@@ -102,14 +102,14 @@ namespace SciterCore.Interop
 #endif
 				apiPtr = SciterAPI();
 
-				_sciterApi = Marshal.PtrToStructure<ISciterAPI>(apiPtr);
+				_sciterApi = (ISciterAPI)Marshal.PtrToStructure(ptr: apiPtr, structureType: typeof(ISciterAPI));
 
 				// from time to time, Sciter changes its ABI
 				// here we test the minimum Sciter version this library is compatible with
 				uint major = _sciterApi.Value.SciterVersion(true);
 				uint minor = _sciterApi.Value.SciterVersion(false);
 				Debug.Assert(major >= 0x00040000);
-				Debug.Assert(_sciterApi.Value.version==0);
+				Debug.Assert(_sciterApi.Value.version>=0);
 			}
 
 			return _sciterApi.Value;
@@ -123,15 +123,15 @@ namespace SciterCore.Interop
 				uint minor = _sciterApi.Value.SciterVersion(false);
 				Debug.Assert(major >= 0x00040000);
 
-				int apiStructSize = Marshal.SizeOf<SciterGraphics.SciterGraphicsApi>();
+				int apiStructSize = Marshal.SizeOf(t: typeof(SciterGraphics.SciterGraphicsApi));
 				
 				if(IntPtr.Size == 8)
 					Debug.Assert(apiStructSize == 276 * 2);
 				else
 					Debug.Assert(apiStructSize == 276);
 
-				IntPtr api_ptr = SciterApi.GetSciterGraphicsAPI();
-				_sciterGraphicsApi = Marshal.PtrToStructure<SciterGraphics.SciterGraphicsApi>(api_ptr);
+				IntPtr apiPtr = SciterApi.GetSciterGraphicsAPI();
+				_sciterGraphicsApi = (SciterGraphics.SciterGraphicsApi)Marshal.PtrToStructure(ptr: apiPtr, structureType: typeof(SciterGraphics.SciterGraphicsApi));
 			}
 			return _sciterGraphicsApi.Value;
 		}
@@ -140,15 +140,15 @@ namespace SciterCore.Interop
 		{
 			if(_sciterRequestApiInstance == null)
 			{
-				int apiStructSize = Marshal.SizeOf<SciterRequest.SciterRequestApi>();
+				int apiStructSize = Marshal.SizeOf(t: typeof(SciterRequest.SciterRequestApi));
 				
 				if(IntPtr.Size == 8)
 					Debug.Assert(apiStructSize == 104*2);
 				else
 					Debug.Assert(apiStructSize == 104);
 
-				IntPtr api_ptr = SciterApi.GetSciterRequestAPI();
-				_sciterRequestApiInstance = Marshal.PtrToStructure<SciterRequest.SciterRequestApi>(api_ptr);
+				IntPtr apiPtr = SciterApi.GetSciterRequestAPI();
+				_sciterRequestApiInstance = (SciterRequest.SciterRequestApi)Marshal.PtrToStructure(ptr: apiPtr, structureType: typeof(SciterRequest.SciterRequestApi));
 			}
 			return _sciterRequestApiInstance.Value;
 		}
@@ -157,15 +157,14 @@ namespace SciterCore.Interop
 		{
 			if(_sciterScriptApi == null)
 			{
-				int apiStructSize = Marshal.SizeOf<TIScript.SciterTIScriptApi>();
+				int apiStructSize = Marshal.SizeOf(typeof(TIScript.SciterTIScriptApi));
 				if(IntPtr.Size == 8)
 					Debug.Assert(apiStructSize == 616);
 				else
 					Debug.Assert(apiStructSize == 308);
 
-				IntPtr api_ptr = SciterApi.TIScriptAPI();
-
-				_sciterScriptApi = Marshal.PtrToStructure<TIScript.SciterTIScriptApi>(api_ptr);
+				IntPtr apiPtr = SciterApi.TIScriptAPI();
+                _sciterScriptApi = (TIScript.SciterTIScriptApi)Marshal.PtrToStructure(ptr: apiPtr, structureType: typeof(TIScript.SciterTIScriptApi));
 			}
 			return _sciterScriptApi.Value;
 		}
@@ -379,8 +378,7 @@ namespace SciterCore.Interop
 			//[UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Unicode)]
 
 			// LPCWSTR	function() SciterClassName;
-			[return: MarshalAs(UnmanagedType.LPWStr)]
-			public delegate string FPTR_SciterClassName();// use Marshal.PtrToStringUni(returned IntPtr) to get the actual string
+            public delegate IntPtr FPTR_SciterClassName();// use Marshal.PtrToStringUni(returned IntPtr) to get the actual string
 			// UINT	function(BOOL major) SciterVersion;
 			public delegate uint FPTR_SciterVersion(bool major);
 			// BOOL	function(HWINDOW hwnd, LPCWSTR uri, LPCBYTE data, UINT dataLength) SciterDataReady;

@@ -9,7 +9,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using SciterSharp.Interop;
+using SciterCore.Interop;
 
 namespace SciterCore.WinForms
 {

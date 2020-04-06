@@ -380,7 +380,7 @@ namespace SciterCore
 
 			IntPtr himg;
 			var r = _gapi.imageCreateFromPixmap(out himg, (uint) bmp.Width, (uint) bmp.Height, true, data.Scan0);
-			Debug.Assert(r == SciterXGraphics.GRAPHIN_RESULT.GRAPHIN_OK);
+			Debug.Assert(r == Interop.SciterGraphics.GRAPHIN_RESULT.GRAPHIN_OK);
 			_himg = himg;
 
 			bmp.UnlockBits(data);

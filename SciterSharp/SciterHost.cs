@@ -26,6 +26,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Reflection;
 using SciterCore.Interop;
+using SciterSharp;
 
 namespace SciterCore
 {
