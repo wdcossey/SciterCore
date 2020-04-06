@@ -18,7 +18,7 @@ namespace SciterCore
 		/// Setup a global debug output handler
 		/// </summary>
 		public SciterDebugOutputHandler()
-		{
+        {
 			_proc = this.DebugOutputProc;
 			_api.SciterSetupDebugOutput(IntPtr.Zero, IntPtr.Zero, _proc);
 		}

@@ -82,7 +82,6 @@ namespace SciterCore.Interop
 		[DllImport("user32.dll")]
 		public static extern bool PostMessage(IntPtr hWnd, Win32Msg Msg, IntPtr wParam, IntPtr lParam);
 
-
 		[DllImport("user32.dll")]
 		public static extern bool ShowWindow(IntPtr hwnd, ShowWindowCommands nCmdShow);
 		
@@ -111,7 +110,6 @@ namespace SciterCore.Interop
 		[DllImport("user32.dll")]
 		[return: MarshalAs(UnmanagedType.Bool)]
 		public static extern bool IsWindowVisible(IntPtr hWnd);
-
 
 		[DllImport("user32.dll")]
 		public static extern sbyte GetMessage(out MSG lpMsg, IntPtr hWnd, uint wMsgFilterMin, uint wMsgFilterMax);
@@ -143,6 +141,12 @@ namespace SciterCore.Interop
 			public PInvokeUtils.RECT rcWork;
 			public uint dwFlags;
 		}
+
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        public static extern IntPtr LoadLibrary(string libname);
+
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
+        public static extern bool FreeLibrary(IntPtr hModule);
 
 		#region Windows flags
 		public enum SetWindowLongFlags : uint
@@ -218,7 +222,6 @@ namespace SciterCore.Interop
 		[DllImport("user32.dll", EntryPoint = "SetWindowLongPtr")]
 		private static extern IntPtr SetWindowLongPtr64(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
 		#endregion
-
 
 		#region CreateChildWindow workaround
 		[DllImport("user32.dll", SetLastError=true)]

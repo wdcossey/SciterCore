@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SciterCore;
 using SciterCore.Interop;
@@ -87,13 +88,24 @@ namespace UnitTests
 		}
 
 
-		private class TestableDOH : SciterDebugOutputHandler
+		private class TestableDebugOutputHandler : SciterDebugOutputHandler
 		{
+            private readonly SciterWindow _window;
+
+            public TestableDebugOutputHandler(SciterWindow window)
+			    :base()
+            {
+                _window = window;
+            }
+
 			public List<Tuple<SciterXDef.OUTPUT_SUBSYTEM, SciterXDef.OUTPUT_SEVERITY, string>> msgs = new List<Tuple<SciterXDef.OUTPUT_SUBSYTEM, SciterXDef.OUTPUT_SEVERITY, string>>();
 
-			protected override void OnOutput(SciterXDef.OUTPUT_SUBSYTEM subsystem, SciterXDef.OUTPUT_SEVERITY severity, string text)
+            protected override void OnOutput(SciterXDef.OUTPUT_SUBSYTEM subsystem, SciterXDef.OUTPUT_SEVERITY severity, string text)
 			{
 				msgs.Add(Tuple.Create(subsystem, severity, text));
+
+				Thread.Sleep(1000);
+				_window.Close();
 			}
 		}
 
@@ -101,7 +113,7 @@ namespace UnitTests
 		public void TestThings()
 		{
 			SciterWindow wnd = new SciterWindow();
-			wnd.CreateMainWindow(1500, 800);
+			wnd.CreateMainWindow(640, 480);
 			wnd.Title = "Wtf";
 
 			SciterHost host = new SciterHost(wnd);
@@ -114,12 +126,11 @@ namespace UnitTests
 		[TestMethod]
 		public void TestODH()
 		{
-			TestableDOH odh = new TestableDOH();
-
-			SciterWindow wnd = new SciterWindow();
-			wnd.CreateMainWindow(1500, 800);
-			wnd.Title = "Wtf";
-			bool res = wnd.LoadHtml(@"
+			SciterWindow window = new SciterWindow();
+            TestableDebugOutputHandler odh = new TestableDebugOutputHandler(window);
+            window.CreateMainWindow(640, 480);
+			window.Title = "Wtf";
+            bool res = window.LoadHtml(@"
 <html>
 <style>
 	body { wtf: 123; }
@@ -134,7 +145,7 @@ namespace UnitTests
 			PInvokeWindows.MSG msg;
 			while(PInvokeWindows.GetMessage(out msg, IntPtr.Zero, 0, 0) != 0)
 			{
-				wnd.Show();
+				window.Show();
 				PInvokeWindows.TranslateMessage(ref msg);
 				PInvokeWindows.DispatchMessage(ref msg);
 			}

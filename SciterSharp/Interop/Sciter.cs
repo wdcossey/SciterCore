@@ -18,7 +18,9 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
@@ -89,8 +91,14 @@ namespace SciterCore.Interop
 				int apiStructSize = Marshal.SizeOf(typeof(ISciterAPI));
 				IntPtr apiPtr;
 
+                
 #if WINDOWS
-                //
+				var codeBasePath = new Uri(typeof(ISciterAPI).Assembly.CodeBase).LocalPath;
+                var codeBaseDirectory = Path.GetDirectoryName(codeBasePath);
+                var is64 = Environment.Is64BitProcess;
+                var bitDirectory = is64 ? "x64" : "x86";
+				
+                PInvokeWindows.LoadLibrary(Path.Combine(codeBaseDirectory, bitDirectory, "sciter.dll"));
 #elif GTKMONO
 				if(IntPtr.Size != 8)
 					throw new Exception("SciterSharp GTK/Mono only supports 64bits builds");

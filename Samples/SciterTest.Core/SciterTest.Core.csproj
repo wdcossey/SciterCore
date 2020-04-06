@@ -83,11 +83,6 @@
     <None Include="res\glyphs.html" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="sciter.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\SciterSharp\SciterCore.WinForms.csproj">
       <Project>{18b2e4e7-cb77-44c3-865b-be05620aba4d}</Project>
       <Name>SciterCore.WinForms</Name>

@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{D60ACAE0-C246-4936-B92B-B756841DB545}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>SciterSharp</RootNamespace>
+    <RootNamespace>SciterCore</RootNamespace>
     <AssemblyName>SciterCore.Gtk</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFrameworkProfile />
@@ -19,7 +19,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>3</WarningLevel>
     <ConsolePause>false</ConsolePause>
-    <DocumentationFile>bin\Debug\SciterSharpGTK.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\SciterCore.Gtk.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Optimize>true</Optimize>

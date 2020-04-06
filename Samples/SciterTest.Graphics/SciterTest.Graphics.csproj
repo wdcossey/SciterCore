@@ -83,10 +83,6 @@
     <None Include="res\index.html" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\..\..\sciter-sdk\bin.win\x64\sciter.dll">
-      <Link>sciter.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <None Include="res\test.html" />
   </ItemGroup>
   <ItemGroup>
