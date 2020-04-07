@@ -28,7 +28,7 @@ namespace SciterCore.Interop
 	{
 		public static void RunMsgLoop()
 		{
-#if WINDOWS
+#if WINDOWS || NETCORE
 			PInvokeWindows.MSG msg;
 			while(PInvokeWindows.GetMessage(out msg, IntPtr.Zero, 0, 0) != 0)
 			{
@@ -67,16 +67,32 @@ namespace SciterCore.Interop
 		}
 
 		// PInvoke structs ===============================================================
-		[StructLayout(LayoutKind.Sequential)]
-		public struct RECT
-		{
-			public int left, top, right, bottom;
+        [StructLayout(LayoutKind.Sequential)]
+        public struct RECT
+        {
+            public RECT(int left, int top, int right, int bottom)
+                : this(right: right, bottom: bottom)
+            {
+                Left = left;
+                Top = top;
+            }
 
-			public int Width { get { return right - left; } }
-			public int Height { get { return bottom - top; } }
-		}
+            public RECT(int right, int bottom)
+            {
+                Left = 0;
+                Top = 0;
+                Right = right;
+                Bottom = bottom;
+            }
 
-		[StructLayout(LayoutKind.Sequential)]
+            public int Left, Top, Right, Bottom;
+
+            public int Width => Right - Left;
+
+            public int Height => Bottom - Top;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
 		public struct POINT
 		{
 			public int X;

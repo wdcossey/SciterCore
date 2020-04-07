@@ -11,8 +11,8 @@ namespace SciterCore
 {
 	public abstract class SciterDebugOutputHandler
 	{
-		private static Sciter.ISciterAPI _api = Sciter.SciterApi;
-		private readonly SciterXDef.FPTR_DEBUG_OUTPUT_PROC _proc;// keep a copy of the delegate so it survives GC
+		private static Sciter.SciterApi _api = Sciter.Api;
+		private readonly SciterXDef.DEBUG_OUTPUT_PROC _proc;// keep a copy of the delegate so it survives GC
 
 		/// <summary>
 		/// Setup a global debug output handler

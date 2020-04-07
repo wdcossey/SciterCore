@@ -65,7 +65,7 @@ namespace UnitTests
 		[TestMethod]
 		public void TestGraphics()
 		{
-			var gapi = Sciter.SciterGraphicsApi;
+			var gapi = Sciter.GraphicsApi;
 
 			IntPtr himg;
 			var a = gapi.imageCreate(out himg, 400, 400, true);

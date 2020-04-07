@@ -14,7 +14,7 @@ namespace SciterTest.Mac
 		static void Main(string[] args)
 		{
 			Debug.WriteLine(Sciter.Version());
-			Sciter.SciterApi.SciterSetOption(
+			Sciter.Api.SciterSetOption(
 				IntPtr.Zero, 
 				SciterXDef.SCITER_RT_OPTIONS.SCITER_SET_GFX_LAYER, 
 				new IntPtr((int) SciterXDef.GFX_LAYER.GFX_LAYER_CG));

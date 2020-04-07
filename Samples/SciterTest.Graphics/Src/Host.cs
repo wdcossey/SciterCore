@@ -39,7 +39,7 @@ namespace SciterTest.Graphics
 	// - in RELEASE mode: resources loaded from by a SciterArchive (packed binary data contained as C# code in ArchiveResource.cs)
 	class BaseHost : SciterHost
 	{
-		protected static Sciter.ISciterAPI _api = Sciter.SciterApi;
+		protected static Sciter.SciterApi _api = Sciter.Api;
 		protected SciterArchive _archive = new SciterArchive();
 		protected SciterWindow _wnd;
 

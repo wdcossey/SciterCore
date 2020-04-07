@@ -83,12 +83,6 @@
       <Name>SciterCore.WinForms</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="..\..\..\sciter-sdk\bin.win\x32\sciter.dll">
-      <Link>sciter.dll</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>$(ProjectDir)scripts\packWindows.bat $(ConfigurationName)</PreBuildEvent>

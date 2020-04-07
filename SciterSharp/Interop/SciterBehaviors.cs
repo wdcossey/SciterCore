@@ -56,9 +56,9 @@ namespace SciterCore.Interop
 
 
 		// alias BOOL function(LPVOID tag, HELEMENT he, UINT evtg, LPVOID prms) ElementEventProc;
-		public delegate bool FPTR_ElementEventProc(IntPtr tag, IntPtr he, uint evtg, IntPtr prms);
+		public delegate bool ELEMENT_EVENT_PROC(IntPtr tag, IntPtr he, uint evtg, IntPtr prms);
 		// alias BOOL function(LPCSTR, HELEMENT, LPElementEventProc*, LPVOID*) SciterBehaviorFactory;
-		public delegate bool FPTR_SciterBehaviorFactory([MarshalAs(UnmanagedType.LPStr)]string s, IntPtr he, out FPTR_ElementEventProc proc, out IntPtr tag);
+		public delegate bool SCITER_BEHAVIOR_FACTORY([MarshalAs(UnmanagedType.LPStr)]string s, IntPtr he, out ELEMENT_EVENT_PROC proc, out IntPtr tag);
 
 		[Flags]
 		public enum PHASE_MASK : uint

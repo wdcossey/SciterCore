@@ -19,7 +19,7 @@ namespace SciterTest.Graphics
 				using(SciterGraphics g = new SciterGraphics(prms.gfx))
 				{
 					g.StateSave();
-					g.Translate(prms.area.left, prms.area.top);
+					g.Translate(prms.area.Left, prms.area.Top);
 
 					List<Tuple<float, float>> points = new List<Tuple<float, float>>
 					{

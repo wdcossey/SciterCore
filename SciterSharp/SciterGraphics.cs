@@ -34,7 +34,7 @@ namespace SciterCore
 {
 	public struct RGBAColor
 	{
-		private static Interop.SciterGraphics.SciterGraphicsApi _gapi = Interop.Sciter.SciterGraphicsApi;
+		private static Interop.SciterGraphics.SciterGraphicsApi _gapi = Interop.Sciter.GraphicsApi;
 		private uint _clr;
 
 		public uint c { get { return _clr; } }
@@ -73,7 +73,7 @@ namespace SciterCore
 
 	public class SciterGraphics : IDisposable
 	{
-		private static Interop.SciterGraphics.SciterGraphicsApi _gapi = Interop.Sciter.SciterGraphicsApi;
+		private static Interop.SciterGraphics.SciterGraphicsApi _gapi = Interop.Sciter.GraphicsApi;
 		public readonly IntPtr _hgfx;
 
 		private SciterGraphics() { }
@@ -319,7 +319,7 @@ namespace SciterCore
 
 	public class SciterImage : IDisposable
 	{
-		private static Interop.SciterGraphics.SciterGraphicsApi _gapi = Interop.Sciter.SciterGraphicsApi;
+		private static Interop.SciterGraphics.SciterGraphicsApi _gapi = Interop.Sciter.GraphicsApi;
 		public IntPtr _himg { get; private set; }
 
 		private SciterImage() { }// non-user usable
@@ -475,7 +475,7 @@ namespace SciterCore
 
 	public class SciterPath : IDisposable
 	{
-		private static Interop.SciterGraphics.SciterGraphicsApi _gapi = Interop.Sciter.SciterGraphicsApi;
+		private static Interop.SciterGraphics.SciterGraphicsApi _gapi = Interop.Sciter.GraphicsApi;
 		public IntPtr _hpath { get; private set; }
 
 		private SciterPath() { }// non-user usable
@@ -581,7 +581,7 @@ namespace SciterCore
 
 	public class SciterText
 	{
-		private static Interop.SciterGraphics.SciterGraphicsApi _gapi = Interop.Sciter.SciterGraphicsApi;
+		private static Interop.SciterGraphics.SciterGraphicsApi _gapi = Interop.Sciter.GraphicsApi;
 		public IntPtr _htext { get; private set; }
 
 		private SciterText() { }// non-user usable

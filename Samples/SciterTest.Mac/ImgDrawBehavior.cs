@@ -41,14 +41,14 @@ namespace SciterTest.Mac
 			using(SciterGraphics gfx = new SciterGraphics(prms.gfx))
 			{
 				gfx.StateSave();
-				gfx.Translate(prms.area.left, prms.area.top);
+				gfx.Translate(prms.area.Left, prms.area.Top);
 
 				gfx.FillColor = new RGBAColor(255, 0, 0);
 				gfx.LineColor = RGBAColor.Black;
 				gfx.LineWidth = 1;
 				//gfx.DrawPath(_svg._spath, SciterSharp.Interop.SciterXGraphics.DRAW_PATH_MODE.DRAW_FILL_AND_STROKE);
 
-				gfx.Translate(prms.area.left+10, prms.area.top+10);
+				gfx.Translate(prms.area.Left+10, prms.area.Top+10);
 				gfx.BlendImage(_simg, 0, 0);
 
 				gfx.StateRestore();

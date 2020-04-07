@@ -16,10 +16,6 @@
 // along with SciterSharp.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 
 namespace SciterCore.Interop
@@ -27,159 +23,159 @@ namespace SciterCore.Interop
 	public static class TIScript
 	{
 		[StructLayout(LayoutKind.Sequential)]
-		public struct SciterTIScriptApi
+		public struct SCITER_TI_SCRIPT_API
 		{
-			public FPTR_create_vm create_vm;
-			public FPTR_destroy_vm destroy_vm;
-			public FPTR_dummy invoke_gc;
-			public FPTR_dummy set_std_streams;
-			public FPTR_get_current_vm get_current_vm;
-			public FPTR_get_global_ns get_global_ns;
-			public FPTR_dummy get_current_ns;
+			public CREATE_VM create_vm;
+			public DESTROY_VM destroy_vm;
+			public DUMMY invoke_gc;
+			public DUMMY set_std_streams;
+			public GET_CURRENT_VM get_current_vm;
+			public GET_GLOBAL_NS get_global_ns;
+			public DUMMY get_current_ns;
 
-			public FPTR_dummy is_int;
-			public FPTR_dummy is_float;
-			public FPTR_dummy is_symbol;
-			public FPTR_is_string is_string;
-			public FPTR_dummy is_array;
-			public FPTR_dummy is_object;
-			public FPTR_dummy is_native_object;
-			public FPTR_dummy is_function;
-			public FPTR_dummy is_native_function;
-			public FPTR_dummy is_instance_of;
-			public FPTR_is_undefined is_undefined;
-			public FPTR_dummy is_nothing;
-			public FPTR_dummy is_null;
-			public FPTR_dummy is_true;
-			public FPTR_dummy is_false;
-			public FPTR_dummy is_class;
-			public FPTR_dummy is_error;
-			public FPTR_dummy is_bytes;
-			public FPTR_dummy is_datetime;
+			public DUMMY is_int;
+			public DUMMY is_float;
+			public DUMMY is_symbol;
+			public IS_STRING is_string;
+			public DUMMY is_array;
+			public DUMMY is_object;
+			public DUMMY is_native_object;
+			public DUMMY is_function;
+			public DUMMY is_native_function;
+			public DUMMY is_instance_of;
+			public IS_UNDEFINED is_undefined;
+			public DUMMY is_nothing;
+			public DUMMY is_null;
+			public DUMMY is_true;
+			public DUMMY is_false;
+			public DUMMY is_class;
+			public DUMMY is_error;
+			public DUMMY is_bytes;
+			public DUMMY is_datetime;
 
-			public FPTR_dummy get_int_value;
-			public FPTR_dummy get_float_value;
-			public FPTR_dummy get_bool_value;
-			public FPTR_dummy get_symbol_value;
-			public FPTR_dummy get_string_value;
-			public FPTR_dummy get_bytes;
-			public FPTR_dummy get_datetime;
+			public DUMMY get_int_value;
+			public DUMMY get_float_value;
+			public DUMMY get_bool_value;
+			public DUMMY get_symbol_value;
+			public DUMMY get_string_value;
+			public DUMMY get_bytes;
+			public DUMMY get_datetime;
 
-			public FPTR_dummy nothing_value;
-			public FPTR_dummy undefined_value;
-			public FPTR_dummy null_value;
-			public FPTR_dummy bool_value;
-			public FPTR_dummy int_value;
-			public FPTR_dummy float_value;
-			public FPTR_dummy string_value;
-			public FPTR_dummy symbol_value;
-			public FPTR_dummy bytes_value;
-			public FPTR_dummy datetime_value;
+			public DUMMY nothing_value;
+			public DUMMY undefined_value;
+			public DUMMY null_value;
+			public DUMMY bool_value;
+			public DUMMY int_value;
+			public DUMMY float_value;
+			public DUMMY string_value;
+			public DUMMY symbol_value;
+			public DUMMY bytes_value;
+			public DUMMY datetime_value;
 
-			public FPTR_dummy to_string;
+			public DUMMY to_string;
 
 			// define native class
-			public FPTR_dummy define_class;
+			public DUMMY define_class;
 
 			// object
-			public FPTR_dummy create_object;
-			public FPTR_dummy set_prop;
-			public FPTR_dummy get_prop;
-			public FPTR_dummy for_each_prop;
-			public FPTR_dummy get_instance_data;
-			public FPTR_dummy set_instance_data;
+			public DUMMY create_object;
+			public DUMMY set_prop;
+			public DUMMY get_prop;
+			public DUMMY for_each_prop;
+			public DUMMY get_instance_data;
+			public DUMMY set_instance_data;
 
 			// array
-			public FPTR_dummy create_array;
-			public FPTR_dummy set_elem;
-			public FPTR_dummy get_elem;
-			public FPTR_dummy set_array_size;
-			public FPTR_dummy get_array_size;
+			public DUMMY create_array;
+			public DUMMY set_elem;
+			public DUMMY get_elem;
+			public DUMMY set_array_size;
+			public DUMMY get_array_size;
 
 			// eval
-			public FPTR_dummy eval;
-			public FPTR_eval_string eval_string;
+			public DUMMY eval;
+			public EVAL_STRING eval_string;
 
 			// call function (method)
-			public FPTR_dummy call;
+			public DUMMY call;
 
 			// compiled bytecodes
-			public FPTR_dummy compile;
-			public FPTR_dummy loadbc;
+			public DUMMY compile;
+			public DUMMY loadbc;
 
 			// throw error
-			public FPTR_dummy throw_error;
+			public DUMMY throw_error;
 
 			// arguments access
-			public FPTR_dummy get_arg_count;
-			public FPTR_dummy get_arg_n;
+			public DUMMY get_arg_count;
+			public DUMMY get_arg_n;
 
 			// path here is global "path" of the object, something like
 			// "one"
 			// "one.two", etc.
-			public FPTR_get_value_by_path get_value_by_path;
+			public GET_VALUE_BY_PATH get_value_by_path;
 
 			// pins
-			public FPTR_dummy pin;
-			public FPTR_dummy unpin;
+			public DUMMY pin;
+			public DUMMY unpin;
 
 			// create native_function_value and native_property_value,
 			// use this if you want to add native functions/properties in runtime to exisiting classes or namespaces (including global ns)
-			public FPTR_dummy native_function_value;
-			public FPTR_dummy native_property_value;
+			public DUMMY native_function_value;
+			public DUMMY native_property_value;
 
 			// Schedule execution of the pfunc(prm) in the thread owning this VM.
 			// Used when you need to call scripting methods from threads other than main (GUI) thread
 			// It is safe to call tiscript functions inside the pfunc.
 			// returns 'true' if scheduling of the call was accepted, 'false' when failure (VM has no dispatcher attached).
-			public FPTR_dummy post;
+			public DUMMY post;
 
-			public FPTR_dummy set_remote_std_streams;
+			public DUMMY set_remote_std_streams;
 
 			// support of multi-return values from native fucntions, n here is a number 1..64
-			public FPTR_dummy make_val_list;
+			public DUMMY make_val_list;
 
 			// returns number of props in object, elements in array, or bytes in byte array.
-			public FPTR_get_length get_length;
+			public GET_LENGTH get_length;
 			// for( var val in coll ) {...}
-			public FPTR_dummy get_next;
+			public DUMMY get_next;
 			// for( var (key,val) in coll ) {...}
-			public FPTR_dummy get_next_key_value;
+			public DUMMY get_next_key_value;
 
 			// associate extra data pointer with the VM
-			public FPTR_dummy set_extra_data;
-			public FPTR_dummy get_extra_data;
+			public DUMMY set_extra_data;
+			public DUMMY get_extra_data;
 
 
 			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-			public delegate void FPTR_dummy();
+			public delegate void DUMMY();
 
 			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-			public delegate IntPtr FPTR_create_vm(uint features = 0xffffffff, uint heap_size = 1024 * 1024, uint stack_size = 64 * 1024);
+			public delegate IntPtr CREATE_VM(uint features = 0xffffffff, uint heapSize = 1024 * 1024, uint stackSize = 64 * 1024);
 
 			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-			public delegate void FPTR_destroy_vm(IntPtr pvm);
+			public delegate void DESTROY_VM(IntPtr pvm);
 
 			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-			public delegate IntPtr FPTR_get_current_vm();
+			public delegate IntPtr GET_CURRENT_VM();
 
 			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-			public delegate tiscript_value FPTR_get_global_ns(IntPtr tiscript_VM_ptr);
+			public delegate tiscript_value GET_GLOBAL_NS(IntPtr tiScriptVmPtr);
 
 			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-			public delegate bool FPTR_is_string(ref tiscript_value v);
+			public delegate bool IS_STRING(ref tiscript_value v);
 
 			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-			public delegate bool FPTR_is_undefined(ref tiscript_value v);
+			public delegate bool IS_UNDEFINED(ref tiscript_value v);
 
 			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-			public delegate bool FPTR_eval_string(IntPtr tiscript_VM_ptr, tiscript_value ns, [MarshalAs(UnmanagedType.LPWStr)]string script, uint script_length, out tiscript_value pretval);
+			public delegate bool EVAL_STRING(IntPtr tiScriptVmPtr, tiscript_value ns, [MarshalAs(UnmanagedType.LPWStr)]string script, uint scriptLength, out tiscript_value pretval);
 
 			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-			public delegate bool FPTR_get_value_by_path(IntPtr tiscript_VM_ptr, out tiscript_value ns, [MarshalAs(UnmanagedType.LPStr)]string path);
+			public delegate bool GET_VALUE_BY_PATH(IntPtr tiScriptVmPtr, out tiscript_value ns, [MarshalAs(UnmanagedType.LPStr)]string path);
 
 			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-			public delegate int FPTR_get_length(IntPtr tiscript_VM_ptr, tiscript_value obj);
+			public delegate int GET_LENGTH(IntPtr tiScriptVmPtr, tiscript_value obj);
 			
 		}
 
@@ -188,9 +184,9 @@ namespace SciterCore.Interop
 		{
 			ulong value;
 
-			public bool IsString { get { return Sciter.SciterScriptApi.is_string(ref this); } }
-			public bool IsUndefined { get { return Sciter.SciterScriptApi.is_undefined(ref this); } }
-			public int Length { get { return Sciter.SciterScriptApi.get_length(Sciter.SciterScriptApi.get_current_vm(), this); } }
+			public bool IsString { get { return Sciter.ScriptApi.is_string(ref this); } }
+			public bool IsUndefined { get { return Sciter.ScriptApi.is_undefined(ref this); } }
+			public int Length { get { return Sciter.ScriptApi.get_length(Sciter.ScriptApi.get_current_vm(), this); } }
 		}
 	}
 }

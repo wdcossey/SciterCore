@@ -15,7 +15,7 @@ namespace SciterCore
 	{
 		public static void Show(IntPtr owner, string text, string caption)
 		{
-#if WINDOWS
+#if WINDOWS || NETCORE
 			PInvokeWindows.MessageBox(owner, text, caption, PInvokeWindows.MessageBoxOptions.OkOnly | PInvokeWindows.MessageBoxOptions.IconExclamation);
 #elif OSX
 			NSAlert alert = new NSAlert();

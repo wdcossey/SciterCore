@@ -29,7 +29,7 @@ namespace SciterCore
 {
 	public class SciterArchive
 	{
-		private static Sciter.ISciterAPI _api = Sciter.SciterApi;
+		private static Sciter.SciterApi _api = Sciter.Api;
 		private IntPtr _har;
 		private GCHandle _pinnedArray;
 

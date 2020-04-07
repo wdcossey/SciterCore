@@ -37,7 +37,7 @@ namespace SciterCore
 	public class SciterValue
 	{
 		private Interop.SciterValue.VALUE _data;
-		private static Sciter.ISciterAPI _api = Sciter.SciterApi;
+		private static Sciter.SciterApi _api = Sciter.Api;
 
 		public static readonly SciterValue Undefined;
 		public static readonly SciterValue Null;
@@ -207,8 +207,8 @@ namespace SciterCore
 		
 		public SciterValue(Func<SciterValue[], SciterValue> func)
 		{
-			Interop.SciterValue.FPTR_NATIVE_FUNCTOR_INVOKE fnfi;
-			Interop.SciterValue.FPTR_NATIVE_FUNCTOR_RELEASE fnfr;
+			Interop.SciterValue.NATIVE_FUNCTOR_INVOKE fnfi;
+			Interop.SciterValue.NATIVE_FUNCTOR_RELEASE fnfr;
 			var fnfi_gch = new GCHandle();
 			var fnfr_gch = new GCHandle();
 			var func_gch = GCHandle.Alloc(func);
@@ -243,8 +243,8 @@ namespace SciterCore
 		
 		public SciterValue(Action<SciterValue[]> func)
 		{
-			Interop.SciterValue.FPTR_NATIVE_FUNCTOR_INVOKE fnfi;
-			Interop.SciterValue.FPTR_NATIVE_FUNCTOR_RELEASE fnfr;
+			Interop.SciterValue.NATIVE_FUNCTOR_INVOKE fnfi;
+			Interop.SciterValue.NATIVE_FUNCTOR_RELEASE fnfr;
 			var fnfi_gch = new GCHandle();
 			var fnfr_gch = new GCHandle();
 			var func_gch = GCHandle.Alloc(func);

@@ -67,7 +67,7 @@ namespace SciterCore.Interop
 			public IntPtr hwnd;
 		}
 
-		public delegate uint FPTR_SciterHostCallback(IntPtr ns /*SCITER_CALLBACK_NOTIFICATION*/, IntPtr callbackParam);
+		public delegate uint SCITER_HOST_CALLBACK(IntPtr ns /*SCITER_CALLBACK_NOTIFICATION*/, IntPtr callbackParam);
 
 		[StructLayout(LayoutKind.Sequential)]
 		public struct SCN_LOAD_DATA
@@ -115,7 +115,7 @@ namespace SciterCore.Interop
 			public IntPtr elem;			// HELEMENT - [in] target DOM element handle
 			public IntPtr behaviorName;	// LPCSTR - [in] zero terminated string, string appears as value of CSS behavior:"???" attribute.
 
-			public SciterBehaviors.FPTR_ElementEventProc elementProc;	// ElementEventProc - [out] pointer to ElementEventProc function.
+			public SciterBehaviors.ELEMENT_EVENT_PROC elementProc;	// ElementEventProc - [out] pointer to ElementEventProc function.
 			public IntPtr elementTag;	// LPVOID - [out] tag value, passed as is into pointer ElementEventProc function.
 		}
 		
@@ -225,12 +225,12 @@ namespace SciterCore.Interop
 			SCITER_SET_MAX_HTTP_DATA_LENGTH = 15,
 		}
 
-#if WINDOWS
-		public delegate IntPtr FPTR_SciterWindowDelegate(IntPtr hwnd, uint msg, IntPtr wParam, IntPtr lParam, IntPtr pParam, ref bool handled);
+#if WINDOWS || NETCORE
+		public delegate IntPtr SCITER_WINDOW_DELEGATE(IntPtr hwnd, uint msg, IntPtr wParam, IntPtr lParam, IntPtr pParam, ref bool handled);
 #elif OSX
-		public delegate void FPTR_SciterWindowDelegate();// void*		Obj-C id, NSWindowDelegate and NSResponder
+		public delegate void SCITER_WINDOW_DELEGATE();// void*		Obj-C id, NSWindowDelegate and NSResponder
 #elif GTKMONO
-		public delegate void FPTR_SciterWindowDelegate();// void*
+		public delegate void SCITER_WINDOW_DELEGATE();// void*
 #endif
 
 
@@ -277,7 +277,7 @@ namespace SciterCore.Interop
 
 
 		// alias DEBUG_OUTPUT_PROC = VOID function(LPVOID param, UINT subsystem /*OUTPUT_SUBSYTEMS*/, UINT severity, LPCWSTR text, UINT text_length);
-		public delegate IntPtr FPTR_DEBUG_OUTPUT_PROC(IntPtr param, uint subsystem /*OUTPUT_SUBSYTEMS*/, uint severity /*OUTPUT_SEVERITY*/, IntPtr text_ptr, uint text_length);
+		public delegate IntPtr DEBUG_OUTPUT_PROC(IntPtr param, uint subsystem /*OUTPUT_SUBSYTEMS*/, uint severity /*OUTPUT_SEVERITY*/, IntPtr text_ptr, uint text_length);
 
 	}
 }

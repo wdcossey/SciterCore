@@ -57,11 +57,11 @@ namespace SciterCore.Interop
 
 
 		// alias LPCBYTE_RECEIVER = void function(LPCBYTE bytes, UINT num_bytes, LPVOID param);
-		public delegate void FPTR_LPCBYTE_RECEIVER(IntPtr bytes, uint num_bytes, IntPtr param);
+		public delegate void LPCBYTE_RECEIVER(IntPtr bytes, uint num_bytes, IntPtr param);
 		// alias LPCWSTR_RECEIVER = void function(LPCWSTR str, UINT str_length, LPVOID param);
-		public delegate void FPTR_LPCWSTR_RECEIVER(IntPtr str, uint str_length, IntPtr param);
+		public delegate void LPCWSTR_RECEIVER(IntPtr str, uint str_length, IntPtr param);
 		// alias LPCSTR_RECEIVER = void function(LPCSTR str, UINT str_length, LPVOID param);
-		public delegate void FPTR_LPCSTR_RECEIVER(IntPtr str, uint str_length, IntPtr param);
+		public delegate void LPCSTR_RECEIVER(IntPtr str, uint str_length, IntPtr param);
 
 
 		public enum ELEMENT_AREAS : uint
@@ -93,7 +93,7 @@ namespace SciterCore.Interop
 
 
 		// alias BOOL function(HELEMENT he, LPVOID param) SciterElementCallback;
-		public delegate bool FPTR_SciterElementCallback(IntPtr he, IntPtr param);
+		public delegate bool SCITER_ELEMENT_CALLBACK(IntPtr he, IntPtr param);
 
 		public enum SET_ELEMENT_HTML : uint
 		{
@@ -159,7 +159,7 @@ namespace SciterCore.Interop
 
 
 		// alias int function(HELEMENT he1, HELEMENT he2, LPVOID param) ELEMENT_COMPARATOR;
-		public delegate bool FPTR_ELEMENT_COMPARATOR(IntPtr he1, IntPtr he2, IntPtr param);
+		public delegate bool ELEMENT_COMPARATOR(IntPtr he1, IntPtr he2, IntPtr param);
 
 
 		public enum CTL_TYPE : uint

@@ -45,11 +45,9 @@ namespace SciterTest.Core
 			// Create the window
 			AppWnd = new SciterWindow();
 
-			var rc = new PInvokeUtils.RECT();
-			rc.right = 800;
-			rc.bottom = 600;
+			var rc = new PInvokeUtils.RECT(800, 600);
 
-			var wnd = AppWnd;
+            var wnd = AppWnd;
 			//wnd.CreateWindow(rc, SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_POPUP | SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_MAIN | SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_RESIZEABLE);
 			wnd.CreateMainWindow(1500, 800);
 			wnd.CenterTopLevelWindow();

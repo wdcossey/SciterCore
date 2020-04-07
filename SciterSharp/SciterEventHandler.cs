@@ -52,7 +52,7 @@ namespace SciterCore
 		
 		public string Name { get; set; }
 		
-		public readonly SciterBehaviors.FPTR_ElementEventProc _proc;// keep a copy of the delegate so it survives GC
+		public readonly SciterBehaviors.ELEMENT_EVENT_PROC _proc;// keep a copy of the delegate so it survives GC
 		
 		// Overridables
 		protected virtual void Subscription(

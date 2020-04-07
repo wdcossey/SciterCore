@@ -27,7 +27,7 @@ namespace SciterCore
 {
 	public class SciterRequest
 	{
-		private static Interop.SciterRequest.SciterRequestApi _rapi = Interop.Sciter.SciterRequestApi;
+		private static Interop.SciterRequest.SciterRequestApi _rapi = Interop.Sciter.RequestApi;
 		public readonly IntPtr _hrq;
 
 		private SciterRequest() { }
@@ -42,7 +42,7 @@ namespace SciterCore
 			get
 			{
 				string strval = null;
-				Interop.SciterXDom.FPTR_LPCSTR_RECEIVER frcv = (IntPtr str, uint str_length, IntPtr param) =>
+				Interop.SciterXDom.LPCSTR_RECEIVER frcv = (IntPtr str, uint str_length, IntPtr param) =>
 				{
 					strval = Marshal.PtrToStringAnsi(str, (int)str_length);
 				};
@@ -57,7 +57,7 @@ namespace SciterCore
 			get
 			{
 				string strval = null;
-				Interop.SciterXDom.FPTR_LPCSTR_RECEIVER frcv = (IntPtr str, uint str_length, IntPtr param) =>
+				Interop.SciterXDom.LPCSTR_RECEIVER frcv = (IntPtr str, uint str_length, IntPtr param) =>
 				{
 					strval = Marshal.PtrToStringAnsi(str, (int)str_length);
 				};

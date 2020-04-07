@@ -29,7 +29,7 @@ namespace SciterCore
 {
 	public class SciterElement : IDisposable
 	{
-		private static Sciter.ISciterAPI _api = Sciter.SciterApi;
+		private static Sciter.SciterApi _api = Sciter.Api;
 		public IntPtr _he { get; private set; }
 
 		public SciterElement(IntPtr he)
@@ -117,7 +117,7 @@ namespace SciterCore
 			get
 			{
 				string strval = null;
-				SciterXDom.FPTR_LPCBYTE_RECEIVER frcv = (IntPtr bytes, uint num_bytes, IntPtr param) =>
+				SciterXDom.LPCBYTE_RECEIVER frcv = (IntPtr bytes, uint num_bytes, IntPtr param) =>
 				{
 					strval = Marshal.PtrToStringAnsi(bytes, (int)num_bytes);
 				};
@@ -134,7 +134,7 @@ namespace SciterCore
 			get
 			{
 				string strval = null;
-				SciterXDom.FPTR_LPCBYTE_RECEIVER frcv = (IntPtr bytes, uint num_bytes, IntPtr param) =>
+				SciterXDom.LPCBYTE_RECEIVER frcv = (IntPtr bytes, uint num_bytes, IntPtr param) =>
 				{
 					strval = Marshal.PtrToStringAnsi(bytes, (int)num_bytes);
 				};
@@ -151,7 +151,7 @@ namespace SciterCore
 			get
 			{
 				string strval = null;
-				SciterXDom.FPTR_LPCWSTR_RECEIVER frcv = (IntPtr str, uint str_length, IntPtr param) =>
+				SciterXDom.LPCWSTR_RECEIVER frcv = (IntPtr str, uint str_length, IntPtr param) =>
 				{
 					strval = Marshal.PtrToStringUni(str, (int)str_length);
 				};
@@ -207,7 +207,7 @@ namespace SciterCore
 		public string GetAttribute(uint n)
 		{
 			string strval = null;
-			SciterXDom.FPTR_LPCWSTR_RECEIVER frcv = (IntPtr str, uint str_length, IntPtr param) =>
+			SciterXDom.LPCWSTR_RECEIVER frcv = (IntPtr str, uint str_length, IntPtr param) =>
 			{
 				strval = Marshal.PtrToStringUni(str, (int)str_length);
 			};
@@ -221,7 +221,7 @@ namespace SciterCore
 		public string GetAttribute(string name)
 		{
 			string strval = null;
-			SciterXDom.FPTR_LPCWSTR_RECEIVER frcv = (IntPtr str, uint str_length, IntPtr param) =>
+			SciterXDom.LPCWSTR_RECEIVER frcv = (IntPtr str, uint str_length, IntPtr param) =>
 			{
 				strval = Marshal.PtrToStringUni(str, (int) str_length);
 			};
@@ -235,7 +235,7 @@ namespace SciterCore
 		public string GetAttributeName(uint n)
 		{
 			string strval = null;
-			SciterXDom.FPTR_LPCSTR_RECEIVER frcv = (IntPtr str, uint str_length, IntPtr param) =>
+			SciterXDom.LPCSTR_RECEIVER frcv = (IntPtr str, uint str_length, IntPtr param) =>
 			{
 				strval = Marshal.PtrToStringAnsi(str, (int)str_length);
 			};
@@ -261,7 +261,7 @@ namespace SciterCore
 		public string GetStyle(string name)
 		{
 			string strval = null;
-			SciterXDom.FPTR_LPCWSTR_RECEIVER frcv = (IntPtr str, uint str_length, IntPtr param) =>
+			SciterXDom.LPCWSTR_RECEIVER frcv = (IntPtr str, uint str_length, IntPtr param) =>
 			{
 				strval = Marshal.PtrToStringUni(str, (int)str_length);
 			};
@@ -554,7 +554,7 @@ namespace SciterCore
 		public SciterElement SelectFirst(string selector)
 		{
 			SciterElement se = null;
-			SciterXDom.FPTR_SciterElementCallback cbk = (IntPtr he, IntPtr param) =>
+			SciterXDom.SCITER_ELEMENT_CALLBACK cbk = (IntPtr he, IntPtr param) =>
 			{
 				se = new SciterElement(he);
 				return true;// true stops enumeration
@@ -566,7 +566,7 @@ namespace SciterCore
 		public List<SciterElement> SelectAll(string selector)
 		{
 			List<SciterElement> list = new List<SciterElement>();
-			SciterXDom.FPTR_SciterElementCallback cbk = (IntPtr he, IntPtr param) =>
+			SciterXDom.SCITER_ELEMENT_CALLBACK cbk = (IntPtr he, IntPtr param) =>
 			{
 				list.Add(new SciterElement(he));
 				return false;// false continue enumeration
@@ -790,7 +790,7 @@ namespace SciterCore
 
 	public class SciterNode
 	{
-		private static Sciter.ISciterAPI _api = Sciter.SciterApi;
+		private static Sciter.SciterApi _api = Sciter.Api;
 		public IntPtr _hn { get; private set; }
 
 		public SciterNode(IntPtr hn)
@@ -882,7 +882,7 @@ namespace SciterCore
 			get
 			{
 				string strval = null;
-				SciterXDom.FPTR_LPCWSTR_RECEIVER frcv = (IntPtr str, uint str_length, IntPtr param) =>
+				SciterXDom.LPCWSTR_RECEIVER frcv = (IntPtr str, uint str_length, IntPtr param) =>
 				{
 					if(str != IntPtr.Zero)
 						strval = Marshal.PtrToStringUni(str, (int)str_length);

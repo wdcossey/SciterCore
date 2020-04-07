@@ -34,11 +34,11 @@ namespace SciterCore
 	{
 		const int INVOKE_NOTIFICATION = 0x8206241;
 
-		private static Sciter.ISciterAPI _api = Sciter.SciterApi;
+		private static Sciter.SciterApi _api = Sciter.Api;
 
 		private IntPtr _hwnd;
 		private Dictionary<string, Type> _behaviorMap = new Dictionary<string, Type>();
-		private SciterXDef.FPTR_SciterHostCallback _cbk;
+		private SciterXDef.SCITER_HOST_CALLBACK _cbk;
 		private SciterEventHandler _window_evh;
 
 		public static bool InjectLibConsole = true;
@@ -57,7 +57,7 @@ namespace SciterCore
 				byte[] byteArray = Encoding.UTF8.GetBytes("include \"scitersharp:console.tis\";");
 				GCHandle pinnedArray = GCHandle.Alloc(byteArray, GCHandleType.Pinned);
 				IntPtr pointer = pinnedArray.AddrOfPinnedObject();
-				Sciter.SciterApi.SciterSetOption(IntPtr.Zero, SciterXDef.SCITER_RT_OPTIONS.SCITER_SET_INIT_SCRIPT, pointer);
+				Sciter.Api.SciterSetOption(IntPtr.Zero, SciterXDef.SCITER_RT_OPTIONS.SCITER_SET_INIT_SCRIPT, pointer);
 				pinnedArray.Free();
 			}
 		}
@@ -100,20 +100,20 @@ namespace SciterCore
 		public bool EvalGlobalTISript(string script, out TIScript.tiscript_value ret)
 		{
 			Debug.Assert(_hwnd != IntPtr.Zero);
-			var vm = Sciter.SciterApi.SciterGetVM(_hwnd);
+			var vm = Sciter.Api.SciterGetVM(_hwnd);
 			Debug.Assert(vm != IntPtr.Zero);
 
-			var global_ns = Sciter.SciterScriptApi.get_global_ns(vm);
+			var global_ns = Sciter.ScriptApi.get_global_ns(vm);
 
-			return Sciter.SciterScriptApi.eval_string(vm, global_ns, script, (uint)script.Length, out ret);
+			return Sciter.ScriptApi.eval_string(vm, global_ns, script, (uint)script.Length, out ret);
 		}
 
 		public bool EvalGlobalTISriptValuePath(string path, out TIScript.tiscript_value ret)
 		{
 			Debug.Assert(_hwnd != IntPtr.Zero);
-			var vm = Sciter.SciterApi.SciterGetVM(_hwnd);
+			var vm = Sciter.Api.SciterGetVM(_hwnd);
 
-			return Sciter.SciterScriptApi.get_value_by_path(vm, out ret, path);
+			return Sciter.ScriptApi.get_value_by_path(vm, out ret, path);
 		}
 
 		/// <summary>
@@ -337,7 +337,7 @@ namespace SciterCore
 					bool res = OnAttachBehavior(new SciterElement(sab.elem), Marshal.PtrToStringAnsi(sab.behaviorName), out elementEvh);
 					if(res)
 					{
-						SciterBehaviors.FPTR_ElementEventProc proc = elementEvh._proc;
+						SciterBehaviors.ELEMENT_EVENT_PROC proc = elementEvh._proc;
 						IntPtr ptrProc = Marshal.GetFunctionPointerForDelegate(proc);
 
 						IntPtr EVENTPROC_OFFSET = Marshal.OffsetOf(typeof(SciterXDef.SCN_ATTACH_BEHAVIOR), "elementProc");

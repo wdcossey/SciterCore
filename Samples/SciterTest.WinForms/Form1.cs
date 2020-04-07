@@ -20,7 +20,7 @@ namespace SciterTest.WinForms
 
 		private void SciterControl1_HandleCreated(object sender, EventArgs e)
 		{
-			var vm = Sciter.SciterApi.SciterGetVM(sciterControl1.Handle);
+			var vm = Sciter.Api.SciterGetVM(sciterControl1.Handle);
 			//AppWnd = new SciterWindow(sciterControl1.Handle);
 			//AppHost.Setup(AppWnd);
 		}

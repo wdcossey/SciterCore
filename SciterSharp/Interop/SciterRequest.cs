@@ -107,11 +107,11 @@ namespace SciterCore.Interop
 
 			// get requested URL
 			// REQUEST_RESULT SCFN(RequestUrl)( HREQUEST rq, LPCSTR_RECEIVER* rcv, LPVOID rcv_param );
-			public delegate REQUEST_RESULT FPTR_RequestUrl(IntPtr rq, SciterXDom.FPTR_LPCSTR_RECEIVER rcv, IntPtr rcv_param);
+			public delegate REQUEST_RESULT FPTR_RequestUrl(IntPtr rq, SciterXDom.LPCSTR_RECEIVER rcv, IntPtr rcv_param);
 
 			// get real, content URL (after possible redirection)
 			// REQUEST_RESULT SCFN(RequestContentUrl)( HREQUEST rq, LPCSTR_RECEIVER* rcv, LPVOID rcv_param );
-			public delegate REQUEST_RESULT FPTR_RequestContentUrl(IntPtr rq, SciterXDom.FPTR_LPCSTR_RECEIVER rcv, IntPtr rcv_param);
+			public delegate REQUEST_RESULT FPTR_RequestContentUrl(IntPtr rq, SciterXDom.LPCSTR_RECEIVER rcv, IntPtr rcv_param);
 
 			// get requested data type
 			// REQUEST_RESULT SCFN(RequestGetRequestType)( HREQUEST rq, REQUEST_RQ_TYPE* pType );
@@ -123,7 +123,7 @@ namespace SciterCore.Interop
 
 			// get received data type, string, mime type
 			// REQUEST_RESULT SCFN(RequestGetReceivedDataType)( HREQUEST rq, LPCSTR_RECEIVER* rcv, LPVOID rcv_param );
-			public delegate REQUEST_RESULT FPTR_RequestGetReceivedDataType(IntPtr rq, SciterXDom.FPTR_LPCSTR_RECEIVER rcv, IntPtr rcv_param);
+			public delegate REQUEST_RESULT FPTR_RequestGetReceivedDataType(IntPtr rq, SciterXDom.LPCSTR_RECEIVER rcv, IntPtr rcv_param);
 
 
 			// get number of request parameters passed
@@ -132,11 +132,11 @@ namespace SciterCore.Interop
 
 			// get nth request parameter name
 			// REQUEST_RESULT SCFN(RequestGetNthParameterName)( HREQUEST rq, UINT n, LPCWSTR_RECEIVER* rcv, LPVOID rcv_param  );
-			public delegate REQUEST_RESULT FPTR_RequestGetNthParameterName(IntPtr rq, uint n, SciterXDom.FPTR_LPCWSTR_RECEIVER rcv, IntPtr rcv_param);
+			public delegate REQUEST_RESULT FPTR_RequestGetNthParameterName(IntPtr rq, uint n, SciterXDom.LPCWSTR_RECEIVER rcv, IntPtr rcv_param);
 
 			// get nth request parameter value
 			// REQUEST_RESULT SCFN(RequestGetNthParameterValue)( HREQUEST rq, UINT n, LPCWSTR_RECEIVER* rcv, LPVOID rcv_param  );
-			public delegate REQUEST_RESULT FPTR_RequestGetNthParameterValue(IntPtr rq, uint n, SciterXDom.FPTR_LPCWSTR_RECEIVER rcv, IntPtr rcv_param);
+			public delegate REQUEST_RESULT FPTR_RequestGetNthParameterValue(IntPtr rq, uint n, SciterXDom.LPCWSTR_RECEIVER rcv, IntPtr rcv_param);
 
 			// get request times , ended - started = milliseconds to get the requst
 			// REQUEST_RESULT SCFN(RequestGetTimes)( HREQUEST rq, UINT* pStarted, UINT* pEnded );
@@ -148,11 +148,11 @@ namespace SciterCore.Interop
 
 			// get nth request header name 
 			// REQUEST_RESULT SCFN(RequestGetNthRqHeaderName)( HREQUEST rq, UINT n, LPCWSTR_RECEIVER* rcv, LPVOID rcv_param );
-			public delegate REQUEST_RESULT FPTR_RequestGetNthRqHeaderName(IntPtr rq, uint n, SciterXDom.FPTR_LPCWSTR_RECEIVER rcv, IntPtr rcv_param);
+			public delegate REQUEST_RESULT FPTR_RequestGetNthRqHeaderName(IntPtr rq, uint n, SciterXDom.LPCWSTR_RECEIVER rcv, IntPtr rcv_param);
 
 			// get nth request header value 
 			// REQUEST_RESULT SCFN(RequestGetNthRqHeaderValue)( HREQUEST rq, UINT n, LPCWSTR_RECEIVER* rcv, LPVOID rcv_param );
-			public delegate REQUEST_RESULT FPTR_RequestGetNthRqHeaderValue(IntPtr rq, uint n, SciterXDom.FPTR_LPCWSTR_RECEIVER rcv, IntPtr rcv_param);
+			public delegate REQUEST_RESULT FPTR_RequestGetNthRqHeaderValue(IntPtr rq, uint n, SciterXDom.LPCWSTR_RECEIVER rcv, IntPtr rcv_param);
 
 			// get number of response headers
 			// REQUEST_RESULT SCFN(RequestGetNumberOfRspHeaders)( HREQUEST rq, UINT* pNumber );
@@ -160,11 +160,11 @@ namespace SciterCore.Interop
 
 			// get nth response header name 
 			// REQUEST_RESULT SCFN(RequestGetNthRspHeaderName)( HREQUEST rq, UINT n, LPCWSTR_RECEIVER* rcv, LPVOID rcv_param );
-			public delegate REQUEST_RESULT FPTR_RequestGetNthRspHeaderName(IntPtr rq, uint n, SciterXDom.FPTR_LPCWSTR_RECEIVER rcv, IntPtr rcv_param);
+			public delegate REQUEST_RESULT FPTR_RequestGetNthRspHeaderName(IntPtr rq, uint n, SciterXDom.LPCWSTR_RECEIVER rcv, IntPtr rcv_param);
 
 			// get nth response header value 
 			// REQUEST_RESULT SCFN(RequestGetNthRspHeaderValue)( HREQUEST rq, UINT n, LPCWSTR_RECEIVER* rcv, LPVOID rcv_param );
-			public delegate REQUEST_RESULT FPTR_RequestGetNthRspHeaderValue(IntPtr rq, uint n, SciterXDom.FPTR_LPCWSTR_RECEIVER rcv, IntPtr rcv_param);
+			public delegate REQUEST_RESULT FPTR_RequestGetNthRspHeaderValue(IntPtr rq, uint n, SciterXDom.LPCWSTR_RECEIVER rcv, IntPtr rcv_param);
 
 			// get completion status (CompletionStatus - http response code : 200, 404, etc.)
 			// REQUEST_RESULT SCFN(RequestGetCompletionStatus)( HREQUEST rq, REQUEST_STATE* pState, UINT* pCompletionStatus );
@@ -172,7 +172,7 @@ namespace SciterCore.Interop
 
 			// get proxy host
 			// REQUEST_RESULT SCFN(RequestGetProxyHost)( HREQUEST rq, LPCSTR_RECEIVER* rcv, LPVOID rcv_param );
-			public delegate REQUEST_RESULT FPTR_RequestGetProxyHost(IntPtr rq, SciterXDom.FPTR_LPCSTR_RECEIVER rcv, IntPtr rcv_param);
+			public delegate REQUEST_RESULT FPTR_RequestGetProxyHost(IntPtr rq, SciterXDom.LPCSTR_RECEIVER rcv, IntPtr rcv_param);
 
 			// get proxy port
 			// REQUEST_RESULT SCFN(RequestGetProxyPort)( HREQUEST rq, UINT* pPort );
@@ -208,7 +208,7 @@ namespace SciterCore.Interop
 
 			// get received (so far) data
 			// REQUEST_RESULT SCFN(RequestGetData)( HREQUEST rq, LPCBYTE_RECEIVER* rcv, LPVOID rcv_param );
-			public delegate REQUEST_RESULT FPTR_RequestGetData(IntPtr rq, SciterXDom.FPTR_LPCBYTE_RECEIVER rcv, IntPtr rcv_param);
+			public delegate REQUEST_RESULT FPTR_RequestGetData(IntPtr rq, SciterXDom.LPCBYTE_RECEIVER rcv, IntPtr rcv_param);
 		}
 	}
 }

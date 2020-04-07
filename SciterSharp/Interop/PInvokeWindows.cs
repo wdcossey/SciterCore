@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with SciterSharp.  If not, see <http://www.gnu.org/licenses/>.
 
-#if WINDOWS
+#if WINDOWS || NETCORE
 using System;
 using System.Collections.Generic;
 using System.Linq;
