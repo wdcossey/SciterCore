@@ -1,4 +1,5 @@
 using SciterCore;
+using SciterCore.Interop;
 
 namespace SciterTest.Gtk
 {
@@ -7,7 +8,10 @@ namespace SciterTest.Gtk
 		public Window()
 		{
 			var wnd = this;
-			wnd.CreateMainWindow(800, 600);
+			wnd.CreateMainWindow(800, 600, 
+			SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_MAIN |
+			SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_GLASSY | 
+			SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_RESIZEABLE);
 			wnd.CenterTopLevelWindow();
 			wnd.Title = "SciterTest.Gtk";
 			#if WINDOWS

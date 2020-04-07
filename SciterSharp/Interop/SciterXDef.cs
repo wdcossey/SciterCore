@@ -234,6 +234,7 @@ namespace SciterCore.Interop
 #endif
 
 
+		[Flags]
 		public enum SCITER_CREATE_WINDOW_FLAGS : uint
 		{
 			/// <summary>Child window only, if this flag is set all other flags ignored</summary>

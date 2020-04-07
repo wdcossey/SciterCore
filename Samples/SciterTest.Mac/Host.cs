@@ -16,7 +16,7 @@ namespace SciterTest.Mac
 			
 #if DEBUG
 			var path = Environment.CurrentDirectory;//Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-			string url = "file:///Users/wdcossey/RiderProjects/SciterSharp/Tests/SciterTest.Mac/res/index.html";
+			string url = "file:///Users/wdcossey/RiderProjects/SciterCore/Samples/SciterTest.Mac/res/index.html";
 #else
 			string url = "file:///Users/midiway/Documents/SciterSharp/Tests/SciterTest.Mac/res/index.html";
 #endif

@@ -6,8 +6,8 @@
     <ProjectGuid>{77C8C5E7-4AB3-49FF-B8CD-4EE0B850576A}</ProjectGuid>
     <ProjectTypeGuids>{A3F8F2AB-B479-4A4A-A458-A89E7DC349F1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Exe</OutputType>
-    <RootNamespace>TestGTK</RootNamespace>
-    <AssemblyName>TestGTK</AssemblyName>
+    <RootNamespace>SciterTest.Gtk</RootNamespace>
+    <AssemblyName>SciterTest.Gtk.Mac</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <TargetFrameworkIdentifier>Xamarin.Mac</TargetFrameworkIdentifier>
     <MonoMacResourcePrefix>Resources</MonoMacResourcePrefix>
@@ -78,7 +78,6 @@
   <ItemGroup>
     <None Include="Info.plist" />
     <None Include="Entitlements.plist" />
-    <Content Include="sciter-osx-64.dylib" />
     <None Include="res\index.html" />
     <None Include="packages.SciterTest.Gtk.Mac.config" />
   </ItemGroup>
@@ -97,6 +96,12 @@
       <Project>{42bb6ec1-e806-4b5b-a242-1662aae7bf25}</Project>
       <Name>SciterCore.Mac</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <NativeReference Include="libsciter-osx-64.dylib">
+      <Kind>Dynamic</Kind>
+      <SmartLink>False</SmartLink>
+    </NativeReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets" />
 </Project>
