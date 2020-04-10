@@ -1,4 +1,4 @@
-﻿#if WINDOWS
+﻿#if WINDOWS && NET45
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -18,23 +18,40 @@ namespace SciterCore.WinForms
 	/// </summary>
 	public class SciterControl : Control
 	{
+
+        private static string DEFAULT_HTML = 
+            "<body><code>Use the <b>LoadHtml</b> event of {0} to load some html.</code>" + 
+            "<br/><br/>" +
+            "<pre><code>    {0}.LoadHtml += (sender, args) => <br/>" + 
+            "    {<br/>" + 
+            "        args.Html = \"&lt;body&gt;Hello &lt;b&gt;World&lt;/b&gt;&lt;/body&gt;\";<br/>" + 
+            "    }</code></pre>";
+
 		public SciterWindow SciterWnd { get; private set; }
 
 		public SciterControl()
 		{
 			SciterWnd = new SciterWindow();
 		}
-		
+
+        public string Html { get; set; }
+
+		public event EventHandler<LoadHtmlEventArgs> LoadHtml;
+
 		#region Overrided Methods
 		protected override void OnHandleCreated(EventArgs e)
 		{
 			SciterWnd.CreateChildWindow(Handle);
-			SciterWnd.LoadHtml(
-				"<body>" +
-					"<code>Add an event handler to the <b>HandleCreated</b> event for any needed initialization (e.g.: load the HTML)</code><br /><br />" +
-					"<code>In the handler, use the <b>SciterWnd</b> property of this control to access the SciterWindow instance.</code>" +
-				"</body>"
-				);
+
+            var loadHtmlEventArgs = new LoadHtmlEventArgs()
+            {
+                Html = this.Html
+            };
+
+            LoadHtml?.Invoke(this, loadHtmlEventArgs);
+
+            SciterWnd.LoadHtml(loadHtmlEventArgs?.Html ?? this.Html ?? string.Format(DEFAULT_HTML, Name));
+
 			SciterWnd.Show();
 			base.OnHandleCreated(e);
 		}
@@ -50,5 +67,16 @@ namespace SciterCore.WinForms
 		}
 		#endregion
 	}
+
+    public class LoadHtmlEventArgs : EventArgs
+    {
+        public LoadHtmlEventArgs()
+        {
+            
+        }
+
+        public string Html { get; set; }
+
+    }
 }
 #endif

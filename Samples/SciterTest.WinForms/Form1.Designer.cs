@@ -28,26 +28,29 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.sciterControl1 = new SciterCore.WinForms.SciterControl();
-			this.SuspendLayout();
-			// 
-			// sciterControl1
-			// 
-			this.sciterControl1.Location = new System.Drawing.Point(105, 69);
-			this.sciterControl1.Name = "sciterControl1";
-			this.sciterControl1.Size = new System.Drawing.Size(452, 217);
-			this.sciterControl1.TabIndex = 0;
-			this.sciterControl1.Text = "sciterControl1";
-			// 
-			// Form1
-			// 
-			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(738, 415);
-			this.Controls.Add(this.sciterControl1);
-			this.Name = "Form1";
-			this.Text = "Form1";
-			this.ResumeLayout(false);
+            this.sciterControl1 = new SciterCore.WinForms.SciterControl();
+            this.SuspendLayout();
+            // 
+            // sciterControl1
+            // 
+            this.sciterControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.sciterControl1.Html = "<body>Hello <b>Sciter</b></body>";
+            this.sciterControl1.Location = new System.Drawing.Point(0, 0);
+            this.sciterControl1.Name = "sciterControl1";
+            this.sciterControl1.Size = new System.Drawing.Size(738, 415);
+            this.sciterControl1.TabIndex = 0;
+            this.sciterControl1.Text = "sciterControl1";
+            this.sciterControl1.LoadHtml += new System.EventHandler<SciterCore.WinForms.LoadHtmlEventArgs>(this.sciterControl1_LoadHtml);
+            // 
+            // Form1
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(738, 415);
+            this.Controls.Add(this.sciterControl1);
+            this.Name = "Form1";
+            this.Text = "Form1";
+            this.ResumeLayout(false);
 
 		}
 

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SciterCore.Interop;
-#if OSX
+#if OSX && XAMARIN
 using AppKit;
 using Foundation;
 #endif
@@ -17,7 +17,7 @@ namespace SciterCore
 		{
 #if WINDOWS || NETCORE
 			PInvokeWindows.MessageBox(owner, text, caption, PInvokeWindows.MessageBoxOptions.OkOnly | PInvokeWindows.MessageBoxOptions.IconExclamation);
-#elif OSX
+#elif OSX && XAMARIN
 			NSAlert alert = new NSAlert();
 			alert.MessageText = text;
 			alert.RunModal();

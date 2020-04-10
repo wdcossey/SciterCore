@@ -22,10 +22,14 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-#if WINDOWS
+#if WINDOWS && !WPF
 using System.Drawing;
 using System.Drawing.Imaging;
-#elif OSX
+#elif WINDOWS && WPF
+using System.Windows.Media;
+using System.Windows.Shapes;
+using System.Windows.Media.Imaging;
+#elif OSX && XAMARIN
 using Foundation;
 using CoreGraphics;
 #endif
@@ -372,7 +376,7 @@ namespace SciterCore
 			_himg = himg;
 		}
 
-#if WINDOWS
+#if WINDOWS && !WPF
 		public SciterImage(Bitmap bmp)
 		{
 			var data = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppPArgb);
@@ -385,7 +389,24 @@ namespace SciterCore
 
 			bmp.UnlockBits(data);
 		}
-#elif OSX
+#elif WINDOWS && WPF
+		public SciterImage(BitmapSource bmp)
+		{
+            WriteableBitmap bitmap = new WriteableBitmap(bmp);
+            bitmap.Lock();
+
+			//var data = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppPArgb);
+			Debug.Assert(bmp.Width*4 == bitmap.BackBufferStride);
+            
+			IntPtr himg;
+			var r = _gapi.imageCreateFromPixmap(out himg, (uint) bmp.Width, (uint) bmp.Height, true, bitmap.BackBuffer);
+			Debug.Assert(r == Interop.SciterGraphics.GRAPHIN_RESULT.GRAPHIN_OK);
+			_himg = himg;
+
+            bitmap.Unlock();
+		}
+
+#elif OSX && XAMARIN
 		public SciterImage(CGImage img)
 		{
 			if(img.BitsPerPixel != 32)

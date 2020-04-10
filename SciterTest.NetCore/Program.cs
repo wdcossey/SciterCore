@@ -12,6 +12,7 @@ namespace SciterTest.NetCore
 {
     class Program
     {
+        [STAThread]
         static async Task Main(string[] args)
         {
             //Console.WriteLine("Hello World!");
@@ -37,7 +38,6 @@ namespace SciterTest.NetCore
                 .ConfigureServices((hostContext, services) =>
                 {
                     services.AddLogging();
-                    //services.Configure<MediaTypeNames.Application>(hostContext.Configuration.GetSection("application"));
                     services.AddHostedService<Startup>();
  
                 })

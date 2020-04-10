@@ -23,7 +23,7 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using SciterCore.Interop;
-#if OSX
+#if OSX && XAMARIN
 using AppKit;
 using Foundation;
 #else
@@ -32,7 +32,7 @@ using System.Drawing;
 
 namespace SciterCore
 {
-#if OSX
+#if OSX && XAMARIN
 	public class OSXView : NSView
 	{
 		public OSXView(IntPtr handle)
@@ -43,7 +43,7 @@ namespace SciterCore
 #endif
 
 	public class SciterWindow
-#if WINDOWS 
+#if WINDOWS && !WPF
 		: System.Windows.Forms.IWin32Window
 #endif
 	{
@@ -52,7 +52,7 @@ namespace SciterCore
 		private SciterXDef.SCITER_WINDOW_DELEGATE _proc;
 #if GTKMONO || NETCORE
 		public IntPtr _gtkwindow { get; private set; }
-#elif OSX
+#elif OSX && XAMARIN
 		public NSView _nsview { get; private set; }
 #endif
 
@@ -94,7 +94,7 @@ namespace SciterCore
 #if GTKMONO
 			_gtkwindow = PInvokeGTK.gtk_widget_get_toplevel(_hwnd);
 			Debug.Assert(_gtkwindow != IntPtr.Zero);
-#elif OSX
+#elif OSX && XAMARIN
 			_nsview = new OSXView(_hwnd);
 #endif
 		}
@@ -130,7 +130,7 @@ namespace SciterCore
 #if GTKMONO
 			_gtkwindow = PInvokeGTK.gtk_widget_get_toplevel(_hwnd);
 			Debug.Assert(_gtkwindow != IntPtr.Zero);
-#elif OSX
+#elif OSX && XAMARIN
 			_nsview = new OSXView(_hwnd);
 #endif
 		}
@@ -249,7 +249,7 @@ namespace SciterCore
 			int nY = (screen_height - window_height) / 2;
 
 			PInvokeGTK.gtk_window_move(_gtkwindow, nX, nY);
-#elif OSX
+#elif OSX && XAMARIN
 			_nsview.Window.Center();
 #endif
 		}
@@ -268,7 +268,7 @@ namespace SciterCore
 			int screen_width = PInvokeGTK.gdk_screen_width();
 			int screen_height = PInvokeGTK.gdk_screen_height();
 			return new PInvokeUtils.SIZE() { cx = screen_width, cy = screen_height };
-#elif OSX
+#elif OSX && XAMARIN
 			var sz = NSScreen.MainScreen.Frame.Size;
 			return new PInvokeUtils.SIZE((int)sz.Width, (int)sz.Height);
 #endif
@@ -285,7 +285,7 @@ namespace SciterCore
 				return new PInvokeUtils.SIZE(mi.rcMonitor.Width, mi.rcMonitor.Height);
 #elif GTKMONO
 				return new PInvokeUtils.SIZE();
-#elif OSX
+#elif OSX && XAMARIN
 				var sz = _nsview.Window.Screen.Frame.Size;
 				return new PInvokeUtils.SIZE((int)sz.Width, (int)sz.Height);
 #endif
@@ -304,7 +304,7 @@ namespace SciterCore
 				int window_width, window_height;
 				PInvokeGTK.gtk_window_get_size(_gtkwindow, out window_width, out window_height);
 				return new PInvokeUtils.SIZE(window_width, window_height);
-#elif OSX
+#elif OSX && XAMARIN
 				var sz = _nsview.Window.Frame.Size;
 				return new PInvokeUtils.SIZE { cx = (int)sz.Width, cy = (int)sz.Height };
 #endif
@@ -321,7 +321,7 @@ namespace SciterCore
 				return new PInvokeUtils.POINT(rectWindow.Left, rectWindow.Top);
 #elif GTKMONO
 				return new PInvokeUtils.POINT();
-#elif OSX
+#elif OSX && XAMARIN
 				var pos = _nsview.Window.Frame.Location;
 				return new PInvokeUtils.POINT((int)pos.X, (int)pos.Y);
 #endif
@@ -333,7 +333,7 @@ namespace SciterCore
 				PInvokeWindows.MoveWindow(_hwnd, value.X, value.Y, Size.cx, Size.cy, false);
 #elif GTKMONO
 				PInvokeGTK.gtk_window_move(_gtkwindow, value.X, value.Y);
-#elif OSX
+#elif OSX && XAMARIN
 				var pt = new CoreGraphics.CGPoint(value.X, value.Y);
 				_nsview.Window.SetFrameTopLeftPoint(pt);
 #endif
@@ -369,7 +369,7 @@ namespace SciterCore
 				PInvokeGTK.gtk_window_present(_gtkwindow);
 			else
 				PInvokeGTK.gtk_widget_hide(_hwnd);
-#elif OSX
+#elif OSX && XAMARIN
 			if(show)
 			{
 				_nsview.Window.MakeMainWindow();
@@ -396,7 +396,7 @@ namespace SciterCore
 			PInvokeWindows.PostMessage(_hwnd, PInvokeWindows.Win32Msg.WM_CLOSE, IntPtr.Zero, IntPtr.Zero);
 #elif GTKMONO
 			PInvokeGTK.gtk_window_close(_gtkwindow);
-#elif OSX
+#elif OSX && XAMARIN
 			_nsview.Window.Close();
 #endif
 		}
@@ -409,7 +409,7 @@ namespace SciterCore
 				return PInvokeWindows.IsWindowVisible(_hwnd);
 #elif GTKMONO
 				return PInvokeGTK.gtk_widget_get_visible(_gtkwindow) != 0;
-#elif OSX
+#elif OSX && XAMARIN
 				return _nsview.Window.IsVisible;
 #endif
 			}
@@ -420,7 +420,7 @@ namespace SciterCore
 			get { return _api.SciterGetVM(_hwnd); }
 		}
 
-#if WINDOWS
+#if WINDOWS && !WPF
 		public Icon Icon
 		{
             // instead of using this property, you can use View.windowIcon on all platforms
@@ -445,7 +445,7 @@ namespace SciterCore
 				Marshal.FreeHGlobal(strPtr);
 #elif GTKMONO
 				PInvokeGTK.gtk_window_set_title(_gtkwindow, value);
-#elif OSX
+#elif OSX && XAMARIN
 				_nsview.Window.Title = value;
 #endif
 			}
@@ -462,7 +462,7 @@ namespace SciterCore
 #elif GTKMONO
 				IntPtr str_ptr = PInvokeGTK.gtk_window_get_title(_gtkwindow);
 				return Marshal.PtrToStringAnsi(str_ptr);
-#elif OSX
+#elif OSX && XAMARIN
 				return _nsview.Window.Title;
 #endif
 			}

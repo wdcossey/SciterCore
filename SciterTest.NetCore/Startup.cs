@@ -19,8 +19,8 @@ namespace SciterTest.NetCore
 
 #if WINDOWS || NETCOREAPP
 			// Sciter needs this for drag'n'drop support; STAThread is required for OleInitialize succeess
-			//int oleres = PInvokeWindows.OleInitialize(IntPtr.Zero);
-			//Debug.Assert(oleres == 0);
+			int oleres = PInvokeWindows.OleInitialize(IntPtr.Zero);
+			Debug.Assert(oleres == 0);
 #endif
 #if GTKMONO
 			PInvokeGTK.gtk_init(IntPtr.Zero, IntPtr.Zero);

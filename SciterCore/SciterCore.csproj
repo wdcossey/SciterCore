@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <RuntimeIdentifiers>win-x64;win-x86;linux-x64;osx-x64</RuntimeIdentifiers>
+    <Configurations>Debug;Release;Debug - Win.64</Configurations>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <DefineConstants Condition="'$(RuntimeIdentifier)' == 'win-x86'">$(DefineConstants);NETCORE</DefineConstants>
+  </PropertyGroup>
+
+
+  <PropertyGroup>
+    <DefineConstants Condition="'$(RuntimeIdentifier)' == 'win-x86'">$(DefineConstants);NETCORE</DefineConstants>
+  </PropertyGroup>
+
+  <!--<PropertyGroup>
+    <DefineConstants Condition="$(RuntimeIdentifiers.Contains('win-x64'))">$(DefineConstants);WINDOWS;WINDOWS_X64</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <DefineConstants Condition="$(RuntimeIdentifiers.Contains('linux-x64'))">$(DefineConstants);LINUX</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <DefineConstants Condition="$(RuntimeIdentifiers.Contains('osx-x64'))">$(DefineConstants);OSX</DefineConstants>
+  </PropertyGroup>-->
+
+
+
+  <Import Project="..\SciterSharp\SciterCoreShared.projitems" Label="Shared" />
+
+</Project>

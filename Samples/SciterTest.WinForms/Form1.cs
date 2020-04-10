@@ -24,5 +24,14 @@ namespace SciterTest.WinForms
 			//AppWnd = new SciterWindow(sciterControl1.Handle);
 			//AppHost.Setup(AppWnd);
 		}
+
+		private void sciterControl1_LoadHtml(object sender, SciterCore.WinForms.LoadHtmlEventArgs e)
+        {
+            e.Html =
+                "<body>" +
+                "<code>Add an event handler to the <b>HandleCreated</b> event for any needed initialization (e.g.: load the HTML)</code><br /><br />" +
+                "<code>In the handler, use the <b>SciterWnd</b> property of this control to access the SciterWindow instance.</code>" +
+                "</body>";
+        }
 	}
 }

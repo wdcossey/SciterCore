@@ -1,8 +1,15 @@
 #if WINDOWS
 using System;
 using System.Runtime.InteropServices;
+#if !WPF
 using System.Drawing;
 using System.Drawing.Imaging;
+#else
+using System.IO;
+using System.Windows;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+#endif
 
 namespace SciterCore.Interop
 {
@@ -15,9 +22,13 @@ namespace SciterCore.Interop
         /// Creates an Image object containing a screen shot of the entire desktop
         /// </summary>
         /// <returns></returns>
+#if !WPF 
         public Image CaptureScreen() 
+#else
+        public BitmapSource CaptureScreen() 
+#endif
         {
-            return CaptureWindow( User32.GetDesktopWindow() );
+            return CaptureWindow(User32.GetDesktopWindow());
         }
 
         /// <summary>
@@ -25,7 +36,11 @@ namespace SciterCore.Interop
         /// </summary>
         /// <param name="handle">The handle to the window. (In windows forms, this is obtained by the Handle property)</param>
         /// <returns></returns>
-        public Image CaptureWindow(IntPtr handle)
+#if !WPF 
+        public Image CaptureWindow(IntPtr handle) 
+#else
+        public BitmapSource CaptureWindow(IntPtr handle)
+#endif
         {
             // get te hDC of the target window
             IntPtr hdcSrc = User32.GetWindowDC(handle);
@@ -50,36 +65,81 @@ namespace SciterCore.Interop
             User32.ReleaseDC(handle,hdcSrc);
 
             // get a .NET image object for it
-            Image img = Image.FromHbitmap(hBitmap);
+#if !WPF 
+            Image result = Image.FromHbitmap(hBitmap);
+#else
+            BitmapSource result = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(
+                hBitmap, IntPtr.Zero, Int32Rect.Empty,
+                BitmapSizeOptions.FromEmptyOptions());
+#endif
+
             // free up the Bitmap object
             GDI32.DeleteObject(hBitmap);
 
-            return img;
+            return result;
         }
 
+#if !WPF 
         /// <summary>
         /// Captures a screen shot of a specific window, and saves it to a file
         /// </summary>
         /// <param name="handle"></param>
-        /// <param name="filename"></param>
+        /// <param name="filePath"></param>
         /// <param name="format"></param>
-        public void CaptureWindowToFile(IntPtr handle, string filename, ImageFormat format) 
+        public void CaptureWindowToFile(IntPtr handle, string filePath, ImageFormat format) 
         {
             Image img = CaptureWindow(handle);
-            img.Save(filename,format);
+            img.Save(filePath, format);
         }
+#else
+        /// <summary>
+        /// Captures a screen shot of a specific window, and saves it to a file
+        /// </summary>
+        /// <param name="handle"></param>
+        /// <param name="filePath"></param>
+        public void CaptureWindowToFile(IntPtr handle, string filePath)
+        {
+            BitmapSource source = CaptureWindow(handle);
+            SaveToFile(filePath: filePath, source: source);
+        }
+#endif
 
+#if !WPF
         /// <summary>
         /// Captures a screen shot of the entire desktop, and saves it to a file
         /// </summary>
-        /// <param name="filename"></param>
+        /// <param name="filePath"></param>
         /// <param name="format"></param>
-        public void CaptureScreenToFile(string filename, ImageFormat format) 
+        public void CaptureScreenToFile(string filePath, ImageFormat format) 
         {
             Image img = CaptureScreen();
-            img.Save(filename,format);
+            img.Save(filePath,format);
         }
-       
+#else
+        /// <summary>
+        /// Captures a screen shot of the entire desktop, and saves it to a file
+        /// </summary>
+        /// <param name="filePath"></param>
+        public void CaptureScreenToFile(string filePath) 
+        {
+            BitmapSource source = CaptureScreen();
+            SaveToFile(filePath: filePath, source: source);
+        }
+#endif
+
+#if WPF
+        private void SaveToFile(string filePath, BitmapSource source) 
+        {
+            BitmapSource img = CaptureScreen();
+            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                BitmapEncoder encoder = new PngBitmapEncoder();
+                encoder.Frames.Add(BitmapFrame.Create(source: source));
+                encoder.Save(stream: fileStream);
+            }
+        }
+#endif
+
         /// <summary>
         /// Helper class containing Gdi32 API functions
         /// </summary>
