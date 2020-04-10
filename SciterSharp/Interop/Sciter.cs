@@ -24,6 +24,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
+// ReSharper disable MemberCanBePrivate.Global
 
 namespace SciterCore.Interop
 {
@@ -180,206 +181,206 @@ namespace SciterCore.Interop
 		[StructLayout(LayoutKind.Sequential)]
 		public struct SciterApi
 		{
-			public int version;
-			public SCITER_CLASS_NAME SciterClassName;
-			public SCITER_VERSION SciterVersion;
-			public SCITER_DATA_READY SciterDataReady;
-			public SCITER_DATA_READY_ASYNC SciterDataReadyAsync;
+			public readonly int version;
+			public readonly SCITER_CLASS_NAME SciterClassName;
+			public readonly SCITER_VERSION SciterVersion;
+			public readonly SCITER_DATA_READY SciterDataReady;
+			public readonly SCITER_DATA_READY_ASYNC SciterDataReadyAsync;
 #if WINDOWS || NETCORE
-			public SCITER_PROC SciterProc;
-			public SCITER_PROC_ND SciterProcND;
+			public readonly SCITER_PROC SciterProc;
+			public readonly SCITER_PROC_ND SciterProcND;
 #endif
-			public SCITER_LOAD_FILE SciterLoadFile;
-			public SCITER_LOAD_HTML SciterLoadHtml;
-			public SCITER_SET_CALLBACK SciterSetCallback;
-			public SCITER_SET_MASTER_CSS SciterSetMasterCSS;
-			public SCITER_APPEND_MASTER_CSS SciterAppendMasterCSS;
-			public SCITER_SET_CSS SciterSetCSS;
-			public SCITER_SET_MEDIA_TYPE SciterSetMediaType;
-			public SCITER_SET_MEDIA_VARS SciterSetMediaVars;
-			public SCITER_GET_MIN_WIDTH SciterGetMinWidth;
-			public SCITER_GET_MIN_HEIGHT SciterGetMinHeight;
-			public SCITER_CALL SciterCall;
-			public SCITER_EVAL SciterEval;
-			public SCITER_UPDATE_WINDOW SciterUpdateWindow;
+			public readonly SCITER_LOAD_FILE SciterLoadFile;
+			public readonly SCITER_LOAD_HTML SciterLoadHtml;
+			public readonly SCITER_SET_CALLBACK SciterSetCallback;
+			public readonly SCITER_SET_MASTER_CSS SciterSetMasterCSS;
+			public readonly SCITER_APPEND_MASTER_CSS SciterAppendMasterCSS;
+			public readonly SCITER_SET_CSS SciterSetCSS;
+			public readonly SCITER_SET_MEDIA_TYPE SciterSetMediaType;
+			public readonly SCITER_SET_MEDIA_VARS SciterSetMediaVars;
+			public readonly SCITER_GET_MIN_WIDTH SciterGetMinWidth;
+			public readonly SCITER_GET_MIN_HEIGHT SciterGetMinHeight;
+			public readonly SCITER_CALL SciterCall;
+			public readonly SCITER_EVAL SciterEval;
+			public readonly SCITER_UPDATE_WINDOW SciterUpdateWindow;
 #if WINDOWS || NETCORE
-			public SCITER_TRANSLATE_MESSAGE SciterTranslateMessage;
+			public readonly SCITER_TRANSLATE_MESSAGE SciterTranslateMessage;
 #endif
-			public SCITER_SET_OPTION SciterSetOption;
-			public SCITER_GET_PPI SciterGetPPI;
-			public SCITER_GET_VIEW_EXPANDO SciterGetViewExpando;
+			public readonly SCITER_SET_OPTION SciterSetOption;
+			public readonly SCITER_GET_PPI SciterGetPPI;
+			public readonly SCITER_GET_VIEW_EXPANDO SciterGetViewExpando;
 #if WINDOWS || NETCORE
-			public SCITER_RENDER_D2D SciterRenderD2D;
-			public SCITER_D2D_FACTORY SciterD2DFactory;
-			public SCITER_DW_FACTORY SciterDWFactory;
+			public readonly SCITER_RENDER_D2D SciterRenderD2D;
+			public readonly SCITER_D2D_FACTORY SciterD2DFactory;
+			public readonly SCITER_DW_FACTORY SciterDWFactory;
 #endif
-			public SCITER_GRAPHICS_CAPS SciterGraphicsCaps;
-			public SCITER_SET_HOME_URL SciterSetHomeURL;
+			public readonly SCITER_GRAPHICS_CAPS SciterGraphicsCaps;
+			public readonly SCITER_SET_HOME_URL SciterSetHomeURL;
 #if OSX
-			public SCITER_CREATE_NS_VIEW SciterCreateNSView;
+			public readonly SCITER_CREATE_NS_VIEW SciterCreateNSView;
 #endif
 #if GTKMONO
-			public SCITER_CREATE_WIDGET SciterCreateWidget;
+			public readonly SCITER_CREATE_WIDGET SciterCreateWidget;
 #endif
-			public SCITER_CREATE_WINDOW SciterCreateWindow;
+			public readonly SCITER_CREATE_WINDOW SciterCreateWindow;
   
-            public SCITER_SETUP_DEBUG_OUTPUT SciterSetupDebugOutput;
+            public readonly SCITER_SETUP_DEBUG_OUTPUT SciterSetupDebugOutput;
 
 			// DOM Element API 
-			public SCITER_USE_ELEMENT Sciter_UseElement;
-			public SCITER_UNUSE_ELEMENT Sciter_UnuseElement;
-			public SCITER_GET_ROOT_ELEMENT SciterGetRootElement;
-			public SCITER_GET_FOCUS_ELEMENT SciterGetFocusElement;
-			public SCITER_FIND_ELEMENT SciterFindElement;
-			public SCITER_GET_CHILDREN_COUNT SciterGetChildrenCount;
-			public SCITER_GET_NTH_CHILD SciterGetNthChild;
-			public SCITER_GET_PARENT_ELEMENT SciterGetParentElement;
-			public SCITER_GET_ELEMENT_HTML_CB SciterGetElementHtmlCB;
-			public SCITER_GET_ELEMENT_TEXT_CB SciterGetElementTextCB;
-			public SCITER_SET_ELEMENT_TEXT SciterSetElementText;
-			public SCITER_GET_ATTRIBUTE_COUNT SciterGetAttributeCount;
-			public SCITER_GET_NTH_ATTRIBUTE_NAME_CB SciterGetNthAttributeNameCB;
-			public SCITER_GET_NTH_ATTRIBUTE_VALUE_CB SciterGetNthAttributeValueCB;
-			public SCITER_GET_ATTRIBUTE_BY_NAME_CB SciterGetAttributeByNameCB;
-			public SCITER_SET_ATTRIBUTE_BY_NAME SciterSetAttributeByName;
-			public SCITER_CLEAR_ATTRIBUTES SciterClearAttributes;
-			public SCITER_GET_ELEMENT_INDEX SciterGetElementIndex;
-			public SCITER_GET_ELEMENT_TYPE SciterGetElementType;
-			public SCITER_GET_ELEMENT_TYPE_CB SciterGetElementTypeCB;
-			public SCITER_GET_STYLE_ATTRIBUTE_CB SciterGetStyleAttributeCB;
-			public SCITER_SET_STYLE_ATTRIBUTE SciterSetStyleAttribute;
-			public SCITER_GET_ELEMENT_LOCATION SciterGetElementLocation;
-			public SCITER_SCROLL_TO_VIEW SciterScrollToView;
-			public SCITER_UPDATE_ELEMENT SciterUpdateElement;
-			public SCITER_REFRESH_ELEMENT_AREA SciterRefreshElementArea;
-			public SCITER_SET_CAPTURE SciterSetCapture;
-			public SCITER_RELEASE_CAPTURE SciterReleaseCapture;
-			public SCITER_GET_ELEMENT_HWND SciterGetElementHwnd;
-			public SCITER_COMBINE_URL SciterCombineURL;
-			public SCITER_SELECT_ELEMENTS SciterSelectElements;
-			public SCITER_SELECT_ELEMENTS_W SciterSelectElementsW;
-			public SCITER_SELECT_PARENT SciterSelectParent;
-			public SCITER_SELECT_PARENT_W SciterSelectParentW;
-			public SCITER_SET_ELEMENT_HTML SciterSetElementHtml;
-			public SCITER_GET_ELEMENT_UID SciterGetElementUID;
-			public SCITER_GET_ELEMENT_BY_UID SciterGetElementByUID;
-			public SCITER_SHOW_POPUP SciterShowPopup;
-			public SCITER_SHOW_POPUP_AT SciterShowPopupAt;
-			public SCITER_HIDE_POPUP SciterHidePopup;
-			public SCITER_GET_ELEMENT_STATE SciterGetElementState;
-			public SCITER_SET_ELEMENT_STATE SciterSetElementState;
-			public SCITER_CREATE_ELEMENT SciterCreateElement;
-			public SCITER_CLONE_ELEMENT SciterCloneElement;
-			public SCITER_INSERT_ELEMENT SciterInsertElement;
-			public SCITER_DETACH_ELEMENT SciterDetachElement;
-			public SCITER_DELETE_ELEMENT SciterDeleteElement;
-			public SCITER_SET_TIMER SciterSetTimer;
-			public SCITER_DETACH_EVENT_HANDLER SciterDetachEventHandler;
-			public SCITER_ATTACH_EVENT_HANDLER SciterAttachEventHandler;
-			public SCITER_WINDOW_ATTACH_EVENT_HANDLER SciterWindowAttachEventHandler;
-			public SCITER_WINDOW_DETACH_EVENT_HANDLER SciterWindowDetachEventHandler;
-			public SCITER_SEND_EVENT SciterSendEvent;
-			public SCITER_POST_EVENT SciterPostEvent;
-			public SCITER_CALL_BEHAVIOR_METHOD SciterCallBehaviorMethod;
-			public SCITER_REQUEST_ELEMENT_DATA SciterRequestElementData;
-			public SCITER_HTTP_REQUEST SciterHttpRequest;
-			public SCITER_GET_SCROLL_INFO SciterGetScrollInfo;
-			public SCITER_SET_SCROLL_POS SciterSetScrollPos;
-			public SCITER_GET_ELEMENT_INTRINSIC_WIDTHS SciterGetElementIntrinsicWidths;
-			public SCITER_GET_ELEMENT_INTRINSIC_HEIGHT SciterGetElementIntrinsicHeight;
-			public SCITER_IS_ELEMENT_VISIBLE SciterIsElementVisible;
-			public SCITER_IS_ELEMENT_ENABLED SciterIsElementEnabled;
-			public SCITER_SORT_ELEMENTS SciterSortElements;
-			public SCITER_SWAP_ELEMENTS SciterSwapElements;
-			public SCITER_TRAVERSE_UI_EVENT SciterTraverseUIEvent;
-			public SCITER_CALL_SCRIPTING_METHOD SciterCallScriptingMethod;
-			public SCITER_CALL_SCRIPTING_FUNCTION SciterCallScriptingFunction;
-			public SCITER_EVAL_ELEMENT_SCRIPT SciterEvalElementScript;
-			public SCITER_ATTACH_HWND_TO_ELEMENT SciterAttachHwndToElement;
-			public SCITER_CONTROL_GET_TYPE SciterControlGetType;
-			public SCITER_GET_VALUE SciterGetValue;
-			public SCITER_SET_VALUE SciterSetValue;
-			public SCITER_GET_EXPANDO SciterGetExpando;
-			public SCITER_GET_OBJECT SciterGetObject;
-			public SCITER_GET_ELEMENT_NAMESPACE SciterGetElementNamespace;
-			public SCITER_GET_HIGHLIGHTED_ELEMENT SciterGetHighlightedElement;
-			public SCITER_SET_HIGHLIGHTED_ELEMENT SciterSetHighlightedElement;
+			public readonly SCITER_USE_ELEMENT Sciter_UseElement;
+			public readonly SCITER_UNUSE_ELEMENT Sciter_UnuseElement;
+			public readonly SCITER_GET_ROOT_ELEMENT SciterGetRootElement;
+			public readonly SCITER_GET_FOCUS_ELEMENT SciterGetFocusElement;
+			public readonly SCITER_FIND_ELEMENT SciterFindElement;
+			public readonly SCITER_GET_CHILDREN_COUNT SciterGetChildrenCount;
+			public readonly SCITER_GET_NTH_CHILD SciterGetNthChild;
+			public readonly SCITER_GET_PARENT_ELEMENT SciterGetParentElement;
+			public readonly SCITER_GET_ELEMENT_HTML_CB SciterGetElementHtmlCB;
+			public readonly SCITER_GET_ELEMENT_TEXT_CB SciterGetElementTextCB;
+			public readonly SCITER_SET_ELEMENT_TEXT SciterSetElementText;
+			public readonly SCITER_GET_ATTRIBUTE_COUNT SciterGetAttributeCount;
+			public readonly SCITER_GET_NTH_ATTRIBUTE_NAME_CB SciterGetNthAttributeNameCB;
+			public readonly SCITER_GET_NTH_ATTRIBUTE_VALUE_CB SciterGetNthAttributeValueCB;
+			public readonly SCITER_GET_ATTRIBUTE_BY_NAME_CB SciterGetAttributeByNameCB;
+			public readonly SCITER_SET_ATTRIBUTE_BY_NAME SciterSetAttributeByName;
+			public readonly SCITER_CLEAR_ATTRIBUTES SciterClearAttributes;
+			public readonly SCITER_GET_ELEMENT_INDEX SciterGetElementIndex;
+			public readonly SCITER_GET_ELEMENT_TYPE SciterGetElementType;
+			public readonly SCITER_GET_ELEMENT_TYPE_CB SciterGetElementTypeCB;
+			public readonly SCITER_GET_STYLE_ATTRIBUTE_CB SciterGetStyleAttributeCB;
+			public readonly SCITER_SET_STYLE_ATTRIBUTE SciterSetStyleAttribute;
+			public readonly SCITER_GET_ELEMENT_LOCATION SciterGetElementLocation;
+			public readonly SCITER_SCROLL_TO_VIEW SciterScrollToView;
+			public readonly SCITER_UPDATE_ELEMENT SciterUpdateElement;
+			public readonly SCITER_REFRESH_ELEMENT_AREA SciterRefreshElementArea;
+			public readonly SCITER_SET_CAPTURE SciterSetCapture;
+			public readonly SCITER_RELEASE_CAPTURE SciterReleaseCapture;
+			public readonly SCITER_GET_ELEMENT_HWND SciterGetElementHwnd;
+			public readonly SCITER_COMBINE_URL SciterCombineURL;
+			public readonly SCITER_SELECT_ELEMENTS SciterSelectElements;
+			public readonly SCITER_SELECT_ELEMENTS_W SciterSelectElementsW;
+			public readonly SCITER_SELECT_PARENT SciterSelectParent;
+			public readonly SCITER_SELECT_PARENT_W SciterSelectParentW;
+			public readonly SCITER_SET_ELEMENT_HTML SciterSetElementHtml;
+			public readonly SCITER_GET_ELEMENT_UID SciterGetElementUID;
+			public readonly SCITER_GET_ELEMENT_BY_UID SciterGetElementByUID;
+			public readonly SCITER_SHOW_POPUP SciterShowPopup;
+			public readonly SCITER_SHOW_POPUP_AT SciterShowPopupAt;
+			public readonly SCITER_HIDE_POPUP SciterHidePopup;
+			public readonly SCITER_GET_ELEMENT_STATE SciterGetElementState;
+			public readonly SCITER_SET_ELEMENT_STATE SciterSetElementState;
+			public readonly SCITER_CREATE_ELEMENT SciterCreateElement;
+			public readonly SCITER_CLONE_ELEMENT SciterCloneElement;
+			public readonly SCITER_INSERT_ELEMENT SciterInsertElement;
+			public readonly SCITER_DETACH_ELEMENT SciterDetachElement;
+			public readonly SCITER_DELETE_ELEMENT SciterDeleteElement;
+			public readonly SCITER_SET_TIMER SciterSetTimer;
+			public readonly SCITER_DETACH_EVENT_HANDLER SciterDetachEventHandler;
+			public readonly SCITER_ATTACH_EVENT_HANDLER SciterAttachEventHandler;
+			public readonly SCITER_WINDOW_ATTACH_EVENT_HANDLER SciterWindowAttachEventHandler;
+			public readonly SCITER_WINDOW_DETACH_EVENT_HANDLER SciterWindowDetachEventHandler;
+			public readonly SCITER_SEND_EVENT SciterSendEvent;
+			public readonly SCITER_POST_EVENT SciterPostEvent;
+			public readonly SCITER_CALL_BEHAVIOR_METHOD SciterCallBehaviorMethod;
+			public readonly SCITER_REQUEST_ELEMENT_DATA SciterRequestElementData;
+			public readonly SCITER_HTTP_REQUEST SciterHttpRequest;
+			public readonly SCITER_GET_SCROLL_INFO SciterGetScrollInfo;
+			public readonly SCITER_SET_SCROLL_POS SciterSetScrollPos;
+			public readonly SCITER_GET_ELEMENT_INTRINSIC_WIDTHS SciterGetElementIntrinsicWidths;
+			public readonly SCITER_GET_ELEMENT_INTRINSIC_HEIGHT SciterGetElementIntrinsicHeight;
+			public readonly SCITER_IS_ELEMENT_VISIBLE SciterIsElementVisible;
+			public readonly SCITER_IS_ELEMENT_ENABLED SciterIsElementEnabled;
+			public readonly SCITER_SORT_ELEMENTS SciterSortElements;
+			public readonly SCITER_SWAP_ELEMENTS SciterSwapElements;
+			public readonly SCITER_TRAVERSE_UI_EVENT SciterTraverseUIEvent;
+			public readonly SCITER_CALL_SCRIPTING_METHOD SciterCallScriptingMethod;
+			public readonly SCITER_CALL_SCRIPTING_FUNCTION SciterCallScriptingFunction;
+			public readonly SCITER_EVAL_ELEMENT_SCRIPT SciterEvalElementScript;
+			public readonly SCITER_ATTACH_HWND_TO_ELEMENT SciterAttachHwndToElement;
+			public readonly SCITER_CONTROL_GET_TYPE SciterControlGetType;
+			public readonly SCITER_GET_VALUE SciterGetValue;
+			public readonly SCITER_SET_VALUE SciterSetValue;
+			public readonly SCITER_GET_EXPANDO SciterGetExpando;
+			public readonly SCITER_GET_OBJECT SciterGetObject;
+			public readonly SCITER_GET_ELEMENT_NAMESPACE SciterGetElementNamespace;
+			public readonly SCITER_GET_HIGHLIGHTED_ELEMENT SciterGetHighlightedElement;
+			public readonly SCITER_SET_HIGHLIGHTED_ELEMENT SciterSetHighlightedElement;
 
 			// DOM Node API 
-			public SCITER_NODE_ADD_REF SciterNodeAddRef;
-			public SCITER_NODE_RELEASE SciterNodeRelease;
-			public SCITER_NODE_CAST_FROM_ELEMENT SciterNodeCastFromElement;
-			public SCITER_NODE_CAST_TO_ELEMENT SciterNodeCastToElement;
-			public SCITER_NODE_FIRST_CHILD SciterNodeFirstChild;
-			public SCITER_NODE_LAST_CHILD SciterNodeLastChild;
-			public SCITER_NODE_NEXT_SIBLING SciterNodeNextSibling;
-			public SCITER_NODE_PREV_SIBLING SciterNodePrevSibling;
-			public SCITER_NODE_PARENT SciterNodeParent;
-			public SCITER_NODE_NTH_CHILD SciterNodeNthChild;
-			public SCITER_NODE_CHILDREN_COUNT SciterNodeChildrenCount;
-			public SCITER_NODE_TYPE SciterNodeType;
-			public SCITER_NODE_GET_TEXT SciterNodeGetText;
-			public SCITER_NODE_SET_TEXT SciterNodeSetText;
-			public SCITER_NODE_INSERT SciterNodeInsert;
-			public SCITER_NODE_REMOVE SciterNodeRemove;
-			public SCITER_CREATE_TEXT_NODE SciterCreateTextNode;
-			public SCITER_CREATE_COMMENT_NODE SciterCreateCommentNode;
+			public readonly SCITER_NODE_ADD_REF SciterNodeAddRef;
+			public readonly SCITER_NODE_RELEASE SciterNodeRelease;
+			public readonly SCITER_NODE_CAST_FROM_ELEMENT SciterNodeCastFromElement;
+			public readonly SCITER_NODE_CAST_TO_ELEMENT SciterNodeCastToElement;
+			public readonly SCITER_NODE_FIRST_CHILD SciterNodeFirstChild;
+			public readonly SCITER_NODE_LAST_CHILD SciterNodeLastChild;
+			public readonly SCITER_NODE_NEXT_SIBLING SciterNodeNextSibling;
+			public readonly SCITER_NODE_PREV_SIBLING SciterNodePrevSibling;
+			public readonly SCITER_NODE_PARENT SciterNodeParent;
+			public readonly SCITER_NODE_NTH_CHILD SciterNodeNthChild;
+			public readonly SCITER_NODE_CHILDREN_COUNT SciterNodeChildrenCount;
+			public readonly SCITER_NODE_TYPE SciterNodeType;
+			public readonly SCITER_NODE_GET_TEXT SciterNodeGetText;
+			public readonly SCITER_NODE_SET_TEXT SciterNodeSetText;
+			public readonly SCITER_NODE_INSERT SciterNodeInsert;
+			public readonly SCITER_NODE_REMOVE SciterNodeRemove;
+			public readonly SCITER_CREATE_TEXT_NODE SciterCreateTextNode;
+			public readonly SCITER_CREATE_COMMENT_NODE SciterCreateCommentNode;
 
 			// Value API 
-			public VALUE_INIT ValueInit;
-			public VALUE_CLEAR ValueClear;
-			public VALUE_COMPARE ValueCompare;
-			public VALUE_COPY ValueCopy;
-			public VALUE_ISOLATE ValueIsolate;
-			public VALUE_TYPE ValueType;
-			public VALUE_STRING_DATA ValueStringData;
-			public VALUE_STRING_DATA_SET ValueStringDataSet;
-			public VALUE_INT_DATA ValueIntData;
-			public VALUE_INT_DATA_SET ValueIntDataSet;
-			public VALUE_INT_64DATA ValueInt64Data;
-			public VALUE_INT_64DATA_SET ValueInt64DataSet;
-			public VALUE_FLOAT_DATA ValueFloatData;
-			public VALUE_FLOAT_DATA_SET ValueFloatDataSet;
-			public VALUE_BINARY_DATA ValueBinaryData;
-			public VALUE_BINARY_DATA_SET ValueBinaryDataSet;
-			public VALUE_ELEMENTS_COUNT ValueElementsCount;
-			public VALUE_NTH_ELEMENT_VALUE ValueNthElementValue;
-			public VALUE_NTH_ELEMENT_VALUE_SET ValueNthElementValueSet;
-			public VALUE_NTH_ELEMENT_KEY ValueNthElementKey;
-			public VALUE_ENUM_ELEMENTS ValueEnumElements;
-			public VALUE_SET_VALUE_TO_KEY ValueSetValueToKey;
-			public VALUE_GET_VALUE_OF_KEY ValueGetValueOfKey;
-			public VALUE_TO_STRING ValueToString;
-			public VALUE_FROM_STRING ValueFromString;
-			public VALUE_INVOKE ValueInvoke;
-			public VALUE_NATIVE_FUNCTOR_SET ValueNativeFunctorSet;
-			public VALUE_IS_NATIVE_FUNCTOR ValueIsNativeFunctor;
+			public readonly VALUE_INIT ValueInit;
+			public readonly VALUE_CLEAR ValueClear;
+			public readonly VALUE_COMPARE ValueCompare;
+			public readonly VALUE_COPY ValueCopy;
+			public readonly VALUE_ISOLATE ValueIsolate;
+			public readonly VALUE_TYPE ValueType;
+			public readonly VALUE_STRING_DATA ValueStringData;
+			public readonly VALUE_STRING_DATA_SET ValueStringDataSet;
+			public readonly VALUE_INT_DATA ValueIntData;
+			public readonly VALUE_INT_DATA_SET ValueIntDataSet;
+			public readonly VALUE_INT_64DATA ValueInt64Data;
+			public readonly VALUE_INT_64DATA_SET ValueInt64DataSet;
+			public readonly VALUE_FLOAT_DATA ValueFloatData;
+			public readonly VALUE_FLOAT_DATA_SET ValueFloatDataSet;
+			public readonly VALUE_BINARY_DATA ValueBinaryData;
+			public readonly VALUE_BINARY_DATA_SET ValueBinaryDataSet;
+			public readonly VALUE_ELEMENTS_COUNT ValueElementsCount;
+			public readonly VALUE_NTH_ELEMENT_VALUE ValueNthElementValue;
+			public readonly VALUE_NTH_ELEMENT_VALUE_SET ValueNthElementValueSet;
+			public readonly VALUE_NTH_ELEMENT_KEY ValueNthElementKey;
+			public readonly VALUE_ENUM_ELEMENTS ValueEnumElements;
+			public readonly VALUE_SET_VALUE_TO_KEY ValueSetValueToKey;
+			public readonly VALUE_GET_VALUE_OF_KEY ValueGetValueOfKey;
+			public readonly VALUE_TO_STRING ValueToString;
+			public readonly VALUE_FROM_STRING ValueFromString;
+			public readonly VALUE_INVOKE ValueInvoke;
+			public readonly VALUE_NATIVE_FUNCTOR_SET ValueNativeFunctorSet;
+			public readonly VALUE_IS_NATIVE_FUNCTOR ValueIsNativeFunctor;
 
 			// tiscript VM API
-			public TI_SCRIPT_API TIScriptAPI;
-			public SCITER_GET_VM SciterGetVM;
+			public readonly TI_SCRIPT_API TIScriptAPI;
+			public readonly SCITER_GET_VM SciterGetVM;
 
-			public SCITER_v2V Sciter_v2V;
-			public SCITER_V2v Sciter_V2v;
+			public readonly SCITER_v2V Sciter_v2V;
+			public readonly SCITER_V2v Sciter_V2v;
 			
-			public SCITER_OPEN_ARCHIVE SciterOpenArchive;
-			public SCITER_GET_ARCHIVE_ITEM SciterGetArchiveItem;
-			public SCITER_CLOSE_ARCHIVE SciterCloseArchive;
+			public readonly SCITER_OPEN_ARCHIVE SciterOpenArchive;
+			public readonly SCITER_GET_ARCHIVE_ITEM SciterGetArchiveItem;
+			public readonly SCITER_CLOSE_ARCHIVE SciterCloseArchive;
 
-			public SCITER_FIRE_EVENT SciterFireEvent;
+			public readonly SCITER_FIRE_EVENT SciterFireEvent;
 
-			public SCITER_GET_CALLBACK_PARAM SciterGetCallbackParam;
-			public SCITER_POST_CALLBACK SciterPostCallback;
-			public GET_SCITER_GRAPHICS_API GetSciterGraphicsAPI;
-			public GET_SCITER_REQUEST_API GetSciterRequestAPI;
+			public readonly SCITER_GET_CALLBACK_PARAM SciterGetCallbackParam;
+			public readonly SCITER_POST_CALLBACK SciterPostCallback;
+			public readonly GET_SCITER_GRAPHICS_API GetSciterGraphicsAPI;
+			public readonly GET_SCITER_REQUEST_API GetSciterRequestAPI;
 
 #if WINDOWS || NETCORE
-			public SCITER_CREATE_ON_DIRECT_X_WINDOW SciterCreateOnDirectXWindow;
-			public SCITER_RENDER_ON_DIRECT_X_WINDOW SciterRenderOnDirectXWindow;
-			public SCITER_RENDER_ON_DIRECT_X_TEXTURE SciterRenderOnDirectXTexture;
+			public readonly SCITER_CREATE_ON_DIRECT_X_WINDOW SciterCreateOnDirectXWindow;
+			public readonly SCITER_RENDER_ON_DIRECT_X_WINDOW SciterRenderOnDirectXWindow;
+			public readonly SCITER_RENDER_ON_DIRECT_X_TEXTURE SciterRenderOnDirectXTexture;
 #endif
 
-			public SCITER_PROC_X SciterProcX;
+			public readonly SCITER_PROC_X SciterProcX;
 
 
 
