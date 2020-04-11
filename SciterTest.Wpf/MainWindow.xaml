@@ -6,16 +6,9 @@
         xmlns:wf="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms" 
         xmlns:local="clr-namespace:SciterTest.Wpf"
         mc:Ignorable="d"
+        WindowStyle="SingleBorderWindow"
         Title="MainWindow" Height="450" Width="800">
-    <Grid>
-
-        <Grid>
-
-            <local:SciterControl >
-
-            </local:SciterControl>
-
-            <Button VerticalAlignment="Center" HorizontalAlignment="Center" Content="Hello"></Button>
-        </Grid>
+    <Grid >
+        <local:SciterControl ></local:SciterControl>
     </Grid>
 </Window>

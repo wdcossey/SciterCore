@@ -50,7 +50,7 @@ namespace SciterCore.WinForms
 
             LoadHtml?.Invoke(this, loadHtmlEventArgs);
 
-            SciterWnd.LoadHtml(loadHtmlEventArgs?.Html ?? this.Html ?? string.Format(DEFAULT_HTML, Name));
+            SciterWnd.LoadHtml(loadHtmlEventArgs?.Html ?? this.Html ?? DEFAULT_HTML);
 
 			SciterWnd.Show();
 			base.OnHandleCreated(e);

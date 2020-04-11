@@ -17,6 +17,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -173,8 +174,24 @@ namespace SciterCore
 			PInvokeWindows.GetClientRect(hwnd_parent, out frame);
 
 #if true
-			string wndclass = Marshal.PtrToStringUni(_api.SciterClassName());
-            _hwnd = PInvokeWindows.CreateWindowEx(0, wndclass, null, PInvokeWindows.WS_CHILD, 0, 0, frame.Right, frame.Bottom, hwnd_parent, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero);
+            string wndclass = Marshal.PtrToStringUni(_api.SciterClassName());
+
+            _hwnd = PInvokeWindows.CreateWindowEx(
+				0,
+                wndclass,
+				null,
+                (int)PInvokeWindows.WindowStyles.WS_CHILD,
+                0, 
+                0, 
+                frame.Right, 
+                frame.Bottom,
+                hwnd_parent,
+				IntPtr.Zero,
+				IntPtr.Zero,
+				IntPtr.Zero);
+
+
+			//_hwnd = PInvokeWindows.CreateWindowEx(0, wndclass, null, (int)PInvokeWindows.WindowStyles.WS_CHILD, 0, 0, frame.Right, frame.Bottom, hwnd_parent, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero);
 			//SetSciterOption(SciterXDef.SCITER_RT_OPTIONS.SCITER_SET_DEBUG_MODE, new IntPtr(1));// NO, user should opt for it
 #else
 			_hwnd = _api.SciterCreateWindow(flags, ref frame, _proc, IntPtr.Zero, hwnd_parent);
@@ -195,12 +212,12 @@ namespace SciterCore
 		}
 
 #if WINDOWS || NETCORE
-		public bool ModifyStyle(PInvokeWindows.SetWindowLongFlags dwRemove, PInvokeWindows.SetWindowLongFlags dwAdd)
+		public bool ModifyStyle(PInvokeWindows.WindowStyles dwRemove, PInvokeWindows.WindowStyles dwAdd)
 		{
 			int GWL_EXSTYLE = -20;
 
-			PInvokeWindows.SetWindowLongFlags dwStyle = (PInvokeWindows.SetWindowLongFlags)PInvokeWindows.GetWindowLongPtr(_hwnd, GWL_EXSTYLE);
-			PInvokeWindows.SetWindowLongFlags dwNewStyle = (dwStyle & ~dwRemove) | dwAdd;
+			PInvokeWindows.WindowStyles dwStyle = (PInvokeWindows.WindowStyles)PInvokeWindows.GetWindowLongPtr(_hwnd, GWL_EXSTYLE);
+			PInvokeWindows.WindowStyles dwNewStyle = (dwStyle & ~dwRemove) | dwAdd;
 			if(dwStyle == dwNewStyle)
 				return false;
 
@@ -208,12 +225,12 @@ namespace SciterCore
 			return true;
 		}
 
-		public bool ModifyStyleEx(PInvokeWindows.SetWindowLongFlags dwRemove, PInvokeWindows.SetWindowLongFlags dwAdd)
+		public bool ModifyStyleEx(PInvokeWindows.WindowStyles dwRemove, PInvokeWindows.WindowStyles dwAdd)
 		{
 			int GWL_STYLE = -16;
 
-			PInvokeWindows.SetWindowLongFlags dwStyle = (PInvokeWindows.SetWindowLongFlags)PInvokeWindows.GetWindowLongPtr(_hwnd, GWL_STYLE);
-			PInvokeWindows.SetWindowLongFlags dwNewStyle = (dwStyle & ~dwRemove) | dwAdd;
+			PInvokeWindows.WindowStyles dwStyle = (PInvokeWindows.WindowStyles)PInvokeWindows.GetWindowLongPtr(_hwnd, GWL_STYLE);
+			PInvokeWindows.WindowStyles dwNewStyle = (dwStyle & ~dwRemove) | dwAdd;
 			if(dwStyle == dwNewStyle)
 				return false;
 
