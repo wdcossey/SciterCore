@@ -15,8 +15,13 @@ namespace SciterTest.Mac
 			AttachEvh(new HostEVH());
 			
 #if DEBUG
-			var path = Environment.CurrentDirectory;//Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-			string url = "file:///Users/wdcossey/RiderProjects/SciterCore/Samples/SciterTest.Mac/res/index.html";
+			var path = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+
+
+			path = Path.Combine(path, "../../../../..", "res/index.html");
+			
+			
+			string url = $"file:///{path}";
 #else
 			string url = "file:///Users/midiway/Documents/SciterSharp/Tests/SciterTest.Mac/res/index.html";
 #endif

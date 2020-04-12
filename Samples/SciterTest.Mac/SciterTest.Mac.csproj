@@ -87,12 +87,6 @@
     <Compile Include="ImgDrawBehavior.cs" />
   </ItemGroup>
   <ItemGroup>
-    <NativeReference Include="libsciter-osx-64.dylib">
-      <Kind>Dynamic</Kind>
-      <SmartLink>False</SmartLink>
-    </NativeReference>
-  </ItemGroup>
-  <ItemGroup>
     <BundleResource Include="res\OXS_Logo.png" />
   </ItemGroup>
   <ItemGroup>
@@ -100,6 +94,12 @@
       <Project>{42bb6ec1-e806-4b5b-a242-1662aae7bf25}</Project>
       <Name>SciterCore.Mac</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <NativeReference Include="..\..\sciter-sdk\bin.osx\sciter-osx-64.dylib">
+      <Kind>Dynamic</Kind>
+      <SmartLink>False</SmartLink>
+    </NativeReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets" />
 </Project>

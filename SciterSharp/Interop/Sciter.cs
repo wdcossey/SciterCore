@@ -77,11 +77,11 @@ namespace SciterCore.Interop
 		//		private static extern IntPtr SciterAPI64();
 		//#endif
 #if WINDOWS || NETCORE
-		[DllImport("sciter", EntryPoint = "SciterAPI")]
+		[DllImport("sciter.dll", EntryPoint = "SciterAPI")]
 #elif GTKMONO
 		[DllImport("sciter-gtk-64.so")]
 #elif OSX
-		[DllImport("sciter-osx-64", EntryPoint = "SciterAPI")]
+		[DllImport("sciter-osx-64.dylib", EntryPoint = "SciterAPI")]
 #endif
 		private static extern IntPtr SciterAPI();
 

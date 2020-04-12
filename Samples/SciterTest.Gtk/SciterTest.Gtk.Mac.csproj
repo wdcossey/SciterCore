@@ -98,7 +98,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <NativeReference Include="libsciter-osx-64.dylib">
+    <NativeReference Include="..\..\sciter-sdk\bin.osx\sciter-osx-64.dylib">
       <Kind>Dynamic</Kind>
       <SmartLink>False</SmartLink>
     </NativeReference>
