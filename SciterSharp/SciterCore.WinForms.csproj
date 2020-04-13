@@ -61,7 +61,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>$(ProjectDir)scripts\packWindows.bat</PreBuildEvent>
+    <PreBuildEvent>$(ProjectDir)scripts\packWindows.bat "$(ProjectDir)LibConsole" "$(ProjectDir)LibConsole.bin"</PreBuildEvent>
   </PropertyGroup>
   <Import Project="SciterCoreShared.projitems" Label="Shared" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
