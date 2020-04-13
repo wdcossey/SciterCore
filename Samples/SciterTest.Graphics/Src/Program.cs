@@ -37,7 +37,7 @@ namespace SciterTest.Graphics
 			host.RegisterBehaviorHandler(typeof(DrawBitmapBehavior), "DrawBitmap");
 			host.RegisterBehaviorHandler(typeof(DrawTextBehavior), "DrawText");
 			host.RegisterBehaviorHandler(typeof(DrawGeometryBehavior), "DrawGeometry");
-			host.AttachEvh(new HostEvh());
+			host.AttachEventHandler(new HostEvh());
 			host.SetupPage("index.html");
 
 			// Show window and Run message loop

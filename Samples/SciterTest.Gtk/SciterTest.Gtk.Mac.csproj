@@ -17,7 +17,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug</OutputPath>
-    <DefineConstants>DEBUG;__UNIFIED__;OSX</DefineConstants>
+    <DefineConstants>__MACOS__;DEBUG;__UNIFIED__;OSX</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <EnableCodeSigning>false</EnableCodeSigning>
@@ -28,9 +28,18 @@
     <UseSGen>true</UseSGen>
     <UseRefCounting>true</UseRefCounting>
     <PlatformTarget>x64</PlatformTarget>
+    <AOTMode>None</AOTMode>
+    <PackageSigningKey>3rd Party Mac Developer Installer</PackageSigningKey>
+    <CustomCommands>
+      <CustomCommands>
+        <Command>
+          <type>BeforeBuild</type>
+          <command>sh ${SolutionDir}/SciterSharp/scripts/packOSX.sh ${ProjectDir}/res ${ProjectDir}/SiteResource.bin</command>
+        </Command>
+      </CustomCommands>
+    </CustomCommands>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
-    <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
@@ -43,15 +52,16 @@
     <UseRefCounting>true</UseRefCounting>
     <LinkMode>SdkOnly</LinkMode>
     <PlatformTarget>x64</PlatformTarget>
-    <DefineConstants>__UNIFIED__;OSX</DefineConstants>
+    <DefineConstants>__MACOS__;__UNIFIED__;OSX</DefineConstants>
     <CustomCommands>
       <CustomCommands>
         <Command>
           <type>BeforeBuild</type>
-          <command>sh scripts/packOSX.sh</command>
+          <command>sh ${SolutionDir}/SciterSharp/scripts/packOSX.sh ${ProjectDir}/res ${ProjectDir}/SiteResource.bin</command>
         </Command>
       </CustomCommands>
     </CustomCommands>
+    <AOTMode>None</AOTMode>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -79,10 +89,8 @@
     <None Include="Info.plist" />
     <None Include="Entitlements.plist" />
     <None Include="res\index.html" />
-    <None Include="packages.SciterTest.Gtk.Mac.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ArchiveResource.cs" />
     <Compile Include="Src\Host.cs" />
     <Compile Include="Src\Mono.cs" />
     <Compile Include="Src\ProgramOSX.cs" />
@@ -102,6 +110,12 @@
       <Kind>Dynamic</Kind>
       <SmartLink>False</SmartLink>
     </NativeReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="SiteResource.bin">
+      <LogicalName>SiteResource</LogicalName>
+      <IncludeInPackage>false</IncludeInPackage>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets" />
 </Project>

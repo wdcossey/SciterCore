@@ -7,12 +7,23 @@ namespace SciterTest.Mac
 {
 	public class Host : SciterHost
 	{
-		public Host(SciterWindow wnd)
-			: base(wnd)
-		{
-			RegisterBehaviorHandler(typeof(ImgDrawBehavior));
 
-			AttachEvh(new HostEVH());
+        public Host()
+        {
+
+        }
+
+		public Host(Func<SciterWindow> windowFunc)
+			: this(window: windowFunc?.Invoke())
+		{
+
+		}
+
+		public Host(SciterWindow window)
+			: base(window: window)
+		{
+			RegisterBehaviorHandler(typeof(ImgDrawBehavior))
+                .AttachEventHandler(new HostEventHandler());
 			
 #if DEBUG
 			var path = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
@@ -26,9 +37,9 @@ namespace SciterTest.Mac
 			string url = "file:///Users/midiway/Documents/SciterSharp/Tests/SciterTest.Mac/res/index.html";
 #endif
 			
-			wnd.LoadPage(url);
-			wnd.CenterTopLevelWindow();
-			wnd.Show();
+			window.LoadPage(fileName: url)
+                .CenterTopLevelWindow()
+                .Show();
 		}
 
 		protected override global::SciterCore.Interop.SciterXDef.LoadResult OnLoadData(global::SciterCore.Interop.SciterXDef.SCN_LOAD_DATA sld)
@@ -37,7 +48,7 @@ namespace SciterTest.Mac
 		}
 	}
 
-	class HostEVH : SciterEventHandler
+	class HostEventHandler : SciterEventHandler
 	{
 
 	}

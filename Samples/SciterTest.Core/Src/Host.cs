@@ -65,8 +65,7 @@ namespace SciterTest.Core
 			string url = "archive://app/" + page_from_res_folder;
 		#endif
 
-			bool res = _wnd.LoadPage(url);
-			Debug.Assert(res);
+			_wnd.LoadPage(fileName: url);
 		}
 
 		protected override SciterXDef.LoadResult OnLoadData(SciterXDef.SCN_LOAD_DATA sld)

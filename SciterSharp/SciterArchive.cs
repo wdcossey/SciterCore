@@ -33,13 +33,19 @@ namespace SciterCore
 		private IntPtr _har;
 		private GCHandle _pinnedArray;
 
-		public async Task Open(string resourceName)
+        public void Open<T>(string resourceName)
+        {
+			OpenAsync<T>(resourceName: resourceName).Wait();
+        }
+
+		public async Task OpenAsync<T>(string resourceName)
 		{
 			if(_har != IntPtr.Zero)
 				throw new Exception("Archive already open.");
 
-			var assembly = Assembly.GetExecutingAssembly();
+			var assembly = typeof(T).Assembly;
 
+            
 			using (var stream = assembly.GetManifestResourceStream(resourceName))
 			{
 				if (stream == null)

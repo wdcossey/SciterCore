@@ -38,7 +38,7 @@
       <CustomCommands>
         <Command>
           <type>BeforeBuild</type>
-          <command>sh scripts/packOSX.sh</command>
+          <command>sh ${SolutionDir}/SciterSharp/scripts/packOSX.sh ${ProjectDir}/LibConsole ${ProjectDir}/LibConsole.bin</command>
         </Command>
       </CustomCommands>
     </CustomCommands>
@@ -47,7 +47,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Optimize>true</Optimize>
     <OutputPath>bin\Release</OutputPath>
-    <DefineConstants>OSX</DefineConstants>
+    <DefineConstants>__UNIFIED__;__MACOS__;OSX;XAMARIN</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
@@ -68,7 +68,7 @@
       <CustomCommands>
         <Command>
           <type>BeforeBuild</type>
-          <command>sh scripts/packOSX.sh</command>
+          <command>sh ${SolutionDir}/SciterSharp/scripts/packOSX.sh ${ProjectDir}/LibConsole ${ProjectDir}/LibConsole.bin</command>
         </Command>
       </CustomCommands>
     </CustomCommands>

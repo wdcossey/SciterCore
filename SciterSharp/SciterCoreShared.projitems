@@ -9,7 +9,6 @@
     <Import_RootNamespace>SciterCoreShared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)ArchiveResource.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\PInvokeGTK.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\PInvokeUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\PInvokeWindows.cs" />
@@ -36,19 +35,28 @@
     <Compile Include="$(MSBuildThisFileDirectory)SciterValue.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SciterWindow.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)WinForms\SciterControl.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\WindowExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="$(MSBuildThisFileDirectory)LibConsole\console.tis" />
-    <Content Include="$(MSBuildThisFileDirectory)LibConsole\popup.css" />
-    <Content Include="$(MSBuildThisFileDirectory)LibConsole\show_data.html" />
-    <Content Include="$(MSBuildThisFileDirectory)LibConsole\show_img.html" />
-    <Content Include="$(MSBuildThisFileDirectory)LibConsole\tracewnd.html" />
-    <Content Include="$(MSBuildThisFileDirectory)LibConsole\unittest.html" />
-    <Content Include="$(MSBuildThisFileDirectory)LibConsole\utils.tis" />
     <None Include="$(MSBuildThisFileDirectory)scripts\fart.exe" />
     <None Include="$(MSBuildThisFileDirectory)scripts\packfolder" />
     <None Include="$(MSBuildThisFileDirectory)scripts\packfolder.exe" />
     <None Include="$(MSBuildThisFileDirectory)scripts\packOSX.sh" />
     <None Include="$(MSBuildThisFileDirectory)scripts\packWindows.bat" />
+    <None Include="$(MSBuildThisFileDirectory)LibConsole\console.tis" />
+    <None Include="$(MSBuildThisFileDirectory)LibConsole\popup.css" />
+    <None Include="$(MSBuildThisFileDirectory)LibConsole\show_data.html" />
+    <None Include="$(MSBuildThisFileDirectory)LibConsole\show_img.html" />
+    <None Include="$(MSBuildThisFileDirectory)LibConsole\tracewnd.html" />
+    <None Include="$(MSBuildThisFileDirectory)LibConsole\unittest.html" />
+    <None Include="$(MSBuildThisFileDirectory)LibConsole\utils.tis" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)LibConsole.bin">
+      <LogicalName>LibConsole</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Extensions\" />
   </ItemGroup>
 </Project>

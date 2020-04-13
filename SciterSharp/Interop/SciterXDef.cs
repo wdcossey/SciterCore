@@ -142,6 +142,7 @@ namespace SciterCore.Interop
 			public IntPtr hwnd; // HWINDOW - [in] HWINDOW of the window this callback was attached to.
 		}
 
+        [Flags]
 		public enum SCRIPT_RUNTIME_FEATURES : uint
 		{
 			ALLOW_FILE_IO = 0x00000001,
@@ -152,7 +153,9 @@ namespace SciterCore.Interop
 
 		public enum GFX_LAYER : uint
 		{
-			GFX_LAYER_GDI = 1, GFX_LAYER_CG = 1, GFX_LAYER_CAIRO = 1,
+			GFX_LAYER_GDI = 1,
+            GFX_LAYER_CG = 1,
+            GFX_LAYER_CAIRO = 1,
 			GFX_LAYER_WARP = 2,
 			GFX_LAYER_D2D = 3,
 			GFX_LAYER_SKIA = 4,

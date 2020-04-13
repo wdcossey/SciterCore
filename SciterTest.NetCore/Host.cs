@@ -14,7 +14,7 @@ namespace SciterTest.NetCore
 		{
 			var host = this;
 			host.Setup(wnd);
-			host.AttachEvh(new HostEvh());
+			host.AttachEventHandler(new HostEvh());
 			host.SetupPage("index.html");
 			wnd.Show();
 		}
@@ -83,8 +83,7 @@ namespace SciterTest.NetCore
 			string url = "archive://app/" + page_from_res_folder;
 		#endif
 
-			bool res = _wnd.LoadPage(url);
-			Debug.Assert(res);
+			_wnd.LoadPage(fileName: url);
 		}
 
 		protected override SciterXDef.LoadResult OnLoadData(SciterXDef.SCN_LOAD_DATA sld)

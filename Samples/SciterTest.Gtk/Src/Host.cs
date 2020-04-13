@@ -18,7 +18,7 @@ namespace SciterTest.Gtk
 		{
 			var host = this;
 			host.Setup(wnd);
-			host.AttachEvh(new HostEvh());
+			host.AttachEventHandler(new HostEventHandler());
 			host.SetupPage("index.html");
 			wnd.Show();
 		}
@@ -28,7 +28,7 @@ namespace SciterTest.Gtk
 		// -override OnPostedNotification() to handle notifications generated with SciterHost.PostNotification()
 	}
 
-	class HostEvh : SciterEventHandler
+	class HostEventHandler : SciterEventHandler
 	{
 		// A dynamic script call handler. Any call in TIScript to function 'view.Host_HelloWorld()' with invoke this method
 		// Notice that signature of these handlers is always the same
@@ -36,7 +36,7 @@ namespace SciterTest.Gtk
 		// (see: https://github.com/MISoftware/OmniCode-Snippets)
 		public bool Host_HelloWorld(SciterElement el, SciterValue[] args, out SciterValue result)
 		{
-			result = new SciterValue("Hello World! (from native side)");
+			result = new SciterValue("Hello Sciter! (from native side)");
 			return true;
 		}
 
@@ -57,7 +57,7 @@ namespace SciterTest.Gtk
 		public BaseHost()
 		{
 		#if !DEBUG
-			_archive.Open(SciterAppResource.ArchiveResource.resources);
+			_archive.Open<BaseHost>("SiteArchive");
 		#endif
 		}
 
@@ -83,11 +83,10 @@ namespace SciterTest.Gtk
 
 			string url = "file://" + path;
 		#else
-			string url = "archive://app/" + page_from_res_folder;
+		    string url = "archive://app/" + page_from_res_folder;
 		#endif
 
-			bool res = _wnd.LoadPage(url);
-			Debug.Assert(res);
+			_wnd.LoadPage(fileName: url);
 		}
 
 		protected override SciterXDef.LoadResult OnLoadData(SciterXDef.SCN_LOAD_DATA sld)

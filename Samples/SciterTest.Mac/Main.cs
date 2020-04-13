@@ -3,6 +3,7 @@ using System.Diagnostics;
 using AppKit;
 using SciterCore;
 using SciterCore.Interop;
+using SciterCoreShared.Extensions;
 
 namespace SciterTest.Mac
 {
@@ -21,14 +22,14 @@ namespace SciterTest.Mac
 
 			NSApplication.Init();
 
-			SciterWindow wnd = new SciterWindow();
-			wnd.CreateMainWindow(800, 600, 
-				SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_MAIN |
-				SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_RESIZEABLE |
-				SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_ENABLE_DEBUG |
-				SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_GLASSY);
-			host = new Host(wnd);
-			//host.DebugInspect();
+
+			host = new Host(() =>
+			{
+				return new SciterWindow()
+					.CreateMainWindow(800, 600);
+			});
+
+			host.DebugInspect();
 
 			NSApplication.Main(args);
 		}

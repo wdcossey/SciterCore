@@ -28,7 +28,7 @@ namespace SciterTest.Idioms
 			// Prepares SciterHost and then load the page
 			var host = new Host();
 			host.Setup(wnd);
-			host.AttachEvh(new HostEvh());
+			host.AttachEventHandler(new HostEvh());
 			host.SetupPage("index.html");
 
 			// Show window and Run message loop

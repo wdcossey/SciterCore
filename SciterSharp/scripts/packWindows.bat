@@ -1,7 +1,8 @@
 @echo off
 
-echo ######## Packing '../LibConsole' directory to 'ArchiveResource.cs' ########
+rem echo ######## Packing '../LibConsole' directory to 'ArchiveResource.cs' ########
 cd %~dp0
-packfolder.exe ../LibConsole ../ArchiveResource.cs -csharp
-fart.exe -- ..\ArchiveResource.* SciterAppResource SciterSharp
+rem packfolder.exe ../LibConsole ../ArchiveResource.cs -csharp
+packfolder.exe %~dp1 %~dp2 -binary
+rem fart.exe -- ..\ArchiveResource.* SciterAppResource SciterSharp
 echo OK

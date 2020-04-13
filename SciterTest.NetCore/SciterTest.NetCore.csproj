@@ -22,11 +22,11 @@
 
   <ItemGroup>
     <None Include="..\..\sciter-sdk\bin.win\x64\sciter.dll">
-      <Link>x64\%(Filename)%(Extension)</Link>
+      <Link>x64\sciter.dll</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="..\..\sciter-sdk\bin.win\x32\sciter.dll">
-      <Link>x86\%(Filename)%(Extension)</Link>
+      <Link>x86\sciter.dll</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

@@ -58,7 +58,7 @@ namespace SciterTest.Core
 			AppHost = new Host();
 			var host = AppHost;
 			host.Setup(wnd);
-			host.AttachEvh(new HostEvh());
+			host.AttachEventHandler(new HostEvh());
 			host.SetupPage("index.html");
 			//host.DebugInspect();
 

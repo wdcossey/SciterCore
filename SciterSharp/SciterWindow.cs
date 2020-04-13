@@ -70,10 +70,12 @@ namespace SciterCore
 
 		public SciterWindow()
 		{
+
 			var allow = SciterXDef.SCRIPT_RUNTIME_FEATURES.ALLOW_EVAL |
-								SciterXDef.SCRIPT_RUNTIME_FEATURES.ALLOW_FILE_IO |
-								SciterXDef.SCRIPT_RUNTIME_FEATURES.ALLOW_SOCKET_IO |
-								SciterXDef.SCRIPT_RUNTIME_FEATURES.ALLOW_SYSINFO;
+						SciterXDef.SCRIPT_RUNTIME_FEATURES.ALLOW_FILE_IO |
+						SciterXDef.SCRIPT_RUNTIME_FEATURES.ALLOW_SOCKET_IO |
+						SciterXDef.SCRIPT_RUNTIME_FEATURES.ALLOW_SYSINFO;
+
 			_api.SciterSetOption(IntPtr.Zero, SciterXDef.SCITER_RT_OPTIONS.SCITER_SET_SCRIPT_RUNTIME_FEATURES, new IntPtr((int)allow));
 
 #if WINDOWS || NETCORE
@@ -105,16 +107,20 @@ namespace SciterCore
 			SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_TITLEBAR |
 			SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_RESIZEABLE |
 			SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_CONTROLS |
-			SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_GLASSY |
-			SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_ENABLE_DEBUG;
+			SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_GLASSY;
 
 		/// <summary>
 		/// Creates the Sciter window and returns the native handle
 		/// </summary>
 		/// <param name="frame">Rectangle of the window</param>
-		/// <param name="creationFlags">Flags for the window creation, defaults to SW_MAIN | SW_TITLEBAR | SW_RESIZEABLE | SW_CONTROLS | SW_ENABLE_DEBUG</param>
-		public void CreateWindow(PInvokeUtils.RECT frame = new PInvokeUtils.RECT(), SciterXDef.SCITER_CREATE_WINDOW_FLAGS creationFlags = DefaultCreateFlags, IntPtr parent = new IntPtr())
+		/// <param name="creationFlags">Flags for the window creation, defaults to SW_MAIN | SW_TITLEBAR | SW_RESIZEABLE | SW_CONTROLS</param>
+		public SciterWindow CreateWindow(PInvokeUtils.RECT frame = new PInvokeUtils.RECT(), SciterXDef.SCITER_CREATE_WINDOW_FLAGS creationFlags = DefaultCreateFlags, IntPtr parent = new IntPtr())
 		{
+
+#if DEBUG
+			// Force Sciter SW_ENABLE_DEBUG in Debug build.
+			creationFlags |= SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_ENABLE_DEBUG;
+#endif
 			Debug.Assert(_hwnd == IntPtr.Zero);
 			_hwnd = _api.SciterCreateWindow(
 				creationFlags,
@@ -134,18 +140,19 @@ namespace SciterCore
 #elif OSX && XAMARIN
 			_nsview = new OSXView(_hwnd);
 #endif
+			return this;
 		}
 
-		public void CreateMainWindow(int width, int height, SciterXDef.SCITER_CREATE_WINDOW_FLAGS creationFlags = DefaultCreateFlags)
+		public SciterWindow CreateMainWindow(int width, int height, SciterXDef.SCITER_CREATE_WINDOW_FLAGS creationFlags = DefaultCreateFlags)
 		{
 			PInvokeUtils.RECT frame = new PInvokeUtils.RECT(width, height);
-            CreateWindow(frame, creationFlags);
+			return CreateWindow(frame, creationFlags);
 		}
 
-		public void CreateOwnedWindow(IntPtr owner, int width, int height, SciterXDef.SCITER_CREATE_WINDOW_FLAGS creationFlags = DefaultCreateFlags)
+		public SciterWindow CreateOwnedWindow(IntPtr owner, int width, int height, SciterXDef.SCITER_CREATE_WINDOW_FLAGS creationFlags = DefaultCreateFlags)
 		{
 			PInvokeUtils.RECT frame = new PInvokeUtils.RECT(width, height);
-            CreateWindow(frame, creationFlags, owner);
+            return CreateWindow(frame, creationFlags, owner);
 		}
 
 		/*
@@ -165,7 +172,7 @@ namespace SciterCore
 		}*/
 
 #if WINDOWS || NETCORE
-		public void CreateChildWindow(IntPtr hwnd_parent, SciterXDef.SCITER_CREATE_WINDOW_FLAGS flags = SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_CHILD)
+		public SciterWindow CreateChildWindow(IntPtr hwnd_parent, SciterXDef.SCITER_CREATE_WINDOW_FLAGS flags = SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_CHILD)
 		{
 			if(PInvokeWindows.IsWindow(hwnd_parent) == false)
 				throw new ArgumentException("Invalid parent window");
@@ -199,6 +206,8 @@ namespace SciterCore
 
 			if(_hwnd == IntPtr.Zero)
 				throw new Exception("CreateChildWindow() failed");
+
+            return this;
 		}
 #endif
 
@@ -218,6 +227,7 @@ namespace SciterCore
 
 			PInvokeWindows.WindowStyles dwStyle = (PInvokeWindows.WindowStyles)PInvokeWindows.GetWindowLongPtr(_hwnd, GWL_EXSTYLE);
 			PInvokeWindows.WindowStyles dwNewStyle = (dwStyle & ~dwRemove) | dwAdd;
+
 			if(dwStyle == dwNewStyle)
 				return false;
 
@@ -242,7 +252,7 @@ namespace SciterCore
 		/// <summary>
 		/// Centers the window in the screen. You must call it after the window is created, but before it is shown to avoid flickering
 		/// </summary>
-		public void CenterTopLevelWindow()
+		public SciterWindow CenterTopLevelWindow()
 		{
 #if WINDOWS || NETCORE
 			PInvokeUtils.RECT rectWindow;
@@ -269,6 +279,7 @@ namespace SciterCore
 #elif OSX && XAMARIN
 			_nsview.Window.Center();
 #endif
+			return this;
 		}
 
 		/// <summary>
@@ -360,10 +371,21 @@ namespace SciterCore
 		/// <summary>
 		/// Loads the page resource from the given URL or file path
 		/// </summary>
-		/// <param name="url_or_filepath">URL or file path of the page</param>
-		public bool LoadPage(string url_or_filepath)
+		/// <param name="fileName">URL or file path of the page</param>
+		public SciterWindow LoadPage(string fileName)
 		{
-			return _api.SciterLoadFile(_hwnd, url_or_filepath);
+			return LoadPage(fileName: fileName, out _);
+		}
+
+		/// <summary>
+		/// Loads the page resource from the given URL or file path
+		/// </summary>
+		/// <param name="fileName">URL or file path of the page</param>
+		public SciterWindow LoadPage(string fileName, out bool loadResult)
+		{
+			loadResult = _api.SciterLoadFile(_hwnd, fileName);
+			Debug.Assert(loadResult);
+			return this;
 		}
 
 		/// <summary>
@@ -377,7 +399,7 @@ namespace SciterCore
 			return _api.SciterLoadHtml(_hwnd, bytes, (uint)bytes.Length, baseUrl);
 		}
 
-		public void Show(bool show = true)
+		public SciterWindow Show(bool show = true)
 		{
 #if WINDOWS || NETCORE
 			PInvokeWindows.ShowWindow(_hwnd, show ? PInvokeWindows.ShowWindowCommands.Show : PInvokeWindows.ShowWindowCommands.Hide);
@@ -387,14 +409,17 @@ namespace SciterCore
 			else
 				PInvokeGTK.gtk_widget_hide(_hwnd);
 #elif OSX && XAMARIN
-			if(show)
+			if (show)
 			{
 				_nsview.Window.MakeMainWindow();
 				_nsview.Window.MakeKeyAndOrderFront(null);
-			} else {
+			}
+			else
+			{
 				_nsview.Window.OrderOut(_nsview.Window);// PerformMiniaturize?
 			}
 #endif
+			return this;
 		}
 
 		public void ShowModal()
@@ -438,22 +463,26 @@ namespace SciterCore
 		}
 
 #if WINDOWS && !WPF
-		public Icon Icon
-		{
+        public SciterWindow SetIcon(Icon icon)
+        {
             // instead of using this property, you can use View.windowIcon on all platforms
-			set
-			{
-				// larger icon
-				PInvokeWindows.SendMessageW(_hwnd, PInvokeWindows.Win32Msg.WM_SETICON, new IntPtr(1), value.Handle);
-				// small icon
-				PInvokeWindows.SendMessageW(_hwnd, PInvokeWindows.Win32Msg.WM_SETICON, IntPtr.Zero, new Icon(value, 16, 16).Handle);
-			}
-		}
+			// larger icon
+			PInvokeWindows.SendMessageW(_hwnd, PInvokeWindows.Win32Msg.WM_SETICON, new IntPtr(1), value.Handle);
+			// small icon
+			PInvokeWindows.SendMessageW(_hwnd, PInvokeWindows.Win32Msg.WM_SETICON, IntPtr.Zero, new Icon(value, 16, 16).Handle);
+            return this;
+        }
 #endif
+
+		public SciterWindow SetTitle(string title)
+        {
+			Title = title;
+			return this;
+        }
 
         public string Title
 		{
-			set
+			private set
 			{
 				Debug.Assert(_hwnd != IntPtr.Zero);
 #if WINDOWS || NETCORE
