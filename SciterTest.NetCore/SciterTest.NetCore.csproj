@@ -10,6 +10,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="SiteResource.bin" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="SiteResource.bin">
+      <LogicalName>SiteResource</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.3" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.3" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="3.1.3" />
@@ -21,11 +31,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\..\sciter-sdk\bin.win\x64\sciter.dll">
+    <None Include="$(SolutionDir)sciter-sdk\bin.win\x64\sciter.dll">
       <Link>x64\sciter.dll</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\sciter-sdk\bin.win\x32\sciter.dll">
+    <None Include="$(SolutionDir)sciter-sdk\bin.win\x32\sciter.dll">
       <Link>x86\sciter.dll</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -34,7 +44,7 @@
   <Import Project="..\SciterSharp\SciterCoreShared.projitems" Label="Shared" />
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="$(SolutionDir)SciterSharp\scripts\packWindows.bat $(ConfigurationName)" />
+    <Exec Command="rem $(SolutionDir)SciterSharp\scripts\packWindows.bat &quot;$(SolutionDir)SciterSharp\LibConsole&quot; &quot;$(ProjectDir)LibConsole.bin&quot;&#xD;&#xA;$(SolutionDir)SciterSharp\scripts\packWindows.bat &quot;$(ProjectDir)res&quot; &quot;$(ProjectDir)SiteResource.bin&quot;" />
   </Target>
 
 </Project>
