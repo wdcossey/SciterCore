@@ -53,7 +53,7 @@ namespace SciterTest.NetCore
 		public BaseHost()
 		{
 		#if !DEBUG
-			_archive.Open(SciterAppResource.ArchiveResource.resources);
+			_archive.Open<BaseHost>("SiteResource");
 		#endif
 		}
 
