@@ -128,8 +128,8 @@ namespace SciterCore.Interop
 		{
 			if(_sciterGraphicsApi == null)
 			{
-				uint major = _sciterApi.Value.SciterVersion(true);
-				uint minor = _sciterApi.Value.SciterVersion(false);
+				uint major = Api.SciterVersion(true);
+				uint minor = Api.SciterVersion(false);
 				Debug.Assert(major >= 0x00040000);
 
 				int apiStructSize = Marshal.SizeOf(t: typeof(SciterGraphics.SciterGraphicsApi));

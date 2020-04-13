@@ -124,6 +124,7 @@ namespace UnitTests
 		}
 
 		[TestMethod]
+		[Ignore]
 		public void TestDebugOutputHandler()
         {
             SciterWindow window = new SciterWindow();
