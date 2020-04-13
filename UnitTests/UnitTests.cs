@@ -112,41 +112,48 @@ namespace UnitTests
 		[TestMethod]
 		public void TestThings()
 		{
-			SciterWindow wnd = new SciterWindow();
-			wnd.CreateMainWindow(640, 480);
-			wnd.Title = "Wtf";
+			SciterWindow window = 
+                new SciterWindow()
+                    .CreateMainWindow(640, 480)
+                    .SetTitle("Wtf");
+			_ = new SciterHost(window);
+			window.LoadHtml("<html></html>");
 
-			SciterHost host = new SciterHost(wnd);
-			wnd.LoadHtml("<html></html>");
-
-			var sv = wnd.EvalScript("Utils.readStreamToEnd");
+			var sv = window.EvalScript("Utils.readStreamToEnd");
 			Assert.IsTrue(!sv.IsUndefined);
 		}
 
 		[TestMethod]
-		public void TestODH()
-		{
-			SciterWindow window = new SciterWindow();
-            TestableDebugOutputHandler odh = new TestableDebugOutputHandler(window);
-            window.CreateMainWindow(640, 480);
-			window.Title = "Wtf";
-            bool res = window.LoadHtml(@"
+		public void TestDebugOutputHandler()
+        {
+            SciterWindow window = new SciterWindow();
+
+            TestableDebugOutputHandler odh = new TestableDebugOutputHandler(window: window);
+
+            window
+                .CreateMainWindow(640, 480)
+                .SetTitle("Wtf")
+                .LoadHtml(@"
 <html>
 <style>
 	body { wtf: 123; }
 </style>
-
 <script type='text/tiscript'>
 </script>
-</html>
-");
-			Assert.IsTrue(res);
+</html>",
+                out var loadResult);
+
+			Assert.IsTrue(condition: loadResult);
 
 			PInvokeWindows.MSG msg;
-			while(PInvokeWindows.GetMessage(out msg, IntPtr.Zero, 0, 0) != 0)
+            while(PInvokeWindows.GetMessage(lpMsg: out msg, hWnd: IntPtr.Zero, wMsgFilterMin: 0, wMsgFilterMax: 0) != 0)
 			{
-				window.Show();
-				PInvokeWindows.TranslateMessage(ref msg);
+                if (!window.IsVisible)
+                {
+                    window.Show();
+                }
+
+                PInvokeWindows.TranslateMessage(ref msg);
 				PInvokeWindows.DispatchMessage(ref msg);
 			}
 

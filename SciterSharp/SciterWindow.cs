@@ -377,13 +377,14 @@ namespace SciterCore
 			return LoadPage(fileName: fileName, out _);
 		}
 
-		/// <summary>
-		/// Loads the page resource from the given URL or file path
-		/// </summary>
-		/// <param name="fileName">URL or file path of the page</param>
-		public SciterWindow LoadPage(string fileName, out bool loadResult)
+        /// <summary>
+        /// Loads the page resource from the given URL or file path
+        /// </summary>
+        /// <param name="fileName">URL or file path of the page</param>
+        /// <param name="loadResult">Result of <see cref="Sciter.SciterApi.SciterLoadFile"/></param>
+        public SciterWindow LoadPage(string fileName, out bool loadResult)
 		{
-			loadResult = _api.SciterLoadFile(_hwnd, fileName);
+			loadResult = _api.SciterLoadFile(hwnd: _hwnd, filename: fileName);
 			Debug.Assert(loadResult);
 			return this;
 		}
@@ -393,11 +394,24 @@ namespace SciterCore
 		/// </summary>
 		/// <param name="html">HTML of the page to be loaded</param>
 		/// <param name="baseUrl">Base Url given to the loaded page</param>
-		public bool LoadHtml(string html, string baseUrl = null)
+		public SciterWindow LoadHtml(string html, string baseUrl = null)
 		{
-			var bytes = Encoding.UTF8.GetBytes(html);
-			return _api.SciterLoadHtml(_hwnd, bytes, (uint)bytes.Length, baseUrl);
+            return LoadHtml(html: html, loadResult: out _, baseUrl: baseUrl);
 		}
+
+        /// <summary>
+        /// Loads HTML input from a string
+        /// </summary>
+        /// <param name="html">HTML of the page to be loaded</param>
+        /// <param name="loadResult">Result of <see cref="Sciter.SciterApi.SciterLoadHtml"/></param>
+        /// <param name="baseUrl">Base Url given to the loaded page</param>
+        public SciterWindow LoadHtml(string html, out bool loadResult, string baseUrl = null)
+		{
+			var bytes = Encoding.UTF8.GetBytes(s: html);
+            loadResult = _api.SciterLoadHtml(hwnd: _hwnd, html: bytes, htmlSize: (uint)bytes.Length, baseUrl: baseUrl);
+            Debug.Assert(loadResult);
+            return this;
+        }
 
 		public SciterWindow Show(bool show = true)
 		{
@@ -467,9 +481,9 @@ namespace SciterCore
         {
             // instead of using this property, you can use View.windowIcon on all platforms
 			// larger icon
-			PInvokeWindows.SendMessageW(_hwnd, PInvokeWindows.Win32Msg.WM_SETICON, new IntPtr(1), value.Handle);
+			PInvokeWindows.SendMessageW(_hwnd, PInvokeWindows.Win32Msg.WM_SETICON, new IntPtr(1), icon.Handle);
 			// small icon
-			PInvokeWindows.SendMessageW(_hwnd, PInvokeWindows.Win32Msg.WM_SETICON, IntPtr.Zero, new Icon(value, 16, 16).Handle);
+			PInvokeWindows.SendMessageW(_hwnd, PInvokeWindows.Win32Msg.WM_SETICON, IntPtr.Zero, new Icon(icon, 16, 16).Handle);
             return this;
         }
 #endif

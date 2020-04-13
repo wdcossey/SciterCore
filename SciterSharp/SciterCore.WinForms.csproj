@@ -50,11 +50,11 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\sciter-sdk\bin.win\x64\sciter.dll">
+    <None Include="$(SolutionDir)sciter-sdk\bin.win\x64\sciter.dll">
       <Link>x64\sciter.dll</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\sciter-sdk\bin.win\x32\sciter.dll">
+    <None Include="$(SolutionDir)sciter-sdk\bin.win\x32\sciter.dll">
       <Link>x86\sciter.dll</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
