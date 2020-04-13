@@ -1,26 +1,22 @@
 using SciterCore;
 using SciterCore.Interop;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Diagnostics;
 using System.IO;
 using SciterValue = SciterCore.SciterValue;
 
 namespace SciterTest.Gtk
 {
-	class Host : BaseHost
+    class Host : BaseHost
 	{
-		public Host(SciterWindow wnd)
+		public Host(SciterWindow window)
 		{
 			var host = this;
-			host.Setup(wnd);
+			host.Setup(window);
 			host.AttachEventHandler(new HostEventHandler());
-			host.SetupPage("index.html");
-			wnd.Show();
+			host.SetupPage(page: "index.html");
+			window.Show();
 		}
 
 		// Things to do here:
@@ -52,22 +48,22 @@ namespace SciterTest.Gtk
 	{
 		protected static Sciter.SciterApi _api = Sciter.Api;
 		protected SciterArchive _archive = new SciterArchive();
-		protected SciterWindow _wnd;
+		protected SciterWindow _window;
 
 		public BaseHost()
 		{
 		#if !DEBUG
-			_archive.Open<BaseHost>("SiteArchive");
+			_archive.Open("SiteResource");
 		#endif
 		}
 
-		public void Setup(SciterWindow wnd)
+		public void Setup(SciterWindow window)
 		{
-			_wnd = wnd;
-			SetupWindow(wnd);
+			_window = window;
+			SetupWindow(window);
 		}
 
-		public void SetupPage(string page_from_res_folder)
+		public void SetupPage(string page)
 		{
 		#if DEBUG
 			string cwd = Path.GetDirectoryName( Assembly.GetExecutingAssembly().Location ).Replace('\\', '/');
@@ -78,7 +74,7 @@ namespace SciterTest.Gtk
 			Environment.CurrentDirectory = cwd + "/../..";
 			#endif
 
-			string path = Environment.CurrentDirectory + "/res/" + page_from_res_folder;
+			string path = Environment.CurrentDirectory + "/res/" + page;
 			Debug.Assert(File.Exists(path));
 
 			string url = "file://" + path;
@@ -86,7 +82,7 @@ namespace SciterTest.Gtk
 		    string url = "archive://app/" + page_from_res_folder;
 		#endif
 
-			_wnd.LoadPage(fileName: url);
+			_window.LoadPage(url: url);
 		}
 
 		protected override SciterXDef.LoadResult OnLoadData(SciterXDef.SCN_LOAD_DATA sld)
@@ -97,7 +93,7 @@ namespace SciterTest.Gtk
 				string path = sld.uri.Substring(14);
 				byte[] data = _archive.Get(path);
 				if(data!=null)
-					_api.SciterDataReady(_wnd._hwnd, sld.uri, data, (uint) data.Length);
+					_api.SciterDataReady(_window.Hwnd, sld.uri, data, (uint) data.Length);
 			}
 
 			// call base to ensure LibConsole is loaded

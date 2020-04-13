@@ -29,14 +29,12 @@ namespace SciterCore
 		/// <summary>
 		/// Show a system message-box owned by this Sciter window. If caption is null, it will be the title of the Sciter window
 		/// </summary>
-		/// <param name="wnd"></param>
+		/// <param name="window"></param>
 		/// <param name="text"></param>
 		/// <param name="caption"></param>
-		public static void ShowMessageBox(this SciterWindow wnd, string text, string caption = null)
+		public static void ShowMessageBox(this SciterWindow window, string text, string caption = null)
 		{
-			if(caption == null)
-				caption = wnd.Title;
-			Show(wnd._hwnd, text, caption);
+			Show(owner: window.Hwnd, text: text, caption: caption ?? window.Title);
 		}
 	}
 }

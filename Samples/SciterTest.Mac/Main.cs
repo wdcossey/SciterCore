@@ -29,7 +29,7 @@ namespace SciterTest.Mac
 					.CreateMainWindow(800, 600);
 			});
 
-			host.DebugInspect();
+			//host.DebugInspect();
 
 			NSApplication.Main(args);
 		}

@@ -37,7 +37,7 @@ namespace SciterTest.Mac
 			string url = "file:///Users/midiway/Documents/SciterSharp/Tests/SciterTest.Mac/res/index.html";
 #endif
 			
-			window.LoadPage(fileName: url)
+			window.LoadPage(url: url)
                 .CenterTopLevelWindow()
                 .Show();
 		}

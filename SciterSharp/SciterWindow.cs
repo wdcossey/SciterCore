@@ -49,7 +49,15 @@ namespace SciterCore
 #endif
 	{
 		protected static Sciter.SciterApi _api = Sciter.Api;
-		public IntPtr _hwnd { get; protected set; }
+
+		private IntPtr _hwnd;
+
+		public IntPtr Hwnd
+		{
+			get => _hwnd;
+			protected set => _hwnd = value;
+		}
+
 		private SciterXDef.SCITER_WINDOW_DELEGATE _proc;
 #if GTKMONO || NETCORE
 		public IntPtr _gtkwindow { get; private set; }
@@ -59,13 +67,13 @@ namespace SciterCore
 
 		public static implicit operator IntPtr(SciterWindow wnd)
 		{
-			return wnd._hwnd;
+			return wnd.Hwnd;
 		}
 
 		public bool SetSciterOption(SciterXDef.SCITER_RT_OPTIONS option, IntPtr value)
 		{
-			Debug.Assert(_hwnd != IntPtr.Zero);
-			return _api.SciterSetOption(_hwnd, option, value);
+			Debug.Assert(Hwnd != IntPtr.Zero);
+			return _api.SciterSetOption(Hwnd, option, value);
 		}
 
 		public SciterWindow()
@@ -87,18 +95,19 @@ namespace SciterCore
 
 		public SciterWindow(IntPtr hwnd)
 		{
+			Hwnd = hwnd;
+
 #if WINDOWS || NETCORE
 			_proc = InternalProcessSciterWindowMessage;
 #else
 			_proc = null;
 #endif
-			_hwnd = hwnd;
 
 #if GTKMONO
-			_gtkwindow = PInvokeGTK.gtk_widget_get_toplevel(_hwnd);
+			_gtkwindow = PInvokeGTK.gtk_widget_get_toplevel(Hwnd);
 			Debug.Assert(_gtkwindow != IntPtr.Zero);
 #elif OSX && XAMARIN
-			_nsview = new OSXView(_hwnd);
+			_nsview = new OSXView(Hwnd);
 #endif
 		}
 
@@ -121,24 +130,24 @@ namespace SciterCore
 			// Force Sciter SW_ENABLE_DEBUG in Debug build.
 			creationFlags |= SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_ENABLE_DEBUG;
 #endif
-			Debug.Assert(_hwnd == IntPtr.Zero);
-			_hwnd = _api.SciterCreateWindow(
+			Debug.Assert(Hwnd == IntPtr.Zero);
+			Hwnd = _api.SciterCreateWindow(
 				creationFlags,
 				ref frame,
 				_proc,
 				IntPtr.Zero,
 				parent
 			);
-			Debug.Assert(_hwnd != IntPtr.Zero);
+			Debug.Assert(Hwnd != IntPtr.Zero);
 
-			if(_hwnd == IntPtr.Zero)
+			if(Hwnd == IntPtr.Zero)
 				throw new Exception("CreateWindow() failed");
 
 #if GTKMONO
-			_gtkwindow = PInvokeGTK.gtk_widget_get_toplevel(_hwnd);
+			_gtkwindow = PInvokeGTK.gtk_widget_get_toplevel(Hwnd);
 			Debug.Assert(_gtkwindow != IntPtr.Zero);
 #elif OSX && XAMARIN
-			_nsview = new OSXView(_hwnd);
+			_nsview = new OSXView(Hwnd);
 #endif
 			return this;
 		}
@@ -183,7 +192,7 @@ namespace SciterCore
 #if true
             string wndclass = Marshal.PtrToStringUni(_api.SciterClassName());
 
-            _hwnd = PInvokeWindows.CreateWindowEx(
+            Hwnd = PInvokeWindows.CreateWindowEx(
 				0,
                 wndclass,
 				null,
@@ -197,14 +206,13 @@ namespace SciterCore
 				IntPtr.Zero,
 				IntPtr.Zero);
 
-
-			//_hwnd = PInvokeWindows.CreateWindowEx(0, wndclass, null, (int)PInvokeWindows.WindowStyles.WS_CHILD, 0, 0, frame.Right, frame.Bottom, hwnd_parent, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero);
+			//Hwnd = PInvokeWindows.CreateWindowEx(0, wndclass, null, (int)PInvokeWindows.WindowStyles.WS_CHILD, 0, 0, frame.Right, frame.Bottom, hwnd_parent, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero);
 			//SetSciterOption(SciterXDef.SCITER_RT_OPTIONS.SCITER_SET_DEBUG_MODE, new IntPtr(1));// NO, user should opt for it
 #else
-			_hwnd = _api.SciterCreateWindow(flags, ref frame, _proc, IntPtr.Zero, hwnd_parent);
+			Hwnd = _api.SciterCreateWindow(flags, ref frame, _proc, IntPtr.Zero, hwnd_parent);
 #endif
 
-			if(_hwnd == IntPtr.Zero)
+			if(Hwnd == IntPtr.Zero)
 				throw new Exception("CreateChildWindow() failed");
 
             return this;
@@ -214,7 +222,7 @@ namespace SciterCore
 		public void Destroy()
 		{
 #if WINDOWS || NETCORE
-			PInvokeWindows.DestroyWindow(_hwnd);
+			PInvokeWindows.DestroyWindow(Hwnd);
 #elif GTKMONO
 			PInvokeGTK.gtk_widget_destroy(_gtkwindow);
 #endif
@@ -225,13 +233,13 @@ namespace SciterCore
 		{
 			int GWL_EXSTYLE = -20;
 
-			PInvokeWindows.WindowStyles dwStyle = (PInvokeWindows.WindowStyles)PInvokeWindows.GetWindowLongPtr(_hwnd, GWL_EXSTYLE);
+			PInvokeWindows.WindowStyles dwStyle = (PInvokeWindows.WindowStyles)PInvokeWindows.GetWindowLongPtr(Hwnd, GWL_EXSTYLE);
 			PInvokeWindows.WindowStyles dwNewStyle = (dwStyle & ~dwRemove) | dwAdd;
 
 			if(dwStyle == dwNewStyle)
 				return false;
 
-			PInvokeWindows.SetWindowLongPtr(_hwnd, GWL_EXSTYLE, (IntPtr)dwNewStyle);
+			PInvokeWindows.SetWindowLongPtr(Hwnd, GWL_EXSTYLE, (IntPtr)dwNewStyle);
 			return true;
 		}
 
@@ -239,12 +247,12 @@ namespace SciterCore
 		{
 			int GWL_STYLE = -16;
 
-			PInvokeWindows.WindowStyles dwStyle = (PInvokeWindows.WindowStyles)PInvokeWindows.GetWindowLongPtr(_hwnd, GWL_STYLE);
+			PInvokeWindows.WindowStyles dwStyle = (PInvokeWindows.WindowStyles)PInvokeWindows.GetWindowLongPtr(Hwnd, GWL_STYLE);
 			PInvokeWindows.WindowStyles dwNewStyle = (dwStyle & ~dwRemove) | dwAdd;
 			if(dwStyle == dwNewStyle)
 				return false;
 
-			PInvokeWindows.SetWindowLongPtr(_hwnd, GWL_STYLE, (IntPtr)dwNewStyle);
+			PInvokeWindows.SetWindowLongPtr(Hwnd, GWL_STYLE, (IntPtr)dwNewStyle);
 			return true;
 		}
 #endif
@@ -256,7 +264,7 @@ namespace SciterCore
 		{
 #if WINDOWS || NETCORE
 			PInvokeUtils.RECT rectWindow;
-			PInvokeWindows.GetWindowRect(_hwnd, out rectWindow);
+			PInvokeWindows.GetWindowRect(Hwnd, out rectWindow);
 
 			PInvokeUtils.RECT rectWorkArea = new PInvokeUtils.RECT();
 			PInvokeWindows.SystemParametersInfo(PInvokeWindows.SPI_GETWORKAREA, 0, ref rectWorkArea, 0);
@@ -264,7 +272,7 @@ namespace SciterCore
 			int nX = (rectWorkArea.Width - rectWindow.Width) / 2 + rectWorkArea.Left;
 			int nY = (rectWorkArea.Height - rectWindow.Height) / 2 + rectWorkArea.Top;
 			
-			PInvokeWindows.MoveWindow(_hwnd, nX, nY, rectWindow.Width, rectWindow.Height, false);
+			PInvokeWindows.MoveWindow(Hwnd, nX, nY, rectWindow.Width, rectWindow.Height, false);
 #elif GTKMONO
 			int screen_width = PInvokeGTK.gdk_screen_width();
 			int screen_height = PInvokeGTK.gdk_screen_height();
@@ -307,7 +315,7 @@ namespace SciterCore
 			get
 			{
 #if WINDOWS || NETCORE
-				IntPtr hmonitor = PInvokeWindows.MonitorFromWindow(_hwnd, PInvokeWindows.MONITOR_DEFAULTTONEAREST);
+				IntPtr hmonitor = PInvokeWindows.MonitorFromWindow(Hwnd, PInvokeWindows.MONITOR_DEFAULTTONEAREST);
 				PInvokeWindows.MONITORINFO mi = new PInvokeWindows.MONITORINFO() { cbSize = Marshal.SizeOf(typeof(PInvokeWindows.MONITORINFO)) };
 				PInvokeWindows.GetMonitorInfo(hmonitor, ref mi);
 				return new PInvokeUtils.SIZE(mi.rcMonitor.Width, mi.rcMonitor.Height);
@@ -326,7 +334,7 @@ namespace SciterCore
 			{
 #if WINDOWS || NETCORE
 				PInvokeUtils.RECT rectWindow;
-				PInvokeWindows.GetWindowRect(_hwnd, out rectWindow);
+				PInvokeWindows.GetWindowRect(Hwnd, out rectWindow);
 				return new PInvokeUtils.SIZE { cx = rectWindow.Width, cy = rectWindow.Height };
 #elif GTKMONO
 				int window_width, window_height;
@@ -345,7 +353,7 @@ namespace SciterCore
 			{
 #if WINDOWS || NETCORE
 				PInvokeUtils.RECT rectWindow;
-				PInvokeWindows.GetWindowRect(_hwnd, out rectWindow);
+				PInvokeWindows.GetWindowRect(Hwnd, out rectWindow);
 				return new PInvokeUtils.POINT(rectWindow.Left, rectWindow.Top);
 #elif GTKMONO
 				return new PInvokeUtils.POINT();
@@ -358,7 +366,7 @@ namespace SciterCore
 			set
 			{
 #if WINDOWS || NETCORE
-				PInvokeWindows.MoveWindow(_hwnd, value.X, value.Y, Size.cx, Size.cy, false);
+				PInvokeWindows.MoveWindow(Hwnd, value.X, value.Y, Size.cx, Size.cy, false);
 #elif GTKMONO
 				PInvokeGTK.gtk_window_move(_gtkwindow, value.X, value.Y);
 #elif OSX && XAMARIN
@@ -371,20 +379,20 @@ namespace SciterCore
 		/// <summary>
 		/// Loads the page resource from the given URL or file path
 		/// </summary>
-		/// <param name="fileName">URL or file path of the page</param>
-		public SciterWindow LoadPage(string fileName)
+		/// <param name="url">URL or file path of the page</param>
+		public SciterWindow LoadPage(string url)
 		{
-			return LoadPage(fileName: fileName, out _);
+			return LoadPage(url: url, out _);
 		}
 
         /// <summary>
         /// Loads the page resource from the given URL or file path
         /// </summary>
-        /// <param name="fileName">URL or file path of the page</param>
+        /// <param name="url">URL or file path of the page</param>
         /// <param name="loadResult">Result of <see cref="Sciter.SciterApi.SciterLoadFile"/></param>
-        public SciterWindow LoadPage(string fileName, out bool loadResult)
+        public SciterWindow LoadPage(string url, out bool loadResult)
 		{
-			loadResult = _api.SciterLoadFile(hwnd: _hwnd, filename: fileName);
+			loadResult = _api.SciterLoadFile(hwnd: Hwnd, filename: url);
 			Debug.Assert(loadResult);
 			return this;
 		}
@@ -408,7 +416,7 @@ namespace SciterCore
         public SciterWindow LoadHtml(string html, out bool loadResult, string baseUrl = null)
 		{
 			var bytes = Encoding.UTF8.GetBytes(s: html);
-            loadResult = _api.SciterLoadHtml(hwnd: _hwnd, html: bytes, htmlSize: (uint)bytes.Length, baseUrl: baseUrl);
+            loadResult = _api.SciterLoadHtml(hwnd: Hwnd, html: bytes, htmlSize: (uint)bytes.Length, baseUrl: baseUrl);
             Debug.Assert(loadResult);
             return this;
         }
@@ -416,12 +424,12 @@ namespace SciterCore
 		public SciterWindow Show(bool show = true)
 		{
 #if WINDOWS || NETCORE
-			PInvokeWindows.ShowWindow(_hwnd, show ? PInvokeWindows.ShowWindowCommands.Show : PInvokeWindows.ShowWindowCommands.Hide);
+			PInvokeWindows.ShowWindow(Hwnd, show ? PInvokeWindows.ShowWindowCommands.Show : PInvokeWindows.ShowWindowCommands.Hide);
 #elif GTKMONO
 			if(show)
 				PInvokeGTK.gtk_window_present(_gtkwindow);
 			else
-				PInvokeGTK.gtk_widget_hide(_hwnd);
+				PInvokeGTK.gtk_widget_hide(Hwnd);
 #elif OSX && XAMARIN
 			if (show)
 			{
@@ -449,7 +457,7 @@ namespace SciterCore
 		public void Close()
 		{
 #if WINDOWS || NETCORE
-			PInvokeWindows.PostMessage(_hwnd, PInvokeWindows.Win32Msg.WM_CLOSE, IntPtr.Zero, IntPtr.Zero);
+			PInvokeWindows.PostMessage(Hwnd, PInvokeWindows.Win32Msg.WM_CLOSE, IntPtr.Zero, IntPtr.Zero);
 #elif GTKMONO
 			PInvokeGTK.gtk_window_close(_gtkwindow);
 #elif OSX && XAMARIN
@@ -462,7 +470,7 @@ namespace SciterCore
 			get
 			{
 #if WINDOWS || NETCORE
-				return PInvokeWindows.IsWindowVisible(_hwnd);
+				return PInvokeWindows.IsWindowVisible(Hwnd);
 #elif GTKMONO
 				return PInvokeGTK.gtk_widget_get_visible(_gtkwindow) != 0;
 #elif OSX && XAMARIN
@@ -473,7 +481,7 @@ namespace SciterCore
 
 		public IntPtr VM
 		{
-			get { return _api.SciterGetVM(_hwnd); }
+			get { return _api.SciterGetVM(Hwnd); }
 		}
 
 #if WINDOWS && !WPF
@@ -481,9 +489,9 @@ namespace SciterCore
         {
             // instead of using this property, you can use View.windowIcon on all platforms
 			// larger icon
-			PInvokeWindows.SendMessageW(_hwnd, PInvokeWindows.Win32Msg.WM_SETICON, new IntPtr(1), icon.Handle);
+			PInvokeWindows.SendMessageW(Hwnd, PInvokeWindows.Win32Msg.WM_SETICON, new IntPtr(1), icon.Handle);
 			// small icon
-			PInvokeWindows.SendMessageW(_hwnd, PInvokeWindows.Win32Msg.WM_SETICON, IntPtr.Zero, new Icon(icon, 16, 16).Handle);
+			PInvokeWindows.SendMessageW(Hwnd, PInvokeWindows.Win32Msg.WM_SETICON, IntPtr.Zero, new Icon(icon, 16, 16).Handle);
             return this;
         }
 #endif
@@ -498,10 +506,10 @@ namespace SciterCore
 		{
 			private set
 			{
-				Debug.Assert(_hwnd != IntPtr.Zero);
+				Debug.Assert(Hwnd != IntPtr.Zero);
 #if WINDOWS || NETCORE
 				IntPtr strPtr = Marshal.StringToHGlobalUni(value);
-				PInvokeWindows.SendMessageW(_hwnd, PInvokeWindows.Win32Msg.WM_SETTEXT, IntPtr.Zero, strPtr);
+				PInvokeWindows.SendMessageW(Hwnd, PInvokeWindows.Win32Msg.WM_SETTEXT, IntPtr.Zero, strPtr);
 				Marshal.FreeHGlobal(strPtr);
 #elif GTKMONO
 				PInvokeGTK.gtk_window_set_title(_gtkwindow, value);
@@ -512,10 +520,10 @@ namespace SciterCore
 
 			get
 			{
-				Debug.Assert(_hwnd != IntPtr.Zero);
+				Debug.Assert(Hwnd != IntPtr.Zero);
 #if WINDOWS || NETCORE
 				IntPtr unmanagedPointer = Marshal.AllocHGlobal(2048);
-				IntPtr chars_copied = PInvokeWindows.SendMessageW(_hwnd, PInvokeWindows.Win32Msg.WM_GETTEXT, new IntPtr(2048), unmanagedPointer);
+				IntPtr chars_copied = PInvokeWindows.SendMessageW(Hwnd, PInvokeWindows.Win32Msg.WM_GETTEXT, new IntPtr(2048), unmanagedPointer);
 				string title = Marshal.PtrToStringUni(unmanagedPointer, chars_copied.ToInt32());
 				Marshal.FreeHGlobal(unmanagedPointer);
 				return title;
@@ -532,9 +540,9 @@ namespace SciterCore
 		{
 			get
 			{
-				Debug.Assert(_hwnd != IntPtr.Zero);
+				Debug.Assert(Hwnd != IntPtr.Zero);
 				IntPtr he;
-				var r = _api.SciterGetRootElement(_hwnd, out he);
+				var r = _api.SciterGetRootElement(Hwnd, out he);
 				Debug.Assert(r == SciterXDom.SCDOM_RESULT.SCDOM_OK);
 
 				if(he == IntPtr.Zero)
@@ -550,7 +558,7 @@ namespace SciterCore
 		{
 			PInvokeUtils.POINT pt = new PInvokeUtils.POINT() { X = x, Y = y };
 			IntPtr outhe;
-			var r = _api.SciterFindElement(_hwnd, pt, out outhe);
+			var r = _api.SciterFindElement(Hwnd, pt, out outhe);
 			Debug.Assert(r == SciterXDom.SCDOM_RESULT.SCDOM_OK);
 
 			if(outhe == IntPtr.Zero)
@@ -565,7 +573,7 @@ namespace SciterCore
 		public SciterElement ElementByUID(uint uid)
 		{
 			IntPtr he;
-			var r = _api.SciterGetElementByUID(_hwnd, uid, out he);
+			var r = _api.SciterGetElementByUID(Hwnd, uid, out he);
 			Debug.Assert(r == SciterXDom.SCDOM_RESULT.SCDOM_OK);
 
 			if(he != IntPtr.Zero)
@@ -575,14 +583,14 @@ namespace SciterCore
 
 		public uint GetMinWidth()
 		{
-			Debug.Assert(_hwnd != IntPtr.Zero);
-			return _api.SciterGetMinWidth(_hwnd);
+			Debug.Assert(Hwnd != IntPtr.Zero);
+			return _api.SciterGetMinWidth(Hwnd);
 		}
 
 		public uint GetMinHeight(uint for_width)
 		{
-			Debug.Assert(_hwnd != IntPtr.Zero);
-			return _api.SciterGetMinHeight(_hwnd, for_width);
+			Debug.Assert(Hwnd != IntPtr.Zero);
+			return _api.SciterGetMinHeight(Hwnd, for_width);
 		}
 
 		/// <summary>
@@ -590,26 +598,26 @@ namespace SciterCore
 		/// </summary>
 		public bool UpdateWindow()
 		{
-			return _api.SciterUpdateWindow(_hwnd);
+			return _api.SciterUpdateWindow(Hwnd);
 		}
 
 		public SciterValue CallFunction(string name, params SciterValue[] args)
 		{
-			Debug.Assert(_hwnd != IntPtr.Zero, "Create the window first");
+			Debug.Assert(Hwnd != IntPtr.Zero, "Create the window first");
 			Debug.Assert(name != null);
 
 			Interop.SciterValue.VALUE vret = new Interop.SciterValue.VALUE();
-			_api.SciterCall(_hwnd, name, (uint)args.Length, SciterValue.ToVALUEArray(args), out vret);
+			_api.SciterCall(Hwnd, name, (uint)args.Length, SciterValue.ToVALUEArray(args), out vret);
 			return new SciterValue(vret);
 		}
 
 		public SciterValue EvalScript(string script)
 		{
-			Debug.Assert(_hwnd != IntPtr.Zero, "Create the window first");
+			Debug.Assert(Hwnd != IntPtr.Zero, "Create the window first");
 			Debug.Assert(script != null);
 
 			Interop.SciterValue.VALUE vret = new Interop.SciterValue.VALUE();
-			_api.SciterEval(_hwnd, script, (uint)script.Length, out vret);
+			_api.SciterEval(Hwnd, script, (uint)script.Length, out vret);
 			return new SciterValue(vret);
 		}
 
@@ -621,7 +629,7 @@ namespace SciterCore
 		/// </summary>
 		public bool SetMediaType(string mediaType)
 		{
-			return _api.SciterSetMediaType(_hwnd, mediaType);
+			return _api.SciterSetMediaType(Hwnd, mediaType);
 		}
 
 		/// <summary>
@@ -633,14 +641,14 @@ namespace SciterCore
 		public bool SetMediaVars(SciterValue mediaVars)
 		{
 			Interop.SciterValue.VALUE v = mediaVars.ToVALUE();
-			return _api.SciterSetMediaVars(_hwnd, ref v);
+			return _api.SciterSetMediaVars(Hwnd, ref v);
 		}
 
 #if WINDOWS || NETCORE
 		private IntPtr InternalProcessSciterWindowMessage(IntPtr hwnd, uint msg, IntPtr wParam, IntPtr lParam, IntPtr pParam, ref bool handled)
 		{
 			Debug.Assert(pParam.ToInt32() == 0);
-			Debug.Assert(_hwnd.ToInt32() == 0 || hwnd == _hwnd);
+			Debug.Assert(Hwnd.ToInt32() == 0 || hwnd == Hwnd);
 
 			IntPtr lResult = IntPtr.Zero;
 			handled = ProcessWindowMessage(hwnd, msg, wParam, lParam, ref lResult);
@@ -650,15 +658,6 @@ namespace SciterCore
 		protected virtual bool ProcessWindowMessage(IntPtr hwnd, uint msg, IntPtr wParam, IntPtr lParam, ref IntPtr lResult)// overrisable
 		{
 			return false;
-		}
-
-
-		public IntPtr Handle
-		{
-			get
-			{
-				return _hwnd;
-			}
 		}
 #endif
 	}

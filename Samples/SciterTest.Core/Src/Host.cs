@@ -1,10 +1,6 @@
 using SciterCore;
 using SciterCore.Interop;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Diagnostics;
 using System.IO;
 using SciterValue = SciterCore.SciterValue;
@@ -15,7 +11,7 @@ namespace SciterTest.Core
 	{
 	}
 
-	class HostEvh : SciterEventHandler
+	class HostEventHandler : SciterEventHandler
 	{
 		public bool Host_HelloWorld(SciterElement el, SciterValue[] args, out SciterValue result)
 		{
@@ -65,7 +61,7 @@ namespace SciterTest.Core
 			string url = "archive://app/" + page_from_res_folder;
 		#endif
 
-			_wnd.LoadPage(fileName: url);
+			_wnd.LoadPage(url: url);
 		}
 
 		protected override SciterXDef.LoadResult OnLoadData(SciterXDef.SCN_LOAD_DATA sld)
@@ -76,7 +72,7 @@ namespace SciterTest.Core
 				string path = sld.uri.Substring(14);
 				byte[] data = _archive.Get(path);
 				if(data!=null)
-					_api.SciterDataReady(_wnd._hwnd, sld.uri, data, (uint) data.Length);
+					_api.SciterDataReady(_wnd.Hwnd, sld.uri, data, (uint) data.Length);
 			}
 			return base.OnLoadData(sld);
 		}

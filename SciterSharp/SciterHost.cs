@@ -48,9 +48,8 @@ namespace SciterCore
 
 		static SciterHost()
 		{
-			_arch = new SciterArchive();
-
-			_arch.Open<SciterHost>("LibConsole"/*ArchiveResource.resources*/);
+			_arch = new SciterArchive()
+                .Open("LibConsole");
 
 			if(InjectLibConsole)
 			{
@@ -69,16 +68,16 @@ namespace SciterCore
 
 		public SciterHost(SciterWindow window)
 		{
-			SetupWindow(window._hwnd);
+			SetupWindow(window.Hwnd);
 		}
 
 		public SciterHost SetupWindow(SciterWindow window)
 		{
 			Debug.Assert(window != null);
-			Debug.Assert(window._hwnd != IntPtr.Zero);
+			Debug.Assert(window.Hwnd != IntPtr.Zero);
 			Debug.Assert(_hwnd == IntPtr.Zero, "You already called SetupWindow()");
 
-			return SetupWindow(window._hwnd);
+			return SetupWindow(window.Hwnd);
 		}
 
 		public SciterHost SetupWindow(IntPtr hwnd)

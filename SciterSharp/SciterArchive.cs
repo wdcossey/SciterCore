@@ -16,14 +16,12 @@
 // along with SciterSharp.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 using SciterCore.Interop;
+using System.Linq;
+using System.Reflection;
 
 namespace SciterCore
 {
@@ -33,35 +31,48 @@ namespace SciterCore
 		private IntPtr _har;
 		private GCHandle _pinnedArray;
 
-        public void Open<T>(string resourceName)
+        public SciterArchive Open(string resourceName)
         {
-			OpenAsync<T>(resourceName: resourceName).Wait();
-        }
+			return OpenAsync(resourceName: resourceName).GetAwaiter().GetResult();
+		}
 
-		public async Task OpenAsync<T>(string resourceName)
+		public SciterArchive Open(Assembly assembly, string resourceName)
 		{
-			if(_har != IntPtr.Zero)
+			return OpenAsync(assembly: assembly, resourceName: resourceName).GetAwaiter().GetResult();
+		}
+
+		public Task<SciterArchive> OpenAsync(string resourceName, StringComparison comparisonType = StringComparison.OrdinalIgnoreCase)
+		{
+			var assembly = Assembly.GetEntryAssembly();
+			if (!assembly.GetManifestResourceNames().Any(a => a.Equals(resourceName, comparisonType: comparisonType)))
+            {
+				assembly = Assembly.GetExecutingAssembly();
+			}
+
+			return OpenAsync(assembly: assembly, resourceName: resourceName);
+		}
+
+		public async Task<SciterArchive> OpenAsync(Assembly assembly, string resourceName)
+		{
+			if (_har != IntPtr.Zero)
 				throw new Exception("Archive already open.");
 
-			var assembly = typeof(T).Assembly;
-
-            
 			using (var stream = assembly.GetManifestResourceStream(resourceName))
 			{
 				if (stream == null)
 				{
 					throw new InvalidOperationException("Could not load manifest resource stream.");
 				}
-				
+
 				byte[] buffer = new byte[stream.Length];
 
 				await stream.ReadAsync(buffer, 0, buffer.Length);
 
-				Open(buffer);
+				return Open(buffer);
 			}
 		}
 		
-		public void Open(byte[] res_array)
+		public SciterArchive Open(byte[] res_array)
 		{
 			if(_har != IntPtr.Zero)
 				throw new Exception("Archive already open.");
@@ -69,6 +80,8 @@ namespace SciterCore
 			_pinnedArray = GCHandle.Alloc(res_array, GCHandleType.Pinned);
 			_har = _api.SciterOpenArchive(_pinnedArray.AddrOfPinnedObject(), (uint) res_array.Length);
 			Debug.Assert(_har != IntPtr.Zero);
+
+			return this;
 		}
 
 		public void Close()

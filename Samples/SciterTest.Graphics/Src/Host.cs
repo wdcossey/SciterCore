@@ -68,7 +68,7 @@ namespace SciterTest.Graphics
 			string url = "archive://app/" + page_from_res_folder;
 		#endif
 
-			_wnd.LoadPage(fileName: url);
+			_wnd.LoadPage(url: url);
 		}
 
 		protected override SciterXDef.LoadResult OnLoadData(SciterXDef.SCN_LOAD_DATA sld)
