@@ -68,16 +68,16 @@ namespace SciterCore
 
 		public SciterHost(SciterWindow window)
 		{
-			SetupWindow(window.Hwnd);
+			SetupWindow(window.Handle);
 		}
 
 		public SciterHost SetupWindow(SciterWindow window)
 		{
 			Debug.Assert(window != null);
-			Debug.Assert(window.Hwnd != IntPtr.Zero);
+			Debug.Assert(window.Handle != IntPtr.Zero);
 			Debug.Assert(_hwnd == IntPtr.Zero, "You already called SetupWindow()");
 
-			return SetupWindow(window.Hwnd);
+			return SetupWindow(window.Handle);
 		}
 
 		public SciterHost SetupWindow(IntPtr hwnd)

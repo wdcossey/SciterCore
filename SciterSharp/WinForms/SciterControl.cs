@@ -58,10 +58,10 @@ namespace SciterCore.WinForms
 
 		protected override void OnClientSizeChanged(EventArgs e)
 		{
-			if(SciterWnd._hwnd.ToInt32()!=0)
+			if(SciterWnd.Handle.ToInt32()!=0)
 			{
 				var sz = this.Size;
-				PInvokeWindows.MoveWindow(SciterWnd._hwnd, 0, 0, sz.Width, sz.Height, true);
+				PInvokeWindows.MoveWindow(SciterWnd.Handle, 0, 0, sz.Width, sz.Height, true);
 			}
 			base.OnClientSizeChanged(e);
 		}

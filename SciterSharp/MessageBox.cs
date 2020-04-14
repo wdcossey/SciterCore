@@ -34,7 +34,7 @@ namespace SciterCore
 		/// <param name="caption"></param>
 		public static void ShowMessageBox(this SciterWindow window, string text, string caption = null)
 		{
-			Show(owner: window.Hwnd, text: text, caption: caption ?? window.Title);
+			Show(owner: window.Handle, text: text, caption: caption ?? window.Title);
 		}
 	}
 }

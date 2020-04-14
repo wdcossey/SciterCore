@@ -93,7 +93,7 @@ namespace SciterTest.Gtk
 				string path = sld.uri.Substring(14);
 				byte[] data = _archive.Get(path);
 				if(data!=null)
-					_api.SciterDataReady(_window.Hwnd, sld.uri, data, (uint) data.Length);
+					_api.SciterDataReady(_window.Handle, sld.uri, data, (uint) data.Length);
 			}
 
 			// call base to ensure LibConsole is loaded

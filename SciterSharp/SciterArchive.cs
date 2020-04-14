@@ -44,7 +44,7 @@ namespace SciterCore
 		public Task<SciterArchive> OpenAsync(string resourceName, StringComparison comparisonType = StringComparison.OrdinalIgnoreCase)
 		{
 			var assembly = Assembly.GetEntryAssembly();
-			if (!assembly.GetManifestResourceNames().Any(a => a.Equals(resourceName, comparisonType: comparisonType)))
+			if (assembly?.GetManifestResourceNames().Any(a => a.Equals(resourceName, comparisonType: comparisonType)) != true)
             {
 				assembly = Assembly.GetExecutingAssembly();
 			}

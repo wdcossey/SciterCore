@@ -8,7 +8,10 @@
         mc:Ignorable="d"
         WindowStyle="SingleBorderWindow"
         Title="MainWindow" Height="450" Width="800">
+    
     <Grid >
-        <local:SciterControl ></local:SciterControl>
+        <local:SciterControl Source="/res/index.html">
+            
+        </local:SciterControl>
     </Grid>
 </Window>

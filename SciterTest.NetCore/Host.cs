@@ -94,7 +94,7 @@ namespace SciterTest.NetCore
 				string path = sld.uri.Substring(14);
 				byte[] data = _archive.Get(path);
 				if(data!=null)
-					_api.SciterDataReady(_wnd._hwnd, sld.uri, data, (uint) data.Length);
+					_api.SciterDataReady(_wnd.Handle, sld.uri, data, (uint) data.Length);
 			}
 
 			// call base to ensure LibConsole is loaded
