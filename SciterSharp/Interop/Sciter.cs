@@ -406,7 +406,7 @@ namespace SciterCore.Interop
 			public delegate IntPtr SCITER_PROC_ND(IntPtr hwnd, uint msg, IntPtr wParam, IntPtr lParam, ref bool pbHandled);
 #endif
 			// BOOL	function(HWINDOW hWndSciter, LPCWSTR filename) SciterLoadFile;
-			public delegate bool SCITER_LOAD_FILE(IntPtr hwnd, [MarshalAs(UnmanagedType.LPWStr)]string filename);
+			public delegate bool SCITER_LOAD_FILE(IntPtr hwnd, [MarshalAs(UnmanagedType.LPWStr)] string filename);
 			// BOOL function(HWINDOW hWndSciter, LPCBYTE html, UINT htmlSize, LPCWSTR baseUrl) SciterLoadHtml;
 			public delegate bool SCITER_LOAD_HTML(IntPtr hwnd, byte[] html, uint htmlSize, string baseUrl);
 			// VOID	function(HWINDOW hWndSciter, LPSciterHostCallback cb, LPVOID cbParam) SciterSetCallback;

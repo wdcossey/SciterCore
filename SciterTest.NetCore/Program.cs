@@ -49,6 +49,7 @@ namespace SciterTest.NetCore
                 .UseConsoleLifetime()
                 .Build();
  
+
             await host.RunAsync();
 
         }

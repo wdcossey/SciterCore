@@ -28,8 +28,25 @@ namespace SciterCore
 	public class SciterArchive
 	{
 		private static Sciter.SciterApi _api = Sciter.Api;
-		private IntPtr _har;
+		private IntPtr _handle;
 		private GCHandle _pinnedArray;
+
+		private const string DEFAULT_URI = "archive://app/";
+		private  Uri DEFAULT_URI_URI = new Uri(DEFAULT_URI);
+
+		public Uri Uri { get; private set; }
+
+		public bool IsOpen => _handle != IntPtr.Zero;
+
+		public SciterArchive(string uri = DEFAULT_URI)
+		{
+			this.Uri = new Uri($"{uri}", UriKind.Absolute);
+		}
+		
+		public SciterArchive(Uri baseUri)
+		{
+			this.Uri = baseUri;
+		}
 
         public SciterArchive Open(string resourceName)
         {
@@ -54,8 +71,7 @@ namespace SciterCore
 
 		public async Task<SciterArchive> OpenAsync(Assembly assembly, string resourceName)
 		{
-			if (_har != IntPtr.Zero)
-				throw new Exception("Archive already open.");
+			ArchiveAlreadyOpened();
 
 			using (var stream = assembly.GetManifestResourceStream(resourceName))
 			{
@@ -74,41 +90,57 @@ namespace SciterCore
 		
 		public SciterArchive Open(byte[] res_array)
 		{
-			if(_har != IntPtr.Zero)
-				throw new Exception("Archive already open.");
+			ArchiveAlreadyOpened();
 
 			_pinnedArray = GCHandle.Alloc(res_array, GCHandleType.Pinned);
-			_har = _api.SciterOpenArchive(_pinnedArray.AddrOfPinnedObject(), (uint) res_array.Length);
-			Debug.Assert(_har != IntPtr.Zero);
+			_handle = _api.SciterOpenArchive(_pinnedArray.AddrOfPinnedObject(), (uint) res_array.Length);
+			Debug.Assert(_handle != IntPtr.Zero);
 
 			return this;
 		}
 
 		public void Close()
 		{
-			if(_har == IntPtr.Zero)
-				throw new Exception("You haven't yet opened this archive.");
+			ArchiveNotOpened();
 			
-			_api.SciterCloseArchive(_har);
-			_har = IntPtr.Zero;
+			_api.SciterCloseArchive(_handle);
+			_handle = IntPtr.Zero;
 			_pinnedArray.Free();
 		}
 
 		public byte[] Get(string path)
 		{
-			if(_har == IntPtr.Zero)
-				throw new Exception("You haven't yet opened this archive.");
+			ArchiveNotOpened();
 
-			IntPtr data_ptr;
-			uint data_count;
+			bool found = _api.SciterGetArchiveItem(_handle, path, out var dataPtr, out var dataLenth);
 
-			bool found = _api.SciterGetArchiveItem(_har, path, out data_ptr, out data_count);
-			if(found == false)
+			if(!found)
+			{
 				return null;
+			}
 
-			byte[] res = new byte[data_count];
-			Marshal.Copy(data_ptr, res, 0, (int) data_count);
+			byte[] res = new byte[dataLenth];
+			Marshal.Copy(dataPtr, res, 0, (int) dataLenth);
 			return res;
 		}
-	}
+
+#region Private
+
+		private void ArchiveNotOpened()
+		{
+			if(_handle == IntPtr.Zero)
+			{
+				throw new Exception("You haven't yet opened this archive.");
+			}
+		}
+		
+		private void ArchiveAlreadyOpened()
+		{
+			if(_handle != IntPtr.Zero)
+			{
+				throw new Exception("Archive already open.");
+			}
+		}
+#endregion
+    }
 }

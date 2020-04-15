@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Drawing;
-using SciterCore;
+﻿using SciterCore;
 using SciterCore.Interop;
 using SciterGraphics = SciterCore.SciterGraphics;
 
 namespace SciterTest.Graphics
 {
+
 	class DrawTextBehavior : SciterEventHandler
 	{
 		protected override bool OnDraw(SciterElement se, SciterBehaviors.DRAW_PARAMS prms)

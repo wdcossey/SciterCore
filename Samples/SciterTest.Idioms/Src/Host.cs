@@ -8,17 +8,24 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using System.IO;
 using SciterValue = SciterCore.SciterValue;
+using System.Reflection;
 
 namespace SciterTest.Idioms
 {
 	class Host : BaseHost
 	{
+		public Host(SciterWindow window)
+			: base(window: window)
+		{
+
+		}
+
 		// Things to do here:
 		// -override OnLoadData() to customize or track resource loading
 		// -override OnPostedNotification() to handle notifications generated with SciterHost.PostNotification()
 	}
 
-	class HostEvh : SciterEventHandler
+	class HostEventHandler : SciterEventHandler
 	{
 		protected override bool OnScriptCall(SciterElement se, string name, SciterValue[] args, out SciterValue result)
 		{
@@ -43,45 +50,44 @@ namespace SciterTest.Idioms
 	{
 		protected static Sciter.SciterApi _api = Sciter.Api;
 		protected SciterArchive _archive = new SciterArchive();
-		protected SciterWindow _wnd;
+		protected SciterWindow _window;
 
-		public BaseHost()
+		public BaseHost(SciterWindow window)
+			: base(window: window)
 		{
-		#if !DEBUG
-			_archive.Open(SciterAppResource.ArchiveResource.resources);
-		#endif
+			_window = window;
+
+#if !DEBUG
+			_archive.Open($"{this.GetType().Namespace}.SiteResource.bin");
+#endif
 		}
 
-		public void Setup(SciterWindow wnd)
+		public void SetupPage(string page)
 		{
-			_wnd = wnd;
-			SetupWindow(wnd);
-		}
+#if DEBUG
+			string location = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
-		public void SetupPage(string page_from_res_folder)
-		{
-		#if DEBUG
-			string path = Environment.CurrentDirectory + "/../../res/" + page_from_res_folder;
+			location += "\\..\\..";
+
+			string path = Path.Combine(location, "res", page);
 			Debug.Assert(File.Exists(path));
-            path = path.Replace('\\', '/');
 
-			string url = "file:///" + path;
-		#else
-			string url = "archive://app/" + page_from_res_folder;
-		#endif
-
-			_wnd.LoadPage(url: url);
+			Uri uri = new Uri(path, UriKind.Absolute);
+#else
+			Uri uri = new Uri(baseUri: _archive.Uri, page);
+#endif
+			_window.LoadPage(uri: uri);
 		}
 
 		protected override SciterXDef.LoadResult OnLoadData(SciterXDef.SCN_LOAD_DATA sld)
 		{
-			if(sld.uri.StartsWith("archive://app/"))
+			if(_archive?.IsOpen == true && sld.uri.StartsWith(_archive.Uri.GetLeftPart(UriPartial.Path)))
 			{
 				// load resource from SciterArchive
-				string path = sld.uri.Substring(14);
-				byte[] data = _archive.Get(path);
+				var uri = new Uri(sld.uri);
+				byte[] data = _archive.Get(uri.GetComponents(UriComponents.Path, UriFormat.SafeUnescaped));
 				if(data!=null)
-					_api.SciterDataReady(_wnd.Handle, sld.uri, data, (uint) data.Length);
+					_api.SciterDataReady(_window.Handle, sld.uri, data, (uint) data.Length);
 			}
 			return base.OnLoadData(sld);
         }

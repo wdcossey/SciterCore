@@ -380,9 +380,9 @@ namespace SciterCore
 		/// Loads the page resource from the given URL or file path
 		/// </summary>
 		/// <param name="url">URL or file path of the page</param>
-		public SciterWindow LoadPage(string url)
+		public SciterWindow LoadPage(Uri uri)
 		{
-			return LoadPage(url: url, out _);
+			return LoadPage(uri: uri, out _);
 		}
 
         /// <summary>
@@ -390,9 +390,9 @@ namespace SciterCore
         /// </summary>
         /// <param name="url">URL or file path of the page</param>
         /// <param name="loadResult">Result of <see cref="Sciter.SciterApi.SciterLoadFile"/></param>
-        public SciterWindow LoadPage(string url, out bool loadResult)
+        public SciterWindow LoadPage(Uri uri, out bool loadResult)
 		{
-			loadResult = _api.SciterLoadFile(hwnd: Handle, filename: url);
+			loadResult = _api.SciterLoadFile(hwnd: Handle, filename: uri.AbsoluteUri.Replace(":///", "://"));
 			Debug.Assert(loadResult);
 			return this;
 		}

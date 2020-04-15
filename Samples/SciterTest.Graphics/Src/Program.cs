@@ -23,25 +23,26 @@ namespace SciterTest.Graphics
 			Console.WriteLine("Sciter: " + Sciter.Version());
 
 			// Create the window
-			var wnd = new SciterWindow();
-			wnd.CreateMainWindow(1500, 800);
-			wnd.CenterTopLevelWindow();
-			wnd.Title = "Sciter Bootstrap";
+			var window = new SciterWindow()
+				.CreateMainWindow(1500, 800)
+				.CenterTopLevelWindow()
+				.SetTitle("Sciter Bootstrap");
 #if WINDOWS
-			wnd.Icon = Properties.Resources.IconMain;
+			window.SetIcon(Properties.Resources.IconMain);
 #endif
 
 			// Prepares SciterHost and then load the page
-			var host = new Host();
-			host.SetupWindow(wnd);
-			host.RegisterBehaviorHandler(typeof(DrawBitmapBehavior), "DrawBitmap");
-			host.RegisterBehaviorHandler(typeof(DrawTextBehavior), "DrawText");
-			host.RegisterBehaviorHandler(typeof(DrawGeometryBehavior), "DrawGeometry");
-			host.AttachEventHandler(new HostEvh());
+			var host = new Host(window: window);
+
+			host.RegisterBehaviorHandler(typeof(DrawBitmapBehavior), "DrawBitmap")
+				.RegisterBehaviorHandler(typeof(DrawTextBehavior), "DrawText")
+				.RegisterBehaviorHandler(typeof(DrawGeometryBehavior), "DrawGeometry")
+				.AttachEventHandler(new HostEventHandler());
+
 			host.SetupPage("index.html");
 
 			// Show window and Run message loop
-			wnd.Show();
+			window.Show();
 			PInvokeUtils.RunMsgLoop();
 
 			GC.Collect();

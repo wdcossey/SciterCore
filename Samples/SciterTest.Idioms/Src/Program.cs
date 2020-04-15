@@ -19,20 +19,19 @@ namespace SciterTest.Idioms
 			Debug.Assert(oleres == 0);
 			
 			// Create the window
-			var wnd = new SciterWindow();
-			wnd.CreateMainWindow(1500, 800);
-			wnd.CenterTopLevelWindow();
-			wnd.Title = "SciterTest.Idioms";
-			wnd.Icon = Properties.Resources.IconMain;
+			var window = new SciterWindow()
+				.CreateMainWindow(1500, 800)
+				.CenterTopLevelWindow()
+				.SetTitle("SciterTest.Idioms")
+				.SetIcon(Properties.Resources.IconMain);
 
 			// Prepares SciterHost and then load the page
-			var host = new Host();
-			host.Setup(wnd);
-			host.AttachEventHandler(new HostEvh());
+			var host = new Host(window: window);
+			host.AttachEventHandler(new HostEventHandler());
 			host.SetupPage("index.html");
 
 			// Show window and Run message loop
-			wnd.Show();
+			window.Show();
 			PInvokeUtils.RunMsgLoop();
 		}
 	}

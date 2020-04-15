@@ -81,20 +81,26 @@ namespace SciterTest.Wpf
         {
             //SciterWnd = new SciterWindow(hwndParent.Handle);
             //SciterWnd.CreateChildWindow(hwndParent.Handle, SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_CHILD | SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_RESIZEABLE | SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_ALPHA);
-            //SciterWnd.LoadHtml(/*loadHtmlEventArgs?.Html ?? this.Html ??*/ DefaultHtml);
+            ////SciterWnd.LoadHtml(/*loadHtmlEventArgs?.Html ?? this.Html ??*/ DefaultHtml);
             ////SciterWnd.Show();
 
-            //return new HandleRef(this, SciterWnd.Handle);
+            //var result = new HandleRef(this, SciterWnd.Handle);
+
+            //_hwnd = result.Handle;
+
+            //OnSourceChanged(this, new DependencyPropertyChangedEventArgs(SourceProperty, null, Source));
+
+            //return result;
 
             string wndclass = Marshal.PtrToStringUni(Sciter.Api.SciterClassName());
             var child = PInvokeWindows.CreateWindowEx(
-                (int)(PInvokeWindows.WindowStyles.WS_EX_TRANSPARENT), 
+                (int)(PInvokeWindows.WindowStyles.WS_EX_TRANSPARENT),
                 wndclass,
-                null, 
-                (int)(PInvokeWindows.WindowStyles.WS_CHILD), 
-                (int)VisualOffset.X, 
-                (int)VisualOffset.Y, 
-                (int)ActualWidth, 
+                null,
+                (int)(PInvokeWindows.WindowStyles.WS_CHILD),
+                (int)VisualOffset.X,
+                (int)VisualOffset.Y,
+                (int)ActualWidth,
                 (int)ActualHeight,
                 hwndParent.Handle, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero);
 
@@ -103,7 +109,7 @@ namespace SciterTest.Wpf
             //Sciter.Api.SciterLoadHtml(child, bytes, (uint)bytes.Length, null);
 
             var result = new HandleRef(this, child);
-            
+
             _hwnd = result.Handle;
 
             OnSourceChanged(this, new DependencyPropertyChangedEventArgs(SourceProperty, null, Source));

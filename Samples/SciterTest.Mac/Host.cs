@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using SciterCore;
@@ -26,18 +27,19 @@ namespace SciterTest.Mac
                 .AttachEventHandler(new HostEventHandler());
 			
 #if DEBUG
-			var path = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+			string location = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
+			location += "\\..\\..\\..\\..\\..";
 
-			path = Path.Combine(path, "../../../../..", "res/index.html");
-			
-			
-			string url = $"file:///{path}";
+			string path = Path.Combine(location, "res", "index.html");
+			Debug.Assert(File.Exists(path));
+
+			Uri uri = new Uri(path, UriKind.Absolute);
 #else
-			string url = "file:///Users/midiway/Documents/SciterSharp/Tests/SciterTest.Mac/res/index.html";
+			Uri uri = new Uri("file:///Users/midiway/Documents/SciterSharp/Tests/SciterTest.Mac/res/index.html", UriKind.Absolute);
 #endif
-			
-			window.LoadPage(url: url)
+
+			window.LoadPage(uri: uri)
                 .CenterTopLevelWindow()
                 .Show();
 		}

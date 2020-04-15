@@ -39,7 +39,7 @@ namespace SciterTest.WinForms
 	{
 		protected static Sciter.SciterApi _api = Sciter.Api;
 		protected SciterArchive _archive = new SciterArchive();
-		protected SciterWindow _wnd;
+		protected SciterWindow _window;
 
 		public BaseHost()
 		{
@@ -48,36 +48,39 @@ namespace SciterTest.WinForms
 		#endif
 		}
 
-		public void Setup(SciterWindow wnd)
+		public void Setup(SciterWindow window)
 		{
-			_wnd = wnd;
-			SetupWindow(wnd);
+			_window = window;
+			SetupWindow(window);
 		}
 
-		public void SetupPage(string page_from_res_folder)
+		public void SetupPage(string page)
 		{
-		#if DEBUG
-			string path = Environment.CurrentDirectory + "/../../res/" + page_from_res_folder;
+#if !DEBUG
+			string location = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
+			location += "\\..\\..";
+
+			string path = Path.Combine(location, "res", page);
 			Debug.Assert(File.Exists(path));
-            path = path.Replace('\\', '/');
 
-			string url = "file:///" + path;
-		#else
-			string url = "archive://app/" + page_from_res_folder;
-		#endif
+			Uri uri = new Uri(path, UriKind.Absolute);
+#else
+			Uri uri = new Uri(baseUri: _archive.Uri, page);
+#endif
 
-			_wnd.LoadPage(url: url);
+			_window.LoadPage(uri: uri);
 		}
 
 		protected override SciterXDef.LoadResult OnLoadData(SciterXDef.SCN_LOAD_DATA sld)
 		{
-			if(sld.uri.StartsWith("archive://app/"))
+			if(_archive?.IsOpen == true && sld.uri.StartsWith(_archive.Uri.GetLeftPart(UriPartial.Path)))
 			{
 				// load resource from SciterArchive
-				string path = sld.uri.Substring(14);
-				byte[] data = _archive.Get(path);
+				var uri = new Uri(sld.uri);
+				byte[] data = _archive.Get(uri.GetComponents(UriComponents.Path, UriFormat.SafeUnescaped));
 				if(data!=null)
-					_api.SciterDataReady(_wnd.Handle, sld.uri, data, (uint) data.Length);
+					_api.SciterDataReady(_window.Handle, sld.uri, data, (uint) data.Length);
 			}
 			return base.OnLoadData(sld);
         }

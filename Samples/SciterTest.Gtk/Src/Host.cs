@@ -47,44 +47,43 @@ namespace SciterTest.Gtk
 	class BaseArchiveHost : SciterHost
 	{
 		protected static Sciter.SciterApi _api = Sciter.Api;
-		protected SciterArchive _archive;
+		protected SciterArchive _archive = new SciterArchive();
 		protected SciterWindow _window;
 
 		public BaseArchiveHost(SciterWindow window, string archiveName)
             : base(window: window)
 		{
 			_window = window;
-			SetupWindow(window);
 #if !DEBUG
-			_archive = new SciterArchive().Open(archiveName);
+			_archive.Open(archiveName);
 #endif
 		}
 
 		public void SetupPage(string page)
 		{
 #if DEBUG
-			string cwd = Path.GetDirectoryName( Assembly.GetExecutingAssembly().Location ).Replace('\\', '/');
+			string location = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
 #if OSX
-			Environment.CurrentDirectory = cwd + "/../../../../..";
+			location += "\\..\\..\\..\\..\\..";
 #else
-			Environment.CurrentDirectory = cwd + "/../..";
+			location += "\\..\\..";
 #endif
 
-			string path = Environment.CurrentDirectory + "/res/" + page;
+			string path = Path.Combine(location, "res", page);
 			Debug.Assert(File.Exists(path));
 
-			string url = "file://" + path;
+			Uri uri = new Uri(path, UriKind.Absolute);
 #else
-		    string url = "archive://app/" + page_from_res_folder;
+			Uri uri = new Uri(baseUri: _archive.Uri, page);
 #endif
 
-			_window.LoadPage(url: url);
+			_window.LoadPage(uri: uri);
 		}
 
 		protected override SciterXDef.LoadResult OnLoadData(SciterXDef.SCN_LOAD_DATA sld)
 		{
-			if(sld.uri.StartsWith("archive://app/"))
+			if(sld.uri.StartsWith(_archive.Uri.AbsoluteUri))
 			{
 				// load resource from SciterArchive
 				string path = sld.uri.Substring(14);

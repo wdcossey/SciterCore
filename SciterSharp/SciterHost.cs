@@ -300,8 +300,12 @@ namespace SciterCore
 		{
 			if (!typeof(SciterEventHandler).IsAssignableFrom(eventHandlerType) || typeof(SciterEventHandler) == eventHandlerType)
 				throw new Exception("The 'eventHandlerType' type must extend SciterEventHandler");
+
 			if(behaviorName == null)
+			{
 				behaviorName = eventHandlerType.Name;
+			}
+
 			_behaviorMap[behaviorName] = eventHandlerType;
 
 			return this;
@@ -340,16 +344,16 @@ namespace SciterCore
 
 			switch(scn.code)
 			{
-				case SciterXDef.SC_LOAD_DATA:
+				case SciterXDef.SCITER_CALLBACK_CODE.SC_LOAD_DATA:
 					SciterXDef.SCN_LOAD_DATA sld = (SciterXDef.SCN_LOAD_DATA)Marshal.PtrToStructure(ptrNotification, typeof(SciterXDef.SCN_LOAD_DATA));
 					return (uint)OnLoadData(sld);
 
-				case SciterXDef.SC_DATA_LOADED:
+				case SciterXDef.SCITER_CALLBACK_CODE.SC_DATA_LOADED:
 					SciterXDef.SCN_DATA_LOADED sdl = (SciterXDef.SCN_DATA_LOADED)Marshal.PtrToStructure(ptrNotification, typeof(SciterXDef.SCN_DATA_LOADED));
 					OnDataLoaded(sdl);
 					return 0;
 
-				case SciterXDef.SC_ATTACH_BEHAVIOR:
+				case SciterXDef.SCITER_CALLBACK_CODE.SC_ATTACH_BEHAVIOR:
 					SciterXDef.SCN_ATTACH_BEHAVIOR sab = (SciterXDef.SCN_ATTACH_BEHAVIOR)Marshal.PtrToStructure(ptrNotification, typeof(SciterXDef.SCN_ATTACH_BEHAVIOR));
 					SciterEventHandler elementEvh;
 					bool res = OnAttachBehavior(new SciterElement(sab.elem), Marshal.PtrToStringAnsi(sab.behaviorName), out elementEvh);
@@ -366,7 +370,7 @@ namespace SciterCore
 					}
 					return 0;
 
-				case SciterXDef.SC_ENGINE_DESTROYED:
+				case SciterXDef.SCITER_CALLBACK_CODE.SC_ENGINE_DESTROYED:
 					if(_window_evh != null)
 					{
 						_api.SciterWindowDetachEventHandler(WindowHandle, _window_evh._proc, IntPtr.Zero);
@@ -376,7 +380,7 @@ namespace SciterCore
 					OnEngineDestroyed();
 					return 0;
 
-				case SciterXDef.SC_POSTED_NOTIFICATION:
+				case SciterXDef.SCITER_CALLBACK_CODE.SC_POSTED_NOTIFICATION:
 					SciterXDef.SCN_POSTED_NOTIFICATION spn = (SciterXDef.SCN_POSTED_NOTIFICATION)Marshal.PtrToStructure(ptrNotification, typeof(SciterXDef.SCN_POSTED_NOTIFICATION));
 					IntPtr lreturn = IntPtr.Zero;
 					if(spn.wparam.ToInt32() == INVOKE_NOTIFICATION)
@@ -395,7 +399,7 @@ namespace SciterCore
 					Marshal.WriteIntPtr(ptrNotification, OFFSET_LRESULT.ToInt32(), lreturn);
 					return 0;
 
-				case SciterXDef.SC_GRAPHICS_CRITICAL_FAILURE:
+				case SciterXDef.SCITER_CALLBACK_CODE.SC_GRAPHICS_CRITICAL_FAILURE:
 					SciterXDef.SCN_GRAPHICS_CRITICAL_FAILURE cgf = (SciterXDef.SCN_GRAPHICS_CRITICAL_FAILURE)Marshal.PtrToStructure(ptrNotification, typeof(SciterXDef.SCN_GRAPHICS_CRITICAL_FAILURE));
 					OnGraphicsCriticalFailure(cgf.hwnd);
 					return 0;

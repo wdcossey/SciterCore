@@ -3,6 +3,7 @@ using SciterCore.Interop;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using SciterValue = SciterCore.SciterValue;
 
 namespace SciterTest.Core
@@ -38,7 +39,7 @@ namespace SciterTest.Core
 
 		public BaseHost()
 		{
-#if !DEBUG
+#if !!DEBUG
 			_archive.Open("SiteResource");
 #endif
 		}
@@ -51,26 +52,29 @@ namespace SciterTest.Core
 
 		public void SetupPage(string page)
 		{
-		#if DEBUG
-			string path = Path.GetFullPath(Environment.CurrentDirectory + "/../../res/" + page);
+#if !DEBUG
+			string location = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
+			location += "\\..\\..";
+
+			string path = Path.Combine(location, "res", page);
 			Debug.Assert(File.Exists(path));
-            path = path.Replace('\\', '/');
 
-			string url = "file://" + path;
-		#else
-			string url = "archive://app/" + page;
-		#endif
+			Uri uri = new Uri(path, UriKind.Absolute);
+#else
+			Uri uri = new Uri(baseUri: _archive.Uri, page);
+#endif
 
-			_window.LoadPage(url: url);
+			_window.LoadPage(uri: uri);
 		}
 
 		protected override SciterXDef.LoadResult OnLoadData(SciterXDef.SCN_LOAD_DATA sld)
 		{
-			if(sld.uri.StartsWith("archive://app/"))
+			if(_archive?.IsOpen == true && sld.uri.StartsWith(_archive.Uri.GetLeftPart(UriPartial.Path)))
 			{
 				// load resource from SciterArchive
-				string path = sld.uri.Substring(14);
-				byte[] data = _archive.Get(path);
+				var uri = new Uri(sld.uri);
+				byte[] data = _archive.Get(uri.GetComponents(UriComponents.Path, UriFormat.SafeUnescaped));
 				if(data!=null)
 					_api.SciterDataReady(_window.Handle, sld.uri, data, (uint) data.Length);
 			}

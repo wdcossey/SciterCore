@@ -53,17 +53,26 @@ namespace SciterCore.Interop
 			LOAD_MYSELF = 3,
 		}
 
-		public const uint SC_LOAD_DATA = 0x01;
-		public const uint SC_DATA_LOADED = 0x02;
-		public const uint SC_ATTACH_BEHAVIOR = 0x04;
-		public const uint SC_ENGINE_DESTROYED = 0x05;
-		public const uint SC_POSTED_NOTIFICATION = 0x06;
-		public const uint SC_GRAPHICS_CRITICAL_FAILURE = 0x07;
+		public enum SCITER_CALLBACK_CODE : uint
+		{
+			SC_LOAD_DATA = 0x01,
+
+			SC_DATA_LOADED = 0x02,
+
+			SC_ATTACH_BEHAVIOR = 0x04,
+
+			SC_ENGINE_DESTROYED = 0x05,
+
+			SC_POSTED_NOTIFICATION = 0x06,
+
+			SC_GRAPHICS_CRITICAL_FAILURE = 0x07,
+		}
+
 
 		[StructLayout(LayoutKind.Sequential)]
 		public struct SCITER_CALLBACK_NOTIFICATION
 		{
-			public uint code;// SC_LOAD_DATA or SC_DATA_LOADED or ..
+			public SCITER_CALLBACK_CODE code;// SC_LOAD_DATA or SC_DATA_LOADED or ..
 			public IntPtr hwnd;
 		}
 
