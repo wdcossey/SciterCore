@@ -35,20 +35,26 @@ namespace SciterCore
 
 		private static Sciter.SciterApi _api = Sciter.Api;
 
-		private IntPtr _hwnd;
+		private IntPtr _windowHandle;
 		private Dictionary<string, Type> _behaviorMap = new Dictionary<string, Type>();
 		private SciterXDef.SCITER_HOST_CALLBACK _cbk;
 		private SciterEventHandler _window_evh;
 
 		public static bool InjectLibConsole = true;
 		private static List<IntPtr> _lib_console_vms = new List<IntPtr>();
-		private static SciterArchive _arch;
+		private static SciterArchive _consoleArchive;
 
 		private class DefaultEventHandler : SciterEventHandler { }
 
+        protected IntPtr WindowHandle
+        {
+			get => _windowHandle;
+		    set => _windowHandle = value;
+        }
+
 		static SciterHost()
 		{
-			_arch = new SciterArchive()
+			_consoleArchive = new SciterArchive()
                 .Open("LibConsole");
 
 			if(InjectLibConsole)
@@ -75,7 +81,7 @@ namespace SciterCore
 		{
 			Debug.Assert(window != null);
 			Debug.Assert(window.Handle != IntPtr.Zero);
-			Debug.Assert(_hwnd == IntPtr.Zero, "You already called SetupWindow()");
+			Debug.Assert(WindowHandle == IntPtr.Zero, "You already called SetupWindow()");
 
 			return SetupWindow(window.Handle);
 		}
@@ -83,9 +89,9 @@ namespace SciterCore
 		public SciterHost SetupWindow(IntPtr hwnd)
 		{
 			Debug.Assert(hwnd != IntPtr.Zero);
-			Debug.Assert(_hwnd == IntPtr.Zero, "You already called SetupWindow()");
+			Debug.Assert(WindowHandle == IntPtr.Zero, "You already called SetupWindow()");
 
-			_hwnd = hwnd;
+			WindowHandle = hwnd;
 
 			// Register a global event handler for this Sciter window
 			_cbk = HandleNotification;
@@ -105,8 +111,8 @@ namespace SciterCore
 
 		public bool EvalGlobalTISript(string script, out TIScript.tiscript_value ret)
 		{
-			Debug.Assert(_hwnd != IntPtr.Zero);
-			var vm = Sciter.Api.SciterGetVM(_hwnd);
+			Debug.Assert(WindowHandle != IntPtr.Zero);
+			var vm = Sciter.Api.SciterGetVM(WindowHandle);
 			Debug.Assert(vm != IntPtr.Zero);
 
 			var global_ns = Sciter.ScriptApi.get_global_ns(vm);
@@ -116,8 +122,8 @@ namespace SciterCore
 
 		public bool EvalGlobalTISriptValuePath(string path, out TIScript.tiscript_value ret)
 		{
-			Debug.Assert(_hwnd != IntPtr.Zero);
-			var vm = Sciter.Api.SciterGetVM(_hwnd);
+			Debug.Assert(WindowHandle != IntPtr.Zero);
+			var vm = Sciter.Api.SciterGetVM(WindowHandle);
 
 			return Sciter.ScriptApi.get_value_by_path(vm, out ret, path);
 		}
@@ -129,12 +135,12 @@ namespace SciterCore
 		/// </summary>
 		public SciterHost AttachEventHandler(SciterEventHandler evh)
 		{
-			Debug.Assert(_hwnd != IntPtr.Zero, "Call SciterHost.SetupWindow() first");
+			Debug.Assert(WindowHandle != IntPtr.Zero, "Call SciterHost.SetupWindow() first");
 			Debug.Assert(evh != null);
 			Debug.Assert(_window_evh == null, "You can attach only a single SciterEventHandler per SciterHost/window");
 			
 			_window_evh = evh;
-			_api.SciterWindowAttachEventHandler(_hwnd, evh._proc, IntPtr.Zero, (uint)SciterBehaviors.EVENT_GROUPS.HANDLE_ALL);
+			_api.SciterWindowAttachEventHandler(WindowHandle, evh._proc, IntPtr.Zero, (uint)SciterBehaviors.EVENT_GROUPS.HANDLE_ALL);
 
 			return this;
 		}
@@ -147,7 +153,7 @@ namespace SciterCore
 			Debug.Assert(_window_evh != null);
 			if(_window_evh != null)
 			{
-				_api.SciterWindowDetachEventHandler(_hwnd, _window_evh._proc, IntPtr.Zero);
+				_api.SciterWindowDetachEventHandler(WindowHandle, _window_evh._proc, IntPtr.Zero);
 				_window_evh = null;
 			}
 
@@ -156,21 +162,21 @@ namespace SciterCore
 
 		public SciterValue CallFunction(string name, params SciterValue[] args)
 		{
-			Debug.Assert(_hwnd != IntPtr.Zero, "Call SciterHost.SetupWindow() first");
+			Debug.Assert(WindowHandle != IntPtr.Zero, "Call SciterHost.SetupWindow() first");
 			Debug.Assert(name != null);
 
 			Interop.SciterValue.VALUE vret = new Interop.SciterValue.VALUE();
-			_api.SciterCall(_hwnd, name, (uint)args.Length, SciterValue.ToVALUEArray(args), out vret);
+			_api.SciterCall(WindowHandle, name, (uint)args.Length, SciterValue.ToVALUEArray(args), out vret);
 			return new SciterValue(vret);
 		}
 
 		public SciterValue EvalScript(string script)
 		{
-			Debug.Assert(_hwnd != IntPtr.Zero, "Call SciterHost.SetupWindow() first");
+			Debug.Assert(WindowHandle != IntPtr.Zero, "Call SciterHost.SetupWindow() first");
 			Debug.Assert(script != null);
 
 			Interop.SciterValue.VALUE vret = new Interop.SciterValue.VALUE();
-			_api.SciterEval(_hwnd, script, (uint)script.Length, out vret);
+			_api.SciterEval(WindowHandle, script, (uint)script.Length, out vret);
 			return new SciterValue(vret);
 		}
 
@@ -180,7 +186,7 @@ namespace SciterCore
 		/// <param name="what">The delegate which will be invoked</param>
 		public void InvokePost(Action what)
 		{
-			Debug.Assert(_hwnd != IntPtr.Zero, "Call SciterHost.SetupWindow() first");
+			Debug.Assert(WindowHandle != IntPtr.Zero, "Call SciterHost.SetupWindow() first");
 			Debug.Assert(what != null);
 
 			GCHandle handle = GCHandle.Alloc(what);
@@ -193,7 +199,7 @@ namespace SciterCore
 		/// <param name="what">The delegate which will be invoked</param>
 		public void InvokeSend(Action what, uint timeout = 3000)
 		{
-			Debug.Assert(_hwnd != IntPtr.Zero, "Call SciterHost.SetupWindow() first");
+			Debug.Assert(WindowHandle != IntPtr.Zero, "Call SciterHost.SetupWindow() first");
 			Debug.Assert(what != null);
 			Debug.Assert(timeout > 0);
 
@@ -284,8 +290,8 @@ namespace SciterCore
 		/// </param>
 		public IntPtr PostNotification(IntPtr wparam, IntPtr lparam, uint timeout = 0)
 		{
-			Debug.Assert(_hwnd != IntPtr.Zero, "Call SciterHost.SetupWindow() first");
-			return _api.SciterPostCallback(_hwnd, wparam, lparam, timeout);
+			Debug.Assert(WindowHandle != IntPtr.Zero, "Call SciterHost.SetupWindow() first");
+			return _api.SciterPostCallback(WindowHandle, wparam, lparam, timeout);
 		}
 
 
@@ -307,9 +313,9 @@ namespace SciterCore
 		{
 			get
 			{
-				Debug.Assert(_hwnd != IntPtr.Zero, "Call SciterHost.SetupWindow() first");
+				Debug.Assert(WindowHandle != IntPtr.Zero, "Call SciterHost.SetupWindow() first");
 				IntPtr heRoot;
-				_api.SciterGetRootElement(_hwnd, out heRoot);
+				_api.SciterGetRootElement(WindowHandle, out heRoot);
 				Debug.Assert(heRoot != IntPtr.Zero);
 				return new SciterElement(heRoot);
 			}
@@ -319,9 +325,9 @@ namespace SciterCore
 		{
 			get
 			{
-				Debug.Assert(_hwnd != IntPtr.Zero, "Call SciterHost.SetupWindow() first");
+				Debug.Assert(WindowHandle != IntPtr.Zero, "Call SciterHost.SetupWindow() first");
 				IntPtr heFocus;
-				_api.SciterGetRootElement(_hwnd, out heFocus);
+				_api.SciterGetRootElement(WindowHandle, out heFocus);
 				Debug.Assert(heFocus != IntPtr.Zero);
 				return new SciterElement(heFocus);
 			}
@@ -363,7 +369,7 @@ namespace SciterCore
 				case SciterXDef.SC_ENGINE_DESTROYED:
 					if(_window_evh != null)
 					{
-						_api.SciterWindowDetachEventHandler(_hwnd, _window_evh._proc, IntPtr.Zero);
+						_api.SciterWindowDetachEventHandler(WindowHandle, _window_evh._proc, IntPtr.Zero);
 						_window_evh = null;
 					}
 
@@ -404,17 +410,22 @@ namespace SciterCore
 		// Overridables
 		protected virtual SciterXDef.LoadResult OnLoadData(SciterXDef.SCN_LOAD_DATA sld)
 		{
-			Debug.Assert(_hwnd != IntPtr.Zero, "Call SciterHost.SetupWindow() first");
+			Debug.Assert(WindowHandle != IntPtr.Zero, "Call SciterHost.SetupWindow() first");
 
 			if(InjectLibConsole && sld.uri.StartsWith("scitersharp:"))
 			{
-				var data = _arch.Get(sld.uri.Substring("scitersharp:".Length));
+				var data = _consoleArchive.Get(sld.uri.Substring("scitersharp:".Length));
 				if(data != null)
-					_api.SciterDataReady(_hwnd, sld.uri, data, (uint)data.Length);
+					_api.SciterDataReady(WindowHandle, sld.uri, data, (uint)data.Length);
 			}
 			return (uint)SciterXDef.LoadResult.LOAD_OK;
 		}
-		protected virtual void OnDataLoaded(SciterXDef.SCN_DATA_LOADED sdl) { }
+
+		protected virtual void OnDataLoaded(SciterXDef.SCN_DATA_LOADED sdl)
+        {
+            //
+        }
+
 		protected virtual bool OnAttachBehavior(SciterElement el, string behaviorName, out SciterEventHandler elementEvh)
 		{
 			// returns a new SciterEventHandler if the behaviorName was registered by a previous RegisterBehaviorHandler() call
@@ -427,8 +438,20 @@ namespace SciterCore
 			elementEvh = null;
 			return false;
 		}
-		protected virtual void OnEngineDestroyed() { }
-		protected virtual IntPtr OnPostedNotification(IntPtr wparam, IntPtr lparam) { return IntPtr.Zero; }
-		protected virtual void OnGraphicsCriticalFailure(IntPtr hwnd) { }
+
+		protected virtual void OnEngineDestroyed()
+        {
+            //
+        }
+
+		protected virtual IntPtr OnPostedNotification(IntPtr wparam, IntPtr lparam)
+        {
+            return IntPtr.Zero;
+        }
+
+		protected virtual void OnGraphicsCriticalFailure(IntPtr hwnd)
+        {
+            //
+        }
 	}
 }

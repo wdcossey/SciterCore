@@ -8,12 +8,12 @@ using SciterValue = SciterCore.SciterValue;
 
 namespace SciterTest.Gtk
 {
-    class Host : BaseHost
+    class Host : BaseArchiveHost
 	{
 		public Host(SciterWindow window)
+            : base(window: window, archiveName: "SiteResource")
 		{
 			var host = this;
-			host.Setup(window);
 			host.AttachEventHandler(new HostEventHandler());
 			host.SetupPage(page: "index.html");
 			window.Show();
@@ -44,43 +44,40 @@ namespace SciterTest.Gtk
 	//
 	// - in DEBUG mode: resources loaded directly from the file system
 	// - in RELEASE mode: resources loaded from by a SciterArchive (packed binary data contained as C# code in ArchiveResource.cs)
-	class BaseHost : SciterHost
+	class BaseArchiveHost : SciterHost
 	{
 		protected static Sciter.SciterApi _api = Sciter.Api;
-		protected SciterArchive _archive = new SciterArchive();
+		protected SciterArchive _archive;
 		protected SciterWindow _window;
 
-		public BaseHost()
-		{
-		#if !DEBUG
-			_archive.Open("SiteResource");
-		#endif
-		}
-
-		public void Setup(SciterWindow window)
+		public BaseArchiveHost(SciterWindow window, string archiveName)
+            : base(window: window)
 		{
 			_window = window;
 			SetupWindow(window);
+#if !DEBUG
+			_archive = new SciterArchive().Open(archiveName);
+#endif
 		}
 
 		public void SetupPage(string page)
 		{
-		#if DEBUG
+#if DEBUG
 			string cwd = Path.GetDirectoryName( Assembly.GetExecutingAssembly().Location ).Replace('\\', '/');
 
-			#if OSX
+#if OSX
 			Environment.CurrentDirectory = cwd + "/../../../../..";
-			#else
+#else
 			Environment.CurrentDirectory = cwd + "/../..";
-			#endif
+#endif
 
 			string path = Environment.CurrentDirectory + "/res/" + page;
 			Debug.Assert(File.Exists(path));
 
 			string url = "file://" + path;
-		#else
+#else
 		    string url = "archive://app/" + page_from_res_folder;
-		#endif
+#endif
 
 			_window.LoadPage(url: url);
 		}
@@ -91,7 +88,7 @@ namespace SciterTest.Gtk
 			{
 				// load resource from SciterArchive
 				string path = sld.uri.Substring(14);
-				byte[] data = _archive.Get(path);
+                byte[] data = _archive?.Get(path);
 				if(data!=null)
 					_api.SciterDataReady(_window.Handle, sld.uri, data, (uint) data.Length);
 			}

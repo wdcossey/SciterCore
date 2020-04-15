@@ -13,7 +13,7 @@ namespace SciterTest.Core
 
 	class HostEventHandler : SciterEventHandler
 	{
-		public bool Host_HelloWorld(SciterElement el, SciterValue[] args, out SciterValue result)
+		public bool Host_HelloWorld(SciterElement element, SciterValue[] @params, out SciterValue result)
 		{
 			result = new SciterValue(argss =>
 			{
@@ -22,7 +22,7 @@ namespace SciterTest.Core
 			return true;
 		}
 
-		public bool Host_DoSomething(SciterElement el, SciterValue[] args, out SciterValue result)
+		public bool Host_DoSomething(SciterElement element, SciterValue[] @params, out SciterValue result)
 		{
 			result = null;
 			return true;
@@ -34,34 +34,34 @@ namespace SciterTest.Core
 	{
 		protected static Sciter.SciterApi _api = Sciter.Api;
 		protected SciterArchive _archive = new SciterArchive();
-		protected SciterWindow _wnd;
+		protected SciterWindow _window;
 
 		public BaseHost()
 		{
-		#if !DEBUG
-			_archive.Open(SciterAppResource.ArchiveResource.resources);
-		#endif
+#if !DEBUG
+			_archive.Open("SiteResource");
+#endif
 		}
 
-		public void Setup(SciterWindow wnd)
+		public void Setup(SciterWindow window)
 		{
-			_wnd = wnd;
-			SetupWindow(wnd);
+			_window = window;
+			SetupWindow(window);
 		}
 
-		public void SetupPage(string page_from_res_folder)
+		public void SetupPage(string page)
 		{
 		#if DEBUG
-			string path = Path.GetFullPath(Environment.CurrentDirectory + "/../../res/" + page_from_res_folder);
+			string path = Path.GetFullPath(Environment.CurrentDirectory + "/../../res/" + page);
 			Debug.Assert(File.Exists(path));
             path = path.Replace('\\', '/');
 
 			string url = "file://" + path;
 		#else
-			string url = "archive://app/" + page_from_res_folder;
+			string url = "archive://app/" + page;
 		#endif
 
-			_wnd.LoadPage(url: url);
+			_window.LoadPage(url: url);
 		}
 
 		protected override SciterXDef.LoadResult OnLoadData(SciterXDef.SCN_LOAD_DATA sld)
@@ -72,7 +72,7 @@ namespace SciterTest.Core
 				string path = sld.uri.Substring(14);
 				byte[] data = _archive.Get(path);
 				if(data!=null)
-					_api.SciterDataReady(_wnd.Handle, sld.uri, data, (uint) data.Length);
+					_api.SciterDataReady(_window.Handle, sld.uri, data, (uint) data.Length);
 			}
 			return base.OnLoadData(sld);
 		}
