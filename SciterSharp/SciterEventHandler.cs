@@ -47,13 +47,13 @@ namespace SciterCore
 
 		public SciterEventHandler(string name = null)
 		{
-			_proc = EventProc;
+			EventProc = EventProcMethod;
 			Name = name ?? this.GetType().FullName;
 		}
 		
-		public string Name { get; }
+		public string Name { get; internal set; }
 		
-		public readonly SciterBehaviors.ELEMENT_EVENT_PROC _proc;// keep a copy of the delegate so it survives GC
+		internal readonly SciterBehaviors.ELEMENT_EVENT_PROC EventProc;// keep a copy of the delegate so it survives GC
 		
 		// Overridables
 		protected virtual void Subscription(
@@ -230,7 +230,7 @@ namespace SciterCore
 		}
 
 		// EventProc
-		private bool EventProc(IntPtr tag, IntPtr he, uint evtg, IntPtr prms)
+		private bool EventProcMethod(IntPtr tag, IntPtr he, uint evtg, IntPtr prms)
 		{
 			SciterElement se = null;
 			if(he != IntPtr.Zero)

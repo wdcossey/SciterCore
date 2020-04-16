@@ -32,14 +32,23 @@ namespace SciterCore
         {
             get
             {
-                return _eventHandler ??
-                    (_eventHandler = (SciterEventHandler)Activator.CreateInstance(Type, new object[] { $"Create by registered native behavior factory: {Name}" }));
+                return GetOrCreateEventHandler(_eventHandler);
             }
 
             private set
             {
                 _eventHandler = value;
             }
+        }
+
+        private SciterEventHandler GetOrCreateEventHandler(SciterEventHandler eventHandler)
+        {
+            if (eventHandler == null)
+            {
+                eventHandler = (SciterEventHandler)Activator.CreateInstance(Type);
+                eventHandler.Name = $"Create by registered native behavior factory: {Name}";
+            }
+            return eventHandler;
         }
 
     }

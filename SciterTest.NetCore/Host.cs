@@ -73,9 +73,12 @@ namespace SciterTest.NetCore
 #endif
 
 			string path = Path.Combine(location, "res", page);
-			Debug.Assert(File.Exists(path));
 
 			Uri uri = new Uri(path, UriKind.Absolute);
+
+			Debug.Assert(uri.IsFile);
+
+			Debug.Assert(File.Exists(uri.AbsolutePath));
 #else
 			Uri uri = new Uri(baseUri: _archive.Uri, page);
 #endif
@@ -85,14 +88,13 @@ namespace SciterTest.NetCore
 
 		protected override SciterXDef.LoadResult OnLoadData(SciterXDef.SCN_LOAD_DATA sld)
 		{
-			if(sld.uri.StartsWith(_archive.Uri.AbsoluteUri))
-			{
-				// load resource from SciterArchive
-				string path = sld.uri.Substring(14);
-				byte[] data = _archive.Get(path);
-				if(data!=null)
-					_api.SciterDataReady(_window.Handle, sld.uri, data, (uint) data.Length);
-			}
+			var uri = new Uri(sld.uri);
+
+			// load resource from SciterArchive
+			_archive?.Get(uri, (data, path) => 
+			{ 
+				_api.SciterDataReady(_window.Handle, path, data, (uint) data.Length);
+			});
 
 			// call base to ensure LibConsole is loaded
 			return base.OnLoadData(sld);

@@ -58,9 +58,12 @@ namespace SciterTest.Core
 			location += "\\..\\..";
 
 			string path = Path.Combine(location, "res", page);
-			Debug.Assert(File.Exists(path));
 
 			Uri uri = new Uri(path, UriKind.Absolute);
+
+			Debug.Assert(uri.IsFile);
+
+			Debug.Assert(File.Exists(uri.AbsolutePath));
 #else
 			Uri uri = new Uri(baseUri: _archive.Uri, page);
 #endif
@@ -70,14 +73,14 @@ namespace SciterTest.Core
 
 		protected override SciterXDef.LoadResult OnLoadData(SciterXDef.SCN_LOAD_DATA sld)
 		{
-			if(_archive?.IsOpen == true && sld.uri.StartsWith(_archive.Uri.GetLeftPart(UriPartial.Path)))
-			{
-				// load resource from SciterArchive
-				var uri = new Uri(sld.uri);
-				byte[] data = _archive.Get(uri.GetComponents(UriComponents.Path, UriFormat.SafeUnescaped));
-				if(data!=null)
-					_api.SciterDataReady(_window.Handle, sld.uri, data, (uint) data.Length);
-			}
+			var uri = new Uri(sld.uri);
+
+			// load resource from SciterArchive
+			_archive?.Get(uri, (data, path) => 
+			{ 
+				_api.SciterDataReady(_window.Handle, path, data, (uint) data.Length);
+			});
+			
 			return base.OnLoadData(sld);
 		}
 	}

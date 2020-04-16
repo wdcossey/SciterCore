@@ -16,7 +16,7 @@ namespace SciterTest.Gtk
 		{
 			var host = this;
 
-			host.RegisterBehaviorHandler(typeof(DrawGeometryBehavior), "DrawGeometry")
+			host.RegisterBehaviorHandler(() => new DrawGeometryBehavior("DrawGeometry"))
 				.AttachEventHandler(new HostEventHandler());
 
 			host.SetupPage(page: "index.html");
@@ -36,7 +36,7 @@ namespace SciterTest.Gtk
 		// (see: https://github.com/MISoftware/OmniCode-Snippets)
 		public bool Host_HelloWorld(SciterElement el, SciterValue[] args, out SciterValue result)
 		{
-			result = new SciterValue("Hello Sciter! (from native side)");
+			result = new SciterValue($"Hello Sciter! (from {new StackTrace().GetFrame(0).GetMethod().Name})");
 			return true;
 		}
 
@@ -91,14 +91,13 @@ namespace SciterTest.Gtk
 
 		protected override SciterXDef.LoadResult OnLoadData(SciterXDef.SCN_LOAD_DATA sld)
 		{
-			if(sld.uri.StartsWith(_archive.Uri.AbsoluteUri))
-			{
-				// load resource from SciterArchive
-				string path = sld.uri.Substring(14);
-                byte[] data = _archive?.Get(path);
-				if(data!=null)
-					_api.SciterDataReady(_window.Handle, sld.uri, data, (uint) data.Length);
-			}
+			var uri = new Uri(sld.uri);
+
+			// load resource from SciterArchive
+			_archive?.Get(uri, (data, path) => 
+			{ 
+				_api.SciterDataReady(_window.Handle, path, data, (uint) data.Length);
+			});
 
 			// call base to ensure LibConsole is loaded
 			return base.OnLoadData(sld);

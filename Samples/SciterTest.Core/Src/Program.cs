@@ -17,6 +17,12 @@ namespace SciterTest.Core
 	{
 		class SciterMessages : SciterDebugOutputHandler
 		{
+
+			public SciterMessages()
+			{
+
+			}
+
 			protected override void OnOutput(SciterXDef.OUTPUT_SUBSYTEM subsystem, SciterXDef.OUTPUT_SEVERITY severity, string text)
 			{
 				Console.WriteLine(text);

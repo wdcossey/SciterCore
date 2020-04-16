@@ -39,7 +39,7 @@ namespace SciterCore
 		private Dictionary<string, EventHandlerRegistry> _behaviorMap = new Dictionary<string, EventHandlerRegistry>();
 
 		private SciterXDef.SCITER_HOST_CALLBACK _hostCallback;
-		private SciterEventHandler _window_evh;
+		private SciterEventHandler _windowEventHandler;
 
 		public static bool InjectLibConsole = true;
 		private static List<IntPtr> _lib_console_vms = new List<IntPtr>();
@@ -55,7 +55,7 @@ namespace SciterCore
 
 		static SciterHost()
 		{
-			_consoleArchive = new SciterArchive()
+			_consoleArchive = new SciterArchive("scitersharp:")
                 .Open("LibConsole");
 
 			if(InjectLibConsole)
@@ -80,6 +80,7 @@ namespace SciterCore
 		}
 
 		public SciterHost(SciterWindow window)
+			: this()
 		{
 			SetupWindow(window.Handle);
 		}
@@ -143,17 +144,17 @@ namespace SciterCore
 
 		/// <summary>
 		/// Attaches a window level event-handler: it receives every event for all elements of the page.
-		/// You normally attaches it before loading the page HTML with <see cref="SciterWindow.LoadPage(string)"/>
+		/// You normally attaches it before loading the page HTML with <see cref="SciterWindow.LoadPage(Uri)"/>
 		/// You can only attach a single event-handler.
 		/// </summary>
-		public SciterHost AttachEventHandler(SciterEventHandler evh)
+		public SciterHost AttachEventHandler(SciterEventHandler eventHandler)
 		{
 			Debug.Assert(WindowHandle != IntPtr.Zero, "Call SciterHost.SetupWindow() first");
-			Debug.Assert(evh != null);
-			Debug.Assert(_window_evh == null, "You can attach only a single SciterEventHandler per SciterHost/window");
+			Debug.Assert(eventHandler != null);
+			Debug.Assert(_windowEventHandler == null, "You can attach only a single SciterEventHandler per SciterHost/Window");
 			
-			_window_evh = evh;
-			_api.SciterWindowAttachEventHandler(WindowHandle, evh._proc, IntPtr.Zero, (uint)SciterBehaviors.EVENT_GROUPS.HANDLE_ALL);
+			_windowEventHandler = eventHandler;
+			_api.SciterWindowAttachEventHandler(WindowHandle, eventHandler.EventProc, IntPtr.Zero, (uint)SciterBehaviors.EVENT_GROUPS.HANDLE_ALL);
 
 			return this;
 		}
@@ -163,11 +164,11 @@ namespace SciterCore
 		/// </summary>
 		public SciterHost DetachEventHandler()
 		{
-			Debug.Assert(_window_evh != null);
-			if(_window_evh != null)
+			Debug.Assert(_windowEventHandler != null);
+			if(_windowEventHandler != null)
 			{
-				_api.SciterWindowDetachEventHandler(WindowHandle, _window_evh._proc, IntPtr.Zero);
-				_window_evh = null;
+				_api.SciterWindowDetachEventHandler(WindowHandle, _windowEventHandler.EventProc, IntPtr.Zero);
+				_windowEventHandler = null;
 			}
 
 			return this;
@@ -323,19 +324,24 @@ namespace SciterCore
 			return this;
 		}
 
-		public SciterHost RegisterBehaviorHandler<THandler>(THandler eventHandlerType, string behaviorName = null)
+		public SciterHost RegisterBehaviorHandler<THandler>(THandler eventHandler, string behaviorName = null)
 			where THandler : SciterEventHandler
 		{
 			if(behaviorName == null)
 			{
-				behaviorName = eventHandlerType.GetType().Name;
+				behaviorName = eventHandler?.Name ?? eventHandler?.GetType()?.Name;
 			}
 
-			_behaviorMap[behaviorName] = new EventHandlerRegistry(behaviorName, eventHandlerType);
+			_behaviorMap[behaviorName] = new EventHandlerRegistry(behaviorName, eventHandler);
 
 			return this;
 		}
 
+		public SciterHost RegisterBehaviorHandler<THandler>(Func<THandler> eventHandler, string behaviorName = null)
+			where THandler : SciterEventHandler
+		{
+			return RegisterBehaviorHandler(eventHandler?.Invoke(), behaviorName);
+		}
 
 		// Properties
 		public SciterElement RootElement
@@ -385,7 +391,7 @@ namespace SciterCore
 					bool res = OnAttachBehavior(new SciterElement(sab.elem), behaviorName, out elementEvh);
 					if(res)
 					{
-						SciterBehaviors.ELEMENT_EVENT_PROC proc = elementEvh._proc;
+						SciterBehaviors.ELEMENT_EVENT_PROC proc = elementEvh.EventProc;
 						IntPtr ptrProc = Marshal.GetFunctionPointerForDelegate(proc);
 
 						IntPtr EVENTPROC_OFFSET = Marshal.OffsetOf(typeof(SciterXDef.SCN_ATTACH_BEHAVIOR), "elementProc");
@@ -397,10 +403,10 @@ namespace SciterCore
 					return 0;
 
 				case SciterXDef.SCITER_CALLBACK_CODE.SC_ENGINE_DESTROYED:
-					if(_window_evh != null)
+					if(_windowEventHandler != null)
 					{
-						_api.SciterWindowDetachEventHandler(WindowHandle, _window_evh._proc, IntPtr.Zero);
-						_window_evh = null;
+						_api.SciterWindowDetachEventHandler(WindowHandle, _windowEventHandler.EventProc, IntPtr.Zero);
+						_windowEventHandler = null;
 					}
 
 					OnEngineDestroyed();
@@ -442,12 +448,16 @@ namespace SciterCore
 		{
 			Debug.Assert(WindowHandle != IntPtr.Zero, "Call SciterHost.SetupWindow() first");
 
-			if(InjectLibConsole && sld.uri.StartsWith("scitersharp:"))
+			var uri = new Uri(sld.uri);
+
+			if(InjectLibConsole)
 			{
-				var data = _consoleArchive.Get(sld.uri.Substring("scitersharp:".Length));
-				if(data != null)
-					_api.SciterDataReady(WindowHandle, sld.uri, data, (uint)data.Length);
+				_consoleArchive?.Get(uri, (data, path) => 
+				{ 
+					_api.SciterDataReady(WindowHandle, path, data, (uint) data.Length);
+				});
 			}
+
 			return (uint)SciterXDef.LoadResult.LOAD_OK;
 		}
 

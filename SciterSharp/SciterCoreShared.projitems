@@ -58,6 +58,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Behaviors\" />
     <Folder Include="$(MSBuildThisFileDirectory)Extensions\" />
   </ItemGroup>
 </Project>

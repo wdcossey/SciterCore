@@ -107,21 +107,46 @@ namespace SciterCore
 			_pinnedArray.Free();
 		}
 
-		public byte[] Get(string path)
+		public SciterArchive Get(Uri uri, Action<byte[], string> onFound)
 		{
-			ArchiveNotOpened();
+			byte[] data = this?.Get(uri);
 
-			bool found = _api.SciterGetArchiveItem(_handle, path, out var dataPtr, out var dataLenth);
-
-			if(!found)
+			if(data != null)
 			{
-				return null;
+				onFound?.Invoke(data, uri.GetComponents(UriComponents.Path, UriFormat.SafeUnescaped));
+			}
+			return this;
+		}
+		
+
+		public byte[] Get(Uri uri)
+		{
+			if (IsOpen && uri.GetLeftPart(UriPartial.Scheme).Equals(this.Uri.GetLeftPart(UriPartial.Scheme)))
+			{
+				var path = uri.GetComponents(UriComponents.Path, UriFormat.SafeUnescaped);
+
+				bool found = _api.SciterGetArchiveItem(_handle, path, out var dataPtr, out var dataLenth);
+
+				if(found)
+				{
+					byte[] res = new byte[dataLenth];
+					Marshal.Copy(dataPtr, res, 0, (int) dataLenth);
+
+					return res;
+				}
 			}
 
-			byte[] res = new byte[dataLenth];
-			Marshal.Copy(dataPtr, res, 0, (int) dataLenth);
-			return res;
+			return null;
 		}
+
+		[Obsolete("Use the Get(Uri) method")]
+		public byte[] Get(string path)
+		{
+			var uri = new Uri(path);
+
+			return Get(uri: uri);
+		}
+
 
 #region Private
 
