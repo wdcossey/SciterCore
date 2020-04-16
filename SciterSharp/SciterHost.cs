@@ -36,8 +36,9 @@ namespace SciterCore
 		private static Sciter.SciterApi _api = Sciter.Api;
 
 		private IntPtr _windowHandle;
-		private Dictionary<string, Type> _behaviorMap = new Dictionary<string, Type>();
-		private SciterXDef.SCITER_HOST_CALLBACK _cbk;
+		private Dictionary<string, EventHandlerRegistry> _behaviorMap = new Dictionary<string, EventHandlerRegistry>();
+
+		private SciterXDef.SCITER_HOST_CALLBACK _hostCallback;
 		private SciterEventHandler _window_evh;
 
 		public static bool InjectLibConsole = true;
@@ -72,21 +73,33 @@ namespace SciterCore
             //
         }
 
+		public SciterHost(Func<SciterWindow> windowFunc)
+            : this(window: windowFunc?.Invoke())
+		{
+            //
+		}
+
 		public SciterHost(SciterWindow window)
 		{
 			SetupWindow(window.Handle);
 		}
 
+		//
 		public SciterHost SetupWindow(SciterWindow window)
-		{
+		{ 
 			Debug.Assert(window != null);
 			Debug.Assert(window.Handle != IntPtr.Zero);
 			Debug.Assert(WindowHandle == IntPtr.Zero, "You already called SetupWindow()");
 
+			if (window == null)
+			{
+				throw new ArgumentNullException(nameof(window));
+			}
+
 			return SetupWindow(window.Handle);
 		}
 
-		public SciterHost SetupWindow(IntPtr hwnd)
+		private SciterHost SetupWindow(IntPtr hwnd)
 		{
 			Debug.Assert(hwnd != IntPtr.Zero);
 			Debug.Assert(WindowHandle == IntPtr.Zero, "You already called SetupWindow()");
@@ -94,8 +107,8 @@ namespace SciterCore
 			WindowHandle = hwnd;
 
 			// Register a global event handler for this Sciter window
-			_cbk = HandleNotification;
-			_api.SciterSetCallback(hwnd, Marshal.GetFunctionPointerForDelegate(_cbk), IntPtr.Zero);
+			_hostCallback = HandleNotification;
+			_api.SciterSetCallback(hwnd, Marshal.GetFunctionPointerForDelegate(_hostCallback), IntPtr.Zero);
 
 			return this;
 		}
@@ -294,19 +307,31 @@ namespace SciterCore
 			return _api.SciterPostCallback(WindowHandle, wparam, lparam, timeout);
 		}
 
-
 		// Behavior factory
 		public SciterHost RegisterBehaviorHandler(Type eventHandlerType, string behaviorName = null)
 		{
 			if (!typeof(SciterEventHandler).IsAssignableFrom(eventHandlerType) || typeof(SciterEventHandler) == eventHandlerType)
 				throw new Exception("The 'eventHandlerType' type must extend SciterEventHandler");
 
-			if(behaviorName == null)
+			if (behaviorName == null)
 			{
 				behaviorName = eventHandlerType.Name;
 			}
 
-			_behaviorMap[behaviorName] = eventHandlerType;
+			_behaviorMap[behaviorName] = new EventHandlerRegistry(behaviorName, eventHandlerType);
+
+			return this;
+		}
+
+		public SciterHost RegisterBehaviorHandler<THandler>(THandler eventHandlerType, string behaviorName = null)
+			where THandler : SciterEventHandler
+		{
+			if(behaviorName == null)
+			{
+				behaviorName = eventHandlerType.GetType().Name;
+			}
+
+			_behaviorMap[behaviorName] = new EventHandlerRegistry(behaviorName, eventHandlerType);
 
 			return this;
 		}
@@ -356,7 +381,8 @@ namespace SciterCore
 				case SciterXDef.SCITER_CALLBACK_CODE.SC_ATTACH_BEHAVIOR:
 					SciterXDef.SCN_ATTACH_BEHAVIOR sab = (SciterXDef.SCN_ATTACH_BEHAVIOR)Marshal.PtrToStructure(ptrNotification, typeof(SciterXDef.SCN_ATTACH_BEHAVIOR));
 					SciterEventHandler elementEvh;
-					bool res = OnAttachBehavior(new SciterElement(sab.elem), Marshal.PtrToStringAnsi(sab.behaviorName), out elementEvh);
+					string behaviorName = Marshal.PtrToStringAnsi(sab.behaviorName);
+					bool res = OnAttachBehavior(new SciterElement(sab.elem), behaviorName, out elementEvh);
 					if(res)
 					{
 						SciterBehaviors.ELEMENT_EVENT_PROC proc = elementEvh._proc;
@@ -435,8 +461,7 @@ namespace SciterCore
 			// returns a new SciterEventHandler if the behaviorName was registered by a previous RegisterBehaviorHandler() call
 			if (_behaviorMap.ContainsKey(behaviorName))
 			{
-				elementEvh = (SciterEventHandler)Activator.CreateInstance(_behaviorMap[behaviorName]);
-				elementEvh.Name = "Create by registered native behavior factory: " + behaviorName;
+				elementEvh = _behaviorMap[behaviorName].EventHandler;
 				return true;
 			}
 			elementEvh = null;

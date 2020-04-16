@@ -36,6 +36,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)SciterWindow.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)WinForms\SciterControl.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\WindowExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EventHandlerRegistry.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)scripts\fart.exe" />

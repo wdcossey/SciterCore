@@ -392,7 +392,7 @@ namespace SciterCore
         /// <param name="loadResult">Result of <see cref="Sciter.SciterApi.SciterLoadFile"/></param>
         public SciterWindow LoadPage(Uri uri, out bool loadResult)
 		{
-			loadResult = _api.SciterLoadFile(hwnd: Handle, filename: uri.AbsoluteUri.Replace(":///", "://"));
+			loadResult = _api.SciterLoadFile(hwnd: Handle, filename: uri.AbsoluteUri);
 			Debug.Assert(loadResult);
 			return this;
 		}

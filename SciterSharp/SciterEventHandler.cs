@@ -40,17 +40,18 @@ namespace SciterCore
 		private static List<SciterEventHandler> _attached_handlers = new List<SciterEventHandler>();// we keep a copy of all attached instances to guard from GC removal
 
 		public SciterEventHandler()
+            : this(name: null)
 		{
-			_proc = EventProc; 
-			Name = this.GetType().FullName;
+
 		}
 
-		public SciterEventHandler(string name)
+		public SciterEventHandler(string name = null)
 		{
-			Name = name;
+			_proc = EventProc;
+			Name = name ?? this.GetType().FullName;
 		}
 		
-		public string Name { get; set; }
+		public string Name { get; }
 		
 		public readonly SciterBehaviors.ELEMENT_EVENT_PROC _proc;// keep a copy of the delegate so it survives GC
 		

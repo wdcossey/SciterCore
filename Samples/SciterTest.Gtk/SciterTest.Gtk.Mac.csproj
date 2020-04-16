@@ -84,6 +84,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\" />
+    <Folder Include="Behaviors\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />
@@ -95,6 +96,7 @@
     <Compile Include="Src\Mono.cs" />
     <Compile Include="Src\ProgramOSX.cs" />
     <Compile Include="Src\Window.cs" />
+    <Compile Include="Behaviors\DrawGeometryBehavior.cs" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="MainMenu.xib" />

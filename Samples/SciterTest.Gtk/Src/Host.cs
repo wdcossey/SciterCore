@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Diagnostics;
 using System.IO;
 using SciterValue = SciterCore.SciterValue;
+using SciterTest.Gtk.Behaviors;
 
 namespace SciterTest.Gtk
 {
@@ -14,7 +15,10 @@ namespace SciterTest.Gtk
             : base(window: window, archiveName: "SiteResource")
 		{
 			var host = this;
-			host.AttachEventHandler(new HostEventHandler());
+
+			host.RegisterBehaviorHandler(typeof(DrawGeometryBehavior), "DrawGeometry")
+				.AttachEventHandler(new HostEventHandler());
+
 			host.SetupPage(page: "index.html");
 			window.Show();
 		}
@@ -65,15 +69,19 @@ namespace SciterTest.Gtk
 			string location = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
 #if OSX
-			location += "\\..\\..\\..\\..\\..";
+			location += "\\..\\..\\..\\..\\..\\";
 #else
 			location += "\\..\\..";
 #endif
 
 			string path = Path.Combine(location, "res", page);
-			Debug.Assert(File.Exists(path));
 
 			Uri uri = new Uri(path, UriKind.Absolute);
+
+			Debug.Assert(uri.IsFile);
+
+			Debug.Assert(File.Exists(uri.AbsolutePath));
+
 #else
 			Uri uri = new Uri(baseUri: _archive.Uri, page);
 #endif

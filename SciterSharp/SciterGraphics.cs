@@ -44,14 +44,15 @@ namespace SciterCore
 		public uint c { get { return _clr; } }
 
 		public byte R { get { return (byte) (_clr & 0xFF); } }
-		public byte G { get { return (byte) ((_clr>>8) & 0xFF); } }
-		public byte B { get { return (byte) ((_clr>>16) & 0xFF);  } }
-		public byte A { get { return (byte) ((_clr>>24) & 0xFF); } }
+		public byte G { get { return (byte) ((_clr >> 8) & 0xFF); } }
+		public byte B { get { return (byte) ((_clr >> 16) & 0xFF);  } }
+		public byte A { get { return (byte) ((_clr >> 24) & 0xFF); } }
 
 		public RGBAColor(int r, int g, int b, int alpha = 255)
 		{
 			_clr = _gapi.RGBA((uint)r, (uint)g, (uint)b, (uint)alpha);
 		}
+
 		public RGBAColor(uint clr)
 		{
 			_clr = clr;

@@ -32,7 +32,6 @@ namespace SciterCore
 		private GCHandle _pinnedArray;
 
 		private const string DEFAULT_URI = "archive://app/";
-		private  Uri DEFAULT_URI_URI = new Uri(DEFAULT_URI);
 
 		public Uri Uri { get; private set; }
 
