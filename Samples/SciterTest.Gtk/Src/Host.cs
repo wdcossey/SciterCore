@@ -36,7 +36,9 @@ namespace SciterTest.Gtk
 		// (see: https://github.com/MISoftware/OmniCode-Snippets)
 		public bool Host_HelloWorld(SciterElement el, SciterValue[] args, out SciterValue result)
 		{
-			result = new SciterValue($"Hello Sciter! (from {new StackTrace().GetFrame(0).GetMethod().Name})");
+			var stackFrame = new StackTrace(true).GetFrame(0);//.GetFileName();
+
+			result = new SciterValue($"Hello <b>Sciter</b>! (from {Path.GetFileName(stackFrame.GetFileName())}:{stackFrame.GetFileLineNumber()}:{stackFrame.GetFileColumnNumber()})");
 			return true;
 		}
 
