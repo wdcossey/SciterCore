@@ -34,11 +34,12 @@ namespace SciterTest.Gtk
 		// Notice that signature of these handlers is always the same
 		// (Hint: install OmniCode snippets which adds the 'ssh' snippet to C# editor so you can easily declare 'Siter Handler' methods)
 		// (see: https://github.com/MISoftware/OmniCode-Snippets)
-		public bool Host_HelloWorld(SciterElement el, SciterValue[] args, out SciterValue result)
+		public bool Host_HelloSciter(SciterElement el, SciterValue[] args, out SciterValue result)
 		{
 			var stackFrame = new StackTrace(true).GetFrame(0);//.GetFileName();
 
-			result = new SciterValue($"Hello <b>Sciter</b>! (from {Path.GetFileName(stackFrame.GetFileName())}:{stackFrame.GetFileLineNumber()}:{stackFrame.GetFileColumnNumber()})");
+
+			result = new SciterValue($"<h2>Hello Sciter from C#!</h2><code>Method: {stackFrame.GetMethod().Name}<br/>File: <a href=\"{new Uri(stackFrame.GetFileName()).AbsoluteUri}\">{Path.GetFileName(stackFrame.GetFileName())}</a><br/>Line: {stackFrame.GetFileLineNumber()}<br/>Column: {stackFrame.GetFileColumnNumber()}</code>");
 			return true;
 		}
 
@@ -96,7 +97,7 @@ namespace SciterTest.Gtk
 			var uri = new Uri(sld.uri);
 
 			// load resource from SciterArchive
-			_archive?.Get(uri, (data, path) => 
+			_archive?.GetItem(uri, (data, path) => 
 			{ 
 				_api.SciterDataReady(_window.Handle, path, data, (uint) data.Length);
 			});

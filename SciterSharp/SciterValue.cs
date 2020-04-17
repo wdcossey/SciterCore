@@ -120,60 +120,69 @@ namespace SciterCore
 			_api.ValueCopy(out _data, ref value._data);
 		}
 		
-		public SciterValue(Interop.SciterValue.VALUE srcv)
+		public SciterValue(Interop.SciterValue.VALUE value)
 		{
 			_api.ValueInit(out _data);
-			_api.ValueCopy(out _data, ref srcv);
+			_api.ValueCopy(out _data, ref value);
 		}
 
-		public SciterValue(bool v)
+		public SciterValue(bool value)
 		{
-			_api.ValueInit(out _data); _api.ValueIntDataSet(ref _data, v ? 1 : 0, (uint) Interop.SciterValue.VALUE_TYPE.T_BOOL, 0);
+			_api.ValueInit(out _data); 
+			_api.ValueIntDataSet(ref _data, value ? 1 : 0, (uint) Interop.SciterValue.VALUE_TYPE.T_BOOL, 0);
 		}
 
-		public SciterValue(int v)
+		public SciterValue(int value)
 		{
-			_api.ValueInit(out _data); _api.ValueIntDataSet(ref _data, v, (uint) Interop.SciterValue.VALUE_TYPE.T_INT, 0);
+			_api.ValueInit(out _data);
+			_api.ValueIntDataSet(ref _data, value, (uint) Interop.SciterValue.VALUE_TYPE.T_INT, 0);
 		}
 
-		public SciterValue(uint v)
+		public SciterValue(uint value)
 		{
-			_api.ValueInit(out _data); _api.ValueIntDataSet(ref _data, (int) v, (uint) Interop.SciterValue.VALUE_TYPE.T_INT, 0);
+			_api.ValueInit(out _data);
+			_api.ValueIntDataSet(ref _data, (int) value, (uint) Interop.SciterValue.VALUE_TYPE.T_INT, 0);
 		}
 
-		public SciterValue(double v)
+		public SciterValue(double value)
 		{
-			_api.ValueInit(out _data); _api.ValueFloatDataSet(ref _data, v, (uint) Interop.SciterValue.VALUE_TYPE.T_FLOAT, 0);
+			_api.ValueInit(out _data); 
+			_api.ValueFloatDataSet(ref _data, value, (uint) Interop.SciterValue.VALUE_TYPE.T_FLOAT, 0);
 		}
 
-		public SciterValue(string str)
+		public SciterValue(string value)
 		{
-			_api.ValueInit(out _data); _api.ValueStringDataSet(ref _data, str, (uint) str.Length, (uint) Interop.SciterValue.VALUE_UNIT_TYPE_STRING.UT_STRING_STRING);
+			_api.ValueInit(out _data); 
+			_api.ValueStringDataSet(ref _data, value, (uint) value.Length, (uint) Interop.SciterValue.VALUE_UNIT_TYPE_STRING.UT_STRING_STRING);
 		}
 
-		public SciterValue(byte[] bs)
+		public SciterValue(byte[] value)
 		{
-			_api.ValueInit(out _data); _api.ValueBinaryDataSet(ref _data, bs, (uint) bs.Length, (uint) Interop.SciterValue.VALUE_TYPE.T_BYTES, 0);
+			_api.ValueInit(out _data); 
+			_api.ValueBinaryDataSet(ref _data, value, (uint) value.Length, (uint) Interop.SciterValue.VALUE_TYPE.T_BYTES, 0);
 		}
 
-		public SciterValue(DateTime dt)
+		public SciterValue(DateTime value)
 		{
-			_api.ValueInit(out _data); _api.ValueInt64DataSet(ref _data, dt.ToFileTime(), (uint)Interop.SciterValue.VALUE_TYPE.T_DATE, 0);
+			_api.ValueInit(out _data); 
+			_api.ValueInt64DataSet(ref _data, value.ToFileTime(), (uint)Interop.SciterValue.VALUE_TYPE.T_DATE, 0);
 		}
 		
-		public SciterValue(IEnumerable<SciterValue> col)
+		public SciterValue(IEnumerable<SciterValue> values)
 		{
 			_api.ValueInit(out _data);
 			var i = 0;
-			foreach(var item in col)
+			foreach(var item in values)
+			{
 				SetItem(i++, item);
+			}
 		}
 		
-		private SciterValue(IConvertible ic)
+		private SciterValue(IConvertible value)
 		{
 			_api.ValueInit(out _data);
 
-			switch (ic)
+			switch (value)
 			{
 				case bool @bool:
 					_api.ValueIntDataSet(ref _data, @bool ? 1 : 0, (uint) Interop.SciterValue.VALUE_TYPE.T_BOOL,
@@ -201,7 +210,7 @@ namespace SciterCore
 					_api.ValueInt64DataSet(ref _data, @dateTime.ToFileTime(), (uint)Interop.SciterValue.VALUE_TYPE.T_DATE, 0);
 					break;
 				default:
-					throw new Exception("Can not create a SciterValue from type '" + ic.GetType() + "'");
+					throw new Exception($"Can not create a SciterValue from type '{value.GetType()}'");
 			}
 		}
 		
@@ -302,25 +311,25 @@ namespace SciterCore
 			return FromObjectRecurse(obj, anti_recurse, 0);
 		}
 
-		private static SciterValue FromObjectRecurse(object obj, List<object> anti_recurse, int deep)
+		private static SciterValue FromObjectRecurse(object value, List<object> anti_recurse, int deep)
 		{
 			if(deep++ == 10)
 				throw new Exception("Recursion too deep");
 
-			if(obj is IConvertible)
-				return new SciterValue(obj as IConvertible);
+			if(value is IConvertible)
+				return new SciterValue(value as IConvertible);
 
-			if(anti_recurse.Contains(obj))
+			if(anti_recurse.Contains(value))
 				throw new Exception("Found recursive property");
 			anti_recurse.Add(anti_recurse);
 
-			var t = obj.GetType();
+			var t = value.GetType();
 			if(t.GetInterface("IEnumerable") != null)
 			{
 				var sv_arr = new SciterValue();
 				var castMethod = typeof(Enumerable).GetMethod("Cast")
 					.MakeGenericMethod(new Type[] { typeof(object) });
-				var castedObject = (IEnumerable<object>) castMethod.Invoke(null, new object[] { obj });
+				var castedObject = (IEnumerable<object>) castMethod.Invoke(null, new object[] { value });
 
 				foreach(var item in castedObject)
 				{
@@ -329,34 +338,36 @@ namespace SciterCore
 				return sv_arr;
 			}
 
-			var sv = new SciterValue();
+			var result = new SciterValue();
+
 			foreach(var prop in t.GetProperties())
 			{
 				if(prop.CanRead)
 				{
-					var val = prop.GetValue(obj);
-					sv[prop.Name] = FromObjectRecurse(val, anti_recurse, deep);
+					var val = prop.GetValue(value);
+					result[prop.Name] = FromObjectRecurse(val, anti_recurse, deep);
 				}
 			}
-			return sv;
+
+			return result;
 		}
 
 		/// <summary>
 		/// Constructs a TIScript array T[] where T is a basic type like int or string
 		/// </summary>
-		public static SciterValue FromList<T>(IEnumerable<T> list) where T : /*struct,*/ IConvertible
+		public static SciterValue FromList<T>(IEnumerable<T> value) where T : /*struct,*/ IConvertible
 		{
-			Debug.Assert(list != null);
+			Debug.Assert(value != null);
 
 			var sv = new SciterValue();
-			if(list.Count()==0)
+			if(value.Count()==0)
 			{
 				_api.ValueIntDataSet(ref sv._data, 0, (uint) Interop.SciterValue.VALUE_TYPE.T_ARRAY, 0);
 				return sv;
 			}
 
 			var i = 0;
-			foreach(var item in list)
+			foreach(var item in value)
 			{
 				sv.SetItem(i++, new SciterValue(item));
 			}
@@ -366,12 +377,12 @@ namespace SciterCore
 		/// <summary>
 		/// Constructs a TIScript key-value object from a dictionary with string as keys and T as values, where T is a basic type like int or string
 		/// </summary>
-		public static SciterValue FromDictionary<T>(IDictionary<string, T> dic) where T : /*struct,*/ IConvertible
+		public static SciterValue FromDictionary<T>(IDictionary<string, T> value) where T : /*struct,*/ IConvertible
 		{
-			Debug.Assert(dic != null);
+			Debug.Assert(value != null);
 
 			var sv = new SciterValue();
-			foreach(var item in dic)
+			foreach(var item in value)
 				sv.SetItem(new SciterValue(item.Key), new SciterValue(item.Value));
 			return sv;
 		}
@@ -379,12 +390,12 @@ namespace SciterCore
 		/// <summary>
 		/// Constructs a TIScript key-value object from a dictionary with string as keys and SciterValue as values
 		/// </summary>
-		public static SciterValue FromDictionary(IDictionary<string, SciterValue> dic)
+		public static SciterValue FromDictionary(IDictionary<string, SciterValue> value)
 		{
-			Debug.Assert(dic != null);
+			Debug.Assert(value != null);
 
 			var sv = new SciterValue();
-			foreach(var item in dic)
+			foreach(var item in value)
 				sv.SetItem(new SciterValue(item.Key), new SciterValue(item.Value));
 			return sv;
 		}

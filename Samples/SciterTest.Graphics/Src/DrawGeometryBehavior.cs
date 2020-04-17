@@ -19,14 +19,17 @@ namespace SciterTest.Graphics
 
 					List<Tuple<float, float>> points = new List<Tuple<float, float>>
 					{
-						Tuple.Create(100.0f, 0.0f),
-						Tuple.Create(150.0f, 150.0f),
-						Tuple.Create(50.0f, 150.0f)
+						Tuple.Create(51.0f, 58.0f),
+						Tuple.Create(70.0f, 28.0f),
+						Tuple.Create(48.0f, 1.0f),
+						Tuple.Create(15.0f, 14.0f),
+						Tuple.Create(17.0f, 49.0f),
 					};
 
-					g.LineColor = new RGBAColor(0, 0, 255);
-					g.FillColor = new RGBAColor(255, 0, 0);
-					g.LineWidth = 5;
+                    g.LineColor = new RGBAColor(0, 255, 255, .75d);
+					g.FillColor = new RGBAColor(127, 78, 194, .75d);
+					g.LineWidth = 4;
+
 					g.Polygon(points);
 					g.Ellipse(200, 50, 50, 50);
 

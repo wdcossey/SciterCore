@@ -38,76 +38,88 @@ namespace SciterCore
 {
 	public struct RGBAColor
 	{
-		private static Interop.SciterGraphics.SciterGraphicsApi _gapi = Interop.Sciter.GraphicsApi;
-		private uint _clr;
+		private static Interop.SciterGraphics.SciterGraphicsApi _graphicsApi = Interop.Sciter.GraphicsApi;
+		private uint _value;
 
-		public uint c { get { return _clr; } }
+		public uint Value { get { return _value; } }
 
-		public byte R { get { return (byte) (_clr & 0xFF); } }
-		public byte G { get { return (byte) ((_clr >> 8) & 0xFF); } }
-		public byte B { get { return (byte) ((_clr >> 16) & 0xFF);  } }
-		public byte A { get { return (byte) ((_clr >> 24) & 0xFF); } }
+		public byte R { get { return (byte) (_value & 0xFF); } }
+		public byte G { get { return (byte) ((_value >> 8) & 0xFF); } }
+		public byte B { get { return (byte) ((_value >> 16) & 0xFF);  } }
+		public byte A { get { return (byte) ((_value >> 24) & 0xFF); } }
 
-		public RGBAColor(int r, int g, int b, int alpha = 255)
+		public RGBAColor(int r, int g, int b, double a = 1d)
+			: this (r, g, b, (int)(Math.Min(Math.Max(a, 0d), 1d) * byte.MaxValue))
 		{
-			_clr = _gapi.RGBA((uint)r, (uint)g, (uint)b, (uint)alpha);
+
 		}
 
-		public RGBAColor(uint clr)
+		public RGBAColor(int r, int g, int b, int a)
 		{
-			_clr = clr;
+			_value = _graphicsApi.RGBA((uint)GetMinMaxValue(r), (uint)GetMinMaxValue(g), (uint)GetMinMaxValue(b), (uint)GetMinMaxValue(a));
 		}
 
+		public RGBAColor(uint value)
+		{
+			_value = value;
+		}
 
 		public static RGBAColor White = new RGBAColor(255, 255, 255);
 		public static RGBAColor Black = new RGBAColor(0, 0, 0);
 		public static RGBAColor Invalid = new RGBAColor(-1, -1, -1);
 
 #if WINDOWS
-		public static RGBAColor FromColor(Color clr)
+		public static RGBAColor FromColor(Color color)
 		{
-			return new RGBAColor(clr.R, clr.G, clr.B, clr.A);
+			return new RGBAColor(color.R, color.G, color.B, color.A);
 		}
 
-		private static uint ToRGBA(Color clr)
+		private static uint ToRGBAColor(Color color)
 		{
-			return _gapi.RGBA(clr.R, clr.G, clr.B, clr.A);
+			return _graphicsApi.RGBA(color.R, color.G, color.B, color.A);
 		}
 #endif
+
+		private static int GetMinMaxValue(int value)
+		{
+			return (int)Math.Min(Math.Max(value, -1), byte.MaxValue);
+		}
 	}
 
 	public class SciterGraphics : IDisposable
 	{
-		private static Interop.SciterGraphics.SciterGraphicsApi _gapi = Interop.Sciter.GraphicsApi;
+		private static Interop.SciterGraphics.SciterGraphicsApi _graphicsApi = Interop.Sciter.GraphicsApi;
 		public readonly IntPtr _hgfx;
 
-		private SciterGraphics() { }
+		private SciterGraphics() 
+		{ 
+			//
+		}
 
 		public SciterGraphics(IntPtr hgfx)
+			: this()
 		{
 			Debug.Assert(hgfx != IntPtr.Zero);
 			_hgfx = hgfx;
-			_gapi.gAddRef(hgfx);
+			_graphicsApi.gAddRef(hgfx);
 		}
 
-		public static SciterGraphics FromSV(SciterValue sv)
+		public static SciterGraphics FromValue(SciterValue sv)
 		{
 			IntPtr hgfx;
 			Interop.SciterValue.VALUE v = sv.ToVALUE();
-			var r = _gapi.vUnWrapGfx(ref v, out hgfx);
+			var r = _graphicsApi.vUnWrapGfx(ref v, out hgfx);
 			Debug.Assert(r == Interop.SciterGraphics.GRAPHIN_RESULT.GRAPHIN_OK);
 
 			return new SciterGraphics(hgfx);
 		}
 
-		public SciterValue ToSV()
+		public SciterValue ToValue()
 		{
-			Interop.SciterValue.VALUE v;
-			var r = _gapi.vWrapGfx(_hgfx, out v);
+			var r = _graphicsApi.vWrapGfx(_hgfx, out var value);
 			Debug.Assert(r == Interop.SciterGraphics.GRAPHIN_RESULT.GRAPHIN_OK);
-			return new SciterValue(v);
+			return new SciterValue(value: value);
 		}
-
 
 		/*
 		DON'T KNOW IF IT WORKS AND IF YOU MUST CALL gAddRef()
@@ -118,23 +130,23 @@ namespace SciterCore
 			Debug.Assert(r == SciterXGraphics.GRAPHIN_RESULT.GRAPHIN_OK);
 		}*/
 
-		public void BlendImage(SciterImage img, float x, float y)
+		public void BlendImage(SciterImage img, float x = 0f, float y = 0f)
 		{
 			//float w, h, ix, iy, iw, ih, opacity;
-			var r = _gapi.gDrawImage(_hgfx, img._himg, x, y, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero);
+			var r = _graphicsApi.gDrawImage(_hgfx, img._himg, x, y, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero);
 			Debug.Assert(r == Interop.SciterGraphics.GRAPHIN_RESULT.GRAPHIN_OK);
 		}
 
 		#region Draw Geometries
 		public void Rectangle(float x1, float y1, float x2, float y2)
 		{
-			var r = _gapi.gRectangle(_hgfx, x1, y1, x2, y2);
+			var r = _graphicsApi.gRectangle(_hgfx, x1, y1, x2, y2);
 			Debug.Assert(r == Interop.SciterGraphics.GRAPHIN_RESULT.GRAPHIN_OK);
 		}
 
 		public void Line(float x1, float y1, float x2, float y2)
 		{
-			var r = _gapi.gLine(_hgfx, x1, y1, x2, y2);
+			var r = _graphicsApi.gLine(_hgfx, x1, y1, x2, y2);
 			Debug.Assert(r == Interop.SciterGraphics.GRAPHIN_RESULT.GRAPHIN_OK);
 		}
 
@@ -146,7 +158,7 @@ namespace SciterCore
 				points.Add(item.Item1);
 				points.Add(item.Item2);
 			}
-			var r = _gapi.gPolygon(_hgfx, points.ToArray(), (uint)points_xy.Count);
+			var r = _graphicsApi.gPolygon(_hgfx, points.ToArray(), (uint)points_xy.Count);
 			Debug.Assert(r == Interop.SciterGraphics.GRAPHIN_RESULT.GRAPHIN_OK);
 		}
 
@@ -158,13 +170,13 @@ namespace SciterCore
 				points.Add(item.Item1);
 				points.Add(item.Item2);
 			}
-			var r = _gapi.gPolyline(_hgfx, points.ToArray(), (uint)points_xy.Count);
+			var r = _graphicsApi.gPolyline(_hgfx, points.ToArray(), (uint)points_xy.Count);
 			Debug.Assert(r == Interop.SciterGraphics.GRAPHIN_RESULT.GRAPHIN_OK);
 		}
 
 		public void Ellipse(float x, float y, float rx, float ry)
 		{
-			var r = _gapi.gEllipse(_hgfx, x, y, rx, ry);
+			var r = _graphicsApi.gEllipse(_hgfx, x, y, rx, ry);
 			Debug.Assert(r == Interop.SciterGraphics.GRAPHIN_RESULT.GRAPHIN_OK);
 		}
 		#endregion
@@ -174,7 +186,7 @@ namespace SciterCore
 		{
 			set
 			{
-				var r = _gapi.gLineWidth(_hgfx, value);
+				var r = _graphicsApi.gLineWidth(_hgfx, value);
 				Debug.Assert(r == Interop.SciterGraphics.GRAPHIN_RESULT.GRAPHIN_OK);
 			}
 		}
@@ -183,7 +195,7 @@ namespace SciterCore
 		{
 			set
 			{
-				var r = _gapi.gLineJoin(_hgfx, value);
+				var r = _graphicsApi.gLineJoin(_hgfx, value);
 				Debug.Assert(r == Interop.SciterGraphics.GRAPHIN_RESULT.GRAPHIN_OK);
 			}
 		}
@@ -192,7 +204,7 @@ namespace SciterCore
 		{
 			set
 			{
-				var r = _gapi.gLineCap(_hgfx, value);
+				var r = _graphicsApi.gLineCap(_hgfx, value);
 				Debug.Assert(r == Interop.SciterGraphics.GRAPHIN_RESULT.GRAPHIN_OK);
 			}
 		}
@@ -201,7 +213,7 @@ namespace SciterCore
 		{
 			set
 			{
-				var r = _gapi.gLineColor(_hgfx, value.c);
+				var r = _graphicsApi.gLineColor(_hgfx, value.Value);
 				Debug.Assert(r == Interop.SciterGraphics.GRAPHIN_RESULT.GRAPHIN_OK);
 			}
 		}
@@ -210,7 +222,7 @@ namespace SciterCore
 		{
 			set
 			{
-				var r = _gapi.gFillColor(_hgfx, value.c);
+				var r = _graphicsApi.gFillColor(_hgfx, value.Value);
 				Debug.Assert(r == Interop.SciterGraphics.GRAPHIN_RESULT.GRAPHIN_OK);
 			}
 		}
@@ -219,7 +231,7 @@ namespace SciterCore
 		#region Path operations
 		public void DrawPath(SciterPath path, Interop.SciterGraphics.DRAW_PATH_MODE mode)
 		{
-			var r = _gapi.gDrawPath(_hgfx, path._hpath, mode);
+			var r = _graphicsApi.gDrawPath(_hgfx, path._hpath, mode);
 			Debug.Assert(r == Interop.SciterGraphics.GRAPHIN_RESULT.GRAPHIN_OK);
 		}
 		#endregion
@@ -227,25 +239,25 @@ namespace SciterCore
 		#region Affine tranformations
 		public void Rotate(float radians, float cx, float cy)
 		{
-			var r = _gapi.gRotate(_hgfx, radians, ref cx, ref cy);
+			var r = _graphicsApi.gRotate(_hgfx, radians, ref cx, ref cy);
 			Debug.Assert(r == Interop.SciterGraphics.GRAPHIN_RESULT.GRAPHIN_OK);
 		}
 
 		public void Translate(float cx, float cy)
 		{
-			var r = _gapi.gTranslate(_hgfx, cx, cy);
+			var r = _graphicsApi.gTranslate(_hgfx, cx, cy);
 			Debug.Assert(r == Interop.SciterGraphics.GRAPHIN_RESULT.GRAPHIN_OK);
 		}
 
 		public void Scale(float x, float y)
 		{
-			var r = _gapi.gScale(_hgfx, x, y);
+			var r = _graphicsApi.gScale(_hgfx, x, y);
 			Debug.Assert(r == Interop.SciterGraphics.GRAPHIN_RESULT.GRAPHIN_OK);
 		}
 
 		public void Skew(float dx, float dy)
 		{
-			var r = _gapi.gSkew(_hgfx, dx, dy);
+			var r = _graphicsApi.gSkew(_hgfx, dx, dy);
 			Debug.Assert(r == Interop.SciterGraphics.GRAPHIN_RESULT.GRAPHIN_OK);
 		}
 		#endregion
@@ -253,7 +265,7 @@ namespace SciterCore
 		#region Text
 		public void DrawText(SciterText text, float px, float py, uint position)
 		{
-			var r = _gapi.gDrawText(_hgfx, text._htext, px, py, position);
+			var r = _graphicsApi.gDrawText(_hgfx, text._htext, px, py, position);
 			Debug.Assert(r == Interop.SciterGraphics.GRAPHIN_RESULT.GRAPHIN_OK);
 		}
 		#endregion
@@ -261,19 +273,19 @@ namespace SciterCore
 		#region Clipping
 		public void PushClipBox(float x1, float y1, float x2, float y2, float opacity = 1)
 		{
-			var r = _gapi.gPushClipBox(_hgfx, x1, y1, x2, y2, opacity);
+			var r = _graphicsApi.gPushClipBox(_hgfx, x1, y1, x2, y2, opacity);
 			Debug.Assert(r == Interop.SciterGraphics.GRAPHIN_RESULT.GRAPHIN_OK);
 		}
 
 		public void PushClipPath(SciterPath path, float opacity = 1)
 		{
-			var r = _gapi.gPushClipPath(_hgfx, path._hpath, opacity);
+			var r = _graphicsApi.gPushClipPath(_hgfx, path._hpath, opacity);
 			Debug.Assert(r == Interop.SciterGraphics.GRAPHIN_RESULT.GRAPHIN_OK);
 		}
 
 		public void PopClip()
 		{
-			var r = _gapi.gPopClip(_hgfx);
+			var r = _graphicsApi.gPopClip(_hgfx);
 			Debug.Assert(r == Interop.SciterGraphics.GRAPHIN_RESULT.GRAPHIN_OK);
 		}
 		#endregion
@@ -281,13 +293,13 @@ namespace SciterCore
 		#region State save/restore
 		public void StateSave()
 		{
-			var r = _gapi.gStateSave(_hgfx);
+			var r = _graphicsApi.gStateSave(_hgfx);
 			Debug.Assert(r == Interop.SciterGraphics.GRAPHIN_RESULT.GRAPHIN_OK);
 		}
 
 		public void StateRestore()
 		{
-			var r = _gapi.gStateRestore(_hgfx);
+			var r = _graphicsApi.gStateRestore(_hgfx);
 			Debug.Assert(r == Interop.SciterGraphics.GRAPHIN_RESULT.GRAPHIN_OK);
 		}
 		#endregion
@@ -299,7 +311,7 @@ namespace SciterCore
 		{
 			if(!disposedValue)
 			{
-				_gapi.gRelease(_hgfx);
+				_graphicsApi.gRelease(_hgfx);
 
 				disposedValue = true;
 			}
@@ -327,9 +339,13 @@ namespace SciterCore
 		private static Interop.SciterGraphics.SciterGraphicsApi _gapi = Interop.Sciter.GraphicsApi;
 		public IntPtr _himg { get; private set; }
 
-		private SciterImage() { }// non-user usable
+		private SciterImage() 
+		{ 
+			// non-user usable
+		}
 
 		public SciterImage(SciterValue sv)
+			: this()
 		{
 			Interop.SciterValue.VALUE v = sv.ToVALUE();
 			IntPtr himg;
@@ -459,9 +475,9 @@ namespace SciterCore
 			}
 		}
 
-		public void Clear(RGBAColor clr)
+		public void Clear(RGBAColor color)
 		{
-			var r = _gapi.imageClear(_himg, clr.c);
+			var r = _gapi.imageClear(_himg, color.Value);
 			Debug.Assert(r == Interop.SciterGraphics.GRAPHIN_RESULT.GRAPHIN_OK);
 		}
 
@@ -500,7 +516,10 @@ namespace SciterCore
 		private static Interop.SciterGraphics.SciterGraphicsApi _gapi = Interop.Sciter.GraphicsApi;
 		public IntPtr _hpath { get; private set; }
 
-		private SciterPath() { }// non-user usable
+		private SciterPath() 
+		{ 
+			// non-user usable
+		}
 
 		public static SciterPath Create()
 		{

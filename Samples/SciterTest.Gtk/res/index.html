@@ -1,4 +1,4 @@
-<html window-frame="none" window-blurbehind="dark" theme="dark">
+<html window-blurbehind="dark" theme="dark">
 <head>
 	<style>
 		html {
@@ -14,10 +14,17 @@
             background: rgba(0, 0, 0, 0.25);
         }
 
+		a {
+			color: white;
+		}
+            a:hover {
+                color: #FEB775;
+            }
+
 	</style>
 
 	<script type="text/tiscript">
-		$(h2).html = view.Host_HelloWorld();
+		$(#helloSciter).html = view.Host_HelloSciter();
 
 		var version_major = Sciter.VERSION >> 16;
 		var version_minor = Sciter.VERSION & 0xFFFF;
@@ -25,11 +32,17 @@
 		var revision_minor = Sciter.REVISION & 0xFFFF;
 		$(h3).text = "Sciter version: " + String.printf("%d.%d.%d.%d", version_major, version_minor, revision_major, revision_minor);
 
-		$(a).on("click", function(evt) {
-			Sciter.launch(this.@#href);
-			return true;
-		});
+		//$$(a).on("click", function(evt) {
+		//	Sciter.launch(this.@#href);
+		//	return true;
+		//});
 
+		for(var (i,child) in $$(a) ) {
+			child.on("click", function(evt) {
+				Sciter.launch(this.@#href);
+				return true;
+			});
+		}
 
 		$(#icons8).on("click", function(evt) {
 			Sciter.launch("https://icons8.com/");
@@ -50,7 +63,7 @@
 				 height="96" />
 		</div>
 
-		<h2 />
+		<div #helloSciter />
 		<h3 />
 
 		If you are new to C# Sciter, read our introductory article:

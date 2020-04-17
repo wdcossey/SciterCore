@@ -39,8 +39,8 @@ namespace SciterTest.Gtk.Behaviors
 						Tuple.Create(17.0f, 49.0f),
 					};
 
-                    g.LineColor = new RGBAColor(0, 255, 255, (int)(.75d * 255));
-					g.FillColor = new RGBAColor(127, 78, 194, (int)(.75d * 255));
+                    g.LineColor = new RGBAColor(0, 255, 255, .75d);
+					g.FillColor = new RGBAColor(127, 78, 194, .75d);
 					g.LineWidth = 4;
 
 					g.Polygon(points);

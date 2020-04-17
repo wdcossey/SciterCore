@@ -25,7 +25,7 @@ using System.Reflection;
 
 namespace SciterCore
 {
-	public class SciterArchive
+	public class SciterArchive : IDisposable
 	{
 		private static Sciter.SciterApi _api = Sciter.Api;
 		private IntPtr _handle;
@@ -37,7 +37,9 @@ namespace SciterCore
 
 		public bool IsOpen => _handle != IntPtr.Zero;
 
-		public SciterArchive(string uri = DEFAULT_URI)
+		#region Constructor(s)
+
+        public SciterArchive(string uri = DEFAULT_URI)
 		{
 			this.Uri = new Uri($"{uri}", UriKind.Absolute);
 		}
@@ -46,6 +48,19 @@ namespace SciterCore
 		{
 			this.Uri = baseUri;
 		}
+
+        #endregion
+
+        #region Interface Implemenations 
+
+        public void Dispose()
+		{
+			Close();
+		}
+
+        #endregion
+
+        #region Open Archive
 
         public SciterArchive Open(string resourceName)
         {
@@ -98,7 +113,11 @@ namespace SciterCore
 			return this;
 		}
 
-		public void Close()
+        #endregion
+
+        #region Close Archive
+
+        public void Close()
 		{
 			ArchiveNotOpened();
 			
@@ -107,9 +126,13 @@ namespace SciterCore
 			_pinnedArray.Free();
 		}
 
-		public SciterArchive Get(Uri uri, Action<byte[], string> onFound)
+        #endregion
+
+        #region Get Archive Item
+
+        public SciterArchive GetItem(Uri uri, Action<byte[], string> onFound)
 		{
-			byte[] data = this?.Get(uri);
+			byte[] data = this?.GetItem(uri);
 
 			if(data != null)
 			{
@@ -117,9 +140,14 @@ namespace SciterCore
 			}
 			return this;
 		}
-		
 
-		public byte[] Get(Uri uri)
+		public SciterArchive GetItem(string uriString, Action<byte[], string> onFound)
+		{
+			var uri = new Uri(uriString);
+			return GetItem(uri, onFound: onFound);
+		}
+		
+		public byte[] GetItem(Uri uri)
 		{
 			if (IsOpen && uri.GetLeftPart(UriPartial.Scheme).Equals(this.Uri.GetLeftPart(UriPartial.Scheme)))
 			{
@@ -135,22 +163,28 @@ namespace SciterCore
 					return res;
 				}
 			}
-
 			return null;
 		}
 
-		[Obsolete("Use the Get(Uri) method")]
+		public byte[] GetItem(string uriString)
+		{
+			var uri = new Uri(uriString);
+			return GetItem(uri);
+		}
+
+		[Obsolete("Use the GetItem(Uri) method")]
 		public byte[] Get(string path)
 		{
 			var uri = new Uri(path);
 
-			return Get(uri: uri);
+			return GetItem(uri: uri);
 		}
 
+        #endregion
 
-#region Private
+        #region Private Methods
 
-		private void ArchiveNotOpened()
+        private void ArchiveNotOpened()
 		{
 			if(_handle == IntPtr.Zero)
 			{
@@ -165,6 +199,7 @@ namespace SciterCore
 				throw new Exception("Archive already open.");
 			}
 		}
-#endregion
-    }
+
+		#endregion
+	}
 }

@@ -452,7 +452,7 @@ namespace SciterCore
 
 			if(InjectLibConsole)
 			{
-				_consoleArchive?.Get(uri, (data, path) => 
+				_consoleArchive?.GetItem(uri, (data, path) => 
 				{ 
 					_api.SciterDataReady(WindowHandle, path, data, (uint) data.Length);
 				});

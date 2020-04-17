@@ -27,12 +27,16 @@ namespace SciterCore
 {
 	public class SciterRequest
 	{
-		private static Interop.SciterRequest.SciterRequestApi _rapi = Interop.Sciter.RequestApi;
+		private static Interop.SciterRequest.SciterRequestApi _requestApi = Interop.Sciter.RequestApi;
 		public readonly IntPtr _hrq;
 
-		private SciterRequest() { }
+		private SciterRequest() 
+		{
+			//
+		}
 
 		public SciterRequest(IntPtr hrq)
+			: this()
 		{
 			_hrq = hrq;
 		}
@@ -47,7 +51,7 @@ namespace SciterCore
 					strval = Marshal.PtrToStringAnsi(str, (int)str_length);
 				};
 
-				_rapi.RequestUrl(_hrq, frcv, IntPtr.Zero);
+				_requestApi.RequestUrl(_hrq, frcv, IntPtr.Zero);
 				return strval;
 			}
 		}
@@ -62,7 +66,7 @@ namespace SciterCore
 					strval = Marshal.PtrToStringAnsi(str, (int)str_length);
 				};
 
-				_rapi.RequestContentUrl(_hrq, frcv, IntPtr.Zero);
+				_requestApi.RequestContentUrl(_hrq, frcv, IntPtr.Zero);
 				return strval;
 			}
 		}
@@ -72,24 +76,24 @@ namespace SciterCore
 			get
 			{
 				Interop.SciterRequest.SciterResourceType rv;
-				_rapi.RequestGetRequestedDataType(_hrq, out rv);
+				_requestApi.RequestGetRequestedDataType(_hrq, out rv);
 				return rv;
 			}
 		}
 
 		public void Suceeded(uint status, byte[] dataOrNull = null)
 		{
-			_rapi.RequestSetSucceeded(_hrq, status, dataOrNull, dataOrNull == null ? 0 : (uint)dataOrNull.Length);
+			_requestApi.RequestSetSucceeded(_hrq, status, dataOrNull, dataOrNull == null ? 0 : (uint)dataOrNull.Length);
 		}
 
 		public void Failed(uint status, byte[] dataOrNull = null)
 		{
-			_rapi.RequestSetFailed(_hrq, status, dataOrNull, dataOrNull == null ? 0 : (uint)dataOrNull.Length);
+			_requestApi.RequestSetFailed(_hrq, status, dataOrNull, dataOrNull == null ? 0 : (uint)dataOrNull.Length);
 		}
 
 		public void AppendData(byte[] data)
 		{
-			_rapi.RequestAppendDataChunk(_hrq, data, (uint)data.Length);
+			_requestApi.RequestAppendDataChunk(_hrq, data, (uint)data.Length);
 		}
 	}
 }

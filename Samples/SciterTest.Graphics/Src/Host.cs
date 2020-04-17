@@ -88,7 +88,7 @@ namespace SciterTest.Graphics
 			var uri = new Uri(sld.uri);
 
 			// load resource from SciterArchive
-			_archive?.Get(uri, (data, path) => 
+			_archive?.GetItem(uri, (data, path) => 
 			{ 
 				_api.SciterDataReady(_window.Handle, path, data, (uint) data.Length);
 			});

@@ -6,7 +6,7 @@
     <SharedGUID>5938F18A-3BA2-4856-A8D3-4197084549E0</SharedGUID>
   </PropertyGroup>
   <PropertyGroup Label="Configuration">
-    <Import_RootNamespace>SciterCoreShared</Import_RootNamespace>
+    <Import_RootNamespace>SciterCore</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Interop\PInvokeGTK.cs" />
@@ -34,9 +34,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)SciterRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SciterValue.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SciterWindow.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)WinForms\SciterArchiveComponent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)WinForms\SciterControl.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\WindowExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EventHandlerRegistry.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)WinForms\SciterHostComponent.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)scripts\fart.exe" />

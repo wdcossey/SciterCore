@@ -1,18 +1,18 @@
 ﻿using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using SciterSharp;
+using SciterCore;
 
 
 #if WINDOWS
-[assembly: AssemblyTitle("SciterSharpWindows")]
-	[assembly: AssemblyProduct("SciterSharpWindows")]
+[assembly: AssemblyTitle("SciterCore")]
+[assembly: AssemblyProduct("SciterCore.WinForms")]
 #elif GTKMONO
-	[assembly: AssemblyTitle("SciterSharpGTK")]
-	[assembly: AssemblyProduct("SciterSharpGTK")]
+	[assembly: AssemblyTitle("SciterCore")]
+	[assembly: AssemblyProduct("SciterCore.Gtk")]
 #elif OSX
-	[assembly: AssemblyTitle("SciterSharpOSX")]
-	[assembly: AssemblyProduct("SciterSharpOSX")]
+	[assembly: AssemblyTitle("SciterCore")]
+	[assembly: AssemblyProduct("SciterCore.Mac")]
 #endif
 
 [assembly: AssemblyDescription("C# bindings for the Sciter engine")]
