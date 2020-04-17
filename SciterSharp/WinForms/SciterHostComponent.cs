@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 
 namespace SciterCore.WinForms
 {
+    [DisplayName("Host")]
+    [DesignerCategory("Sciter")]
+    [Category("Sciter")]
     public class SciterHostComponent : Component
     {
         internal InternalHost Host { get; }

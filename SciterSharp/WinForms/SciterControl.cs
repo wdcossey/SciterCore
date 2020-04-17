@@ -16,6 +16,9 @@ namespace SciterCore.WinForms
 	/// <summary>
 	/// Represents a SciterWindow control.
 	/// </summary>
+	[DisplayName("SciterControl")]
+    [DesignerCategory("Sciter")]
+    [Category("Sciter")]
 	public class SciterControl : Control
 	{
 
@@ -33,6 +36,8 @@ namespace SciterCore.WinForms
 		{
 			SciterWnd = new SciterWindow();
 		}
+
+		public SciterHostComponent Host { get; set; }
 
         public string Html { get; set; }
 

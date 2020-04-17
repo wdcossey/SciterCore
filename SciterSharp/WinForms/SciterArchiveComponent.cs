@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace SciterCore.WinForms
 {
+    [DisplayName("Archive")]
+    [DesignerCategory("Sciter")]
+    [Category("Sciter")]
     public class SciterArchiveComponent : Component
     {
         internal SciterArchive Archive { get; }
