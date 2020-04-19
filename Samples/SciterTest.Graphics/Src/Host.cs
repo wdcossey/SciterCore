@@ -10,6 +10,7 @@ using SciterCore.Interop;
 using SciterGraphics = SciterCore.Interop.SciterGraphics;
 using SciterValue = SciterCore.SciterValue;
 using System.Reflection;
+using SciterTest.Graphics.Behaviors;
 
 namespace SciterTest.Graphics
 {
@@ -19,7 +20,25 @@ namespace SciterTest.Graphics
 		public Host(SciterWindow window)
 			: base(window)
 		{
+			RegisterBehaviorHandler(typeof(InfoBitmapBehavior));
 
+			RegisterBehaviorHandler(typeof(SolidBitmapBehavior));
+			RegisterBehaviorHandler(typeof(SolidForegroundBitmapBehavior));
+
+			RegisterBehaviorHandler(typeof(LinearBitmapBehavior));
+			RegisterBehaviorHandler(typeof(LinearForegroundBitmapBehavior));
+
+			RegisterBehaviorHandler(typeof(RadialBitmapBehavior));
+			RegisterBehaviorHandler(typeof(RadialForegroundBitmapBehavior));
+
+			RegisterBehaviorHandler(typeof(DrawTextBehavior));
+			RegisterBehaviorHandler(typeof(DrawGeometryBehavior));
+
+	        AttachEventHandler(new HostEventHandler());
+
+			SetupPage("index.html");
+
+			window.Show();
 		}
 
 		// Things to do here:
@@ -66,7 +85,11 @@ namespace SciterTest.Graphics
 #if DEBUG
 			string location = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
+#if OSX
+			location += "\\..\\..\\..\\..\\..\\";
+#else
 			location += "\\..\\..";
+#endif
 
 			string path = Path.Combine(location, "res", page);
 

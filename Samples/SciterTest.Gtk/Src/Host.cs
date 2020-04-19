@@ -16,7 +16,7 @@ namespace SciterTest.Gtk
 		{
 			var host = this;
 
-			host.RegisterBehaviorHandler(() => new DrawGeometryBehavior("DrawGeometry"))
+			host.RegisterBehaviorHandler(() => new DrawGeometryBehavior("draw-geometry"))
 				.AttachEventHandler(new HostEventHandler());
 
 			host.SetupPage(page: "index.html");
@@ -95,10 +95,8 @@ namespace SciterTest.Gtk
 
 		protected override SciterXDef.LoadResult OnLoadData(SciterXDef.SCN_LOAD_DATA sld)
 		{
-			var uri = new Uri(sld.uri);
-
 			// load resource from SciterArchive
-			_archive?.GetItem(uri, (data, path) => 
+			_archive?.GetItem(sld.uri, (data, path) => 
 			{ 
 				_api.SciterDataReady(_window.Handle, path, data, (uint) data.Length);
 			});

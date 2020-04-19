@@ -39,7 +39,7 @@ namespace SciterTest.Core
 
 		public BaseHost()
 		{
-#if !!DEBUG
+#if !DEBUG
 			_archive.Open("SiteResource");
 #endif
 		}
@@ -52,7 +52,7 @@ namespace SciterTest.Core
 
 		public void SetupPage(string page)
 		{
-#if !DEBUG
+#if DEBUG
 			string location = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
 			location += "\\..\\..";

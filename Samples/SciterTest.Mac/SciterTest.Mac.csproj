@@ -37,7 +37,7 @@
       <CustomCommands>
         <Command>
           <type>BeforeBuild</type>
-          <command>sh ${SolutionDir}/SciterSharp/scripts/packOSX.sh ${ProjectDir}/res ${ProjectDir}/SiteResource.bin</command>
+          <command>sh ${SolutionDir}/scripts/packOSX.sh ${ProjectDir}/res ${ProjectDir}/SiteResource.bin</command>
         </Command>
       </CustomCommands>
     </CustomCommands>
@@ -63,7 +63,7 @@
       <CustomCommands>
         <Command>
           <type>BeforeBuild</type>
-          <command>sh ${SolutionDir}/SciterSharp/scripts/packOSX.sh ${ProjectDir}/res ${ProjectDir}/SiteResource.bin</command>
+          <command>sh ${SolutionDir}/scripts/packOSX.sh ${ProjectDir}/res ${ProjectDir}/SiteResource.bin</command>
         </Command>
       </CustomCommands>
     </CustomCommands>
@@ -105,12 +105,6 @@
     <BundleResource Include="res\OXS_Logo.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\SciterSharp\SciterCore.Mac.csproj">
-      <Project>{42bb6ec1-e806-4b5b-a242-1662aae7bf25}</Project>
-      <Name>SciterCore.Mac</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <NativeReference Include="..\..\sciter-sdk\bin.osx\sciter-osx-64.dylib">
       <Kind>Dynamic</Kind>
       <SmartLink>False</SmartLink>
@@ -120,6 +114,12 @@
     <EmbeddedResource Include="SiteResource.bin">
       <LogicalName>SiteResource</LogicalName>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\SciterCore\SciterCore.Mac.csproj">
+      <Project>{42BB6EC1-E806-4B5B-A242-1662AAE7BF25}</Project>
+      <Name>SciterCore.Mac</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets" />
 </Project>

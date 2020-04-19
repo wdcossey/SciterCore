@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <None Remove="LibConsole\tracewnd.html" />
+    <None Remove="LibConsole\show_img.html" />
+    <None Remove="LibConsole\unittest.html" />
+    <None Remove="LibConsole\utils.tis" />
+    <None Remove="LibConsole\popup.css" />
+    <None Remove="LibConsole\show_data.html" />
+    <None Remove="LibConsole\console.tis" />
+    <None Remove="LibConsole.bin" />
+    <None Remove="version.json" />
+    <None Remove="SciterMidi.snk" />
+    <None Remove="SciterCoreShared.projitems" />
+    <None Remove="SciterCore.Gtk.dll.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(SolutionDir)sciter-sdk\bin.win\x64\sciter.dll">
+      <Link>x64\sciter.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="$(SolutionDir)sciter-sdk\bin.win\x32\sciter.dll">
+      <Link>x86\sciter.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  
+
+  <ItemGroup>
+    <Compile Remove="*" />
+    <Compile Remove="**\*" />
+  </ItemGroup>
+</Project>

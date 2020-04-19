@@ -1,26 +1,120 @@
 <!-- OmniView:on -->
-<html>
+<html window-frame="extended" window-blurbehind="dark" theme="dark">
 <head>
-	<style>
-		body { margin: 30px; }
-		div
-		{
-			border: solid 1px silver;
-			size: 300px;
-			behavior: DrawGeometry;
-			background: rgba(0, 0, 0, 0.5);
-		}
-	</style>
+    <style>
 
-	<script type="text/tiscript">
-		Utils.a = 123;
-		log("at index" + Utils.a)
-	</script>
+        html {
+            background: rgba(0, 0, 0, 0.25);
+            color: white;
+        }
+
+        body {
+            margin: 30px;
+        }
+
+        img {
+            margin: 4px;
+            height: 96px;
+            border: 2px dashed rgba(255, 255, 255, 0.9);
+            behavior: draw-alt-attribute;
+        }
+
+            img[class*=alt-background] {
+                fill: cornflowerblue;
+                background: rgba(255, 127, 127, 1);
+            }
+
+            img[class*=solid] {
+                behavior: draw-solid-background;
+            }
+
+            img[class*=solid-fore] {
+                behavior: draw-solid-foreground;
+            }
+
+            img[class*=linear] {
+                behavior: draw-linear-background;
+            }
+
+            img[class*=linear-fore] {
+                behavior: draw-linear-foreground;
+            }
+
+            img[class*=radial] {
+                behavior: draw-radial-background;
+            }
+
+            img[class*=radial-fore] {
+                behavior: draw-radial-foreground;
+            }
+    </style>
+
+    <script type="text/tiscript">
+        Utils.a = 123;
+        log("at index" + Utils.a)
+    </script>
+
 </head>
 
 <body>
-	<div></div>
-	<plaintext></plaintext>
-	<frame src="test.html" />
+
+    <div>
+        <img src="logo.png"
+             alt="Default" />
+
+        <img src="icons8-visual-studio-2019.svg"
+             alt="Default" />
+
+        <img src="icons8-c-sharp-logo.svg"
+             class="alt-background"
+             alt="Default" />
+    </div>
+
+    <div>
+        <img src="logo.png"
+             alt="Solid"
+             class="solid" />
+
+        <img src="icons8-visual-studio-2019.svg"
+             alt="Solid"
+             class="solid" />
+
+        <img src="icons8-c-sharp-logo.svg"
+             alt="Solid"
+             class="solid-fore alt-background" />
+    </div>
+
+    <div>
+        <img src="logo.png"
+             alt="Linear"
+             class="linear" />
+
+        <img src="icons8-visual-studio-2019.svg"
+             alt="Linear"
+             class="linear" />
+
+        <img src="icons8-c-sharp-logo.svg"
+             alt="Linear"
+             class="linear-fore alt-background" />
+    </div>
+
+    <div>
+        <img src="logo.png"
+             alt="Radial"
+             class="radial" />
+
+        <img src="icons8-visual-studio-2019.svg"
+             alt="Radial"
+             class="radial" />
+
+        <img src="icons8-c-sharp-logo.svg"
+             alt="Radial"
+             class="radial-fore alt-background" />
+    </div>
+
+    <!--
+    <plaintext></plaintext>
+    <frame src="test.html" />
+    -->
 </body>
 </html>
