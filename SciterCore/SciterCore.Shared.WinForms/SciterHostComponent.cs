@@ -1,6 +1,4 @@
-﻿#if WINDOWS && NET45
-
-using SciterCore.Interop;
+﻿using SciterCore.Interop;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -95,5 +93,3 @@ namespace SciterCore.WinForms
     }
 
 }
-
-#endif

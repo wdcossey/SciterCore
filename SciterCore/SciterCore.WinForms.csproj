@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="SciterCoreShared.projitems" Label="Shared" Condition="Exists('SciterCoreShared.projitems')" />
+  <Import Project="SciterCore.Shared.WinForms\SciterCore.Shared.WinForms.projitems" Label="Shared" Condition="Exists('SciterCore.Shared.WinForms\SciterCore.Shared.WinForms.projitems')" />
+  <Import Project="SciterCore.Shared.projitems" Label="Shared" Condition="Exists('SciterCore.Shared.projitems')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>

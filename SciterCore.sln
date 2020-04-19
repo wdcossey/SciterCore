@@ -8,7 +8,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.gitignore = .gitignore
 		OmniCode-Settings.json = OmniCode-Settings.json
 		README.md = README.md
-		SciterCore\SciterSharpOSX.nuspec = SciterSharp\SciterSharpOSX.nuspec
+		SciterCore\SciterSharpOSX.nuspec = SciterCore\SciterSharpOSX.nuspec
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{2ED64300-CB6A-4CB3-B687-D2795395FC44}"
@@ -41,7 +41,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SciterCore.WinForms", "Scit
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{3F91218E-BE78-4C76-8A97-C2CD48E72FE8}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SciterCoreShared", "SciterCore\SciterCoreShared.shproj", "{8AC2F80A-0648-45D4-9F2E-B4422C4D1A9B}"
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SciterCore.Shared", "SciterCore\SciterCore.Shared.shproj", "{8AC2F80A-0648-45D4-9F2E-B4422C4D1A9B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{14C11ACF-171B-498A-B05E-1FBA845B8405}"
 EndProject
@@ -60,6 +60,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Graphics", "Graphics", "{244506BE-7F72-4A4F-8E22-2AF438399C05}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SciterTest.Graphics.Mac", "Samples\SciterTest.Graphics\SciterTest.Graphics.Mac.csproj", "{53E56088-BA7F-4740-9C7A-E6E1B769B24D}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SciterCore.Shared.WinForms", "SciterCore\SciterCore.Shared.WinForms\SciterCore.Shared.WinForms.shproj", "{F504805E-3A89-41DD-88D4-8319B5A31265}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -446,6 +448,7 @@ Global
 		{94F9B5FC-8186-4D0E-B3A8-2EA68CAFDF8F} = {2ABBA2EF-6FEE-4F81-BF64-A1AB02BEE2C5}
 		{244506BE-7F72-4A4F-8E22-2AF438399C05} = {2ABBA2EF-6FEE-4F81-BF64-A1AB02BEE2C5}
 		{53E56088-BA7F-4740-9C7A-E6E1B769B24D} = {244506BE-7F72-4A4F-8E22-2AF438399C05}
+		{F504805E-3A89-41DD-88D4-8319B5A31265} = {3F91218E-BE78-4C76-8A97-C2CD48E72FE8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {ACCCA607-3FFA-4A98-AB4B-302FEDF13D01}

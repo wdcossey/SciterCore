@@ -1,5 +1,4 @@
-﻿#if WINDOWS && NET45
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -85,4 +84,3 @@ namespace SciterCore.WinForms
 
     }
 }
-#endif

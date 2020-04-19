@@ -48,6 +48,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <Import Project="SciterCoreShared.projitems" Label="Shared" Condition="Exists('SciterCoreShared.projitems')" />
+  <Import Project="SciterCore.Shared.projitems" Label="Shared" Condition="Exists('SciterCore.Shared.projitems')" />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

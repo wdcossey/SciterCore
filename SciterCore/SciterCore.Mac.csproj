@@ -79,6 +79,6 @@
     <Reference Include="System.Core" />
     <Reference Include="Xamarin.Mac" />
   </ItemGroup>
-  <Import Project="SciterCoreShared.projitems" Label="Shared" Condition="Exists('SciterCoreShared.projitems')" />
+  <Import Project="SciterCore.Shared.projitems" Label="Shared" Condition="Exists('SciterCore.Shared.projitems')" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets" />
 </Project>

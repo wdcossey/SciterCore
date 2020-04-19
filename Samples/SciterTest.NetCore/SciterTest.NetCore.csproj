@@ -37,4 +37,5 @@
     <Exec Command="rem $(SolutionDir)scripts\packWindows.bat &quot;$(SolutionDir)SciterCore\LibConsole&quot; &quot;$(ProjectDir)LibConsole.bin&quot;&#xD;&#xA;$(SolutionDir)scripts\packWindows.bat &quot;$(ProjectDir)res&quot; &quot;$(ProjectDir)SiteResource.bin&quot;" />
   </Target>
 
+  <Import Project="..\..\SciterCore\SciterCore.Shared.projitems" Label="Shared" Condition="Exists('..\..\SciterCore\SciterCore.Shared.projitems')" />
 </Project>

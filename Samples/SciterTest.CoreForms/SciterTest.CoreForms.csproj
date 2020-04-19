@@ -14,5 +14,4 @@
     <DefineConstants>TRACE;WINDOWS;NETCOREAPP</DefineConstants>
   </PropertyGroup>
 
-  <Import Project="..\..\SciterCore\SciterCoreShared.projitems" Label="Shared" Condition="Exists('..\..\SciterCore\SciterCoreShared.projitems')" />
 </Project>
