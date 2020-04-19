@@ -40,11 +40,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\BehaviorAttributeExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)scripts\fart.exe" />
-    <None Include="$(MSBuildThisFileDirectory)scripts\packfolder" />
-    <None Include="$(MSBuildThisFileDirectory)scripts\packfolder.exe" />
-    <None Include="$(MSBuildThisFileDirectory)scripts\packOSX.sh" />
-    <None Include="$(MSBuildThisFileDirectory)scripts\packWindows.bat" />
     <None Include="$(MSBuildThisFileDirectory)LibConsole\console.tis" />
     <None Include="$(MSBuildThisFileDirectory)LibConsole\popup.css" />
     <None Include="$(MSBuildThisFileDirectory)LibConsole\show_data.html" />
