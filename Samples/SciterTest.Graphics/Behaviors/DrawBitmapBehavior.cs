@@ -2,7 +2,7 @@
 using SciterCore;
 using SciterCore.Attributes;
 using SciterCore.Interop;
-using SciterTest.Graphocs.Extensions;
+using SciterTest.Graphics.Extensions;
 using SkiaSharp;
 using SciterGraphics = SciterCore.SciterGraphics;
 
@@ -16,7 +16,7 @@ namespace SciterTest.Graphics.Behaviors
         {
             if (prms.cmd == SciterBehaviors.DRAW_EVENTS.DRAW_FOREGROUND)
             {
-                using (SKBitmap bitmap = new SKBitmap(prms.area.Width, prms.area.Height))
+                using (SKBitmap bitmap = new SKBitmap(width: prms.area.Width, height: prms.area.Height, colorType: SKColorType.Rgba8888, alphaType: SKAlphaType.Premul))
                 using (SKCanvas canvas = new SKCanvas(bitmap))
                 using (SKPaint paint = new SKPaint())
                 {
@@ -31,7 +31,7 @@ namespace SciterTest.Graphics.Behaviors
                     paint.MeasureText(altText, ref textBounds);
 
                     paint.Color = new SKColor(0, 0, 0, 127);
-                    canvas.DrawRect(bitmap.Width, bitmap.Height, -(textBounds.Width + 10), -(textBounds.Height + 5), paint);
+                    canvas.DrawRect(bitmap.Width, bitmap.Height, -(textBounds.Width + 10), -(textBounds.Height + 10), paint);
 
                     paint.Color = new SKColor(255, 255, 255);
                     paint.TextAlign = SKTextAlign.Right;
@@ -68,7 +68,7 @@ namespace SciterTest.Graphics.Behaviors
         {
             if (prms.cmd == _drawEvent)
             {
-                using (SKBitmap bitmap = new SKBitmap(prms.area.Width, prms.area.Height))
+                using (SKBitmap bitmap = new SKBitmap(width: prms.area.Width, height: prms.area.Height, colorType: SKColorType.Rgba8888, alphaType: SKAlphaType.Premul))
                 using (SKCanvas canvas = new SKCanvas(bitmap))
                 using (SKPaint paint = new SKPaint())
                 {
@@ -104,7 +104,7 @@ namespace SciterTest.Graphics.Behaviors
             if (prms.cmd == SciterBehaviors.DRAW_EVENTS.DRAW_BACKGROUND)
             {
 
-                using (SKBitmap bitmap = new SKBitmap(prms.area.Width, prms.area.Height))
+                using (SKBitmap bitmap = new SKBitmap(width: prms.area.Width, height: prms.area.Height, colorType: SKColorType.Rgba8888, alphaType: SKAlphaType.Premul))
                 using (SKCanvas canvas = new SKCanvas(bitmap))
                 using (SKPaint paint = new SKPaint())
                 {
@@ -203,7 +203,7 @@ namespace SciterTest.Graphics.Behaviors
             if (prms.cmd == _drawEvent)
             {
 
-                using (SKBitmap bitmap = new SKBitmap(prms.area.Width, prms.area.Height))
+                using (SKBitmap bitmap = new SKBitmap(width: prms.area.Width, height: prms.area.Height, colorType: SKColorType.Rgba8888, alphaType: SKAlphaType.Premul))
                 using (SKCanvas canvas = new SKCanvas(bitmap))
                 using (SKPaint paint = new SKPaint())
                 {
@@ -262,7 +262,7 @@ namespace SciterTest.Graphics.Behaviors
         {
             if (prms.cmd == _drawEvent)
             {
-                using (SKBitmap bitmap = new SKBitmap(prms.area.Width, prms.area.Height))
+                using (SKBitmap bitmap = new SKBitmap(width: prms.area.Width, height: prms.area.Height, colorType: SKColorType.Rgba8888, alphaType: SKAlphaType.Premul))
                 using (SKCanvas canvas = new SKCanvas(bitmap))
                 using (SKPaint paint = new SKPaint())
                 {

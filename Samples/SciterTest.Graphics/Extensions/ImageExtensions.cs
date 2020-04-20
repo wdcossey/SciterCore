@@ -1,8 +1,7 @@
-﻿using System;
-using SciterCore;
+﻿using SciterCore;
 using SkiaSharp;
 
-namespace SciterTest.Graphocs.Extensions
+namespace SciterTest.Graphics.Extensions
 {
     public static class ImageExtensions
     {

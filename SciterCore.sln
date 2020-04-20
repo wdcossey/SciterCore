@@ -53,7 +53,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SciterTest.CoreForms", "Sam
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SciterTest.Wpf", "Samples\SciterTest.Wpf\SciterTest.Wpf.csproj", "{8EC9F0AE-F6C7-47CC-9407-3F8140DF52C6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SciterCore.Binaries.Windows", "SciterCore\SciterCore.Binaries.Windows.csproj", "{6F0C6E25-6869-4776-A983-E9267AB30A0C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SciterCore.Binaries.Windows", "SciterCore\SciterCore.Binaries.Windows.csproj", "{6F0C6E25-6869-4776-A983-E9267AB30A0C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Gtk", "Gtk", "{94F9B5FC-8186-4D0E-B3A8-2EA68CAFDF8F}"
 EndProject
@@ -65,13 +65,15 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SciterCore.Shared.WinForms"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		SciterCore\SciterCoreShared.projitems*{18b2e4e7-cb77-44c3-865b-be05620aba4d}*SharedItemsImports = 4
-		SciterCore\SciterCoreShared.projitems*{1bb04d34-ceb7-4f51-8d02-980150e4c2a5}*SharedItemsImports = 5
-		SciterCore\SciterCoreShared.projitems*{42bb6ec1-e806-4b5b-a242-1662aae7bf25}*SharedItemsImports = 4
-		SciterCore\SciterCoreShared.projitems*{810ab1b7-d4ef-4df0-9c09-5347a8a612ca}*SharedItemsImports = 5
-		SciterCore\SciterCoreShared.projitems*{8ac2f80a-0648-45d4-9f2e-b4422c4d1a9b}*SharedItemsImports = 13
-		SciterCore\SciterCoreShared.projitems*{8ec9f0ae-f6c7-47cc-9407-3f8140df52c6}*SharedItemsImports = 4
-		SciterCore\SciterCoreShared.projitems*{d60acae0-c246-4936-b92b-b756841db545}*SharedItemsImports = 4
+		SciterCore\SciterCore.Shared.projitems*{18b2e4e7-cb77-44c3-865b-be05620aba4d}*SharedItemsImports = 4
+		SciterCore\SciterCore.Shared.WinForms\SciterCore.Shared.WinForms.projitems*{18b2e4e7-cb77-44c3-865b-be05620aba4d}*SharedItemsImports = 4
+		SciterCore\SciterCore.Shared.projitems*{1bb04d34-ceb7-4f51-8d02-980150e4c2a5}*SharedItemsImports = 5
+		SciterCore\SciterCore.Shared.projitems*{42bb6ec1-e806-4b5b-a242-1662aae7bf25}*SharedItemsImports = 4
+		SciterCore\SciterCore.Shared.projitems*{810ab1b7-d4ef-4df0-9c09-5347a8a612ca}*SharedItemsImports = 5
+		SciterCore\SciterCore.Shared.projitems*{8ac2f80a-0648-45d4-9f2e-b4422c4d1a9b}*SharedItemsImports = 13
+		SciterCore\SciterCore.Shared.projitems*{8ec9f0ae-f6c7-47cc-9407-3f8140df52c6}*SharedItemsImports = 4
+		SciterCore\SciterCore.Shared.projitems*{d60acae0-c246-4936-b92b-b756841db545}*SharedItemsImports = 4
+		SciterCore\SciterCore.Shared.WinForms\SciterCore.Shared.WinForms.projitems*{f504805e-3a89-41dd-88d4-8319b5a31265}*SharedItemsImports = 13
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -271,22 +273,22 @@ Global
 		{77C8C5E7-4AB3-49FF-B8CD-4EE0B850576A}.Debug|Any CPU.ActiveCfg = Debug|x64
 		{77C8C5E7-4AB3-49FF-B8CD-4EE0B850576A}.Debug|Any CPU.Build.0 = Debug|x64
 		{77C8C5E7-4AB3-49FF-B8CD-4EE0B850576A}.Debug|ARM.ActiveCfg = Debug|x64
+		{77C8C5E7-4AB3-49FF-B8CD-4EE0B850576A}.Debug|ARM.Build.0 = Debug|x64
 		{77C8C5E7-4AB3-49FF-B8CD-4EE0B850576A}.Debug|ARM64.ActiveCfg = Debug|x64
+		{77C8C5E7-4AB3-49FF-B8CD-4EE0B850576A}.Debug|ARM64.Build.0 = Debug|x64
 		{77C8C5E7-4AB3-49FF-B8CD-4EE0B850576A}.Debug|x64.ActiveCfg = Debug|x64
 		{77C8C5E7-4AB3-49FF-B8CD-4EE0B850576A}.Debug|x64.Build.0 = Debug|x64
 		{77C8C5E7-4AB3-49FF-B8CD-4EE0B850576A}.Debug|x86.ActiveCfg = Debug|x64
+		{77C8C5E7-4AB3-49FF-B8CD-4EE0B850576A}.Debug|x86.Build.0 = Debug|x64
 		{77C8C5E7-4AB3-49FF-B8CD-4EE0B850576A}.Release|Any CPU.ActiveCfg = Release|x64
 		{77C8C5E7-4AB3-49FF-B8CD-4EE0B850576A}.Release|Any CPU.Build.0 = Release|x64
 		{77C8C5E7-4AB3-49FF-B8CD-4EE0B850576A}.Release|ARM.ActiveCfg = Release|x64
+		{77C8C5E7-4AB3-49FF-B8CD-4EE0B850576A}.Release|ARM.Build.0 = Release|x64
 		{77C8C5E7-4AB3-49FF-B8CD-4EE0B850576A}.Release|ARM64.ActiveCfg = Release|x64
+		{77C8C5E7-4AB3-49FF-B8CD-4EE0B850576A}.Release|ARM64.Build.0 = Release|x64
 		{77C8C5E7-4AB3-49FF-B8CD-4EE0B850576A}.Release|x64.ActiveCfg = Release|x64
 		{77C8C5E7-4AB3-49FF-B8CD-4EE0B850576A}.Release|x64.Build.0 = Release|x64
 		{77C8C5E7-4AB3-49FF-B8CD-4EE0B850576A}.Release|x86.ActiveCfg = Release|x64
-		{77C8C5E7-4AB3-49FF-B8CD-4EE0B850576A}.Debug|ARM.Build.0 = Debug|x64
-		{77C8C5E7-4AB3-49FF-B8CD-4EE0B850576A}.Debug|ARM64.Build.0 = Debug|x64
-		{77C8C5E7-4AB3-49FF-B8CD-4EE0B850576A}.Debug|x86.Build.0 = Debug|x64
-		{77C8C5E7-4AB3-49FF-B8CD-4EE0B850576A}.Release|ARM.Build.0 = Release|x64
-		{77C8C5E7-4AB3-49FF-B8CD-4EE0B850576A}.Release|ARM64.Build.0 = Release|x64
 		{77C8C5E7-4AB3-49FF-B8CD-4EE0B850576A}.Release|x86.Build.0 = Release|x64
 		{D60ACAE0-C246-4936-B92B-B756841DB545}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D60ACAE0-C246-4936-B92B-B756841DB545}.Debug|Any CPU.Build.0 = Debug|Any CPU

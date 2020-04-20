@@ -82,7 +82,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="${SolutionDir}\SciterCore\SciterCore.WinForms.csproj">
+    <ProjectReference Include="..\..\SciterCore\SciterCore.WinForms.csproj">
       <Project>{18b2e4e7-cb77-44c3-865b-be05620aba4d}</Project>
       <Name>SciterCore.WinForms</Name>
     </ProjectReference>

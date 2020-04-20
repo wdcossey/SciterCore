@@ -105,11 +105,11 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="${SolutionDir}\SciterCore\SciterCore.Binaries.Windows.csproj">
+    <ProjectReference Include="..\..\SciterCore\SciterCore.Binaries.Windows.csproj">
       <Project>{6f0c6e25-6869-4776-a983-e9267ab30a0c}</Project>
       <Name>SciterCore.Binaries.Windows</Name>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="${SolutionDir}\SciterCore\SciterCoreShared.projitems" Label="Shared" />
+  <Import Project="..\..\SciterCore\SciterCore.Shared.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

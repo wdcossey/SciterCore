@@ -3,6 +3,10 @@
   <Import Project="SciterCore.Shared.WinForms\SciterCore.Shared.WinForms.projitems" Label="Shared" Condition="Exists('SciterCore.Shared.WinForms\SciterCore.Shared.WinForms.projitems')" />
   <Import Project="SciterCore.Shared.projitems" Label="Shared" Condition="Exists('SciterCore.Shared.projitems')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+    <PropertyGroup>
+      <BaseOutputPath>$(MSBuildProjectDirectory)/out/$(MSBuildProjectName)/bin</BaseOutputPath>
+      <BaseIntermediateOutputPath>$(MSBuildProjectDirectory)/out/$(MSBuildProjectName)/obj</BaseIntermediateOutputPath>
+    </PropertyGroup>
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -66,6 +70,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>$(ProjectDir)scripts\packWindows.bat "$(ProjectDir)LibConsole" "$(ProjectDir)LibConsole.bin"</PreBuildEvent>
+    <PreBuildEvent>$(SolutionDir)scripts\packWindows.bat "$(ProjectDir)LibConsole" "$(ProjectDir)LibConsole.bin"</PreBuildEvent>
   </PropertyGroup>
 </Project>

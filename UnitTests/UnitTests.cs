@@ -91,11 +91,11 @@ namespace SciterCore.UnitTests
 		public void TestColor_AlphaAsInt()
 		{
 			// RGBA
-			var rgba = new RGBAColor(255, 255, 255);
+			var rgba = new RGBAColor(255, 5, 5);
 			Assert.IsTrue(rgba.R == 255);
 			Assert.IsTrue(rgba.G == 5);
 			Assert.IsTrue(rgba.B == 5);
-			Assert.IsTrue(rgba.A == 0);
+			Assert.IsTrue(rgba.A == 255);
 
 			// RGBA
 			rgba = new RGBAColor(0, 0, 255, 127);
@@ -133,8 +133,8 @@ namespace SciterCore.UnitTests
 		{			
 			var invalid = RGBAColor.Invalid;
 
-			var rgba = new RGBAColor(-1, -255, -1000, -255d);
-			Assert.IsTrue(rgba.Value == 0);
+			var rgba = new RGBAColor(-1, -255, -1000);
+			Assert.IsTrue(rgba.Value == invalid.Value);
 		}
 
 		private class TestableDebugOutputHandler : SciterDebugOutputHandler

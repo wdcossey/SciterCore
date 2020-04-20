@@ -14,4 +14,10 @@
     <DefineConstants>TRACE;WINDOWS;NETCOREAPP</DefineConstants>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\SciterCore\SciterCore.Binaries.Windows.csproj" />
+  </ItemGroup>
+
+  <Import Project="..\..\SciterCore\SciterCore.Shared.projitems" Label="Shared" />
+
 </Project>
