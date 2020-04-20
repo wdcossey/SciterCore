@@ -7,6 +7,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using SciterCore;
+using SciterCore.Interop;
 
 namespace SciterTest.NetCore
 {
@@ -15,40 +17,49 @@ namespace SciterTest.NetCore
         [STAThread]
         static async Task Main(string[] args)
         {
-            var host = new HostBuilder()
-                .ConfigureHostConfiguration(configHost =>
-                {
-                    configHost.SetBasePath(Directory.GetCurrentDirectory());
-                    //configHost.AddJsonFile(_hostsettings, optional: true);
-                    //configHost.AddEnvironmentVariables(prefix: _prefix);
-                    configHost.AddCommandLine(args);
-                })
-                .ConfigureAppConfiguration((hostContext, configApp) =>
-                {
-                    configApp.SetBasePath(Directory.GetCurrentDirectory());
-                    //configApp.AddJsonFile(_appsettings, optional: true);
-                    configApp.AddJsonFile(
-                        $"appsettings.{hostContext.HostingEnvironment.EnvironmentName}.json",
-                        optional: true);
-                    //configApp.AddEnvironmentVariables(prefix: _prefix);
-                    configApp.AddCommandLine(args);
-                })
-                .ConfigureServices((hostContext, services) =>
-                {
-                    services.AddLogging();
-                    services.AddHostedService<Startup>();
+
+            var app = new SciterApplication();
+            var window = new Window();
+            var host = new Host(window);
+
+            app.Run(host);
+
+            
+
+            //var host = new HostBuilder()
+            //    .ConfigureHostConfiguration(configHost =>
+            //    {
+            //        configHost.SetBasePath(Directory.GetCurrentDirectory());
+            //        //configHost.AddJsonFile(_hostsettings, optional: true);
+            //        //configHost.AddEnvironmentVariables(prefix: _prefix);
+            //        configHost.AddCommandLine(args);
+            //    })
+            //    .ConfigureAppConfiguration((hostContext, configApp) =>
+            //    {
+            //        configApp.SetBasePath(Directory.GetCurrentDirectory());
+            //        //configApp.AddJsonFile(_appsettings, optional: true);
+            //        configApp.AddJsonFile(
+            //            $"appsettings.{hostContext.HostingEnvironment.EnvironmentName}.json",
+            //            optional: true);
+            //        //configApp.AddEnvironmentVariables(prefix: _prefix);
+            //        configApp.AddCommandLine(args);
+            //    })
+            //    .ConfigureServices((hostContext, services) =>
+            //    {
+            //        services.AddLogging();
+            //        services.AddHostedService<Startup>();
  
-                })
-                .ConfigureLogging((hostContext, configLogging) =>
-                {
-                    configLogging.AddConsole();
+            //    })
+            //    .ConfigureLogging((hostContext, configLogging) =>
+            //    {
+            //        configLogging.AddConsole();
  
-                })
-                .UseConsoleLifetime()
-                .Build();
+            //    })
+            //    .UseConsoleLifetime()
+            //    .Build();
  
 
-            await host.RunAsync();
+            //await host.RunAsync();
 
         }
     }

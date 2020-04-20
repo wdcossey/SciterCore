@@ -25,6 +25,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Interop\TIScript.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LibVersion.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MessageBox.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SciterApplication.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SciterArchive.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SciterDebugOutputHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SciterElement.cs" />

@@ -7,12 +7,11 @@ namespace SciterTest.NetCore
 	{
 		public Window()
 		{
-			var wnd = this;
             CreateMainWindow(800, 600);
             CenterTopLevelWindow();
 			SetTitle("SciterTest.NetCore");
 			#if WINDOWS
-			wnd.Icon = Properties.Resources.IconMain;
+				wnd.Icon = Properties.Resources.IconMain;
 			#endif
         }
 	}

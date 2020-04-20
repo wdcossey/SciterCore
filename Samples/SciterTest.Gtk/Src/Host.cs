@@ -37,9 +37,6 @@ namespace SciterTest.Gtk
 		public bool Host_HelloSciter(SciterElement el, SciterValue[] args, out SciterValue result)
 		{
 			var stackFrame = new StackTrace(true).GetFrame(0);//.GetFileName();
-
-			//<a href="http://www.codeproject.com/Articles/1057199/Sciter-HTML-Csharp-based-desktop-apps-walkthrough">Walk-through for writing apps with SciterSharp</a>
-
 			result = new SciterValue($"<h2>Hello Sciter from C#!</h2><code>Method: {stackFrame.GetMethod().Name}<br/>File: <a href=\"{new Uri(stackFrame.GetFileName()).AbsoluteUri}\">{Path.GetFileName(stackFrame.GetFileName())}</a><br/>Line: {stackFrame.GetFileLineNumber()}<br/>Column: {stackFrame.GetFileColumnNumber()}</code>");
 			return true;
 		}

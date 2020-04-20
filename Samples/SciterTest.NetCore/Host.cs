@@ -30,9 +30,10 @@ namespace SciterTest.NetCore
 		// Notice that signature of these handlers is always the same
 		// (Hint: install OmniCode snippets which adds the 'ssh' snippet to C# editor so you can easily declare 'Siter Handler' methods)
 		// (see: https://github.com/MISoftware/OmniCode-Snippets)
-		public bool Host_HelloWorld(SciterElement el, SciterValue[] args, out SciterValue result)
+		public bool Host_HelloSciter(SciterElement el, SciterValue[] args, out SciterValue result)
 		{
-			result = new SciterValue($"Hello Sciter! (from .Net Core)");
+			var stackFrame = new StackTrace(true).GetFrame(0);//.GetFileName();
+			result = new SciterValue($"<h2>Hello Sciter from C# in .Net Core!</h2><code>Method: {stackFrame.GetMethod().Name}<br/>File: <a href=\"{new Uri(stackFrame.GetFileName()).AbsoluteUri}\">{Path.GetFileName(stackFrame.GetFileName())}</a><br/>Line: {stackFrame.GetFileLineNumber()}<br/>Column: {stackFrame.GetFileColumnNumber()}</code>");
 			return true;
 		}
 

@@ -393,7 +393,7 @@ namespace SciterCore
         public SciterWindow LoadPage(Uri uri, out bool loadResult)
 		{
 			//TODO: Check why SciterLoadFile() behaves differently in Windows with AbsoluteUri (file:///)
-#if WINDOWS
+#if WINDOWS || NETCORE
 			loadResult = _api.SciterLoadFile(hwnd: Handle, filename: uri.AbsoluteUri.Replace(":///", "://"));
 #else
 			loadResult = _api.SciterLoadFile(hwnd: Handle, filename: uri.AbsoluteUri);
