@@ -20,6 +20,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="C:\Users\williamc\Source\repos\libui\build-release\meson-out\libui.dll" Link="libui.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.3" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.3" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="3.1.3" />
@@ -32,6 +38,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\SciterCore\SciterCore.Binaries.Windows.csproj" />
+    <ProjectReference Include="C:\Users\williamc\Source\repos\DevZH.UI\src\DevZH.UI\DevZH.UI.csproj" />
   </ItemGroup>
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
     <Exec Command="rem $(SolutionDir)scripts\packWindows.bat &quot;$(SolutionDir)SciterCore\LibConsole&quot; &quot;$(ProjectDir)LibConsole.bin&quot;&#xD;&#xA;$(SolutionDir)scripts\packWindows.bat &quot;$(ProjectDir)res&quot; &quot;$(ProjectDir)SiteResource.bin&quot;" />
