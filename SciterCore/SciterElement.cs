@@ -246,11 +246,11 @@ namespace SciterCore
 			return strval;
 		}
 
-		public void SetAttribute(string name, string value)
-		{
-			var r = _api.SciterSetAttributeByName(_he, name, value);
-			Debug.Assert(r == SciterXDom.SCDOM_RESULT.SCDOM_OK);
-		}
+        public void SetAttribute(string name, object value)
+        {
+            var r = _api.SciterSetAttributeByName(_he, name, $"{value}");
+            Debug.Assert(r == SciterXDom.SCDOM_RESULT.SCDOM_OK);
+        }
 
 		public void RemoveAttribute(string name)
 		{
@@ -596,6 +596,17 @@ namespace SciterCore
 			_api.SciterInsertElement(se._he, _he, int.MaxValue);
 		}
 
+
+        public SciterElement Append(string tagname, string text = null)
+        {
+            var element = Create(tagname, text);
+
+			_api.SciterInsertElement(element._he, _he, int.MaxValue);
+
+            return element;
+        }
+
+
 		public void Swap(SciterElement sewith)
 		{
 			_api.SciterSwapElements(_he, sewith._he);
@@ -614,13 +625,13 @@ namespace SciterCore
 		#endregion
 
 		#region Events
-		public void AttachEvh(SciterEventHandler evh)
+		public void AttachEventHandler(SciterEventHandler evh)
 		{
 			Debug.Assert(evh != null);
 			var r = _api.SciterAttachEventHandler(_he, evh.EventProc, IntPtr.Zero);
 			Debug.Assert(r == SciterXDom.SCDOM_RESULT.SCDOM_OK);
 		}
-		public void DetachEvh(SciterEventHandler evh)
+		public void DetachEventHandler(SciterEventHandler evh)
 		{
 			Debug.Assert(evh != null);
 			var r = _api.SciterDetachEventHandler(_he, evh.EventProc, IntPtr.Zero);

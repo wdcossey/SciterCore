@@ -481,32 +481,25 @@ namespace SciterCore
 		}
 
 		public int Get(int @default = 0)
-		{
-			if (_api.ValueIntData(ref _data, out var pData) == (int) Interop.SciterValue.VALUE_RESULT.HV_OK)
-			{
-				return pData;
-			}
-			return @default;
-		}
+        {
+            return _api.ValueIntData(ref _data, out var pData) == (int) Interop.SciterValue.VALUE_RESULT.HV_OK 
+                ? pData 
+                : @default;
+        }
 
 		public double Get(double @default = 0d)
-		{
-			if (_api.ValueFloatData(ref _data, out var pData) == (int) Interop.SciterValue.VALUE_RESULT.HV_OK)
-			{
-				return pData;
-			}
-			return @default;
-		}
+        {
+            return _api.ValueFloatData(ref _data, out var pData) == (int) Interop.SciterValue.VALUE_RESULT.HV_OK 
+                ? pData
+                : @default;
+        }
 
 		public string Get(string @default = "")
-		{
-			if (_api.ValueStringData(ref _data, out var retPtr, out var retLength) ==
-			    (int) Interop.SciterValue.VALUE_RESULT.HV_OK)
-			{
-				return Marshal.PtrToStringUni(retPtr, (int) retLength);
-			}
-			return @default;
-		}
+        {
+            return _api.ValueStringData(ref _data, out var retPtr, out var retLength) == (int) Interop.SciterValue.VALUE_RESULT.HV_OK
+                ? Marshal.PtrToStringUni(retPtr, (int) retLength) 
+                : @default;
+        }
 
 		public byte[] GetBytes()
 		{

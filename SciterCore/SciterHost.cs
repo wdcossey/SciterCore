@@ -45,6 +45,7 @@ namespace SciterCore
 		public static bool InjectLibConsole = true;
 		private static List<IntPtr> _lib_console_vms = new List<IntPtr>();
 		private static SciterArchive _consoleArchive;
+		private SciterEventHandler _window_evh;
 
 		private class DefaultEventHandler : SciterEventHandler { }
 
@@ -355,6 +356,12 @@ namespace SciterCore
 				return new SciterElement(heFocus);
 			}
 		}
+
+        public SciterEventHandler WindowEventHandler
+        {
+            get => _window_evh;
+            protected set => _window_evh = value;
+        }
 
         // Notification handler
         private uint HandleNotification(IntPtr ptrNotification, IntPtr callbackParam)

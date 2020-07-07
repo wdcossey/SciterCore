@@ -1,0 +1,84 @@
+﻿@import url(common-element-colors.css);
+
+html {
+    var(background-color): rgba(255, 255, 255, 1.0);
+    var(toolbar-background-color): rgba(0, 0, 0, 5%);
+    var(toolbar-border-color): rgba(0,0,0,10%);
+    background: color(background-color);
+    var(splitter-color): rgba(0,0,0,10%);
+    var(left-strip-width): 80dip;
+    var(paper-color): rgba(255,255,255);
+    var(paper-color-dimmed): rgba(255,255,255,40%);
+    var(paper-color-highlight): #ddd;
+    var(hyperlink-color): #2038DD;
+    var(text-color): #000;
+    var(text-color-dimmed): rgba(0,0,0,40%);
+    var(icon-color): rgba(0,0,0,70%);
+    var(icon-color-dimmed): rgba(0,0,0,20%);
+    var(icon-color-trace): rgba(0,0,0,10%);
+    var(document-color): rgb(255,255,255);
+    var(document-text-color): rgb(0,0,0);
+    var(document-gray-color): rgb(200,200,200);
+    var(selection-color): window-accent-color;
+    var(selection-highlight-color): morph(window-accent-color,opacity:10%);
+    var(selection-hover-color): morph(window-accent-color,lighten:20%);
+    var(selection-text-color): window-accent-text-color;
+    var(selection-border-width): 3dip;
+    var(accent) : window-accent-color;
+    var(accent-dimmed) : morph(window-accent-color,opacity:40%);
+    var(info-color) : #FFF8DC;
+    var(connector-color) : window-accent-color;
+    var(dialog-shim-color): rgba(240,240,240,50%);
+    var(list-item-normal) : transparent;
+    var(list-item-hover): rgb(235, 238, 241);
+    var(list-item-current): rgb(246, 248, 250);
+    var(list-item-focus): rgb(3, 102, 214);
+    var(list-item-focus-text): #fff;
+}
+
+    html:theme(dark) {
+        var(background-color): rgba(36, 41, 46, 1.0);
+        var(toolbar-background-color): rgba(29, 33, 37, 1.0);
+        var(toolbar-border-color): rgba(0, 0, 0, 1.0);
+        background: color(background-color);
+        var(splitter-color): rgba(0, 0, 0, 1.0);
+        var(paper-color): rgba(0,0,0);
+        var(paper-color-dimmed): rgba(0,0,0,40%);
+        var(paper-color-highlight): #777;
+        var(hyperlink-color): #1E90FF;
+        var(text-color): #fff;
+        var(text-color-dimmed): rgba(255,255,255,40%);
+        var(icon-color): rgba(255,255,255,70%);
+        var(icon-color-dimmed): rgba(255,255,255,20%);
+        var(document-color): rgb(29,31,34);
+        var(document-text-color): rgb(255,255,255);
+        var(document-gray-color): rgb(100,100,100);
+        var(info-color) : #2F3F3F;
+        var(dialog-shim-color): rgba(29,31,34,50%);
+        var(list-item-normal) : transparent;
+        var(list-item-hover): rgb(47, 54, 61);
+        var(list-item-current): rgb(68, 77, 86);
+        var(list-item-focus): rgb(3, 102, 214);
+        var(list-item-focus-text): #fff;
+    }
+
+@media ui-blurbehind {
+  html {
+    background:transparent;
+  }
+} 
+
+.connected[with] {
+  prototype: ConnectedLabel url(utils/utils.tis);
+  border-radius:3dip;
+}
+
+.connected[with]:hover {
+  outline:1dip solid color(connector-color);
+}
+
+span.connected[with] {
+  display:inline-block;
+}
+
+

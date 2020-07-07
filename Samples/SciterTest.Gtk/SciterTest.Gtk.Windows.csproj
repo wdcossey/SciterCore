@@ -97,7 +97,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.manifest" />
-    <None Include="packages.SciterTest.Gtk.Windows.config" />
     <None Include="Resources\IconMain.ico" />
   </ItemGroup>
   <ItemGroup>

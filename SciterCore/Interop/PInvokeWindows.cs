@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -93,15 +94,27 @@ namespace SciterCore.Interop
         [DllImport("user32.dll")]
         public static extern bool ShowWindow(IntPtr hwnd, ShowWindowCommands nCmdShow);
 
-        [DllImport("ole32.dll")]
-        public static extern int OleInitialize(IntPtr pvReserved);
+        [DllImport("ole32.dll", EntryPoint = "OleInitialize", ExactSpelling = true)]
+        private static extern int OleInitializeInternal(IntPtr pvReserved);
 
-        [DllImport("ole32.dll", CharSet = CharSet.Auto, SetLastError = true,
+        [SecurityCritical, SecuritySafeCritical]
+        public static int OleInitialize(IntPtr pvReserved)
+        {
+            return OleInitializeInternal(pvReserved);
+        }
+
+        [DllImport("ole32.dll", EntryPoint = "CoInitializeEx", ExactSpelling = true, CharSet = CharSet.Auto, SetLastError = true,
             CallingConvention = CallingConvention.StdCall)]
-        public static extern int CoInitializeEx(
+        private static extern int CoInitializeExInternal(
             [In, Optional] IntPtr pvReserved,
             [In] COINIT dwCoInit //DWORD
         );
+
+        [SecurityCritical, SecuritySafeCritical]
+        public static int OleInitialize(IntPtr pvReserved, COINIT dwCoInit)
+        {
+            return CoInitializeExInternal(pvReserved, dwCoInit);
+        }
 
         [DllImport("user32.dll")]
         public static extern IntPtr GetDesktopWindow();
