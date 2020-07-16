@@ -67,6 +67,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SciterCore.ILSpy", "SciterC
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SciterCore.ILSpy.Core", "SciterCore.ILSpy.Core\SciterCore.ILSpy.Core.csproj", "{A23B8D73-56BD-4295-8415-F1B89CC4C064}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SciterCore.PackFolder", "SciterCore.PackFolder\SciterCore.PackFolder.csproj", "{B57B6D19-AD3D-47A1-AC8F-AF24951CBE31}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		SciterCore\SciterCore.Shared.projitems*{18b2e4e7-cb77-44c3-865b-be05620aba4d}*SharedItemsImports = 4
@@ -472,6 +474,26 @@ Global
 		{A23B8D73-56BD-4295-8415-F1B89CC4C064}.Release|x64.Build.0 = Release|Any CPU
 		{A23B8D73-56BD-4295-8415-F1B89CC4C064}.Release|x86.ActiveCfg = Release|Any CPU
 		{A23B8D73-56BD-4295-8415-F1B89CC4C064}.Release|x86.Build.0 = Release|Any CPU
+		{B57B6D19-AD3D-47A1-AC8F-AF24951CBE31}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B57B6D19-AD3D-47A1-AC8F-AF24951CBE31}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B57B6D19-AD3D-47A1-AC8F-AF24951CBE31}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{B57B6D19-AD3D-47A1-AC8F-AF24951CBE31}.Debug|ARM.Build.0 = Debug|Any CPU
+		{B57B6D19-AD3D-47A1-AC8F-AF24951CBE31}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{B57B6D19-AD3D-47A1-AC8F-AF24951CBE31}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{B57B6D19-AD3D-47A1-AC8F-AF24951CBE31}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B57B6D19-AD3D-47A1-AC8F-AF24951CBE31}.Debug|x64.Build.0 = Debug|Any CPU
+		{B57B6D19-AD3D-47A1-AC8F-AF24951CBE31}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B57B6D19-AD3D-47A1-AC8F-AF24951CBE31}.Debug|x86.Build.0 = Debug|Any CPU
+		{B57B6D19-AD3D-47A1-AC8F-AF24951CBE31}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B57B6D19-AD3D-47A1-AC8F-AF24951CBE31}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B57B6D19-AD3D-47A1-AC8F-AF24951CBE31}.Release|ARM.ActiveCfg = Release|Any CPU
+		{B57B6D19-AD3D-47A1-AC8F-AF24951CBE31}.Release|ARM.Build.0 = Release|Any CPU
+		{B57B6D19-AD3D-47A1-AC8F-AF24951CBE31}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{B57B6D19-AD3D-47A1-AC8F-AF24951CBE31}.Release|ARM64.Build.0 = Release|Any CPU
+		{B57B6D19-AD3D-47A1-AC8F-AF24951CBE31}.Release|x64.ActiveCfg = Release|Any CPU
+		{B57B6D19-AD3D-47A1-AC8F-AF24951CBE31}.Release|x64.Build.0 = Release|Any CPU
+		{B57B6D19-AD3D-47A1-AC8F-AF24951CBE31}.Release|x86.ActiveCfg = Release|Any CPU
+		{B57B6D19-AD3D-47A1-AC8F-AF24951CBE31}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

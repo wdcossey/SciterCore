@@ -53,7 +53,7 @@ namespace SciterTest.NetCore
 
 		public BaseHost()
 		{
-			_archive.Open("SiteResource");
+			_archive.Open("SciterResource");
 		}
 
 		public void Setup(SciterWindow window)
