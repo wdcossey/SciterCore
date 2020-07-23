@@ -270,6 +270,23 @@ namespace SciterCore
 						return true;
 					}
 
+				case SciterBehaviors.EVENT_GROUPS.HANDLE_SOM:
+				{
+					//SOM_PARAMS *p = (SOM_PARAMS *)prms;
+                    SciterBehaviors.SOM_PARAMS p = (SciterBehaviors.SOM_PARAMS)Marshal.PtrToStructure(ptr: prms, typeof(SciterBehaviors.SOM_PARAMS));
+
+                    if (p.cmd == SciterBehaviors.SOM_EVENTS.SOM_GET_PASSPORT)
+                    {
+	                    //	p->data.passport = pThis->asset_get_passport();
+                    }
+                    else if (p.cmd == SciterBehaviors.SOM_EVENTS.SOM_GET_ASSET)
+                    {
+	                    //	p->data.asset = static_cast<som_asset_t*>(pThis); // note: no add_ref
+                    }
+
+                    return false;
+				}
+				
 				case SciterBehaviors.EVENT_GROUPS.HANDLE_MOUSE:
 					{
 						SciterBehaviors.MOUSE_PARAMS p = (SciterBehaviors.MOUSE_PARAMS)Marshal.PtrToStructure(prms, typeof(SciterBehaviors.MOUSE_PARAMS));

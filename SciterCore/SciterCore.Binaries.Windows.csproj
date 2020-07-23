@@ -2,22 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <EnableDefaultItems>false</EnableDefaultItems>
   </PropertyGroup>
   
-  <ItemGroup>
-    <None Remove="LibConsole\tracewnd.html" />
-    <None Remove="LibConsole\show_img.html" />
-    <None Remove="LibConsole\unittest.html" />
-    <None Remove="LibConsole\utils.tis" />
-    <None Remove="LibConsole\popup.css" />
-    <None Remove="LibConsole\show_data.html" />
-    <None Remove="LibConsole\console.tis" />
-    <None Remove="LibConsole.bin" />
-    <None Remove="version.json" />
-    <None Remove="SciterMidi.snk" />
-    <None Remove="SciterCoreShared.projitems" />
-    <None Remove="SciterCore.Gtk.dll.config" />
-  </ItemGroup>
   <ItemGroup>
     <None Include="$(SolutionDir)sciter-sdk\bin.win\x64\sciter.dll">
       <Link>x64\sciter.dll</Link>
@@ -29,9 +16,4 @@
     </None>
   </ItemGroup>
   
-
-  <ItemGroup>
-    <Compile Remove="*" />
-    <Compile Remove="**\*" />
-  </ItemGroup>
 </Project>

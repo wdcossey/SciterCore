@@ -172,6 +172,9 @@ namespace SciterCore.Interop
             public PInvokeUtils.RECT rcWork;
             public uint dwFlags;
         }
+        
+        [DllImport("user32.dll")]
+        public static extern bool InvalidateRect(IntPtr hWnd, IntPtr lpRect, bool bErase);
 
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         public static extern IntPtr LoadLibrary(string libname);

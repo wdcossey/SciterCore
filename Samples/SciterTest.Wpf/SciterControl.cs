@@ -20,6 +20,9 @@ namespace SciterTest.Wpf
             "    }</code></pre></body></html>";
 
         public SciterWindow SciterWnd { get; private set; }
+        
+        private IntPtr _sciterHandle = IntPtr.Zero;
+        
 
         public SciterControl()
         {
@@ -93,8 +96,8 @@ namespace SciterTest.Wpf
             //return result;
 
             string wndclass = Marshal.PtrToStringUni(Sciter.Api.SciterClassName());
-            var child = PInvokeWindows.CreateWindowEx(
-                (int)(PInvokeWindows.WindowStyles.WS_EX_TRANSPARENT),
+            _sciterHandle = PInvokeWindows.CreateWindowEx(
+                (int)0,
                 wndclass,
                 null,
                 (int)(PInvokeWindows.WindowStyles.WS_CHILD),
@@ -108,7 +111,7 @@ namespace SciterTest.Wpf
 
             //Sciter.Api.SciterLoadHtml(child, bytes, (uint)bytes.Length, null);
 
-            var result = new HandleRef(this, child);
+            var result = new HandleRef(this, _sciterHandle);
 
             _hwnd = result.Handle;
 
@@ -131,10 +134,10 @@ namespace SciterTest.Wpf
         //    SciterWnd.CreateChildWindow(source.Handle);
         //    SciterWnd.LoadHtml(/*loadHtmlEventArgs?.Html ?? this.Html ??*/ DefaultHtml);
         //    SciterWnd.Show();
-        //    if (SciterWnd._hwnd.ToInt32() != 0)
+        //    if (SciterWnd.Handle.ToInt32() != 0)
         //    {
         //        //PInvokeWindows.MoveWindow(source.Handle, 0, 0, (int)ActualWidth, (int)ActualHeight, true);
-        //        PInvokeWindows.MoveWindow(SciterWnd._hwnd, (int)VisualOffset.X, (int)VisualOffset.Y, (int)ActualWidth, (int)ActualHeight, true);
+        //        PInvokeWindows.MoveWindow(SciterWnd.Handle, (int)VisualOffset.X, (int)VisualOffset.Y, (int)ActualWidth, (int)ActualHeight, true);
         //    }
         //}
     }

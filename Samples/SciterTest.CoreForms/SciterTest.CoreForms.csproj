@@ -18,6 +18,12 @@
     <ProjectReference Include="..\..\SciterCore\SciterCore.Binaries.Windows.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Update="SciterControl.resx">
+      <DependentUpon>SciterControl.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+
   <Import Project="..\..\SciterCore\SciterCore.Shared.projitems" Label="Shared" />
 
 </Project>
