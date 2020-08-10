@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SciterTest.Idioms</RootNamespace>
     <AssemblyName>SciterTest.Idioms</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile />
@@ -81,15 +81,12 @@
     <None Include="res\logo_mi.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\SciterCore\SciterCore.WinForms.csproj">
-      <Project>{18B2E4E7-CB77-44C3-865B-BE05620ABA4D}</Project>
+    <ProjectReference Include="..\..\Platform\SciterCore.WinForms\SciterCore.WinForms.csproj">
+      <Project>{18b2e4e7-cb77-44c3-865b-be05620aba4d}</Project>
       <Name>SciterCore.WinForms</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PreBuildEvent>$(SolutionDir)\scripts\packWindows.bat "$(ProjectDir)res" "$(ProjectDir)SiteResource.bin"</PreBuildEvent>
-  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

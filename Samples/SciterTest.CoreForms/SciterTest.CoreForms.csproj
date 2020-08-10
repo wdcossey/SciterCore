@@ -15,15 +15,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\SciterCore\SciterCore.Binaries.Windows.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <EmbeddedResource Update="SciterControl.resx">
       <DependentUpon>SciterControl.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
 
-  <Import Project="..\..\SciterCore\SciterCore.Shared.projitems" Label="Shared" />
+  <ItemGroup>
+    <ProjectReference Include="$(SolutionDir)Platform\SciterCore.Binaries.Windows\SciterCore.Binaries.Windows.csproj" />
+  </ItemGroup>
+
+  <Import Project="$(SolutionDir)Shared\SciterCore.Shared\SciterCore.Shared.projitems" Label="Shared" Condition="Exists('$(SolutionDir)Shared\SciterCore.Shared\SciterCore.Shared.projitems')" />
 
 </Project>

@@ -18,6 +18,12 @@ namespace SciterTest.NetCore
 			host.SetupPage("index.html");
 			wnd.Show();
 		}
+		
+		public Host(Func<SciterWindow> wndFunc)
+		: this(wndFunc.Invoke())
+		{
+			
+		}
 
 		// Things to do here:
 		// -override OnLoadData() to customize or track resource loading
@@ -53,7 +59,7 @@ namespace SciterTest.NetCore
 
 		public BaseHost()
 		{
-			_archive.Open("SciterResource");
+			_archive.Open();
 		}
 
 		public void Setup(SciterWindow window)

@@ -5,7 +5,7 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>SciterTest.Gtk</RootNamespace>
     <AssemblyName>SciterTest.Gtk</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
     <TargetFrameworkProfile />
@@ -45,14 +45,14 @@
     <None Include="res\index.html" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\SciterCore\SciterCore.Gtk.csproj">
-      <Project>{D60ACAE0-C246-4936-B92B-B756841DB545}</Project>
-      <Name>SciterCore.Gtk</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="res\icons8-visual-studio-2019.svg" />
     <None Include="res\logo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Platform\SciterCore.Gtk\SciterCore.Gtk.csproj">
+      <Project>{d60acae0-c246-4936-b92b-b756841db545}</Project>
+      <Name>SciterCore.Gtk</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

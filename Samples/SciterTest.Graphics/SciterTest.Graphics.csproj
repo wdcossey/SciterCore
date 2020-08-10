@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SciterTest.Graphics</RootNamespace>
     <AssemblyName>SciterTest.Graphics</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile />
@@ -102,15 +102,15 @@
     <None Include="res\test.html" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\SciterCore\SciterCore.WinForms.csproj">
-      <Project>{18B2E4E7-CB77-44C3-865B-BE05620ABA4D}</Project>
-      <Name>SciterCore.WinForms</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="res\icons8-c-sharp-logo.svg" />
     <None Include="res\icons8-visual-studio-2019.svg" />
     <None Include="res\logo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Platform\SciterCore.WinForms\SciterCore.WinForms.csproj">
+      <Project>{18b2e4e7-cb77-44c3-865b-be05620aba4d}</Project>
+      <Name>SciterCore.WinForms</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

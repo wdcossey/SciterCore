@@ -4,17 +4,16 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using SciterCore;
 using SciterCore.Interop;
 using SciterValue = SciterCore.Interop.SciterValue;
 
 namespace SciterCore.UnitTests
 {
-	[TestClass]
 	public class UnitTests
 	{
-		[TestMethod]
+		[Test]
 		public void TestSciterElement()
 		{
 			SciterElement el = SciterElement.Create("div");
@@ -22,7 +21,7 @@ namespace SciterCore.UnitTests
 			Assert.IsTrue(el == el2);
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestSciterValue()
 		{
 			//string[] arr = new string[] { "A", "B", "C" };
@@ -62,7 +61,7 @@ namespace SciterCore.UnitTests
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestGraphics()
 		{
 			var gapi = Sciter.GraphicsApi;
@@ -87,7 +86,7 @@ namespace SciterCore.UnitTests
 			Assert.IsTrue(rgba.A == 4);
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestColor_AlphaAsInt()
 		{
 			// RGBA
@@ -105,7 +104,7 @@ namespace SciterCore.UnitTests
 			Assert.IsTrue(rgba.A == 127);
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestColor_AlphaAsDouble()
 		{			
 			var rgba = new RGBAColor(255, 0, 0, .5d);
@@ -119,8 +118,7 @@ namespace SciterCore.UnitTests
 			Assert.IsTrue(rgba.G == 0);
 			Assert.IsTrue(rgba.B == 0);
 			Assert.IsTrue(rgba.A == 63);
-
-
+			
 			rgba = new RGBAColor(0, 0, 0, 25d);
 			Assert.IsTrue(rgba.R == 0);
 			Assert.IsTrue(rgba.G == 0);
@@ -128,7 +126,7 @@ namespace SciterCore.UnitTests
 			Assert.IsTrue(rgba.A == 255);
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestColor_Invalid()
 		{			
 			var invalid = RGBAColor.Invalid;
@@ -158,7 +156,7 @@ namespace SciterCore.UnitTests
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestThings()
 		{
 			SciterWindow window = 
@@ -172,8 +170,8 @@ namespace SciterCore.UnitTests
 			Assert.IsTrue(!sv.IsUndefined);
 		}
 
-		[TestMethod]
-		[Ignore]
+		[Test]
+		[Ignore("")]
 		public void TestDebugOutputHandler()
         {
             SciterWindow window = new SciterWindow();

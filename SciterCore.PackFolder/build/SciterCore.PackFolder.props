@@ -17,12 +17,13 @@
   </Target>-->
   
   <Target Name="SciterPreBuild" BeforeTargets="PreBuildEvent" >
-    <Exec Command="$(TaskFolder)$(TaskAssembly) &quot;$(ProjectDir)res&quot; &quot;$(ProjectDir)$(ProjectName).sciter&quot; -binary" />
+    <MakeDir Directories="$(ProjectDir).sciter" />
+    <Exec Command="$(TaskFolder)$(TaskAssembly) &quot;$(ProjectDir)res&quot; &quot;$(ProjectDir).sciter\$(ProjectName).bin&quot; -binary" />
   </Target>
 
   <Target Name="SciterEmbedLocal" BeforeTargets="PrepareForBuild">
     <ItemGroup>
-      <EmbeddedResource Include="$(ProjectDir)$(ProjectName).sciter">
+      <EmbeddedResource Include="$(ProjectDir).sciter\$(ProjectName).bin">
         <LogicalName>SciterResource</LogicalName>
       </EmbeddedResource>
     </ItemGroup>

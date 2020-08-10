@@ -12,7 +12,7 @@ namespace SciterTest.Wpf
     public class SciterControl : HwndHost
     {
         private static readonly string DefaultHtml = 
-            $"<html window-frame=\"none\" window-blurbehind=\"dark\" theme=\"dark\"><head><style> html {{ background: transparent }} </style></head><body><code>Use the <b>LoadHtml</b> event of {nameof(SciterControl)} to load some html.</code>" + 
+            $"<html window-frame=\"none\" window-blurbehind=\"none\" theme=\"dark\"><head><style> html {{ background: transparent }} </style></head><body><code>Use the <b>LoadHtml</b> event of {nameof(SciterControl)} to load some html.</code>" + 
             "<br/><br/>" +
             $"<pre><code>    {nameof(SciterControl)}.LoadHtml += (sender, args) => <br/>" + 
             "    {<br/>" + 

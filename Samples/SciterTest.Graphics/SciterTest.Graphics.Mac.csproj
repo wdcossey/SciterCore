@@ -126,8 +126,8 @@
     <BundleResource Include="res\logo.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\SciterCore\SciterCore.Mac.csproj">
-      <Project>{42BB6EC1-E806-4B5B-A242-1662AAE7BF25}</Project>
+    <ProjectReference Include="..\..\Platform\SciterCore.Mac\SciterCore.Mac.csproj">
+      <Project>{42bb6ec1-e806-4b5b-a242-1662aae7bf25}</Project>
       <Name>SciterCore.Mac</Name>
     </ProjectReference>
   </ItemGroup>
