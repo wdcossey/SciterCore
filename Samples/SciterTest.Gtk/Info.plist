@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleName</key>
-	<string>TestGTK</string>
+	<string>SciterCore.Graphics</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.companyname.sciterbootstrap</string>
+	<string>com.companyname.scitercore</string>
 	<key>CFBundleShortVersionString</key>
 	<string>1.0</string>
 	<key>CFBundleVersion</key>
@@ -28,6 +28,5 @@
 	<string>Main</string>
 	<key>XSAppIconAssets</key>
 	<string>Assets.xcassets/AppIcon.appiconset</string>
-	
 </dict>
 </plist>

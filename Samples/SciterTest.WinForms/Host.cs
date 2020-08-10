@@ -74,14 +74,14 @@ namespace SciterTest.WinForms
 
 		protected override SciterXDef.LoadResult OnLoadData(SciterXDef.SCN_LOAD_DATA sld)
 		{
-			if(_archive?.IsOpen == true && sld.uri.StartsWith(_archive.Uri.GetLeftPart(UriPartial.Path)))
-			{
-				// load resource from SciterArchive
-				var uri = new Uri(sld.uri);
-				byte[] data = _archive.Get(uri.GetComponents(UriComponents.Path, UriFormat.SafeUnescaped));
-				if(data!=null)
-					_api.SciterDataReady(_window.Handle, sld.uri, data, (uint) data.Length);
-			}
+			var uri = new Uri(sld.uri);
+
+			// load resource from SciterArchive
+			_archive?.GetItem(uri, (data, path) => 
+			{ 
+				_api.SciterDataReady(_window.Handle, path, data, (uint) data.Length);
+			});
+
 			return base.OnLoadData(sld);
         }
     }

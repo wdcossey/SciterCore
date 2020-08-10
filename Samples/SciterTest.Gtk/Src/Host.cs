@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Diagnostics;
 using System.IO;
 using SciterValue = SciterCore.SciterValue;
+using SciterTest.Gtk.Behaviors;
 
 namespace SciterTest.Gtk
 {
@@ -14,7 +15,10 @@ namespace SciterTest.Gtk
             : base(window: window, archiveName: "SiteResource")
 		{
 			var host = this;
-			host.AttachEventHandler(new HostEventHandler());
+
+			host.RegisterBehaviorHandler(() => new DrawGeometryBehavior("draw-geometry"))
+				.AttachEventHandler(new HostEventHandler());
+
 			host.SetupPage(page: "index.html");
 			window.Show();
 		}
@@ -30,9 +34,10 @@ namespace SciterTest.Gtk
 		// Notice that signature of these handlers is always the same
 		// (Hint: install OmniCode snippets which adds the 'ssh' snippet to C# editor so you can easily declare 'Siter Handler' methods)
 		// (see: https://github.com/MISoftware/OmniCode-Snippets)
-		public bool Host_HelloWorld(SciterElement el, SciterValue[] args, out SciterValue result)
+		public bool Host_HelloSciter(SciterElement el, SciterValue[] args, out SciterValue result)
 		{
-			result = new SciterValue("Hello Sciter! (from native side)");
+			var stackFrame = new StackTrace(true).GetFrame(0);//.GetFileName();
+			result = new SciterValue($"<h2>Hello Sciter from C#!</h2><code>Method: {stackFrame.GetMethod().Name}<br/>File: <a href=\"{new Uri(stackFrame.GetFileName()).AbsoluteUri}\">{Path.GetFileName(stackFrame.GetFileName())}</a><br/>Line: {stackFrame.GetFileLineNumber()}<br/>Column: {stackFrame.GetFileColumnNumber()}</code>");
 			return true;
 		}
 
@@ -65,15 +70,19 @@ namespace SciterTest.Gtk
 			string location = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
 #if OSX
-			location += "\\..\\..\\..\\..\\..";
+			location += "\\..\\..\\..\\..\\..\\";
 #else
 			location += "\\..\\..";
 #endif
 
 			string path = Path.Combine(location, "res", page);
-			Debug.Assert(File.Exists(path));
 
 			Uri uri = new Uri(path, UriKind.Absolute);
+
+			Debug.Assert(uri.IsFile);
+
+			Debug.Assert(File.Exists(uri.AbsolutePath));
+
 #else
 			Uri uri = new Uri(baseUri: _archive.Uri, page);
 #endif
@@ -83,14 +92,11 @@ namespace SciterTest.Gtk
 
 		protected override SciterXDef.LoadResult OnLoadData(SciterXDef.SCN_LOAD_DATA sld)
 		{
-			if(sld.uri.StartsWith(_archive.Uri.AbsoluteUri))
-			{
-				// load resource from SciterArchive
-				string path = sld.uri.Substring(14);
-                byte[] data = _archive?.Get(path);
-				if(data!=null)
-					_api.SciterDataReady(_window.Handle, sld.uri, data, (uint) data.Length);
-			}
+			// load resource from SciterArchive
+			_archive?.GetItem(sld.uri, (data, path) => 
+			{ 
+				_api.SciterDataReady(_window.Handle, path, data, (uint) data.Length);
+			});
 
 			// call base to ensure LibConsole is loaded
 			return base.OnLoadData(sld);

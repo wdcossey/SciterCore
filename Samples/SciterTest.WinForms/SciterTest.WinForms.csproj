@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SciterTest.WinForms</RootNamespace>
     <AssemblyName>SciterTest.WinForms</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
@@ -81,9 +81,8 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-
   <ItemGroup>
-    <ProjectReference Include="..\..\SciterSharp\SciterCore.WinForms.csproj">
+    <ProjectReference Include="..\..\Platform\SciterCore.WinForms\SciterCore.WinForms.csproj">
       <Project>{18b2e4e7-cb77-44c3-865b-be05620aba4d}</Project>
       <Name>SciterCore.WinForms</Name>
     </ProjectReference>

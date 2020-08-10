@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <!-- Suppresses the warnings about the package not having assemblies in lib/*/.dll.-->
+        <NoPackageAnalysis>true</NoPackageAnalysis>
+        <!-- Change the default location where NuGet will put the build output -->
+        <BuildOutputTargetFolder>tasks</BuildOutputTargetFolder>
+        <LangVersion>default</LangVersion>
+        <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+        <CopyBuildOutputToOutputDirectory>true</CopyBuildOutputToOutputDirectory>
+        <Title>SciterCore.PackFolder</Title>
+        <Authors>wdcossey</Authors>
+        <Description>PackFolder tasks for SciterCore</Description>
+        <Copyright>William D Cossey</Copyright>
+        <PackageProjectUrl>https://github.com/wdcossey/SciterCore</PackageProjectUrl>
+        <PackageIconUrl>https://github.com/wdcossey/SciterCore/raw/master/Assets/nuget.png</PackageIconUrl>
+        <RepositoryUrl>https://github.com/wdcossey/SciterCore</RepositoryUrl>
+        <PackageTags>Sciter, SciterCore</PackageTags>
+        <PackageVersion>0.0.8-beta.11</PackageVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Content Include="buildMultiTargeting\SciterCore.PackFolder.props">
+            <PackagePath>buildMultiTargeting\</PackagePath>
+        </Content>
+        <Content Include="build\SciterCore.PackFolder.props">
+            <PackagePath>build\</PackagePath>
+        </Content>
+        <Content Include="scripts\*">
+            <PackagePath>scripts\</PackagePath>
+        </Content>
+    </ItemGroup>
+    
+</Project>

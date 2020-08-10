@@ -29,6 +29,6 @@
 
 
 
-  <Import Project="..\SciterSharp\SciterCoreShared.projitems" Label="Shared" />
+  <Import Project="..\SciterCore\SciterCoreShared.projitems" Label="Shared" />
 
 </Project>

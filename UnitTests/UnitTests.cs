@@ -4,17 +4,16 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using SciterCore;
 using SciterCore.Interop;
 using SciterValue = SciterCore.Interop.SciterValue;
 
-namespace UnitTests
+namespace SciterCore.UnitTests
 {
-	[TestClass]
 	public class UnitTests
 	{
-		[TestMethod]
+		[Test]
 		public void TestSciterElement()
 		{
 			SciterElement el = SciterElement.Create("div");
@@ -22,7 +21,7 @@ namespace UnitTests
 			Assert.IsTrue(el == el2);
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestSciterValue()
 		{
 			//string[] arr = new string[] { "A", "B", "C" };
@@ -34,7 +33,7 @@ namespace UnitTests
 			res.Append(new SciterCore.SciterValue(1));
 			string r = res.ToString();
 			string r2 = res.ToString();
-			string r3 = res.ToJsonString(SciterValue.VALUE_STRING_CVT_TYPE.CVT_JSON_LITERAL);
+			string r3 = res.ToJsonString(SciterCore.Interop.SciterValue.VALUE_STRING_CVT_TYPE.CVT_JSON_LITERAL);
 
 			{
 				// http://sciter.com/forums/topic/erasing-sequence-elements-with-scitervalue/
@@ -62,7 +61,7 @@ namespace UnitTests
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestGraphics()
 		{
 			var gapi = Sciter.GraphicsApi;
@@ -87,6 +86,54 @@ namespace UnitTests
 			Assert.IsTrue(rgba.A == 4);
 		}
 
+		[Test]
+		public void TestColor_AlphaAsInt()
+		{
+			// RGBA
+			var rgba = new RGBAColor(255, 5, 5);
+			Assert.IsTrue(rgba.R == 255);
+			Assert.IsTrue(rgba.G == 5);
+			Assert.IsTrue(rgba.B == 5);
+			Assert.IsTrue(rgba.A == 255);
+
+			// RGBA
+			rgba = new RGBAColor(0, 0, 255, 127);
+			Assert.IsTrue(rgba.R == 0);
+			Assert.IsTrue(rgba.G == 0);
+			Assert.IsTrue(rgba.B == 255);
+			Assert.IsTrue(rgba.A == 127);
+		}
+
+		[Test]
+		public void TestColor_AlphaAsDouble()
+		{			
+			var rgba = new RGBAColor(255, 0, 0, .5d);
+			Assert.IsTrue(rgba.R == 255);
+			Assert.IsTrue(rgba.G == 0);
+			Assert.IsTrue(rgba.B == 0);
+			Assert.IsTrue(rgba.A == 127);
+			
+			rgba = new RGBAColor(0, 0, 0, .25d);
+			Assert.IsTrue(rgba.R == 0);
+			Assert.IsTrue(rgba.G == 0);
+			Assert.IsTrue(rgba.B == 0);
+			Assert.IsTrue(rgba.A == 63);
+			
+			rgba = new RGBAColor(0, 0, 0, 25d);
+			Assert.IsTrue(rgba.R == 0);
+			Assert.IsTrue(rgba.G == 0);
+			Assert.IsTrue(rgba.B == 0);
+			Assert.IsTrue(rgba.A == 255);
+		}
+
+		[Test]
+		public void TestColor_Invalid()
+		{			
+			var invalid = RGBAColor.Invalid;
+
+			var rgba = new RGBAColor(-1, -255, -1000);
+			Assert.IsTrue(rgba.Value == invalid.Value);
+		}
 
 		private class TestableDebugOutputHandler : SciterDebugOutputHandler
 		{
@@ -109,7 +156,7 @@ namespace UnitTests
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestThings()
 		{
 			SciterWindow window = 
@@ -123,8 +170,8 @@ namespace UnitTests
 			Assert.IsTrue(!sv.IsUndefined);
 		}
 
-		[TestMethod]
-		[Ignore]
+		[Test]
+		[Ignore("")]
 		public void TestDebugOutputHandler()
         {
             SciterWindow window = new SciterWindow();

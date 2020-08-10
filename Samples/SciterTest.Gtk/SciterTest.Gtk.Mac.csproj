@@ -34,7 +34,7 @@
       <CustomCommands>
         <Command>
           <type>BeforeBuild</type>
-          <command>sh ${SolutionDir}/SciterSharp/scripts/packOSX.sh ${ProjectDir}/res ${ProjectDir}/SiteResource.bin</command>
+          <command>sh ${SolutionDir}/scripts/packOSX.sh ${ProjectDir}/res ${ProjectDir}/SiteResource.bin</command>
         </Command>
       </CustomCommands>
     </CustomCommands>
@@ -57,7 +57,7 @@
       <CustomCommands>
         <Command>
           <type>BeforeBuild</type>
-          <command>sh ${SolutionDir}/SciterSharp/scripts/packOSX.sh ${ProjectDir}/res ${ProjectDir}/SiteResource.bin</command>
+          <command>sh ${SolutionDir}/scripts/packOSX.sh ${ProjectDir}/res ${ProjectDir}/SiteResource.bin</command>
         </Command>
       </CustomCommands>
     </CustomCommands>
@@ -95,15 +95,10 @@
     <Compile Include="Src\Mono.cs" />
     <Compile Include="Src\ProgramOSX.cs" />
     <Compile Include="Src\Window.cs" />
+    <Compile Include="Behaviors\DrawGeometryBehavior.cs" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="MainMenu.xib" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\SciterSharp\SciterCore.Mac.csproj">
-      <Project>{42bb6ec1-e806-4b5b-a242-1662aae7bf25}</Project>
-      <Name>SciterCore.Mac</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <NativeReference Include="..\..\sciter-sdk\bin.osx\sciter-osx-64.dylib">
@@ -116,6 +111,16 @@
       <LogicalName>SiteResource</LogicalName>
       <IncludeInPackage>false</IncludeInPackage>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\icons8-visual-studio-2019.svg" />
+    <None Include="res\logo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Platform\SciterCore.Mac\SciterCore.Mac.csproj">
+      <Project>{42bb6ec1-e806-4b5b-a242-1662aae7bf25}</Project>
+      <Name>SciterCore.Mac</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets" />
 </Project>

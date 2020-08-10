@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>5938F18A-3BA2-4856-A8D3-4197084549E0</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>SciterCore</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Interop\PInvokeGTK.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interop\PInvokeUtils.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interop\PInvokeWindows.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interop\SciterBehaviors.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interop\SciterGraphics.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interop\Sciter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interop\SciterXDef.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interop\SciterXDom.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interop\SciterXMsg.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interop\SciterRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interop\SciterValue.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interop\SciterVideoApi.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interop\ScreenCapture.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interop\TIScript.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LibVersion.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MessageBox.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SciterArchive.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SciterDebugOutputHandler.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SciterElement.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SciterEventHandler.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SciterGraphics.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SciterHost.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SciterRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SciterValue.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SciterWindow.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\WindowExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EventHandlerRegistry.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Attributes\SciterBehaviorAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\BehaviorAttributeExtensions.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)scripts\fart.exe" />
+    <None Include="$(MSBuildThisFileDirectory)scripts\packfolder" />
+    <None Include="$(MSBuildThisFileDirectory)scripts\packfolder.exe" />
+    <None Include="$(MSBuildThisFileDirectory)scripts\packOSX.sh" />
+    <None Include="$(MSBuildThisFileDirectory)scripts\packWindows.bat" />
+    <None Include="$(MSBuildThisFileDirectory)LibConsole\console.tis" />
+    <None Include="$(MSBuildThisFileDirectory)LibConsole\popup.css" />
+    <None Include="$(MSBuildThisFileDirectory)LibConsole\show_data.html" />
+    <None Include="$(MSBuildThisFileDirectory)LibConsole\show_img.html" />
+    <None Include="$(MSBuildThisFileDirectory)LibConsole\tracewnd.html" />
+    <None Include="$(MSBuildThisFileDirectory)LibConsole\unittest.html" />
+    <None Include="$(MSBuildThisFileDirectory)LibConsole\utils.tis" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)LibConsole.bin">
+      <LogicalName>LibConsole</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Behaviors\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Extensions\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Attributes\" />
+  </ItemGroup>
+</Project>

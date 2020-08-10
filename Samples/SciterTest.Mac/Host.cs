@@ -32,9 +32,13 @@ namespace SciterTest.Mac
 			location += "\\..\\..\\..\\..\\..";
 
 			string path = Path.Combine(location, "res", "index.html");
-			Debug.Assert(File.Exists(path));
 
 			Uri uri = new Uri(path, UriKind.Absolute);
+
+			Debug.Assert(uri.IsFile);
+
+			Debug.Assert(File.Exists(uri.AbsolutePath));
+			
 #else
 			Uri uri = new Uri("file:///Users/midiway/Documents/SciterSharp/Tests/SciterTest.Mac/res/index.html", UriKind.Absolute);
 #endif

@@ -33,7 +33,7 @@ namespace SciterTest.Graphics
 
 			// Prepares SciterHost and then load the page
 			var host = new Host(window: window);
-
+            /*
 			host.RegisterBehaviorHandler(typeof(DrawBitmapBehavior), "DrawBitmap")
 				.RegisterBehaviorHandler(typeof(DrawTextBehavior), "DrawText")
 				.RegisterBehaviorHandler(typeof(DrawGeometryBehavior), "DrawGeometry")
@@ -43,6 +43,7 @@ namespace SciterTest.Graphics
 
 			// Show window and Run message loop
 			window.Show();
+            */
 			PInvokeUtils.RunMsgLoop();
 
 			GC.Collect();

@@ -7,7 +7,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SciterTest.Gtk</RootNamespace>
     <AssemblyName>SciterTest.Gtk.Windows</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile />
@@ -75,6 +75,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Behaviors\DrawGeometryBehavior.cs" />
     <Compile Include="Src\Host.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -96,21 +97,26 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.manifest" />
-    <None Include="packages.SciterTest.Gtk.Windows.config" />
     <None Include="Resources\IconMain.ico" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\index.html" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\SciterSharp\SciterCore.WinForms.csproj">
+    <None Include="res\icons8-visual-studio-2019.svg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\logo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Platform\SciterCore.WinForms\SciterCore.WinForms.csproj">
       <Project>{18b2e4e7-cb77-44c3-865b-be05620aba4d}</Project>
       <Name>SciterCore.WinForms</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>$(SolutionDir)SciterSharp\scripts\packWindows.bat "$(ProjectDir)res" "$(ProjectDir)SiteResource.bin"</PreBuildEvent>
+    <PreBuildEvent>$(SolutionDir)scripts\packWindows.bat "$(ProjectDir)res" "$(ProjectDir)SiteResource.bin"</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

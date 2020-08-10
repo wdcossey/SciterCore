@@ -10,6 +10,7 @@ using SciterCore.Interop;
 using SciterGraphics = SciterCore.Interop.SciterGraphics;
 using SciterValue = SciterCore.SciterValue;
 using System.Reflection;
+using SciterTest.Graphics.Behaviors;
 
 namespace SciterTest.Graphics
 {
@@ -19,7 +20,25 @@ namespace SciterTest.Graphics
 		public Host(SciterWindow window)
 			: base(window)
 		{
+			RegisterBehaviorHandler(typeof(InfoBitmapBehavior));
 
+			RegisterBehaviorHandler(typeof(SolidBitmapBehavior));
+			RegisterBehaviorHandler(typeof(SolidForegroundBitmapBehavior));
+
+			RegisterBehaviorHandler(typeof(LinearBitmapBehavior));
+			RegisterBehaviorHandler(typeof(LinearForegroundBitmapBehavior));
+
+			RegisterBehaviorHandler(typeof(RadialBitmapBehavior));
+			RegisterBehaviorHandler(typeof(RadialForegroundBitmapBehavior));
+
+			RegisterBehaviorHandler(typeof(DrawTextBehavior));
+			RegisterBehaviorHandler(typeof(DrawGeometryBehavior));
+
+	        AttachEventHandler(new HostEventHandler());
+
+			SetupPage("index.html");
+
+			window.Show();
 		}
 
 		// Things to do here:
@@ -66,12 +85,20 @@ namespace SciterTest.Graphics
 #if DEBUG
 			string location = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
+#if OSX
+			location += "\\..\\..\\..\\..\\..\\";
+#else
 			location += "\\..\\..";
+#endif
 
 			string path = Path.Combine(location, "res", page);
-			Debug.Assert(File.Exists(path));
 
 			Uri uri = new Uri(path, UriKind.Absolute);
+
+			Debug.Assert(uri.IsFile);
+
+			Debug.Assert(File.Exists(uri.AbsolutePath));
+
 #else
 			Uri uri = new Uri(baseUri: _archive.Uri, page);
 #endif
@@ -81,14 +108,14 @@ namespace SciterTest.Graphics
 
 		protected override SciterXDef.LoadResult OnLoadData(SciterXDef.SCN_LOAD_DATA sld)
 		{
-			if(_archive?.IsOpen == true && sld.uri.StartsWith(_archive.Uri.GetLeftPart(UriPartial.Path)))
-			{
-				// load resource from SciterArchive
-				var uri = new Uri(sld.uri);
-				byte[] data = _archive.Get(uri.GetComponents(UriComponents.Path, UriFormat.SafeUnescaped));
-				if(data!=null)
-					_api.SciterDataReady(_window.Handle, sld.uri, data, (uint) data.Length);
-			}
+			var uri = new Uri(sld.uri);
+
+			// load resource from SciterArchive
+			_archive?.GetItem(uri, (data, path) => 
+			{ 
+				_api.SciterDataReady(_window.Handle, path, data, (uint) data.Length);
+			});
+
 			return base.OnLoadData(sld);
 		}
 	}

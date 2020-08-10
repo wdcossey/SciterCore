@@ -1,0 +1,32 @@
+<!-- 
+  This file is automatically imported by NuGet into a user's project
+  when it targets a single framework, or in classic (pre 2017) csproj projects.
+-->
+<Project TreatAsLocalProperty="TaskFolder;TaskAssembly">
+  
+  <PropertyGroup>
+    <TaskFolder>$(MSBuildThisFileDirectory)..\scripts\</TaskFolder>
+    <TaskAssembly Condition="$([MSBuild]::IsOsPlatform(Windows))">packfolder.exe</TaskAssembly>
+    <TaskAssembly Condition="$([MSBuild]::IsOsPlatform(OSX))">packOSX.sh</TaskAssembly>
+    <TaskAssembly Condition="$([MSBuild]::IsOsPlatform(Linux))">packOSX.sh</TaskAssembly>
+  </PropertyGroup>
+
+  <!--<Target Name="PrepResources"
+          AfterTargets="PrepareResources">
+    <Exec Command="$(TaskFolder)$(TaskAssembly) &quot;$(ProjectDir)res&quot; &quot;$(ProjectDir)SiteResource.bin&quot; -binary" />
+  </Target>-->
+  
+  <Target Name="SciterPreBuild" BeforeTargets="PreBuildEvent" >
+    <MakeDir Directories="$(ProjectDir).sciter" />
+    <Exec Command="$(TaskFolder)$(TaskAssembly) &quot;$(ProjectDir)res&quot; &quot;$(ProjectDir).sciter\$(ProjectName).bin&quot; -binary" />
+  </Target>
+
+  <Target Name="SciterEmbedLocal" BeforeTargets="PrepareForBuild">
+    <ItemGroup>
+      <EmbeddedResource Include="$(ProjectDir).sciter\$(ProjectName).bin">
+        <LogicalName>SciterResource</LogicalName>
+      </EmbeddedResource>
+    </ItemGroup>
+  </Target>
+  
+</Project>
