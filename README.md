@@ -1,14 +1,14 @@
 ![https://sciter.com/](https://sciter.com/wp-content/themes/sciter/!images/logo.png)
 
-SciterCore.PackFolder NuGet: ![NuGet](https://img.shields.io/nuget/v/.svg?style=flat)
+SciterCore.PackFolder [![NuGet](https://img.shields.io/nuget/v/.svg?style=flat)]() ![Build status](https://dev.azure.com/wdcossey/GitHub/_apis/build/status/SciterCore.PackFolder)
 
-SciterCore.Binaries.Windows NuGet: ![NuGet](https://img.shields.io/nuget/v/.svg?style=flat)
+SciterCore.Binaries.Windows [![NuGet](https://img.shields.io/nuget/v/.svg?style=flat)]() ![Build status](https://dev.azure.com/wdcossey/GitHub/_apis/build/status/SciterCore.Binaries.Windows)
 
-SciterCore.WinForms NuGet: ![NuGet](https://img.shields.io/nuget/v/.svg?style=flat)
+SciterCore.WinForms [![NuGet](https://img.shields.io/nuget/v/.svg?style=flat)]() ![Build status](https://dev.azure.com/wdcossey/GitHub/_apis/build/status/SciterCore.WinForms)
 
-SciterCore.Gtk NuGet: ![NuGet](https://img.shields.io/nuget/v/.svg?style=flat)
+SciterCore.Gtk [![NuGet](https://img.shields.io/nuget/v/.svg?style=flat)]() ![Build status](https://dev.azure.com/wdcossey/GitHub/_apis/build/status/SciterCore.Gtk)
 
-SciterCore.Mac NuGet: ![NuGet](https://img.shields.io/nuget/v/.svg?style=flat)
+SciterCore.Mac [![NuGet](https://img.shields.io/nuget/v/.svg?style=flat)]() ![Build status](https://dev.azure.com/wdcossey/GitHub/_apis/build/status/SciterCore.Mac)
 
 ## About this project
 

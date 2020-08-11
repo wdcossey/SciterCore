@@ -50,12 +50,6 @@
     <None Include="$(MSBuildThisFileDirectory)LibConsole\utils.tis" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)LibConsole.bin">
-      <LogicalName>LibConsole</LogicalName>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Behaviors\" />
     <Folder Include="$(MSBuildThisFileDirectory)Extensions\" />
     <Folder Include="$(MSBuildThisFileDirectory)Attributes\" />
   </ItemGroup>
