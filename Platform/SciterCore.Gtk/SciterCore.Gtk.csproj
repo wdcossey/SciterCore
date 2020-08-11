@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" TreatAsLocalProperty="TaskFolder;PackSourceFolder;PackOutputFile;TaskAssembly">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -48,7 +48,30 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <Import Project="$(SolutionDir)Shared\SciterCore.Shared\SciterCore.Shared.projitems" Label="Shared" Condition="Exists('$(SolutionDir)Share\SciterCore.Shared\SciterCore.Shared.projitems')" />
+  <Import Project="$(SolutionDir)Shared\SciterCore.Shared\SciterCore.Shared.projitems" Label="Shared" Condition="Exists('$(SolutionDir)Shared\SciterCore.Shared\SciterCore.Shared.projitems')" />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\..\Shared\SciterCore.Shared\SciterCore.Shared.projitems" Label="Shared" />
+
+  <!-- LibConsole packaging -->
+  <PropertyGroup>
+    <TaskFolder>$(MSBuildThisFileDirectory)..\..\scripts\</TaskFolder>
+    <PackSourceFolder>$(MSBuildThisFileDirectory)..\..\Shared\SciterCore.Shared\LibConsole</PackSourceFolder>
+    <PackOutputFile>$(ProjectDir).sciter\LibConsole.bin</PackOutputFile>
+    <TaskAssembly Condition="$([MSBuild]::IsOsPlatform(Windows))">packfolder.exe</TaskAssembly>
+    <TaskAssembly Condition="$([MSBuild]::IsOsPlatform(OSX))">packOSX.sh</TaskAssembly>
+    <TaskAssembly Condition="$([MSBuild]::IsOsPlatform(Linux))">packOSX.sh</TaskAssembly>
+  </PropertyGroup>
+
+  <Target Name="SciterPreBuild" BeforeTargets="PreBuildEvent" >
+    <MakeDir Directories="$(ProjectDir).sciter" />
+    <Exec Command="$(TaskFolder)$(TaskAssembly) &quot;$(PackSourceFolder)&quot; &quot;$(PackOutputFile)&quot; -binary" />
+  </Target>
+
+  <Target Name="SciterEmbedLocal" BeforeTargets="PrepareForBuild">
+    <ItemGroup>
+      <EmbeddedResource Include="$(ProjectDir).sciter\LibConsole.bin">
+        <LogicalName>LibConsole</LogicalName>
+      </EmbeddedResource>
+    </ItemGroup>
+  </Target>
+  
 </Project>

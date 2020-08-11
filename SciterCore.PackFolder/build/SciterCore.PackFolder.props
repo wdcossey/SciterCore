@@ -10,11 +10,6 @@
     <TaskAssembly Condition="$([MSBuild]::IsOsPlatform(OSX))">packOSX.sh</TaskAssembly>
     <TaskAssembly Condition="$([MSBuild]::IsOsPlatform(Linux))">packOSX.sh</TaskAssembly>
   </PropertyGroup>
-
-  <!--<Target Name="PrepResources"
-          AfterTargets="PrepareResources">
-    <Exec Command="$(TaskFolder)$(TaskAssembly) &quot;$(ProjectDir)res&quot; &quot;$(ProjectDir)SiteResource.bin&quot; -binary" />
-  </Target>-->
   
   <Target Name="SciterPreBuild" BeforeTargets="PreBuildEvent" >
     <MakeDir Directories="$(ProjectDir).sciter" />

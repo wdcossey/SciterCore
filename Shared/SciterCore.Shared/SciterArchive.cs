@@ -91,7 +91,7 @@ namespace SciterCore
 			{
 				if (stream == null)
 				{
-					throw new InvalidOperationException("Could not load manifest resource stream.");
+					throw new InvalidOperationException($"Could not load manifest resource stream ({resourceName}).");
 				}
 
 				byte[] buffer = new byte[stream.Length];

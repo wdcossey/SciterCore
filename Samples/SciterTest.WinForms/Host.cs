@@ -3,6 +3,7 @@ using SciterCore.Interop;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using SciterValue = SciterCore.SciterValue;
 
 namespace SciterTest.WinForms
@@ -44,7 +45,7 @@ namespace SciterTest.WinForms
 		public BaseHost()
 		{
 		#if !DEBUG
-			_archive.Open(SciterAppResource.ArchiveResource.resources);
+			_archive.Open();
 		#endif
 		}
 
