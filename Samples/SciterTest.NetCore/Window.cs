@@ -1,5 +1,4 @@
 using SciterCore;
-using SciterCore.Interop;
 
 namespace SciterTest.NetCore
 {

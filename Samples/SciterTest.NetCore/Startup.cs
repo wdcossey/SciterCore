@@ -1,9 +1,6 @@
-﻿using System;
-using System.Diagnostics;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
-using SciterCore;
 using SciterCore.Interop;
 
 namespace SciterTest.NetCore

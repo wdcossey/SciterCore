@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Threading;
 using NUnit.Framework;
-using SciterCore;
 using SciterCore.Interop;
-using SciterValue = SciterCore.Interop.SciterValue;
 
 namespace SciterCore.UnitTests
 {

@@ -1,14 +1,8 @@
 using SciterCore;
 using SciterCore.Interop;
 using System;
-using System.Runtime.InteropServices;
 using System.Diagnostics;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
-using System.Reflection;
 using SciterValue = SciterCore.SciterValue;
 
 namespace SciterTest.Core

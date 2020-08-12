@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+    <!-- if ShouldIncludeNativeSciterCore == False then don't include the native SciterCore binaries -->
+    <PropertyGroup>
+        <ShouldIncludeNativeSciterCore Condition=" '$(ShouldIncludeNativeSciterCore)' == '' ">True</ShouldIncludeNativeSciterCore>
+    </PropertyGroup>
+
+    <!-- get the preferred architecture -->
+    <PropertyGroup>
+        <!-- handle VS 2017 live unit testing -->
+        <PreferredNativeSciterCore Condition=" '$(PreferredNativeSciterCore)' == '' and '$(BuildingForLiveUnitTesting)' == 'true' and '$(PlatformTarget)' == '' ">x86</PreferredNativeSciterCore>   
+
+        <!-- handle x86/x64 specifically -->
+        <PreferredNativeSciterCore Condition=" '$(PreferredNativeSciterCore)' == '' and ( '$(PlatformTarget)' == 'x64' or '$(PlatformTarget)' == 'x86' ) ">$(PlatformTarget)</PreferredNativeSciterCore> 
+        <!-- handle Any CPU, considering Prefer32Bit - but only on Windows as macOS and Linux ignore this flag -->
+        <PreferredNativeSciterCore Condition=" '$(PreferredNativeSciterCore)' == '' and '$(OS)' != 'Unix' and '$(Prefer32Bit)' == 'False' ">x64</PreferredNativeSciterCore>  
+        <PreferredNativeSciterCore Condition=" '$(PreferredNativeSciterCore)' == '' and '$(OS)' != 'Unix' and '$(Prefer32Bit)' == 'True' ">x86</PreferredNativeSciterCore> 
+        <!-- fall back to x64 on 64-bit machines -->
+        <PreferredNativeSciterCore Condition=" '$(PreferredNativeSciterCore)' == '' and '$(MSBuildRuntimeType)' != 'Core' and '$([System.Environment]::Is64BitOperatingSystem)' == 'True' ">x64</PreferredNativeSciterCore> 
+        <PreferredNativeSciterCore Condition=" '$(PreferredNativeSciterCore)' == '' and '$(MSBuildRuntimeType)' == 'Core' and '$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)' == 'X64' ">x64</PreferredNativeSciterCore> 
+        <!-- fall back to x86 -->
+        <PreferredNativeSciterCore Condition=" '$(PreferredNativeSciterCore)' == '' ">x86</PreferredNativeSciterCore>
+    </PropertyGroup>
+    
+    <!-- a special case for Any CPU -->
+    <ItemGroup Condition=" '$(ShouldIncludeNativeSciterCore)' != 'False' ">
+        <!-- Windows -->
+        <None Include="$(MSBuildThisFileDirectory)..\..\runtimes\win-x86\native\sciter.dll"
+              Condition="Exists('$(MSBuildThisFileDirectory)..\..\runtimes\win-x86\native\sciter.dll')">
+            <Link>x86\sciter.dll</Link>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Include="$(MSBuildThisFileDirectory)..\..\runtimes\win-x64\native\sciter.dll"
+              Condition="Exists('$(MSBuildThisFileDirectory)..\..\runtimes\win-x64\native\sciter.dll')">
+            <Link>x64\sciter.dll</Link>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <!-- Linux -->
+        <None Include="$(MSBuildThisFileDirectory)..\..\runtimes\linux-x64\native\libsciter-gtk.so"
+              Condition="Exists('$(MSBuildThisFileDirectory)..\..\runtimes\linux-x64\native\libsciter-gtk.so')">
+            <Link>x64\libsciter-gtk.so</Link>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <!-- MacOS -->
+        <None Include="$(MSBuildThisFileDirectory)..\..\runtimes\osx\native\sciter-osx-64.dylib"
+              Condition="Exists('$(MSBuildThisFileDirectory)..\..\runtimes\osx\native\sciter-osx-64.dylib')">
+            <Link>x64\sciter-osx-64.dylib</Link>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+
+</Project>

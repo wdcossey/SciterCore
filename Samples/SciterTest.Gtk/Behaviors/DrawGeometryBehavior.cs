@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using SciterCore;
 using SciterCore.Interop;
 using SciterGraphics = SciterCore.SciterGraphics;

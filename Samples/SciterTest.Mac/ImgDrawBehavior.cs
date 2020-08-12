@@ -1,7 +1,4 @@
-﻿using System;
-using SciterCore;
-using AppKit;
-using Foundation;
+﻿using SciterCore;
 using CoreGraphics;
 
 namespace SciterTest.Mac

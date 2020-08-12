@@ -1,9 +1,6 @@
 using SciterCore;
 using SciterCore.Interop;
 using System;
-using System.Diagnostics;
-using System.IO;
-using System.Reflection;
 using SciterValue = SciterCore.SciterValue;
 
 namespace SciterTest.WinForms

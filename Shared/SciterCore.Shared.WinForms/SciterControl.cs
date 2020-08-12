@@ -1,12 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using SciterCore.Interop;
 
@@ -18,7 +11,7 @@ namespace SciterCore.WinForms
 	[DisplayName("SciterControl")]
     [DesignerCategory("Sciter")]
     [Category("Sciter")]
-	public class SciterControl : Control
+	public class SciterControl : UserControl
 	{
 
         private static string DEFAULT_HTML = 
@@ -63,11 +56,11 @@ namespace SciterCore.WinForms
 
 		protected override void OnClientSizeChanged(EventArgs e)
 		{
-			if(SciterWnd.Handle.ToInt32()!=0)
-			{
-				var sz = this.Size;
-				PInvokeWindows.MoveWindow(SciterWnd.Handle, 0, 0, sz.Width, sz.Height, true);
-			}
+			if(SciterWnd != null && SciterWnd?.Handle != IntPtr.Zero)
+            {
+                var sz = this.Size;
+                PInvokeWindows.MoveWindow(hWnd: SciterWnd.Handle, X: 0, Y: 0, nWidth: sz.Width, nHeight: sz.Height, bRepaint: true);
+            }
 			base.OnClientSizeChanged(e);
 		}
 		#endregion

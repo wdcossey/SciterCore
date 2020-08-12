@@ -18,15 +18,11 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 using System.Threading;
-using System.Reflection;
 using SciterCore.Interop;
-using SciterCore.Extensions;
 
 namespace SciterCore
 {

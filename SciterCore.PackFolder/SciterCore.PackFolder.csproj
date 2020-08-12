@@ -1,7 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netstandard2.0</TargetFramework>
         <!-- Suppresses the warnings about the package not having assemblies in lib/*/.dll.-->
         <NoPackageAnalysis>true</NoPackageAnalysis>
         <!-- Change the default location where NuGet will put the build output -->
@@ -18,6 +17,7 @@
         <RepositoryUrl>https://github.com/wdcossey/SciterCore</RepositoryUrl>
         <PackageTags>Sciter, SciterCore</PackageTags>
         <PackageVersion>0.0.8-beta.11</PackageVersion>
+        <TargetFrameworks>netstandard2.0;netcoreapp2.0;netcoreapp2.1;netcoreapp3.0;netcoreapp3.1</TargetFrameworks>
     </PropertyGroup>
 
     <ItemGroup>

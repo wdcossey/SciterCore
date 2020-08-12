@@ -42,7 +42,7 @@
     <DocumentationFile>bin\Release\SciterCore.WinForms.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
     <AssemblyOriginatorKeyFile>..\SciterMidi.snk</AssemblyOriginatorKeyFile>
@@ -65,10 +65,6 @@
       <Project>{b57b6d19-ad3d-47a1-ac8f-af24951cbe31}</Project>
       <Name>SciterCore.PackFolder</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SciterCore.Binaries.Windows\SciterCore.Binaries.Windows.csproj">
-      <Project>{6f0c6e25-6869-4776-a983-e9267ab30a0c}</Project>
-      <Name>SciterCore.Binaries.Windows</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   
@@ -83,7 +79,7 @@
     <TaskAssembly Condition="$([MSBuild]::IsOsPlatform(Linux))">packOSX.sh</TaskAssembly>
   </PropertyGroup>
 
-  <Target Name="SciterPreBuild" BeforeTargets="PreBuildEvent" >
+  <Target Name="SciterPreBuild" BeforeTargets="PreBuildEvent">
     <MakeDir Directories="$(ProjectDir).sciter" />
     <Exec Command="$(TaskFolder)$(TaskAssembly) &quot;$(PackSourceFolder)&quot; &quot;$(PackOutputFile)&quot; -binary" />
   </Target>

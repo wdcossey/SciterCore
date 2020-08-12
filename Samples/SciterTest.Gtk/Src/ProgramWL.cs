@@ -1,12 +1,8 @@
 #if WINDOWS || GTKMONO
 using System;
 using System.Diagnostics;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SciterCore;
 using SciterCore.Interop;
+using SciterCore;
 
 namespace SciterTest.Gtk
 {

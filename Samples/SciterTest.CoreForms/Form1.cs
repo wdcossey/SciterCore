@@ -1,14 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using SciterCore;
-using SciterCore.Interop;
 
 namespace SciterTest.CoreForms
 {
@@ -36,7 +27,7 @@ namespace SciterTest.CoreForms
 
         private void SciterControl1HandleCreated(object sender, EventArgs e)
         {
-            var vm = Sciter.Api.SciterGetVM(sciterControl1.Handle);
+            //var vm = Sciter.Api.SciterGetVM(sciterControl1.Handle);
             //AppWnd = new SciterWindow(sciterControl1.Handle);
             //AppHost.Setup(AppWnd);
         }

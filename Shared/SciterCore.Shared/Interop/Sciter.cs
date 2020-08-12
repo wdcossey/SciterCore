@@ -16,13 +16,8 @@
 // along with SciterSharp.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 // ReSharper disable MemberCanBePrivate.Global
 
@@ -79,9 +74,9 @@ namespace SciterCore.Interop
 #if WINDOWS || NETCORE
 		[DllImport("sciter.dll", EntryPoint = "SciterAPI")]
 #elif GTKMONO
-		[DllImport("sciter-gtk-64.so")]
+		[DllImport("x64\\sciter-gtk-64.so")]
 #elif OSX
-		[DllImport("sciter-osx-64.dylib", EntryPoint = "SciterAPI")]
+		[DllImport("x64\\sciter-osx-64.dylib", EntryPoint = "SciterAPI")]
 #endif
 		private static extern IntPtr SciterAPI();
 
@@ -98,8 +93,9 @@ namespace SciterCore.Interop
                 var codeBaseDirectory = Path.GetDirectoryName(codeBasePath);
                 var is64 = Environment.Is64BitProcess;
                 var bitDirectory = is64 ? "x64" : "x86";
-				
-                PInvokeWindows.LoadLibrary(Path.Combine(codeBaseDirectory, bitDirectory, "sciter.dll"));
+                var libName = Path.Combine(codeBaseDirectory, bitDirectory, "sciter.dll");
+                
+                PInvokeWindows.LoadLibrary(libName);
 #elif GTKMONO
 				if(IntPtr.Size != 8)
 					throw new Exception("SciterSharp GTK/Mono only supports 64bits builds");
