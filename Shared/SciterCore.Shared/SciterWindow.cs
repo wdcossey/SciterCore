@@ -185,6 +185,10 @@ namespace SciterCore
 			PInvokeUtils.RECT frame;
 			PInvokeWindows.GetClientRect(hwnd_parent, out frame);
 
+#if DEBUG
+			_api.SciterSetOption(IntPtr.Zero, SciterXDef.SCITER_RT_OPTIONS.SCITER_SET_DEBUG_MODE, new IntPtr(1));
+#endif
+
 #if true
             string wndclass = Marshal.PtrToStringUni(_api.SciterClassName());
 
@@ -201,7 +205,7 @@ namespace SciterCore
 				IntPtr.Zero,
 				IntPtr.Zero,
 				IntPtr.Zero);
-
+            
 			//Hwnd = PInvokeWindows.CreateWindowEx(0, wndclass, null, (int)PInvokeWindows.WindowStyles.WS_CHILD, 0, 0, frame.Right, frame.Bottom, hwnd_parent, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero);
 			//SetSciterOption(SciterXDef.SCITER_RT_OPTIONS.SCITER_SET_DEBUG_MODE, new IntPtr(1));// NO, user should opt for it
 #else
