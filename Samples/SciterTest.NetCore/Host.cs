@@ -8,10 +8,14 @@ using SciterValue = SciterCore.SciterValue;
 
 namespace SciterTest.NetCore
 {
-	public class Host : BaseHost
+	public class Host<TWindow> : BaseHost
+		where TWindow : SciterWindow 
 	{
-		public Host(SciterWindow wnd)
+		public static TWindow AppWindow { get; private set; }// must keep a reference to survive GC
+		
+		public Host(TWindow wnd)
 		{
+			AppWindow = wnd;
 			var host = this;
 			host.Setup(wnd);
 			host.AttachEventHandler(new HostEvh());
@@ -19,7 +23,7 @@ namespace SciterTest.NetCore
 			wnd.Show();
 		}
 		
-		public Host(Func<SciterWindow> wndFunc)
+		public Host(Func<TWindow> wndFunc)
 		: this(wndFunc.Invoke())
 		{
 			

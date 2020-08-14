@@ -13,7 +13,7 @@ namespace SciterTest.NetCore
             var app = new SciterApplication();
             app.Run(() =>
             {
-                return new Host(() => new Window());
+                return new Host<Window>(() => new Window());
             });
             
             //var host = new HostBuilder()

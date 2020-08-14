@@ -34,7 +34,7 @@ namespace SciterCore.WinForms
             Archive = new SciterArchive();
         }
 
-        public Uri Uri
+        public Uri BaseAddress
         {
             get
             {

@@ -79,6 +79,10 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <None Include="res\icons8-visual-studio-2019.svg" />
+    <None Include="res\icons8-visual-studio-code-2019.svg" />
+    <None Include="res\index.html" />
+    <None Include="res\logo.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

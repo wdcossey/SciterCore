@@ -7,15 +7,14 @@ namespace SciterTest.NetCore
 {
     public class Startup : IHostedService
     {
-        public static Window AppWindow { get; private set; }// must keep a reference to survive GC
-        public static Host AppHost { get; private set; }
+        public static Host<Window> AppHost { get; private set; }
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
             //MessageBox.Show (IntPtr.Zero, "ola", "mnundo");
 
 #if WINDOWS || NETCOREAPP
-			// Sciter needs this for drag'n'drop support; STAThread is required for OleInitialize succeess
+			// Sciter needs this for drag'n'drop support; STAThread is required for OleInitialize success
 			//int oleres = PInvokeWindows.OleInitialize(IntPtr.Zero);
 			//Debug.Assert(oleres == 0);
 #endif
@@ -29,11 +28,9 @@ namespace SciterTest.NetCore
                 In Linux, if you are getting a System.TypeInitializationException below, it is because you don't have 'libsciter-gtk-64.so' in your LD_LIBRARY_PATH.
                 Run 'sudo bash install-libsciter.sh' contained in this package to install it in your system.
             */
-            // Create the window
-            AppWindow = new Window();
 
             // Prepares SciterHost and then load the page
-            AppHost = new Host(AppWindow);
+            AppHost = new Host<Window>(() => new Window());
 
 
             // Run message loop

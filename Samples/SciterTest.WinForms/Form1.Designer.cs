@@ -36,8 +36,6 @@
 			// sciterControl1
 			// 
 			this.sciterControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.sciterControl1.Host = this.sciterHost;
-			this.sciterControl1.Html = "<body>Hello <b>Sciter</b> from VS</body>";
 			this.sciterControl1.Location = new System.Drawing.Point(0, 0);
 			this.sciterControl1.Name = "sciterControl1";
 			this.sciterControl1.Size = new System.Drawing.Size(647, 422);
@@ -46,11 +44,13 @@
 			// 
 			// sciterHost
 			// 
+			this.sciterHost.RootPage = "index.html";
 			this.sciterHost.Archive = this.sciterArchive;
+			this.sciterHost.Control = this.sciterControl1;
 			// 
 			// sciterArchive
 			// 
-			this.sciterArchive.Uri = new System.Uri("archive://app/", System.UriKind.Absolute);
+			this.sciterArchive.BaseAddress = new System.Uri("archive://app/", System.UriKind.Absolute);
 			// 
 			// Form1
 			// 

@@ -24,8 +24,6 @@ namespace SciterCore.WinForms
             "        args.Html = \"&lt;body&gt;Hello &lt;b&gt;World&lt;/b&gt;&lt;/body&gt;\";<br/>" + 
             "    }</code></pre>";
 
-        private SciterHostComponent _host;
-
         //private TextureBrush _brush;
 
         public SciterWindow SciterWnd { get; private set; }
@@ -35,24 +33,14 @@ namespace SciterCore.WinForms
 			
 		}
 
-		public SciterHostComponent Host
-		{
-			get => _host;
-			set
-			{
-				_host = value;
-
-				if (SciterWnd != null && SciterWnd?.Handle != IntPtr.Zero)
-				{
-					_host?.FormsHost?.SetWindow(SciterWnd);
-				}
-			}
-		}
-
+		[Category("Sciter")]
 		public string Html { get; set; }
+		
 
         [Category("Sciter")]
 		public event EventHandler<LoadHtmlEventArgs> LoadHtml;
+		
+		internal event EventHandler<WindowCreatedEventArgs> WindowCreated;
 
 		#region Overrided Methods
 		
@@ -88,19 +76,18 @@ namespace SciterCore.WinForms
 			SciterWnd = new SciterWindow()
 				.CreateChildWindow(Handle);
 			
+			this.WindowCreated?.Invoke(this, new WindowCreatedEventArgs(SciterWnd));
+			
 			if (SciterWnd != null && SciterWnd?.Handle != IntPtr.Zero)
 			{
-				
-				_host?.FormsHost?.SetWindow(SciterWnd);
-				
-				var loadHtmlEventArgs = new LoadHtmlEventArgs()
-				{
-					Html = this.Html
-				};
+				//var loadHtmlEventArgs = new LoadHtmlEventArgs()
+				//{
+				//	Html = this.Html
+				//};
 
-				LoadHtml?.Invoke(this, loadHtmlEventArgs);
-
-				SciterWnd.LoadHtml(loadHtmlEventArgs?.Html ?? this.Html ?? DEFAULT_HTML);
+				//LoadHtml?.Invoke(this, loadHtmlEventArgs);
+				//
+				//SciterWnd.LoadHtml(loadHtmlEventArgs?.Html ?? this.Html ?? DEFAULT_HTML);
 
 				SciterWnd.Show();
 			}
@@ -129,5 +116,15 @@ namespace SciterCore.WinForms
 
         public string Html { get; set; }
 
+    }
+
+    internal class WindowCreatedEventArgs : EventArgs
+    {
+	    public SciterWindow Window { get; }
+
+	    public WindowCreatedEventArgs(SciterWindow window)
+	    {
+		    Window = window;
+	    }
     }
 }

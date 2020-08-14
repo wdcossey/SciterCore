@@ -5,7 +5,7 @@ namespace SciterCore
 {
     public class SciterApplication : IDisposable
     {
-        private static object _lock = new object();
+        private static readonly object QueueLock = new object();
 
         private SciterWindow Window { get; set; }
 
@@ -61,7 +61,7 @@ namespace SciterCore
         
         public static void QueueMain(Action action)
         {
-            lock (_lock)
+            lock (QueueLock)
             {
                 action?.Invoke();
             }
