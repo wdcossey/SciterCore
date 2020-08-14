@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 using SciterCore;
+using SciterCore.Interop;
 
 namespace SciterTest.WinForms
 {
@@ -18,6 +19,8 @@ namespace SciterTest.WinForms
 
 		private void SciterControl1_HandleCreated(object sender, EventArgs e)
 		{
+			//var vm = sciterControl1.SciterWnd.VM;
+			
 			//var vm = Sciter.Api.SciterGetVM(sciterControl1.SciterWnd.Handle);
 			//AppWnd = new SciterWindow(sciterControl1.SciterWnd.Handle);
 			//AppHost.Setup(AppWnd);

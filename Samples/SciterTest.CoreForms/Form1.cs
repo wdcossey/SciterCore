@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using SciterCore.Interop;
 
 namespace SciterTest.CoreForms
 {
@@ -8,10 +9,11 @@ namespace SciterTest.CoreForms
         public Form1()
         {
             InitializeComponent();
-
             sciterControl1.HandleCreated += SciterControl1HandleCreated;
             sciterControl1.LoadHtml += SciterControl1OnLoadHtml;
         }
+
+        
 
         private void SciterControl1OnLoadHtml(object? sender, LoadHtmlEventArgs e)
         {

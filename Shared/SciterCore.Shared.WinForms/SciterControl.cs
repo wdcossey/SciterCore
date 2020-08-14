@@ -1,5 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using SciterCore.Interop;
 
@@ -22,34 +24,86 @@ namespace SciterCore.WinForms
             "        args.Html = \"&lt;body&gt;Hello &lt;b&gt;World&lt;/b&gt;&lt;/body&gt;\";<br/>" + 
             "    }</code></pre>";
 
-		public SciterWindow SciterWnd { get; private set; }
+        private SciterHostComponent _host;
+
+        //private TextureBrush _brush;
+
+        public SciterWindow SciterWnd { get; private set; }
 
 		public SciterControl()
 		{
-			SciterWnd = new SciterWindow();
+			
 		}
 
-		public SciterHostComponent Host { get; set; }
+		public SciterHostComponent Host
+		{
+			get => _host;
+			set
+			{
+				_host = value;
 
-        public string Html { get; set; }
+				if (SciterWnd != null && SciterWnd?.Handle != IntPtr.Zero)
+				{
+					_host?.FormsHost?.SetWindow(SciterWnd);
+				}
+			}
+		}
 
+		public string Html { get; set; }
+
+        [Category("Sciter")]
 		public event EventHandler<LoadHtmlEventArgs> LoadHtml;
 
 		#region Overrided Methods
+		
+		protected override void WndProc(ref Message m)
+		{
+			base.WndProc(ref m);
+		}
+		
+		//protected override void OnPaintBackground(PaintEventArgs e)
+		//{
+		//	e.Graphics.Clear(SystemColors.Control);
+		//	
+		//	var size = 8;
+//
+		//	using (var bmp = new Bitmap(size * 2, size * 2))
+		//	{
+		//		using (var brush = new SolidBrush(SystemColors.ControlDark))
+		//		using (var graphics = Graphics.FromImage(bmp))
+		//		{
+		//			graphics.FillRectangle(brush, 0, 0, size, size);
+		//			graphics.FillRectangle(brush, size, size, size, size);
+		//		}
+		//		
+		//		using (var textureBrush = new TextureBrush(bmp, WrapMode.Tile))
+		//		{
+		//			e.Graphics.FillRectangle(textureBrush, e.ClipRectangle);
+		//		}
+		//	}
+		//}
+
 		protected override void OnHandleCreated(EventArgs e)
 		{
-			SciterWnd.CreateChildWindow(Handle);
+			SciterWnd = new SciterWindow()
+				.CreateChildWindow(Handle);
+			
+			if (SciterWnd != null && SciterWnd?.Handle != IntPtr.Zero)
+			{
+				
+				_host?.FormsHost?.SetWindow(SciterWnd);
+				
+				var loadHtmlEventArgs = new LoadHtmlEventArgs()
+				{
+					Html = this.Html
+				};
 
-            var loadHtmlEventArgs = new LoadHtmlEventArgs()
-            {
-                Html = this.Html
-            };
+				LoadHtml?.Invoke(this, loadHtmlEventArgs);
 
-            LoadHtml?.Invoke(this, loadHtmlEventArgs);
+				SciterWnd.LoadHtml(loadHtmlEventArgs?.Html ?? this.Html ?? DEFAULT_HTML);
 
-            SciterWnd.LoadHtml(loadHtmlEventArgs?.Html ?? this.Html ?? DEFAULT_HTML);
-
-			SciterWnd.Show();
+				SciterWnd.Show();
+			}
 
 			base.OnHandleCreated(e);
 		}

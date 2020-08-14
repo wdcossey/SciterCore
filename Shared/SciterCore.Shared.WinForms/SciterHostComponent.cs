@@ -3,12 +3,12 @@ using System.ComponentModel;
 
 namespace SciterCore.WinForms
 {
-    [DisplayName("Host")]
+    [DisplayName("FormsHost")]
     [DesignerCategory("Sciter")]
     [Category("Sciter")]
     public class SciterHostComponent : Component
     {
-        internal InternalHost Host { get; }
+        internal SciterFormsHost FormsHost { get; }
 
         private SciterArchiveComponent _archive;
         private SciterControl _control;
@@ -25,11 +25,11 @@ namespace SciterCore.WinForms
 
                 if (value != null)
                 {
-                    Host.SetArchive(value?.Archive);
+                    FormsHost.SetArchive(value?.Archive);
                 }
             }
         }
-        
+
         //public SciterControl Control
         //{ 
         //    get
@@ -42,36 +42,37 @@ namespace SciterCore.WinForms
 
         //        if (value != null)
         //        {
-        //            Host.SetWindow(value?.SciterWnd);
+        //            FormsHost.SetWindow(value?.SciterWnd);
         //        }
         //    }
         //}
 
         public SciterHostComponent()
         {
-            Host = new InternalHost();
+            FormsHost = new SciterFormsHost();
         }
     }
 
-    class InternalHost : SciterHost
+    internal class SciterFormsHost : SciterHost
     {
         protected static Sciter.SciterApi _api = Sciter.Api;
         private SciterArchive _archive;
 
-        internal InternalHost()
+        internal SciterFormsHost()
         {
-
+            
         }
 
-        internal InternalHost SetArchive(SciterArchive archive)
+        internal SciterFormsHost SetArchive(SciterArchive archive)
         {
             _archive = archive;
+            _archive.Open();
             return this;
         }
         
-        internal InternalHost SetWindow(SciterWindow window)
+        internal SciterFormsHost SetWindow(SciterWindow window)
         {
-            this.SetupWindow(window: window);
+            base.SetupWindow(window: window);
             return this;
         }
 
