@@ -2,21 +2,21 @@
   This file is automatically imported by NuGet into a user's project
   when it targets a single framework, or in classic (pre 2017) csproj projects.
 -->
-<Project TreatAsLocalProperty="TaskFolder;TaskAssembly">
+<Project TreatAsLocalProperty="SciterCorePackFolderTaskFolder;SciterCorePackFolderTaskAssembly">
   
   <PropertyGroup>
-    <TaskFolder>$(MSBuildThisFileDirectory)..\scripts\</TaskFolder>
-    <TaskAssembly Condition="$([MSBuild]::IsOsPlatform(Windows))">packfolder.exe</TaskAssembly>
-    <TaskAssembly Condition="$([MSBuild]::IsOsPlatform(OSX))">packOSX.sh</TaskAssembly>
-    <TaskAssembly Condition="$([MSBuild]::IsOsPlatform(Linux))">packOSX.sh</TaskAssembly>
+    <SciterCorePackFolderTaskFolder>$(MSBuildThisFileDirectory)..\..\scripts\</SciterCorePackFolderTaskFolder>
+    <SciterCorePackFolderTaskAssembly Condition="$([MSBuild]::IsOsPlatform(Windows))">packfolder.exe</SciterCorePackFolderTaskAssembly>
+    <SciterCorePackFolderTaskAssembly Condition="$([MSBuild]::IsOsPlatform(OSX))">packOSX.sh</SciterCorePackFolderTaskAssembly>
+    <SciterCorePackFolderTaskAssembly Condition="$([MSBuild]::IsOsPlatform(Linux))">packOSX.sh</SciterCorePackFolderTaskAssembly>
   </PropertyGroup>
   
-  <Target Name="SciterPreBuild" BeforeTargets="PreBuildEvent" >
+  <Target Name="SciterCorePackFolderPreBuild" BeforeTargets="PreBuildEvent" >
     <MakeDir Directories="$(ProjectDir).sciter" />
-    <Exec Command="$(TaskFolder)$(TaskAssembly) &quot;$(ProjectDir)res&quot; &quot;$(ProjectDir).sciter\$(ProjectName).bin&quot; -binary" />
+    <Exec Command="$(SciterCorePackFolderTaskFolder)$(SciterCorePackFolderTaskAssembly) &quot;$(ProjectDir)res&quot; &quot;$(ProjectDir).sciter\$(ProjectName).bin&quot; -binary" />
   </Target>
 
-  <Target Name="SciterEmbedLocal" BeforeTargets="PrepareForBuild">
+  <Target Name="SciterCorePackFolderEmbedLocal" BeforeTargets="PrepareForBuild">
     <ItemGroup>
       <EmbeddedResource Include="$(ProjectDir).sciter\$(ProjectName).bin">
         <LogicalName>SciterResource</LogicalName>
