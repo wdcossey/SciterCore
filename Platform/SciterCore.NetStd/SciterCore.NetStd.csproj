@@ -13,7 +13,7 @@
     </PropertyGroup>
     <ItemGroup>
       <PackageReference Include="SciterCore.Binaries" Version="0.0.1-alpha.19" />
-      <PackageReference Include="SciterCore.PackFolder" Version="0.0.8-beta.12" />
+      <PackageReference Include="SciterCore.PackFolder" Version="0.0.8-alpha.19" />
     </ItemGroup>
     
     <!-- LibConsole packaging -->
