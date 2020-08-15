@@ -350,5 +350,5 @@ MigrationBackup/
 .ionide/
 .idea/**
 
-/Platform/**/.sciter/*
-/Shared/**/.sciter/*
+# Ignore SciterCore.PackFolder output
+**/.sciter/*.bin

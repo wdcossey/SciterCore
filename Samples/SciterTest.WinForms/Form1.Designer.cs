@@ -59,7 +59,7 @@
 			this.ClientSize = new System.Drawing.Size(647, 422);
 			this.Controls.Add(this.sciterControl1);
 			this.Name = "Form1";
-			this.Text = "Form1";
+			this.Text = "SciterCore::Framework::WinForms";
 			this.ResumeLayout(false);
 		}
 
