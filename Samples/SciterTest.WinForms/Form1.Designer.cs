@@ -38,7 +38,7 @@
 			this.sciterControl1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.sciterControl1.Location = new System.Drawing.Point(0, 0);
 			this.sciterControl1.Name = "sciterControl1";
-			this.sciterControl1.Size = new System.Drawing.Size(647, 422);
+			this.sciterControl1.Size = new System.Drawing.Size(608, 408);
 			this.sciterControl1.TabIndex = 0;
 			this.sciterControl1.LoadHtml += new System.EventHandler<SciterCore.WinForms.LoadHtmlEventArgs>(this.sciterControl1_LoadHtml);
 			// 
@@ -50,7 +50,7 @@
 			// 
 			// sciterArchive
 			// 
-			this.sciterArchive.BaseAddress = new System.Uri("archive://app/", System.UriKind.Absolute);
+			this.sciterArchive.BaseAddress = "archive://app/";
 			// 
 			// Form1
 			// 

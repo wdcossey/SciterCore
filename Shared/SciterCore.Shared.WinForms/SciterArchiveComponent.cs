@@ -31,16 +31,18 @@ namespace SciterCore.WinForms
 
         public SciterArchiveComponent()
         {
+            if (this.DesignMode)
+                return;
+            
             Archive = new SciterArchive();
         }
 
-        public Uri BaseAddress
+        public string BaseAddress
         {
             get
             {
-                return Archive.Uri;
+                return Archive?.Uri?.AbsoluteUri ?? SciterArchive.DEFAULT_ARCHIVE_URI;
             }
-
             set
             {
                 //Archive.Uri = value;

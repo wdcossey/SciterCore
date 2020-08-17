@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="SciterCore.Binaries" Version="0.0.52-alpha" />
+    <PackageReference Include="SciterCore.Binaries" Version="0.0.55-alpha" />
   </ItemGroup>
 
   <Import Project="$(SolutionDir)Shared\SciterCore.Shared\SciterCore.Shared.projitems" Label="Shared" Condition="Exists('$(SolutionDir)Shared\SciterCore.Shared\SciterCore.Shared.projitems')" />

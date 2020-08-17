@@ -31,7 +31,7 @@ namespace SciterCore
 		private IntPtr _handle;
 		private GCHandle _pinnedArray;
 
-		private const string DEFAULT_URI = "archive://app/";
+		public const string DEFAULT_ARCHIVE_URI = "archive://app/";
 
 		public Uri Uri { get; private set; }
 
@@ -39,7 +39,7 @@ namespace SciterCore
 
 		#region Constructor(s)
 
-        public SciterArchive(string uri = DEFAULT_URI)
+        public SciterArchive(string uri = DEFAULT_ARCHIVE_URI)
 		{
 			this.Uri = new Uri($"{uri}", UriKind.Absolute);
 		}

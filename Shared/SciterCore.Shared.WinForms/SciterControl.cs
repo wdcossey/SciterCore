@@ -15,8 +15,7 @@ namespace SciterCore.WinForms
     [Category("Sciter")]
 	public class SciterControl : UserControl
 	{
-
-        private static string DEFAULT_HTML = 
+		private static string DEFAULT_HTML = 
             "<body><code>Use the <b>LoadHtml</b> event of {0} to load some html.</code>" + 
             "<br/><br/>" +
             "<pre><code>    {0}.LoadHtml += (sender, args) => <br/>" + 
@@ -49,30 +48,38 @@ namespace SciterCore.WinForms
 			base.WndProc(ref m);
 		}
 		
-		//protected override void OnPaintBackground(PaintEventArgs e)
-		//{
-		//	e.Graphics.Clear(SystemColors.Control);
-		//	
-		//	var size = 8;
-//
-		//	using (var bmp = new Bitmap(size * 2, size * 2))
-		//	{
-		//		using (var brush = new SolidBrush(SystemColors.ControlDark))
-		//		using (var graphics = Graphics.FromImage(bmp))
-		//		{
-		//			graphics.FillRectangle(brush, 0, 0, size, size);
-		//			graphics.FillRectangle(brush, size, size, size, size);
-		//		}
-		//		
-		//		using (var textureBrush = new TextureBrush(bmp, WrapMode.Tile))
-		//		{
-		//			e.Graphics.FillRectangle(textureBrush, e.ClipRectangle);
-		//		}
-		//	}
-		//}
+		protected override void OnPaintBackground(PaintEventArgs e)
+		{
+			if (!this.DesignMode)
+			{
+				base.OnPaintBackground(e);
+				return;
+			}
+
+			e.Graphics.Clear(SystemColors.Control);
+			
+			const int size = 8;
+			using (var bmp = new Bitmap(size * 2, size * 2))
+			{
+				using (var brush = new SolidBrush(SystemColors.ControlDark))
+				using (var graphics = Graphics.FromImage(bmp))
+				{
+					graphics.FillRectangle(brush, 0, 0, size, size);
+					graphics.FillRectangle(brush, size, size, size, size);
+				}
+				
+				using (var textureBrush = new TextureBrush(bmp, WrapMode.Tile))
+				{
+					e.Graphics.FillRectangle(textureBrush, e.ClipRectangle);
+				}
+			}
+		}
 
 		protected override void OnHandleCreated(EventArgs e)
 		{
+			if (this.DesignMode)
+				return;
+			
 			SciterWnd = new SciterWindow()
 				.CreateChildWindow(Handle);
 			
