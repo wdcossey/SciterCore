@@ -27,9 +27,12 @@ namespace SciterCore.WinForms
             {
                 _archive = value;
 
+                if (this.DesignMode)
+                    return;
+                
                 if (value != null)
                 {
-                    FormsHost.SetArchive(value?.Archive);
+                   FormsHost?.SetArchive(value?.Archive);
                 }
             }
         }
@@ -44,6 +47,9 @@ namespace SciterCore.WinForms
                 if (_control == null) 
                     return;
                 
+                if (this.DesignMode)
+                    return;
+                
                 if (_control.SciterWnd != null && _control.SciterWnd?.Handle != IntPtr.Zero)
                 {
                     OnWindowCreated(_control, new WindowCreatedEventArgs(_control.SciterWnd));
@@ -55,14 +61,20 @@ namespace SciterCore.WinForms
 
         private void OnWindowCreated(object sender, WindowCreatedEventArgs e)
         {
-            this.FormsHost.SetWindow(e.Window);
+            if (this.DesignMode)
+                return;
             
-            e.Window.LoadPage(uri: new Uri(baseUri: _archive.BaseAddress, RootPage ?? ""));
+            this.FormsHost?.SetWindow(e.Window);
+            
+            e.Window.LoadPage(uri: new Uri(baseUri: new Uri(_archive.BaseAddress), RootPage ?? ""));
 
         }
 
         public SciterHostComponent()
         {
+            if (this.DesignMode)
+                return;
+            
             FormsHost = new SciterFormsHost();
             
             FormsHost.InternalGetItem += FormsHostOnInternalGetItem;
@@ -70,7 +82,10 @@ namespace SciterCore.WinForms
 
         private void FormsHostOnInternalGetItem(object sender, InternalGetArchiveItemEventArgs e)
         {
-            var args = new GetArchiveItemEventArgs(_archive.BaseAddress.AbsoluteUri, e.Uri);
+            if (this.DesignMode)
+                return;
+            
+            var args = new GetArchiveItemEventArgs(_archive.BaseAddress, e.Uri);
             GetArchiveItem?.Invoke(this, args);
             e.Uri = args.Path;
         }

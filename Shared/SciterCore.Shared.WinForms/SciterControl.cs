@@ -78,8 +78,11 @@ namespace SciterCore.WinForms
 		protected override void OnHandleCreated(EventArgs e)
 		{
 			if (this.DesignMode)
+			{
+				this.DoubleBuffered = true;
 				return;
-			
+			}
+
 			SciterWnd = new SciterWindow()
 				.CreateChildWindow(Handle);
 			

@@ -88,11 +88,11 @@ namespace SciterCore
 		}
 		#endregion
 
-		public static SciterElement Create(string tagname, string text = null)
+		public static SciterElement Create(string tagName, string text = null)
 		{
 			IntPtr he;
-			_api.SciterCreateElement(tagname, text, out he);
-			if(he != IntPtr.Zero)
+			_api.SciterCreateElement(tagName, text, out he);
+			if (he != IntPtr.Zero)
 				return new SciterElement(he);
 			return null;
 		}
@@ -178,30 +178,30 @@ namespace SciterCore
 		#endregion
 
 		#region Attributes and Styles
+		
 		public Dictionary<string, string> Attributes
 		{
 			get
 			{
-				Dictionary<string, string> attrs = new Dictionary<string, string>();
-				for(uint n = 0; n < AttributeCount; n++)
+				var result = new Dictionary<string, string>();
+				for (uint n = 0; n < AttributeCountInternal; n++)
 				{
-					attrs[ GetAttributeName(n) ] = GetAttribute(n);
+					result[GetAttributeNameInternal(n)] = GetAttributeInternal(n);
 				}
-				return attrs;
+				return result;
 			}
 		}
 
-		public uint AttributeCount
+		internal uint AttributeCountInternal
 		{
 			get
 			{
-				uint count;
-				_api.SciterGetAttributeCount(_he, out count);
-				return count;
+				_api.SciterGetAttributeCount(_he, out var result);
+				return result;
 			}
 		}
 
-		public string GetAttribute(uint n)
+		internal string GetAttributeInternal(uint n)
 		{
 			string strval = null;
 			SciterXDom.LPCWSTR_RECEIVER frcv = (IntPtr str, uint str_length, IntPtr param) =>
@@ -215,7 +215,7 @@ namespace SciterCore
 			return strval;
 		}
 
-		public string GetAttribute(string name)
+		internal string GetAttributeInternal(string name)
 		{
 			string strval = null;
 			SciterXDom.LPCWSTR_RECEIVER frcv = (IntPtr str, uint str_length, IntPtr param) =>
@@ -229,7 +229,7 @@ namespace SciterCore
 			return strval;
 		}
 
-		public string GetAttributeName(uint n)
+		internal string GetAttributeNameInternal(uint n)
 		{
 			string strval = null;
 			SciterXDom.LPCSTR_RECEIVER frcv = (IntPtr str, uint str_length, IntPtr param) =>
@@ -243,35 +243,36 @@ namespace SciterCore
 			return strval;
 		}
 
-        public void SetAttribute(string name, object value)
+        internal void SetAttributeInternal(string name, object value)
         {
             var r = _api.SciterSetAttributeByName(_he, name, $"{value}");
             Debug.Assert(r == SciterXDom.SCDOM_RESULT.SCDOM_OK);
         }
 
-		public void RemoveAttribute(string name)
+        internal void RemoveAttributeInternal(string name)
 		{
 			_api.SciterSetAttributeByName(_he, name, null);
 		}
-
-
-		public string GetStyle(string name)
+		
+        internal string GetStyleInternal(string name)
 		{
-			string strval = null;
-			SciterXDom.LPCWSTR_RECEIVER frcv = (IntPtr str, uint str_length, IntPtr param) =>
+			var result = default(string);
+			SciterXDom.LPCWSTR_RECEIVER receiver = (IntPtr str, uint str_length, IntPtr param) =>
 			{
-				strval = Marshal.PtrToStringUni(str, (int)str_length);
+				result = Marshal.PtrToStringUni(str, (int)str_length);
 			};
 
-			var r = _api.SciterGetStyleAttributeCB(_he, name, frcv, IntPtr.Zero);
+			var r = _api.SciterGetStyleAttributeCB(_he, name, receiver, IntPtr.Zero);
 			if(r == SciterXDom.SCDOM_RESULT.SCDOM_OK_NOT_HANDLED)
-				Debug.Assert(strval == null);
-			return strval;
+				Debug.Assert(result == null);
+			return result;
 		}
-		public void SetStyle(string name, string value)
+		
+        internal void SetStyleInternal(string name, string value)
 		{
 			_api.SciterSetStyleAttribute(_he, name, value);
 		}
+		
 		#endregion
 
 		#region State
@@ -298,31 +299,28 @@ namespace SciterCore
 		}
 		#endregion
 
-		public string CombineURL(string url = "")
+		internal string CombineUrlInternal(string url = "")
 		{
-			IntPtr buffer = PInvokeUtils.NativeUtf16FromString(url, 2048);
-			var res = _api.SciterCombineURL(_he, buffer, 2048);
-			string s = PInvokeUtils.StringFromNativeUtf16(buffer);
+			var buffer = PInvokeUtils.NativeUtf16FromString(url, 2048);
+			var domResult = _api.SciterCombineURL(_he, buffer, 2048);
+			var result = PInvokeUtils.StringFromNativeUtf16(buffer);
 			PInvokeUtils.NativeUtf16FromString_FreeBuffer(buffer);
-			return s;
+			return result;
 		}
 
 		#region Integers
 		public IntPtr GetNativeHwnd(bool rootWindow = true)
 		{
-			IntPtr hwnd;
-			_api.SciterGetElementHwnd(_he, out hwnd, rootWindow);
-			return hwnd;
+			_api.SciterGetElementHwnd(_he, out var result, rootWindow);
+			return result;
 		}
 
 		public SciterWindow Window
 		{
 			get
 			{
-				IntPtr hwnd = GetNativeHwnd();
-				if(hwnd != IntPtr.Zero)
-					return new SciterWindow(hwnd);
-				return null;
+				var hwnd = GetNativeHwnd();
+				return hwnd != IntPtr.Zero ? new SciterWindow(hwnd) : null;
 			}
 		}
 
@@ -340,101 +338,93 @@ namespace SciterCore
 		{
 			get
 			{
-				uint idx;
-				_api.SciterGetElementIndex(_he, out idx);
-				return idx;
+				_api.SciterGetElementIndex(_he, out var result);
+				return result;
 			}
 		}
 
-		public uint ChildrenCount
+		internal uint ChildCountInternal
 		{
 			get
 			{
-				uint n;
-				_api.SciterGetChildrenCount(_he, out n);
-				return n;
+				_api.SciterGetChildrenCount(_he, out var result);
+				return result;
 			}
 		}
+		
 		#endregion
 
 		public void Delete()
 		{
 			_api.SciterDeleteElement(_he);
 		}
-		public void Dettach()
+		
+		internal void DetachElementInternal()
 		{
 			_api.SciterDetachElement(_he);
 		}
 
-		public SciterElement Clone()
+		internal SciterElement CloneElementInternal()
 		{
-			IntPtr clone_he;
-			_api.SciterCloneElement(_he, out clone_he);
-			return new SciterElement(clone_he);
+			_api.SciterCloneElement(_he, out var result);
+			return new SciterElement(result);
 		}
 
-		public SciterNode ToNode()
+		internal SciterNode CastToNodeInternal()
 		{
-			IntPtr hn;
-			_api.SciterNodeCastFromElement(_he, out hn);
-			return new SciterNode(hn);
+			_api.SciterNodeCastFromElement(_he, out var result);
+			return new SciterNode(result);
 		}
 
-		public bool Enabled // deeply enabled
+		/// <summary>
+		/// Deeply Enabled
+		/// </summary>
+		public bool IsEnabled
 		{
 			get
 			{
-				bool b;
-				_api.SciterIsElementEnabled(_he, out b);
-				return b;
+				_api.SciterIsElementEnabled(_he, out var result);
+				return result;
 			}
 		}
 
-		public bool Visible // deeply visible
+		/// <summary>
+		/// Deeply Visible
+		/// </summary>
+		public bool IsVisible
 		{
 			get
 			{
-				bool b;
-				_api.SciterIsElementVisible(_he, out b);
-				return b;
+				_api.SciterIsElementVisible(_he, out var result);
+				return result;
 			}
 		}
 
 		#region Operators and overrides
+		
 		public static bool operator ==(SciterElement a, SciterElement b)
 		{
 			if((object)a == null || (object)b == null)
 				return Object.Equals(a, b);
 			return a._he == b._he;
 		}
+		
 		public static bool operator !=(SciterElement a, SciterElement b)
 		{
 			return !(a == b);
 		}
 
-		public SciterElement this[uint idx]
-		{
-			get
-			{
-				return GetChild(idx);
-			}
-		}
+		public SciterElement this[uint idx] => GetChildElementInternal(idx);
 
 		public string this[string name]
 		{
-			get
-			{
-				return GetAttribute(name);
-			}
-			set
-			{
-				SetAttribute(name, value);
-			}
+			get => GetAttributeInternal(name);
+			set => SetAttributeInternal(name, value);
 		}
 
 		public override bool Equals(object o)
 		{
-			return Object.ReferenceEquals(this, o);
+			return object.ReferenceEquals(this, o);
 		}
 
 		public override int GetHashCode()
@@ -445,9 +435,9 @@ namespace SciterCore
 		public override string ToString()
 		{
 			string tag = Tag;
-			string id = GetAttribute("id");
-			string classes = GetAttribute("class");
-			uint childcount = this.ChildrenCount;
+			string id = GetAttributeInternal("id");
+			string classes = GetAttributeInternal("class");
+			uint childCount = this.ChildCountInternal;
 
 			StringBuilder str = new StringBuilder();
 			str.Append("<" + tag);
@@ -455,7 +445,7 @@ namespace SciterCore
 				str.Append(" #" + id);
 			if(classes != null)
 				str.Append(" ." + String.Join(".", classes.Split(' ')));
-			if(childcount == 0)
+			if(childCount == 0)
 				str.Append(" />");
 			else
 				str.Append(">...</" + tag + ">");
@@ -465,13 +455,10 @@ namespace SciterCore
 		#endregion
 
 		#region DOM navigation
-		public SciterElement GetChild(uint idx)
+		internal SciterElement GetChildElementInternal(uint index)
 		{
-			IntPtr child_he;
-			_api.SciterGetNthChild(_he, idx, out child_he);
-			if(child_he == IntPtr.Zero)
-				return null;
-			return new SciterElement(child_he);
+			_api.SciterGetNthChild(_he, index, out var child_he);
+			return child_he == IntPtr.Zero ? null : new SciterElement(child_he);
 		}
 
 		public IEnumerable<SciterElement> Children
@@ -479,7 +466,7 @@ namespace SciterCore
 			get
 			{
 				var list = new List<SciterElement>();
-				for(uint i = 0; i < ChildrenCount; i++)
+				for(uint i = 0; i < ChildCountInternal; i++)
 					list.Add(this[i]);
 				return list;
 			}
@@ -489,57 +476,19 @@ namespace SciterCore
 		{
 			get
 			{
-				IntPtr out_he;
-				_api.SciterGetParentElement(_he, out out_he);
-				if(out_he == IntPtr.Zero)
-					return null;
-				return new SciterElement(out_he);
+				_api.SciterGetParentElement(_he, out var out_he);
+				return out_he == IntPtr.Zero ? null : new SciterElement(out_he);
 			}
 		}
 
-		public SciterElement NextSibling
-		{
-			get
-			{
-				SciterElement parent = this.Parent;
-				if(parent == null)
-					return null;
-				return parent.GetChild(this.Index + 1);
-			}
-		}
+		internal SciterElement NextSiblingInternal => this.Parent?.GetChildElementInternal(this.Index + 1);
 
-		public SciterElement PrevSibling
-		{
-			get
-			{
-				SciterElement parent = this.Parent;
-				if(parent == null)
-					return null;
-				return parent.GetChild(this.Index - 1);
-			}
-		}
+		internal SciterElement PreviousSiblingInternal => this.Parent?.GetChildElementInternal(this.Index - 1);
 
-		public SciterElement FirstSibling
-		{
-			get
-			{
-				SciterElement parent = this.Parent;
-				if(parent == null)
-					return null;
-				return parent.GetChild(0);
-			}
-		}
+		internal SciterElement FirstSiblingInternal => this.Parent?.GetChildElementInternal(0);
 
-		public SciterElement LastSibling
-		{
-			get
-			{
-				SciterElement parent = this.Parent;
-				if(parent == null)
-					return null;
-				return parent.GetChild(parent.ChildrenCount - 1);
-			}
-		}
+		internal SciterElement LastSiblingInternal => this.Parent?.GetChildElementInternal(this.Parent.ChildCountInternal - 1);
+
 		#endregion
 
 		#region DOM query/select
@@ -574,11 +523,8 @@ namespace SciterCore
 
 		public SciterElement SelectNearestParent(string selector)
 		{
-			IntPtr heFound;
-			_api.SciterSelectParentW(_he, selector, 0, out heFound);
-			if(heFound.ToInt32() == 0)
-				return null;
-			return new SciterElement(heFound);
+			_api.SciterSelectParentW(_he, selector, 0, out var heFound);
+			return heFound.ToInt32() == 0 ? null : new SciterElement(heFound);
 		}
 		#endregion
 
@@ -588,21 +534,20 @@ namespace SciterCore
 			_api.SciterInsertElement(se._he, _he, index);
 		}
 
-		public void Append(SciterElement se)
+		public void Append(SciterElement element)
 		{
-			_api.SciterInsertElement(se._he, _he, int.MaxValue);
+			_api.SciterInsertElement(element._he, _he, int.MaxValue);
 		}
 
 
-        public SciterElement Append(string tagname, string text = null)
+        public SciterElement Append(string tagName, string text = null)
         {
-            var element = Create(tagname, text);
+            var element = Create(tagName, text);
 
 			_api.SciterInsertElement(element._he, _he, int.MaxValue);
 
             return element;
         }
-
 
 		public void Swap(SciterElement sewith)
 		{

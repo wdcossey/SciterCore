@@ -35,18 +35,20 @@
 			// 
 			// sciterControl1
 			// 
+			this.sciterControl1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
 			this.sciterControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.sciterControl1.Html = null;
 			this.sciterControl1.Location = new System.Drawing.Point(0, 0);
 			this.sciterControl1.Name = "sciterControl1";
-			this.sciterControl1.Size = new System.Drawing.Size(608, 408);
+			this.sciterControl1.Size = new System.Drawing.Size(511, 353);
 			this.sciterControl1.TabIndex = 0;
 			this.sciterControl1.LoadHtml += new System.EventHandler<SciterCore.WinForms.LoadHtmlEventArgs>(this.sciterControl1_LoadHtml);
 			// 
 			// sciterHost
 			// 
-			this.sciterHost.RootPage = "index.html";
 			this.sciterHost.Archive = this.sciterArchive;
 			this.sciterHost.Control = this.sciterControl1;
+			this.sciterHost.RootPage = "index.html";
 			// 
 			// sciterArchive
 			// 
@@ -56,7 +58,7 @@
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(647, 422);
+			this.ClientSize = new System.Drawing.Size(511, 353);
 			this.Controls.Add(this.sciterControl1);
 			this.Name = "Form1";
 			this.Text = "SciterCore::Framework::Forms";

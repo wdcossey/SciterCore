@@ -27,8 +27,8 @@ namespace SciterTest.WinForms
 			}
 		}
 
-		private SciterWindow AppWnd;
-		private Host AppHost = new Host();
+		//private SciterWindow AppWnd;
+		//private Host AppHost = new Host();
 
 		private void SciterControl1_HandleCreated(object sender, EventArgs e)
 		{
