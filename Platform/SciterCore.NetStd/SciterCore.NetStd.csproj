@@ -12,8 +12,8 @@
       <DefineConstants>TRACE;NETCORE</DefineConstants>
     </PropertyGroup>
     <ItemGroup>
-      <PackageReference Include="SciterCore.Binaries" Version="0.0.1-alpha.20" />
-      <PackageReference Include="SciterCore.PackFolder" Version="0.0.1-alpha.20" />
+      <PackageReference Include="SciterCore.Binaries" Version="0.0.52-alpha" />
+      <PackageReference Include="SciterCore.PackFolder" Version="0.0.52-alpha" />
     </ItemGroup>
     
     <!-- LibConsole packaging -->

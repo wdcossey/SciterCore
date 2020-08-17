@@ -132,9 +132,9 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\..\packages\SkiaSharp.1.68.1.1\build\net45\SkiaSharp.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\SkiaSharp.1.68.1.1\build\net45\SkiaSharp.targets'))" />
-    <Error Condition="!Exists('..\..\packages\SciterCore.Binaries.0.0.1-alpha.20\build\any\SciterCore.Binaries.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\SciterCore.Binaries.0.0.1-alpha.20\build\any\SciterCore.Binaries.targets'))" />
+    <Error Condition="!Exists('..\..\packages\SciterCore.Binaries.0.0.52-alpha\build\any\SciterCore.Binaries.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\SciterCore.Binaries.0.0.52-alpha\build\any\SciterCore.Binaries.targets'))" />
   </Target>
-  <Import Project="..\..\packages\SciterCore.Binaries.0.0.1-alpha.20\build\any\SciterCore.Binaries.targets" Condition="Exists('..\..\packages\SciterCore.Binaries.0.0.1-alpha.20\build\any\SciterCore.Binaries.targets')" />
+  <Import Project="..\..\packages\SciterCore.Binaries.0.0.52-alpha\build\any\SciterCore.Binaries.targets" Condition="Exists('..\..\packages\SciterCore.Binaries.0.0.52-alpha\build\any\SciterCore.Binaries.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

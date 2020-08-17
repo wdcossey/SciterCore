@@ -112,16 +112,16 @@ namespace SciterCore
 			return this;
 		}
 
-		public SciterHost InjectGlobalTISript(string script)
+		public SciterHost InjectGlobalTIScript(string script)
 		{
 			var ret = new TIScript.tiscript_value();
-			var res = EvalGlobalTISript(script, out ret);
+			var res = EvalGlobalTIScript(script, out ret);
 			Debug.Assert(res);
 
 			return this;
 		}
 
-		public bool EvalGlobalTISript(string script, out TIScript.tiscript_value ret)
+		public bool EvalGlobalTIScript(string script, out TIScript.tiscript_value ret)
 		{
 			Debug.Assert(WindowHandle != IntPtr.Zero);
 			var vm = Sciter.Api.SciterGetVM(WindowHandle);
@@ -132,7 +132,7 @@ namespace SciterCore
 			return Sciter.ScriptApi.eval_string(vm, global_ns, script, (uint)script.Length, out ret);
 		}
 
-		public bool EvalGlobalTISriptValuePath(string path, out TIScript.tiscript_value ret)
+		public bool EvalGlobalTIScriptValuePath(string path, out TIScript.tiscript_value ret)
 		{
 			Debug.Assert(WindowHandle != IntPtr.Zero);
 			var vm = Sciter.Api.SciterGetVM(WindowHandle);

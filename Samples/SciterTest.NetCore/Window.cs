@@ -6,12 +6,9 @@ namespace SciterTest.NetCore
 	{
 		public Window()
 		{
-            CreateMainWindow(800, 600);
-            CenterTopLevelWindow();
-			SetTitle("SciterTest.NetCore");
-			#if WINDOWS
-				wnd.Icon = Properties.Resources.IconMain;
-			#endif
-        }
+			CreateMainWindow(800, 600)
+				.CenterTopLevelWindow()
+				.SetTitle("SciterCore::NetCore");
+		}
 	}
 }
