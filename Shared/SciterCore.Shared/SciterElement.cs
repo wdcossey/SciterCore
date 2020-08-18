@@ -168,7 +168,7 @@ namespace SciterCore
 		public void SetHTML(string html, SciterXDom.SET_ELEMENT_HTML where = SciterXDom.SET_ELEMENT_HTML.SIH_REPLACE_CONTENT)
 		{
 			if(html==null)
-				Clear();
+				ClearTextInternal();
 			else
 			{
 				var data = Encoding.UTF8.GetBytes(html);
@@ -492,78 +492,84 @@ namespace SciterCore
 		#endregion
 
 		#region DOM query/select
-		public SciterElement SelectFirstById(string id)
+		internal SciterElement SelectFirstByIdInternal(string id)
 		{
-			return SelectFirst("[id='" + id + "']");
+			return SelectFirstInternal("[id='" + id + "']");
 		}
 
-		public SciterElement SelectFirst(string selector)
+		internal SciterElement SelectFirstInternal(string selector)
 		{
-			SciterElement se = null;
-			SciterXDom.SCITER_ELEMENT_CALLBACK cbk = (IntPtr he, IntPtr param) =>
+			SciterElement result = null;
+			
+			_api.SciterSelectElementsW(_he, selector, (IntPtr he, IntPtr param) =>
 			{
-				se = new SciterElement(he);
+				result = new SciterElement(he);
 				return true;// true stops enumeration
-			};
-			_api.SciterSelectElementsW(_he, selector, cbk, IntPtr.Zero);
-			return se;
+			}, IntPtr.Zero);
+			
+			return result;
 		}
 
-		public List<SciterElement> SelectAll(string selector)
+		internal IEnumerable<SciterElement> SelectAllInternal(string selector)
 		{
-			List<SciterElement> list = new List<SciterElement>();
-			SciterXDom.SCITER_ELEMENT_CALLBACK cbk = (IntPtr he, IntPtr param) =>
-			{
-				list.Add(new SciterElement(he));
-				return false;// false continue enumeration
-			};
-			_api.SciterSelectElementsW(_he, selector, cbk, IntPtr.Zero);
-			return list;
+			var result = new List<SciterElement>();
+
+			_api.SciterSelectElementsW(_he, selector, 
+				(IntPtr he, IntPtr param) =>
+						{
+							result.Add(new SciterElement(he));
+							return false;// false continue enumeration
+						}, IntPtr.Zero);
+			
+			return result;
 		}
 
-		public SciterElement SelectNearestParent(string selector)
+		internal SciterElement SelectNearestParentInternal(string selector)
 		{
 			_api.SciterSelectParentW(_he, selector, 0, out var heFound);
-			return heFound.ToInt32() == 0 ? null : new SciterElement(heFound);
+			return heFound == IntPtr.Zero ? null : new SciterElement(heFound);
 		}
 		#endregion
 
 		#region DOM sub-tree manipulation
-		public void Insert(SciterElement se, uint index = 0)
+		
+		internal bool InsertElementInternal(SciterElement element, uint index = 0)
 		{
-			_api.SciterInsertElement(se._he, _he, index);
+			return _api.SciterInsertElement(element._he, _he, index) == SciterXDom.SCDOM_RESULT.SCDOM_OK;
 		}
 
-		public void Append(SciterElement element)
+		internal bool AppendElementInternal(SciterElement element)
 		{
-			_api.SciterInsertElement(element._he, _he, int.MaxValue);
+			return _api.SciterInsertElement(element._he, _he, int.MaxValue) == SciterXDom.SCDOM_RESULT.SCDOM_OK;
 		}
 
-
-        public SciterElement Append(string tagName, string text = null)
+		internal bool AppendElementInternal(string tagName, string text = null)
         {
             var element = Create(tagName, text);
-
-			_api.SciterInsertElement(element._he, _he, int.MaxValue);
-
-            return element;
+            return _api.SciterInsertElement(element._he, _he, int.MaxValue) == SciterXDom.SCDOM_RESULT.SCDOM_OK;
         }
 
-		public void Swap(SciterElement sewith)
+		internal bool SwapElementsInternal(SciterElement swapElement)
 		{
-			_api.SciterSwapElements(_he, sewith._he);
+			return _api.SciterSwapElements(_he, swapElement._he) == SciterXDom.SCDOM_RESULT.SCDOM_OK;
 		}
 
-		public void Clear()
+		internal bool ClearTextInternal()
 		{
-			_api.SciterSetElementText(_he, null, 0);
+			return _api.SciterSetElementText(_he, null, 0) == SciterXDom.SCDOM_RESULT.SCDOM_OK;
 		}
 
-		public void TransformHTML(string html, SciterXDom.SET_ELEMENT_HTML how = SciterXDom.SET_ELEMENT_HTML.SIH_REPLACE_CONTENT)
+		internal bool TransformHtmlInternal(string html, SciterXDom.SET_ELEMENT_HTML replacement = SciterXDom.SET_ELEMENT_HTML.SIH_REPLACE_CONTENT)
 		{
 			var bytes = Encoding.UTF8.GetBytes(html);
-			_api.SciterSetElementHtml(_he, bytes, (uint) bytes.Length, how);
+			return TransformHtmlInternal(bytes: bytes, replacement: replacement);
 		}
+
+		internal bool TransformHtmlInternal(byte[] bytes, SciterXDom.SET_ELEMENT_HTML replacement = SciterXDom.SET_ELEMENT_HTML.SIH_REPLACE_CONTENT)
+		{
+			return _api.SciterSetElementHtml(_he, bytes, (uint) bytes.Length, replacement) == SciterXDom.SCDOM_RESULT.SCDOM_OK;
+		}
+		
 		#endregion
 
 		#region Events

@@ -98,7 +98,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.manifest" />
-    <None Include="packages.config" />
     <None Include="Resources\IconMain.ico" />
   </ItemGroup>
   <ItemGroup>
