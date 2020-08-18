@@ -30,14 +30,6 @@
     <PlatformTarget>x64</PlatformTarget>
     <AOTMode>None</AOTMode>
     <PackageSigningKey>3rd Party Mac Developer Installer</PackageSigningKey>
-    <CustomCommands>
-      <CustomCommands>
-        <Command>
-          <type>BeforeBuild</type>
-          <command>sh ${SolutionDir}/scripts/packOSX.sh ${ProjectDir}/res ${ProjectDir}/SiteResource.bin</command>
-        </Command>
-      </CustomCommands>
-    </CustomCommands>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
     <Optimize>true</Optimize>
@@ -53,14 +45,6 @@
     <LinkMode>SdkOnly</LinkMode>
     <PlatformTarget>x64</PlatformTarget>
     <DefineConstants>__MACOS__;__UNIFIED__;OSX</DefineConstants>
-    <CustomCommands>
-      <CustomCommands>
-        <Command>
-          <type>BeforeBuild</type>
-          <command>sh ${SolutionDir}/scripts/packOSX.sh ${ProjectDir}/res ${ProjectDir}/SiteResource.bin</command>
-        </Command>
-      </CustomCommands>
-    </CustomCommands>
     <AOTMode>None</AOTMode>
   </PropertyGroup>
   <ItemGroup>
