@@ -44,6 +44,7 @@
     <Reference Include="System.Net" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config" />
     <None Include="SciterCore.Gtk.dll.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -61,7 +62,7 @@
     <TaskAssembly Condition="$([MSBuild]::IsOsPlatform(Linux))">packOSX.sh</TaskAssembly>
   </PropertyGroup>
 
-  <Target Name="SciterPreBuild" BeforeTargets="PreBuildEvent" >
+  <Target Name="SciterPreBuild" BeforeTargets="PreBuildEvent">
     <MakeDir Directories="$(ProjectDir).sciter" />
     <Exec Command="$(TaskFolder)$(TaskAssembly) &quot;$(PackSourceFolder)&quot; &quot;$(PackOutputFile)&quot; -binary" />
   </Target>
@@ -72,6 +73,15 @@
         <LogicalName>LibConsole</LogicalName>
       </EmbeddedResource>
     </ItemGroup>
+  </Target>
+
+  <Import Project="..\..\packages\SciterCore.Binaries.0.0.55-alpha\build\any\SciterCore.Binaries.targets" Condition="Exists('..\..\packages\SciterCore.Binaries.0.0.55-alpha\build\any\SciterCore.Binaries.targets')" />
+
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105.The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\..\packages\SciterCore.Binaries.0.0.55-alpha\build\any\SciterCore.Binaries.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\SciterCore.Binaries.0.0.55-alpha\build\any\SciterCore.Binaries.targets'))" />
   </Target>
   
 </Project>
