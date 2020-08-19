@@ -276,27 +276,34 @@ namespace SciterCore
 		#endregion
 
 		#region State
-		public SciterXDom.ELEMENT_STATE_BITS State
+		public SciterXDom.ELEMENT_STATE_BITS State => GetElementStateInternal();
+
+		internal SciterXDom.ELEMENT_STATE_BITS GetElementStateInternal()
 		{
-			get
-			{
-				return GetState();
-			}
+			TryGetElementStateInternal(out var stateBits);
+			return stateBits;
 		}
 
-		public SciterXDom.ELEMENT_STATE_BITS GetState()
+		internal bool TryGetElementStateInternal(out SciterXDom.ELEMENT_STATE_BITS stateBits)
 		{
-			uint bits;
-			var r = _api.SciterGetElementState(_he, out bits);
-			Debug.Assert(r == SciterXDom.SCDOM_RESULT.SCDOM_OK);
-			return (SciterXDom.ELEMENT_STATE_BITS) bits;
+			var domResult = _api.SciterGetElementState(_he, out var bits);
+			var result = domResult == SciterXDom.SCDOM_RESULT.SCDOM_OK;
+			
+			stateBits = result ? (SciterXDom.ELEMENT_STATE_BITS) bits : default(SciterXDom.ELEMENT_STATE_BITS);
+			
+			return result;
 		}
 
-		public void SetState(SciterXDom.ELEMENT_STATE_BITS bitsToSet, SciterXDom.ELEMENT_STATE_BITS bitsToClear = 0, bool update = true)
+		internal void SetElementStateInternal(SciterXDom.ELEMENT_STATE_BITS bitsToSet, SciterXDom.ELEMENT_STATE_BITS bitsToClear = 0, bool update = true)
 		{
-			var r = _api.SciterSetElementState(_he, (uint) bitsToSet, (uint) bitsToClear, update);
-			Debug.Assert(r == SciterXDom.SCDOM_RESULT.SCDOM_OK);
+			TrySetElementStateInternal(bitsToSet: bitsToSet, bitsToClear: bitsToClear, update: update);
 		}
+
+		internal bool TrySetElementStateInternal(SciterXDom.ELEMENT_STATE_BITS bitsToSet, SciterXDom.ELEMENT_STATE_BITS bitsToClear = 0, bool update = true)
+		{
+			return _api.SciterSetElementState(_he, (uint) bitsToSet, (uint) bitsToClear, update) == SciterXDom.SCDOM_RESULT.SCDOM_OK;
+		}
+		
 		#endregion
 
 		internal string CombineUrlInternal(string url = "")
@@ -543,10 +550,21 @@ namespace SciterCore
 			return _api.SciterInsertElement(element._he, _he, int.MaxValue) == SciterXDom.SCDOM_RESULT.SCDOM_OK;
 		}
 
+		internal bool TryAppendElementInternal(SciterElement element)
+		{
+			return _api.SciterInsertElement(element._he, _he, int.MaxValue) == SciterXDom.SCDOM_RESULT.SCDOM_OK;
+		}
+
 		internal bool AppendElementInternal(string tagName, string text = null)
         {
             var element = Create(tagName, text);
-            return _api.SciterInsertElement(element._he, _he, int.MaxValue) == SciterXDom.SCDOM_RESULT.SCDOM_OK;
+            return AppendElementInternal(element);
+        }
+
+		internal bool TryAppendElementInternal(string tagName, out SciterElement element, string text = null)
+        {
+            element = Create(tagName, text);
+            return AppendElementInternal(element);
         }
 
 		internal bool SwapElementsInternal(SciterElement swapElement)
@@ -573,12 +591,12 @@ namespace SciterCore
 		#endregion
 
 		#region Events
-		public void AttachEventHandler(SciterEventHandler evh)
+		
+		internal bool AttachEventHandlerInternal(SciterEventHandler evh)
 		{
-			Debug.Assert(evh != null);
-			var r = _api.SciterAttachEventHandler(_he, evh.EventProc, IntPtr.Zero);
-			Debug.Assert(r == SciterXDom.SCDOM_RESULT.SCDOM_OK);
+			return _api.SciterAttachEventHandler(_he, evh.EventProc, IntPtr.Zero) == SciterXDom.SCDOM_RESULT.SCDOM_OK;
 		}
+		
 		public void DetachEventHandler(SciterEventHandler evh)
 		{
 			Debug.Assert(evh != null);
@@ -730,20 +748,24 @@ namespace SciterCore
 		#endregion
 
 		#region Helpers
-		public bool IsChildOf(SciterElement parent_test)
+		
+		public bool IsChildOf(SciterElement element)
 		{
-			SciterElement el_it = this;
+			var parentElement = this;
+			
 			while(true)
 			{
-				if(el_it._he == parent_test._he)
+				if (parentElement._he == element._he)
 					return true;
 
-				el_it = el_it.Parent;
-				if(el_it == null)
+				parentElement = parentElement.Parent;
+				
+				if (parentElement == null)
 					break;
 			}
 			return false;
 		}
+
 		#endregion
 	}
 
