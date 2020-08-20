@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using SciterCore.Interop;
 
+// ReSharper disable UnusedMethodReturnValue.Global
+// ReSharper disable UnusedMember.Global
 // ReSharper disable MemberCanBePrivate.Global
 
 namespace SciterCore
@@ -22,17 +24,9 @@ namespace SciterCore
         /// <exception cref="ArgumentNullException">If the <paramref name="tagName"/> is null.</exception>
         public static SciterElement AppendChildElement(this SciterElement parent, string tagName, string text = null)
         {
-            if (parent == null)
-                throw new ArgumentNullException(nameof(parent), @"Parent element cannot be null.");
-            
-            if (string.IsNullOrWhiteSpace(tagName))
-                throw new ArgumentNullException(nameof(tagName), @"tagName cannot be null or empty.");
-            
-            var childElement = SciterElement.Create(tagName: tagName, text);
-
-            return parent?.AppendChildElement(childElement: childElement);
+            return parent?.AppendChildElement(childElement: SciterElement.Create(tagName: tagName, text));
         }
-        
+
         //TODO: Add TryAppendChildElement
 
         /// <summary>
@@ -51,7 +45,7 @@ namespace SciterCore
             if (childElement == null)
                 throw new ArgumentNullException(nameof(childElement), @"Element cannot be null or empty.");
             
-            parent?.AppendElement(childElement);
+            parent.AppendElement(childElement);
 
             return childElement;
         }
@@ -61,32 +55,47 @@ namespace SciterCore
         
         public static void DetachElement(this SciterElement element)
         {
-            element?.DetachElementInternal();
+            element?.TryDetachElementInternal();
         }
         
-        //TODO: Add TryDetachElement
-        
+        public static bool TryDetachElement(this SciterElement element)
+        {
+            return element?.TryDetachElementInternal() == true;
+        }
+
         public static SciterElement CloneElement(this SciterElement element)
         {
             return element?.CloneElementInternal();
         }
         
-        //TODO: Add TryCloneElement
-        
+        public static bool TryCloneElement(this SciterElement element, out SciterElement clonedElement)
+        {
+            clonedElement = default;
+            return element?.TryCloneElementInternal(out clonedElement) == true;
+        }
+
         public static SciterElement GetChildElement(this SciterElement element, int index)
         {
             return element?.GetChildElementInternal(index: Convert.ToUInt32(index));
         }
         
-        //TODO: Add TryGetChildElement
-        
+        public static bool TryGetChildElement(this SciterElement element, int index, out SciterElement getElement)
+        {
+            getElement = default;
+            return element?.TryGetChildElementInternal(index: Convert.ToUInt32(index), out getElement) == true;
+        }
+
         public static SciterNode CastToNode(this SciterElement element)
         {
             return element?.CastToNodeInternal();
         }
-        
-        //TODO: Add TryCastToNode
-        
+
+        public static bool TryCastToNode(this SciterElement element, out SciterNode node)
+        {
+            node = default;
+            return element?.TryCastToNodeInternal(out node) == true;
+        }
+
         #endregion Element
 
         #region Siblings
@@ -393,7 +402,7 @@ namespace SciterCore
         public static bool TryTransformHtml(this SciterElement element, string html, ElementHtmlReplacement replacement)
         {
             var value = Convert.ToUInt32((int)replacement);
-            return element?.TransformHtmlInternal(html: html, replacement: (Interop.SciterXDom.SET_ELEMENT_HTML)value) == true;
+            return element?.TransformHtmlInternal(html: html, replacement: (SciterXDom.SET_ELEMENT_HTML)value) == true;
         }
 
         #endregion DOM Manipulation
@@ -460,27 +469,29 @@ namespace SciterCore
         
         #region State
 
-        public static SciterCore.Interop.SciterXDom.ELEMENT_STATE_BITS GetElementState(this SciterElement element)
+        public static ElementState GetElementState(this SciterElement element)
         {
-            element.TryGetElementState(stateBits: out var stateBits);
-            return stateBits;
+            element.TryGetElementState(elementState: out var elementState);
+            return elementState;
         }
 
-        public static bool TryGetElementState(this SciterElement element, out SciterCore.Interop.SciterXDom.ELEMENT_STATE_BITS stateBits)
+        public static bool TryGetElementState(this SciterElement element, out ElementState elementState)
         {
-            stateBits = default(SciterCore.Interop.SciterXDom.ELEMENT_STATE_BITS);
-            return element?.TryGetElementStateInternal(stateBits: out stateBits) == true;
+            SciterXDom.ELEMENT_STATE_BITS stateBits = default;
+            var result = element?.TryGetElementStateInternal(stateBits: out stateBits) == true;
+            elementState = (ElementState)(uint)(result ? stateBits : 0);
+            return result;
         }
 
-        public static SciterElement SetElementState(this SciterElement element, SciterXDom.ELEMENT_STATE_BITS bitsToSet, SciterXDom.ELEMENT_STATE_BITS bitsToClear = 0, bool update = true)
+        public static SciterElement SetElementState(this SciterElement element, ElementState statesToSet, ElementState statesToClear = ElementState.None, bool update = true)
         {
-            element?.TrySetElementState(bitsToSet: bitsToSet, bitsToClear: bitsToClear, update: update);
+            element?.TrySetElementState(statesToSet: statesToSet, statesToClear: statesToClear, update: update);
             return element;
         }
 
-        public static bool TrySetElementState(this SciterElement element, SciterXDom.ELEMENT_STATE_BITS bitsToSet, SciterXDom.ELEMENT_STATE_BITS bitsToClear = 0, bool update = true)
+        public static bool TrySetElementState(this SciterElement element, ElementState statesToSet, ElementState statesToClear = ElementState.None, bool update = true)
         {
-            return element?.TrySetElementStateInternal(bitsToSet: bitsToSet, bitsToClear: bitsToClear, update: update) == true;
+            return element?.TrySetElementStateInternal(bitsToSet: (SciterXDom.ELEMENT_STATE_BITS)statesToSet, bitsToClear: (SciterXDom.ELEMENT_STATE_BITS)statesToClear, update: update) == true;
         }
         
         #endregion

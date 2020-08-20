@@ -132,12 +132,11 @@ namespace SciterCore
 
         public SciterArchive GetItem(Uri uri, Action<byte[], string> onFound)
 		{
-			byte[] data = this?.GetItem(uri);
+			var data = this?.GetItem(uri);
 
 			if(data != null)
-			{
 				onFound?.Invoke(data, uri.GetComponents(UriComponents.Path, UriFormat.SafeUnescaped));
-			}
+			
 			return this;
 		}
 

@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Enums\ElementHtmlReplacement.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Enums\ElementState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\SciterElementExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\PInvokeGTK.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\PInvokeUtils.cs" />

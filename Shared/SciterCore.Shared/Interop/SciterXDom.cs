@@ -106,6 +106,7 @@ namespace SciterCore.Interop
 		// public delegate bool FPTR_ElementEventProc(IntPtr tag, IntPtr he, uint evtg, IntPtr prms);
 
 
+		[Flags]
 		public enum ELEMENT_STATE_BITS : uint
 		{
 			STATE_LINK             = 0x00000001,

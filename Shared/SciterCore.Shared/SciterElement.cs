@@ -361,26 +361,40 @@ namespace SciterCore
 		
 		#endregion
 
-		public void Delete()
+		internal bool TryDeleteElementInternal()
 		{
-			_api.SciterDeleteElement(_he);
+			return _api.SciterDeleteElement(_he) == SciterXDom.SCDOM_RESULT.SCDOM_OK;
 		}
-		
-		internal void DetachElementInternal()
+
+		internal bool TryDetachElementInternal()
 		{
-			_api.SciterDetachElement(_he);
+			return _api.SciterDetachElement(_he) == SciterXDom.SCDOM_RESULT.SCDOM_OK;
 		}
 
 		internal SciterElement CloneElementInternal()
 		{
-			_api.SciterCloneElement(_he, out var result);
-			return new SciterElement(result);
+			TryCloneElementInternal(out var result);
+			return result;
+		}
+
+		internal bool TryCloneElementInternal(out SciterElement element)
+		{
+			var result = _api.SciterCloneElement(_he, out var cloneResult) == SciterXDom.SCDOM_RESULT.SCDOM_OK;
+			element = result ? new SciterElement(cloneResult) : null;
+			return result;
 		}
 
 		internal SciterNode CastToNodeInternal()
 		{
-			_api.SciterNodeCastFromElement(_he, out var result);
-			return new SciterNode(result);
+			TryCastToNodeInternal(out var result);
+			return result;
+		}
+
+		internal bool TryCastToNodeInternal(out SciterNode node)
+		{
+			var result = _api.SciterNodeCastFromElement(_he, out var castResult) == SciterXDom.SCDOM_RESULT.SCDOM_OK;
+			node = result ? new SciterNode(castResult) : null;
+			return result;
 		}
 
 		/// <summary>
@@ -421,7 +435,7 @@ namespace SciterCore
 			return !(a == b);
 		}
 
-		public SciterElement this[uint idx] => GetChildElementInternal(idx);
+		public SciterElement this[uint index] => GetChildElementInternal(index);
 
 		public string this[string name]
 		{
@@ -462,10 +476,18 @@ namespace SciterCore
 		#endregion
 
 		#region DOM navigation
+		
 		internal SciterElement GetChildElementInternal(uint index)
 		{
-			_api.SciterGetNthChild(_he, index, out var child_he);
-			return child_he == IntPtr.Zero ? null : new SciterElement(child_he);
+			TryGetChildElementInternal(index, out var element);
+			return element;
+		}
+		
+		internal bool TryGetChildElementInternal(uint index, out SciterElement element)
+		{
+			var result = _api.SciterGetNthChild(_he, index, out var child_he) == SciterXDom.SCDOM_RESULT.SCDOM_OK;
+			element = (result && child_he != IntPtr.Zero) ? new SciterElement(child_he) : null;
+			return (result && child_he != IntPtr.Zero);
 		}
 
 		public IEnumerable<SciterElement> Children
