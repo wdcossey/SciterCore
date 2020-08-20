@@ -26,17 +26,19 @@ namespace SciterCore
 {
 	public class SciterElement : IDisposable
 	{
-		private static Sciter.SciterApi _api = Sciter.Api;
-		public IntPtr _he { get; private set; }
+		private static readonly Sciter.SciterApi Api = Sciter.Api;
+		private readonly IntPtr _elementHandle;
 
-		public SciterElement(IntPtr he)
+		public IntPtr Handle => _elementHandle;
+		
+		public SciterElement(IntPtr elementHandle)
 		{
-			Debug.Assert(he != IntPtr.Zero);
-			if(he == IntPtr.Zero)
+			Debug.Assert(elementHandle != IntPtr.Zero);
+			if(elementHandle == IntPtr.Zero)
 				throw new ArgumentException("IntPtr.Zero received at SciterElement constructor");
 
-			_api.Sciter_UseElement(he);
-			_he = he;
+			Api.Sciter_UseElement(elementHandle);
+			_elementHandle = elementHandle;
 		}
 
 		public SciterElement(SciterValue sv)
@@ -44,20 +46,20 @@ namespace SciterCore
 			if(!sv.IsObject)
 				throw new ArgumentException("The given SciterValue is not a TIScript Element reference");
 
-			IntPtr he = sv.GetObjectData();
-			if(he == IntPtr.Zero)
+			var elementHandle = sv.GetObjectData();
+			if(elementHandle == IntPtr.Zero)
 				throw new ArgumentException("IntPtr.Zero received at SciterElement constructor");
 
-			_api.Sciter_UseElement(_he);
-			_he = he;
+			Api.Sciter_UseElement(_elementHandle);
+			_elementHandle = elementHandle;
 		}
 
 		#region IDisposable Support
-		private bool disposedValue = false; // To detect redundant calls
+		private bool _disposedValue = false; // To detect redundant calls
 
 		protected virtual void Dispose(bool disposing)
 		{
-			if(!disposedValue)
+			if(!_disposedValue)
 			{
 				if(disposing)
 				{
@@ -66,9 +68,9 @@ namespace SciterCore
 
 				// TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
 				// TODO: set large fields to null.
-				_api.Sciter_UnuseElement(_he);
+				Api.Sciter_UnuseElement(_elementHandle);
 
-				disposedValue = true;
+				_disposedValue = true;
 			}
 		}
 
@@ -90,91 +92,136 @@ namespace SciterCore
 
 		public static SciterElement Create(string tagName, string text = null)
 		{
-			IntPtr he;
-			_api.SciterCreateElement(tagName, text, out he);
-			if (he != IntPtr.Zero)
-				return new SciterElement(he);
-			return null;
+			TryCreate(tagName: tagName, element: out var element, text: text);
+			return element;
+		}
+
+		public static bool TryCreate(string tagName, out SciterElement element, string text = null)
+		{
+			var result =
+				Api.SciterCreateElement(tagName, text, out var elementHandle) == SciterXDom.SCDOM_RESULT.SCDOM_OK &&
+				elementHandle != IntPtr.Zero;
+			
+			element = result ? new SciterElement(elementHandle) : null;
+			
+			return result;
 		}
 
 		#region Query HTML
-		public string Tag
+
+		public string Tag => GetTagInternal();
+
+		internal string GetTagInternal()
 		{
-			get
-			{
-				IntPtr ptrtag;
-				var r = _api.SciterGetElementType(_he, out ptrtag);
-				Debug.Assert(r == SciterXDom.SCDOM_RESULT.SCDOM_OK);
-				return Marshal.PtrToStringAnsi(ptrtag);
-			}
+			TryGetTagInternal(out var result);
+			return result;
+		}
+		
+		internal bool TryGetTagInternal(out string tag)
+		{
+			var result = Api.SciterGetElementType(_elementHandle, out var tagPtr) == SciterXDom.SCDOM_RESULT.SCDOM_OK;
+			tag = result ? Marshal.PtrToStringAnsi(tagPtr) : default;
+			return result;
+		}
+		
+		public string Html 
+		{
+			get => GetHtmlInternal();
+			set => SetHtmlInternal(value);
+		} 
+
+		internal string GetHtmlInternal()
+		{
+			TryGetHtmlInternal(out var result);
+			return result;
+		}
+		
+		internal bool TryGetHtmlInternal(out string html)
+		{
+			var result = TryGetElementHtmlValue(outerHtml: true, out var htmlValue);
+			html = result ? htmlValue : default;
+			return result;
 		}
 
-		public string HTML
+		internal void SetHtmlInternal(string html, SciterXDom.SET_ELEMENT_HTML where = SciterXDom.SET_ELEMENT_HTML.SIH_REPLACE_CONTENT)
 		{
-			get
-			{
-				string strval = null;
-				SciterXDom.LPCBYTE_RECEIVER frcv = (IntPtr bytes, uint num_bytes, IntPtr param) =>
-				{
-					strval = Marshal.PtrToStringAnsi(bytes, (int)num_bytes);
-				};
-
-				var r = _api.SciterGetElementHtmlCB(_he, true, frcv, IntPtr.Zero);
-				if(r == SciterXDom.SCDOM_RESULT.SCDOM_OK_NOT_HANDLED)
-					Debug.Assert(strval == null);
-				return strval;
-			}
+			TrySetHtmlInternal(html: html, where: where);
 		}
 
-		public string InnerHTML
+		internal bool TrySetHtmlInternal(string html, SciterXDom.SET_ELEMENT_HTML where = SciterXDom.SET_ELEMENT_HTML.SIH_REPLACE_CONTENT)
 		{
-			get
-			{
-				string strval = null;
-				SciterXDom.LPCBYTE_RECEIVER frcv = (IntPtr bytes, uint num_bytes, IntPtr param) =>
-				{
-					strval = Marshal.PtrToStringAnsi(bytes, (int)num_bytes);
-				};
+			if (html == null)
+				return ClearTextInternal();
 
-				var r = _api.SciterGetElementHtmlCB(_he, false, frcv, IntPtr.Zero);
-				if(r == SciterXDom.SCDOM_RESULT.SCDOM_OK_NOT_HANDLED)
-					Debug.Assert(strval == null);
-				return strval;
-			}
+			var data = Encoding.UTF8.GetBytes(html);
+			return Api.SciterSetElementHtml(_elementHandle, data, (uint) data.Length, @where) == SciterXDom.SCDOM_RESULT.SCDOM_OK;
+		}
+		
+		public string InnerHtml => GetInnerHtmlInternal();
+
+		internal string GetInnerHtmlInternal()
+		{
+			TryGetInnerHtmlInternal(out var result);
+			return result;
+		}
+		
+		internal bool TryGetInnerHtmlInternal(out string innerHtml)
+		{
+			var result = TryGetElementHtmlValue(outerHtml: false, out var htmlValue);
+			innerHtml = result ? htmlValue : default;
+			return result;
+		}
+		
+		private bool TryGetElementHtmlValue(bool outerHtml, out string value)
+		{
+			string htmlValue = default;
+
+			var domResult = Api.SciterGetElementHtmlCB(_elementHandle, outerHtml, (IntPtr bytes, uint numBytes, IntPtr param) =>
+			{
+				htmlValue = Marshal.PtrToStringAnsi(bytes, Convert.ToInt32(numBytes));
+			}, IntPtr.Zero);
+			
+			value = htmlValue;
+
+			return domResult == SciterXDom.SCDOM_RESULT.SCDOM_OK || (domResult == SciterXDom.SCDOM_RESULT.SCDOM_OK_NOT_HANDLED && value == null);
 		}
 
 		public string Text
 		{
-			get
-			{
-				string strval = null;
-				SciterXDom.LPCWSTR_RECEIVER frcv = (IntPtr str, uint str_length, IntPtr param) =>
-				{
-					strval = Marshal.PtrToStringUni(str, (int)str_length);
-				};
-
-				var r = _api.SciterGetElementTextCB(_he, frcv, IntPtr.Zero);
-				if(r == SciterXDom.SCDOM_RESULT.SCDOM_OK_NOT_HANDLED)
-					Debug.Assert(strval == null);
-				return strval;
-			}
-
-			set
-			{
-				_api.SciterSetElementText(_he, value, (uint) value.Length);
-			}
+			get => GetTextInternal();
+			set => SetTextInternal(value);
 		}
-
-		public void SetHTML(string html, SciterXDom.SET_ELEMENT_HTML where = SciterXDom.SET_ELEMENT_HTML.SIH_REPLACE_CONTENT)
+		
+		internal string GetTextInternal()
 		{
-			if(html==null)
-				ClearTextInternal();
-			else
-			{
-				var data = Encoding.UTF8.GetBytes(html);
-				_api.SciterSetElementHtml(_he, data, (uint) data.Length, where);
-			}
+			TryGetTextInternal(out var result);
+			return result;
 		}
+		
+		internal bool TryGetTextInternal(out string text)
+		{
+			string outText = default;
+
+			var domResult = Api.SciterGetElementTextCB(_elementHandle, (IntPtr strPtr, uint strLength, IntPtr param) =>
+			{
+				outText = Marshal.PtrToStringUni(strPtr, (int)strLength);
+			}, IntPtr.Zero);
+			
+			text = outText;
+			
+			return domResult == SciterXDom.SCDOM_RESULT.SCDOM_OK || (domResult == SciterXDom.SCDOM_RESULT.SCDOM_OK_NOT_HANDLED && text == null);
+		}
+		
+		internal void SetTextInternal(string text)
+		{
+			TrySetTextInternal(text: text);
+		}
+		
+		internal bool TrySetTextInternal(string text)
+		{
+			return Api.SciterSetElementText(_elementHandle, text, (uint) text.Length) == SciterXDom.SCDOM_RESULT.SCDOM_OK;
+		}
+		
 		#endregion
 
 		#region Attributes and Styles
@@ -184,93 +231,134 @@ namespace SciterCore
 			get
 			{
 				var result = new Dictionary<string, string>();
-				for (uint n = 0; n < AttributeCountInternal; n++)
+				for (uint n = 0; n < GetAttributeCountInternal(); n++)
 				{
-					result[GetAttributeNameInternal(n)] = GetAttributeInternal(n);
+					result[GetAttributeNameInternal(n)] = GetAttributeValueInternal(n);
 				}
 				return result;
 			}
 		}
 
-		internal uint AttributeCountInternal
+		internal uint GetAttributeCountInternal()
 		{
-			get
-			{
-				_api.SciterGetAttributeCount(_he, out var result);
-				return result;
-			}
+			TryGetAttributeCountInternal(out var result);
+			return result;
 		}
 
-		internal string GetAttributeInternal(uint n)
+		internal bool TryGetAttributeCountInternal(out uint result)
 		{
-			string strval = null;
-			SciterXDom.LPCWSTR_RECEIVER frcv = (IntPtr str, uint str_length, IntPtr param) =>
-			{
-				strval = Marshal.PtrToStringUni(str, (int)str_length);
-			};
-
-			var r = _api.SciterGetNthAttributeValueCB(_he, n, frcv, IntPtr.Zero);
-			if(r == SciterXDom.SCDOM_RESULT.SCDOM_OK_NOT_HANDLED)
-				Debug.Assert(strval == null);
-			return strval;
+			result = default;
+			return Api.SciterGetAttributeCount(_elementHandle, out result) == SciterXDom.SCDOM_RESULT.SCDOM_OK;
 		}
 
-		internal string GetAttributeInternal(string name)
+		internal string GetAttributeValueInternal(uint index)
 		{
-			string strval = null;
-			SciterXDom.LPCWSTR_RECEIVER frcv = (IntPtr str, uint str_length, IntPtr param) =>
-			{
-				strval = Marshal.PtrToStringUni(str, (int) str_length);
-			};
-
-			var r = _api.SciterGetAttributeByNameCB(_he, name, frcv, IntPtr.Zero);
-			if(r == SciterXDom.SCDOM_RESULT.SCDOM_OK_NOT_HANDLED)
-				Debug.Assert(strval == null);
-			return strval;
+			TryGetAttributeValueInternal(index: index, out var result);
+			return result;
 		}
 
-		internal string GetAttributeNameInternal(uint n)
+		internal bool TryGetAttributeValueInternal(uint index, out string value)
 		{
-			string strval = null;
-			SciterXDom.LPCSTR_RECEIVER frcv = (IntPtr str, uint str_length, IntPtr param) =>
+			string outValue = default;
+			
+			var domResult = Api.SciterGetNthAttributeValueCB(_elementHandle, index, (IntPtr str, uint strLength, IntPtr param) =>
 			{
-				strval = Marshal.PtrToStringAnsi(str, (int)str_length);
-			};
+				outValue = Marshal.PtrToStringUni(str, (int)strLength);
+			}, IntPtr.Zero);
 
-			var r = _api.SciterGetNthAttributeNameCB(_he, n, frcv, IntPtr.Zero);
-			if(r == SciterXDom.SCDOM_RESULT.SCDOM_OK_NOT_HANDLED)
-				Debug.Assert(strval == null);
-			return strval;
+			var result = domResult == SciterXDom.SCDOM_RESULT.SCDOM_OK ||
+				(domResult == SciterXDom.SCDOM_RESULT.SCDOM_OK_NOT_HANDLED && outValue == null);
+
+			value = outValue;
+			
+			return result;
 		}
 
-        internal void SetAttributeInternal(string name, object value)
+		internal string GetAttributeValueInternal(string key)
+		{
+			TryGetAttributeValueInternal(key: key, value: out var result);
+			return result;
+		}
+
+		internal bool TryGetAttributeValueInternal(string key, out string value)
+		{
+			string outValue = default;
+			
+			var domResult = Api.SciterGetAttributeByNameCB(_elementHandle, key, (IntPtr str, uint strLength, IntPtr param) =>
+			{
+				outValue = Marshal.PtrToStringUni(str, (int) strLength);
+			}, IntPtr.Zero);
+
+			var result = domResult == SciterXDom.SCDOM_RESULT.SCDOM_OK ||
+			             (domResult == SciterXDom.SCDOM_RESULT.SCDOM_OK_NOT_HANDLED && outValue == null);
+
+			value = outValue;
+			
+			return result;
+		}
+
+		internal string GetAttributeNameInternal(uint index)
+		{
+			TryGetAttributeNameInternal(index: index, out var result);
+			return result;
+		}
+
+		internal bool TryGetAttributeNameInternal(uint index, out string value)
+		{
+			string outValue = default;
+			
+			var domResult = Api.SciterGetNthAttributeNameCB(_elementHandle, index, (IntPtr str, uint strLength, IntPtr param) =>
+			{
+				outValue = Marshal.PtrToStringAnsi(str, (int) strLength);
+			}, IntPtr.Zero);
+
+			var result = domResult == SciterXDom.SCDOM_RESULT.SCDOM_OK ||
+			             (domResult == SciterXDom.SCDOM_RESULT.SCDOM_OK_NOT_HANDLED && outValue == null);
+
+			value = outValue;
+			
+			return result;
+		}
+
+        internal void SetAttributeValueInternal(string key, string value)
         {
-            var r = _api.SciterSetAttributeByName(_he, name, $"{value}");
+            var r = Api.SciterSetAttributeByName(_elementHandle, key, value);
             Debug.Assert(r == SciterXDom.SCDOM_RESULT.SCDOM_OK);
         }
 
-        internal void RemoveAttributeInternal(string name)
+        internal void RemoveAttributeInternal(string key)
 		{
-			_api.SciterSetAttributeByName(_he, name, null);
+			Api.SciterSetAttributeByName(_elementHandle, key, null);
 		}
 		
-        internal string GetStyleInternal(string name)
+        internal string GetStyleValueInternal(string key)
 		{
-			var result = default(string);
-			SciterXDom.LPCWSTR_RECEIVER receiver = (IntPtr str, uint str_length, IntPtr param) =>
-			{
-				result = Marshal.PtrToStringUni(str, (int)str_length);
-			};
-
-			var r = _api.SciterGetStyleAttributeCB(_he, name, receiver, IntPtr.Zero);
-			if(r == SciterXDom.SCDOM_RESULT.SCDOM_OK_NOT_HANDLED)
-				Debug.Assert(result == null);
+			TryGetStyleValueInternal(key: key, out var result);
 			return result;
 		}
 		
-        internal void SetStyleInternal(string name, string value)
+        internal bool TryGetStyleValueInternal(string key, out string value)
 		{
-			_api.SciterSetStyleAttribute(_he, name, value);
+			string outStyle = default;
+			
+			var domResult = Api.SciterGetStyleAttributeCB(_elementHandle, key, (IntPtr str, uint strLength, IntPtr param) =>
+			{
+				outStyle = Marshal.PtrToStringUni(str, Convert.ToInt32(strLength));
+			}, IntPtr.Zero);
+			
+			value = outStyle;
+			
+			return domResult == SciterXDom.SCDOM_RESULT.SCDOM_OK || (domResult == SciterXDom.SCDOM_RESULT.SCDOM_OK_NOT_HANDLED && value == null);
+		}
+		
+        internal void SetStyleValueInternal(string key, string value)
+		{
+			TrySetStyleValueInternal(key: key, value: value);
+		}
+		
+        internal bool TrySetStyleValueInternal(string key, string value)
+		{
+			return Api.SciterSetStyleAttribute(_elementHandle, key, value) == SciterXDom.SCDOM_RESULT.SCDOM_OK;
 		}
 		
 		#endregion
@@ -286,7 +374,7 @@ namespace SciterCore
 
 		internal bool TryGetElementStateInternal(out SciterXDom.ELEMENT_STATE_BITS stateBits)
 		{
-			var domResult = _api.SciterGetElementState(_he, out var bits);
+			var domResult = Api.SciterGetElementState(_elementHandle, out var bits);
 			var result = domResult == SciterXDom.SCDOM_RESULT.SCDOM_OK;
 			
 			stateBits = result ? (SciterXDom.ELEMENT_STATE_BITS) bits : default(SciterXDom.ELEMENT_STATE_BITS);
@@ -301,7 +389,7 @@ namespace SciterCore
 
 		internal bool TrySetElementStateInternal(SciterXDom.ELEMENT_STATE_BITS bitsToSet, SciterXDom.ELEMENT_STATE_BITS bitsToClear = 0, bool update = true)
 		{
-			return _api.SciterSetElementState(_he, (uint) bitsToSet, (uint) bitsToClear, update) == SciterXDom.SCDOM_RESULT.SCDOM_OK;
+			return Api.SciterSetElementState(_elementHandle, (uint) bitsToSet, (uint) bitsToClear, update) == SciterXDom.SCDOM_RESULT.SCDOM_OK;
 		}
 		
 		#endregion
@@ -309,7 +397,7 @@ namespace SciterCore
 		internal string CombineUrlInternal(string url = "")
 		{
 			var buffer = PInvokeUtils.NativeUtf16FromString(url, 2048);
-			var domResult = _api.SciterCombineURL(_he, buffer, 2048);
+			var domResult = Api.SciterCombineURL(_elementHandle, buffer, 2048);
 			var result = PInvokeUtils.StringFromNativeUtf16(buffer);
 			PInvokeUtils.NativeUtf16FromString_FreeBuffer(buffer);
 			return result;
@@ -318,7 +406,7 @@ namespace SciterCore
 		#region Integers
 		public IntPtr GetNativeHwnd(bool rootWindow = true)
 		{
-			_api.SciterGetElementHwnd(_he, out var result, rootWindow);
+			Api.SciterGetElementHwnd(_elementHandle, out var result, rootWindow);
 			return result;
 		}
 
@@ -336,7 +424,7 @@ namespace SciterCore
 			get
 			{
 				uint uid;
-				_api.SciterGetElementUID(_he, out uid);
+				Api.SciterGetElementUID(_elementHandle, out uid);
 				return uid;
 			}
 		}
@@ -345,7 +433,7 @@ namespace SciterCore
 		{
 			get
 			{
-				_api.SciterGetElementIndex(_he, out var result);
+				Api.SciterGetElementIndex(_elementHandle, out var result);
 				return result;
 			}
 		}
@@ -354,32 +442,32 @@ namespace SciterCore
 		{
 			get
 			{
-				_api.SciterGetChildrenCount(_he, out var result);
+				Api.SciterGetChildrenCount(_elementHandle, out var result);
 				return result;
 			}
 		}
 		
 		#endregion
 
-		internal bool TryDeleteElementInternal()
+		internal bool TryDeleteInternal()
 		{
-			return _api.SciterDeleteElement(_he) == SciterXDom.SCDOM_RESULT.SCDOM_OK;
+			return Api.SciterDeleteElement(_elementHandle) == SciterXDom.SCDOM_RESULT.SCDOM_OK;
 		}
 
-		internal bool TryDetachElementInternal()
+		internal bool TryDetachInternal()
 		{
-			return _api.SciterDetachElement(_he) == SciterXDom.SCDOM_RESULT.SCDOM_OK;
+			return Api.SciterDetachElement(_elementHandle) == SciterXDom.SCDOM_RESULT.SCDOM_OK;
 		}
 
-		internal SciterElement CloneElementInternal()
+		internal SciterElement CloneInternal()
 		{
-			TryCloneElementInternal(out var result);
+			TryCloneInternal(out var result);
 			return result;
 		}
 
-		internal bool TryCloneElementInternal(out SciterElement element)
+		internal bool TryCloneInternal(out SciterElement element)
 		{
-			var result = _api.SciterCloneElement(_he, out var cloneResult) == SciterXDom.SCDOM_RESULT.SCDOM_OK;
+			var result = Api.SciterCloneElement(_elementHandle, out var cloneResult) == SciterXDom.SCDOM_RESULT.SCDOM_OK;
 			element = result ? new SciterElement(cloneResult) : null;
 			return result;
 		}
@@ -392,7 +480,7 @@ namespace SciterCore
 
 		internal bool TryCastToNodeInternal(out SciterNode node)
 		{
-			var result = _api.SciterNodeCastFromElement(_he, out var castResult) == SciterXDom.SCDOM_RESULT.SCDOM_OK;
+			var result = Api.SciterNodeCastFromElement(_elementHandle, out var castResult) == SciterXDom.SCDOM_RESULT.SCDOM_OK;
 			node = result ? new SciterNode(castResult) : null;
 			return result;
 		}
@@ -400,25 +488,19 @@ namespace SciterCore
 		/// <summary>
 		/// Deeply Enabled
 		/// </summary>
-		public bool IsEnabled
+		internal bool IsEnabledInternal()
 		{
-			get
-			{
-				_api.SciterIsElementEnabled(_he, out var result);
-				return result;
-			}
+			Api.SciterIsElementEnabled(_elementHandle, out var result);
+			return result;
 		}
 
 		/// <summary>
 		/// Deeply Visible
 		/// </summary>
-		public bool IsVisible
+		internal bool IsVisibleInternal()
 		{
-			get
-			{
-				_api.SciterIsElementVisible(_he, out var result);
-				return result;
-			}
+			Api.SciterIsElementVisible(_elementHandle, out var result);
+			return result;
 		}
 
 		#region Operators and overrides
@@ -426,8 +508,8 @@ namespace SciterCore
 		public static bool operator ==(SciterElement a, SciterElement b)
 		{
 			if((object)a == null || (object)b == null)
-				return Object.Equals(a, b);
-			return a._he == b._he;
+				return Equals(a, b);
+			return a.Handle == b.Handle;
 		}
 		
 		public static bool operator !=(SciterElement a, SciterElement b)
@@ -435,12 +517,12 @@ namespace SciterCore
 			return !(a == b);
 		}
 
-		public SciterElement this[uint index] => GetChildElementInternal(index);
+		public SciterElement this[uint index] => GetChildAtIndexInternal(index);
 
 		public string this[string name]
 		{
-			get => GetAttributeInternal(name);
-			set => SetAttributeInternal(name, value);
+			get => GetAttributeValueInternal(name);
+			set => SetAttributeValueInternal(name, value);
 		}
 
 		public override bool Equals(object o)
@@ -450,14 +532,14 @@ namespace SciterCore
 
 		public override int GetHashCode()
 		{
-			return _he.ToInt32();
+			return _elementHandle.ToInt32();
 		}
 
 		public override string ToString()
 		{
 			string tag = Tag;
-			string id = GetAttributeInternal("id");
-			string classes = GetAttributeInternal("class");
+			string id = GetAttributeValueInternal("id");
+			string classes = GetAttributeValueInternal("class");
 			uint childCount = this.ChildCountInternal;
 
 			StringBuilder str = new StringBuilder();
@@ -477,15 +559,15 @@ namespace SciterCore
 
 		#region DOM navigation
 		
-		internal SciterElement GetChildElementInternal(uint index)
+		internal SciterElement GetChildAtIndexInternal(uint index)
 		{
-			TryGetChildElementInternal(index, out var element);
+			TryGetChildAtIndexInternal(index, out var element);
 			return element;
 		}
 		
-		internal bool TryGetChildElementInternal(uint index, out SciterElement element)
+		internal bool TryGetChildAtIndexInternal(uint index, out SciterElement element)
 		{
-			var result = _api.SciterGetNthChild(_he, index, out var child_he) == SciterXDom.SCDOM_RESULT.SCDOM_OK;
+			var result = Api.SciterGetNthChild(_elementHandle, index, out var child_he) == SciterXDom.SCDOM_RESULT.SCDOM_OK;
 			element = (result && child_he != IntPtr.Zero) ? new SciterElement(child_he) : null;
 			return (result && child_he != IntPtr.Zero);
 		}
@@ -505,18 +587,18 @@ namespace SciterCore
 		{
 			get
 			{
-				_api.SciterGetParentElement(_he, out var out_he);
+				Api.SciterGetParentElement(_elementHandle, out var out_he);
 				return out_he == IntPtr.Zero ? null : new SciterElement(out_he);
 			}
 		}
 
-		internal SciterElement NextSiblingInternal => this.Parent?.GetChildElementInternal(this.Index + 1);
+		internal SciterElement NextSiblingInternal => this.Parent?.GetChildAtIndexInternal(this.Index + 1);
 
-		internal SciterElement PreviousSiblingInternal => this.Parent?.GetChildElementInternal(this.Index - 1);
+		internal SciterElement PreviousSiblingInternal => this.Parent?.GetChildAtIndexInternal(this.Index - 1);
 
-		internal SciterElement FirstSiblingInternal => this.Parent?.GetChildElementInternal(0);
+		internal SciterElement FirstSiblingInternal => this.Parent?.GetChildAtIndexInternal(0);
 
-		internal SciterElement LastSiblingInternal => this.Parent?.GetChildElementInternal(this.Parent.ChildCountInternal - 1);
+		internal SciterElement LastSiblingInternal => this.Parent?.GetChildAtIndexInternal(this.Parent.ChildCountInternal - 1);
 
 		#endregion
 
@@ -530,7 +612,7 @@ namespace SciterCore
 		{
 			SciterElement result = null;
 			
-			_api.SciterSelectElementsW(_he, selector, (IntPtr he, IntPtr param) =>
+			Api.SciterSelectElementsW(_elementHandle, selector, (IntPtr he, IntPtr param) =>
 			{
 				result = new SciterElement(he);
 				return true;// true stops enumeration
@@ -543,7 +625,7 @@ namespace SciterCore
 		{
 			var result = new List<SciterElement>();
 
-			_api.SciterSelectElementsW(_he, selector, 
+			Api.SciterSelectElementsW(_elementHandle, selector, 
 				(IntPtr he, IntPtr param) =>
 						{
 							result.Add(new SciterElement(he));
@@ -555,7 +637,7 @@ namespace SciterCore
 
 		internal SciterElement SelectNearestParentInternal(string selector)
 		{
-			_api.SciterSelectParentW(_he, selector, 0, out var heFound);
+			Api.SciterSelectParentW(_elementHandle, selector, 0, out var heFound);
 			return heFound == IntPtr.Zero ? null : new SciterElement(heFound);
 		}
 		#endregion
@@ -564,17 +646,17 @@ namespace SciterCore
 		
 		internal bool InsertElementInternal(SciterElement element, uint index = 0)
 		{
-			return _api.SciterInsertElement(element._he, _he, index) == SciterXDom.SCDOM_RESULT.SCDOM_OK;
+			return Api.SciterInsertElement(element._elementHandle, _elementHandle, index) == SciterXDom.SCDOM_RESULT.SCDOM_OK;
 		}
 
 		internal bool AppendElementInternal(SciterElement element)
 		{
-			return _api.SciterInsertElement(element._he, _he, int.MaxValue) == SciterXDom.SCDOM_RESULT.SCDOM_OK;
+			return Api.SciterInsertElement(element._elementHandle, _elementHandle, int.MaxValue) == SciterXDom.SCDOM_RESULT.SCDOM_OK;
 		}
 
 		internal bool TryAppendElementInternal(SciterElement element)
 		{
-			return _api.SciterInsertElement(element._he, _he, int.MaxValue) == SciterXDom.SCDOM_RESULT.SCDOM_OK;
+			return Api.SciterInsertElement(element._elementHandle, _elementHandle, int.MaxValue) == SciterXDom.SCDOM_RESULT.SCDOM_OK;
 		}
 
 		internal bool AppendElementInternal(string tagName, string text = null)
@@ -591,12 +673,12 @@ namespace SciterCore
 
 		internal bool SwapElementsInternal(SciterElement swapElement)
 		{
-			return _api.SciterSwapElements(_he, swapElement._he) == SciterXDom.SCDOM_RESULT.SCDOM_OK;
+			return Api.SciterSwapElements(_elementHandle, swapElement._elementHandle) == SciterXDom.SCDOM_RESULT.SCDOM_OK;
 		}
 
 		internal bool ClearTextInternal()
 		{
-			return _api.SciterSetElementText(_he, null, 0) == SciterXDom.SCDOM_RESULT.SCDOM_OK;
+			return Api.SciterSetElementText(_elementHandle, null, 0) == SciterXDom.SCDOM_RESULT.SCDOM_OK;
 		}
 
 		internal bool TransformHtmlInternal(string html, SciterXDom.SET_ELEMENT_HTML replacement = SciterXDom.SET_ELEMENT_HTML.SIH_REPLACE_CONTENT)
@@ -607,7 +689,7 @@ namespace SciterCore
 
 		internal bool TransformHtmlInternal(byte[] bytes, SciterXDom.SET_ELEMENT_HTML replacement = SciterXDom.SET_ELEMENT_HTML.SIH_REPLACE_CONTENT)
 		{
-			return _api.SciterSetElementHtml(_he, bytes, (uint) bytes.Length, replacement) == SciterXDom.SCDOM_RESULT.SCDOM_OK;
+			return Api.SciterSetElementHtml(_elementHandle, bytes, (uint) bytes.Length, replacement) == SciterXDom.SCDOM_RESULT.SCDOM_OK;
 		}
 		
 		#endregion
@@ -616,32 +698,32 @@ namespace SciterCore
 		
 		internal bool AttachEventHandlerInternal(SciterEventHandler evh)
 		{
-			return _api.SciterAttachEventHandler(_he, evh.EventProc, IntPtr.Zero) == SciterXDom.SCDOM_RESULT.SCDOM_OK;
+			return Api.SciterAttachEventHandler(_elementHandle, evh.EventProc, IntPtr.Zero) == SciterXDom.SCDOM_RESULT.SCDOM_OK;
 		}
 		
 		public void DetachEventHandler(SciterEventHandler evh)
 		{
 			Debug.Assert(evh != null);
-			var r = _api.SciterDetachEventHandler(_he, evh.EventProc, IntPtr.Zero);
+			var r = Api.SciterDetachEventHandler(_elementHandle, evh.EventProc, IntPtr.Zero);
 			Debug.Assert(r == SciterXDom.SCDOM_RESULT.SCDOM_OK);
 		}
 
 		public bool SendEvent(uint event_code, uint reason = 0, SciterElement heSource = null)
 		{
 			bool handled;
-			_api.SciterSendEvent(_he, event_code, heSource == null ? IntPtr.Zero : heSource._he, new IntPtr(reason), out handled);
+			Api.SciterSendEvent(_elementHandle, event_code, heSource == null ? IntPtr.Zero : heSource._elementHandle, new IntPtr(reason), out handled);
 			return handled;
 		}
 
 		public void PostEvent(uint event_code, uint reason = 0, SciterElement heSource = null)
 		{
-			_api.SciterPostEvent(_he, event_code, heSource == null ? IntPtr.Zero : heSource._he, new IntPtr(reason));
+			Api.SciterPostEvent(_elementHandle, event_code, heSource == null ? IntPtr.Zero : heSource._elementHandle, new IntPtr(reason));
 		}
 
 		public bool FireEvent(SciterBehaviors.BEHAVIOR_EVENT_PARAMS evt, bool post = true)
 		{
 			bool handled;
-			_api.SciterFireEvent(ref evt, post, out handled);
+			Api.SciterFireEvent(ref evt, post, out handled);
 			return handled;
 		}
 		#endregion
@@ -650,7 +732,7 @@ namespace SciterCore
 		public PInvokeUtils.RECT GetLocation(SciterXDom.ELEMENT_AREAS area = SciterXDom.ELEMENT_AREAS.ROOT_RELATIVE | SciterXDom.ELEMENT_AREAS.CONTENT_BOX)
 		{
 			PInvokeUtils.RECT rc;
-			_api.SciterGetElementLocation(_he, out rc, area);
+			Api.SciterGetElementLocation(_elementHandle, out rc, area);
 			return rc;
 		}
 
@@ -659,7 +741,7 @@ namespace SciterCore
 			get
 			{
 				PInvokeUtils.RECT rc;
-				_api.SciterGetElementLocation(_he, out rc, SciterXDom.ELEMENT_AREAS.ROOT_RELATIVE | SciterXDom.ELEMENT_AREAS.PADDING_BOX);
+				Api.SciterGetElementLocation(_elementHandle, out rc, SciterXDom.ELEMENT_AREAS.ROOT_RELATIVE | SciterXDom.ELEMENT_AREAS.PADDING_BOX);
 				return new PInvokeUtils.SIZE() { cx = rc.Width, cy = rc.Height };
 			}
 		}
@@ -670,23 +752,23 @@ namespace SciterCore
 		/// </summary>
 		public bool Test(string selector)
 		{
-			IntPtr heFound;
-			_api.SciterSelectParent(_he, selector, 1, out heFound);
+			Api.SciterSelectParent(_elementHandle, selector, 1, out var heFound);
 			return heFound != IntPtr.Zero;
 		}
 
-		public void Update(bool andForceRender = false)
+		internal bool TryUpdateInternal(bool forceRender = false)
 		{
-			_api.SciterUpdateElement(_he, andForceRender);
+			return Api.SciterUpdateElement(_elementHandle, forceRender) == SciterXDom.SCDOM_RESULT.SCDOM_OK;
 		}
 
-		public void Refresh(PInvokeUtils.RECT rc)
+		internal bool TryRefreshInternal(PInvokeUtils.RECT rect)
 		{
-			_api.SciterRefreshElementArea(_he, rc);
+			return Api.SciterRefreshElementArea(_elementHandle, rect) == SciterXDom.SCDOM_RESULT.SCDOM_OK;
 		}
-		public void Refresh()
+		
+		internal bool TryRefreshInternal()
 		{
-			_api.SciterRefreshElementArea(_he, GetLocation(SciterXDom.ELEMENT_AREAS.SELF_RELATIVE | SciterXDom.ELEMENT_AREAS.CONTENT_BOX));
+			return Api.SciterRefreshElementArea(_elementHandle, GetLocation(SciterXDom.ELEMENT_AREAS.SELF_RELATIVE | SciterXDom.ELEMENT_AREAS.CONTENT_BOX)) == SciterXDom.SCDOM_RESULT.SCDOM_OK;
 		}
 
 		#region Scripting
@@ -695,14 +777,14 @@ namespace SciterCore
 			get
 			{
 				Interop.SciterValue.VALUE val;
-				_api.SciterGetValue(_he, out val);
+				Api.SciterGetValue(_elementHandle, out val);
 				return new SciterValue(val);
 			}
 
 			set
 			{
 				var val = value.ToVALUE();
-				_api.SciterSetValue(_he, ref val);
+				Api.SciterSetValue(_elementHandle, ref val);
 			}
 		}
 
@@ -711,7 +793,7 @@ namespace SciterCore
 			get
 			{
 				Interop.SciterValue.VALUE val;
-				_api.SciterGetExpando(_he, out val, true);
+				Api.SciterGetExpando(_elementHandle, out val, true);
 				return new SciterValue(val);
 			}
 		}
@@ -729,7 +811,7 @@ namespace SciterCore
 			Debug.Assert(name != null);
 
 			Interop.SciterValue.VALUE vret;
-			_api.SciterCallScriptingMethod(_he, name, SciterValue.ToVALUEArray(args), (uint) args.Length, out vret);
+			Api.SciterCallScriptingMethod(_elementHandle, name, SciterValue.ToVALUEArray(args), (uint) args.Length, out vret);
 			return new SciterValue(vret);
 		}
 
@@ -744,14 +826,14 @@ namespace SciterCore
 			Debug.Assert(name != null);
 
 			Interop.SciterValue.VALUE vret;
-			_api.SciterCallScriptingFunction(_he, name, SciterValue.ToVALUEArray(args), (uint) args.Length, out vret);
+			Api.SciterCallScriptingFunction(_elementHandle, name, SciterValue.ToVALUEArray(args), (uint) args.Length, out vret);
 			return new SciterValue(vret);
 		}
 
 		public SciterValue Eval(string script)
 		{
 			Interop.SciterValue.VALUE rv;
-			_api.SciterEvalElementScript(_he, script, (uint) script.Length, out rv);
+			Api.SciterEvalElementScript(_elementHandle, script, (uint) script.Length, out rv);
 			return new SciterValue(rv);
 		}
 		#endregion
@@ -759,35 +841,8 @@ namespace SciterCore
 		#region Highlight set/get
 		public bool Highlight
 		{
-			set
-			{
-				if(value)
-					_api.SciterSetHighlightedElement(GetNativeHwnd(), _he);
-				else
-					_api.SciterSetHighlightedElement(GetNativeHwnd(), IntPtr.Zero);
-			}
+			set => Api.SciterSetHighlightedElement(GetNativeHwnd(), value ? _elementHandle : IntPtr.Zero);
 		}
-		#endregion
-
-		#region Helpers
-		
-		public bool IsChildOf(SciterElement element)
-		{
-			var parentElement = this;
-			
-			while(true)
-			{
-				if (parentElement._he == element._he)
-					return true;
-
-				parentElement = parentElement.Parent;
-				
-				if (parentElement == null)
-					break;
-			}
-			return false;
-		}
-
 		#endregion
 	}
 

@@ -12,7 +12,7 @@ namespace SciterCore.UnitTests
 		public void TestSciterElement()
 		{
 			SciterElement el = SciterElement.Create("div");
-			SciterElement el2 = new SciterElement(el._he);
+			SciterElement el2 = new SciterElement(el.Handle);
 			Assert.IsTrue(el == el2);
 		}
 

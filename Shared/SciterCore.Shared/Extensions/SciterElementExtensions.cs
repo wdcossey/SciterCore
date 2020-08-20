@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using SciterCore.Interop;
 
+// ReSharper disable UnusedType.Global
 // ReSharper disable UnusedMethodReturnValue.Global
 // ReSharper disable UnusedMember.Global
 // ReSharper disable MemberCanBePrivate.Global
@@ -10,7 +12,75 @@ namespace SciterCore
 {
     public static class SciterElementExtensions
     {
+        #region Enabled
 
+        /// <summary>
+        /// Is the <paramref name="element"/> visible
+        /// </summary>
+        /// <param name="element">The <see cref="SciterElement"/></param>
+        /// <returns>true if Visible, false if not visible of the <paramref name="element"/> is null</returns>
+        public static bool IsEnabled(this SciterElement element)
+        {
+            return element?.IsEnabledInternal() == true;
+        }
+
+        #endregion Enabled
+        
+        #region Visibility
+
+        public static bool IsVisible(this SciterElement element)
+        {
+            return element?.IsVisibleInternal() == true;
+        }
+
+        #endregion
+
+        #region Rendering
+
+        public static SciterElement Update(this SciterElement element, bool forceRender = false)
+        {
+            element?.TryUpdate(forceRender: forceRender);
+            return element;
+        }
+        
+        public static bool TryUpdate(this SciterElement element, bool forceRender = false)
+        {
+            return element?.TryUpdateInternal(forceRender: forceRender) == true;
+        }
+
+        public static SciterElement Refresh(this SciterElement element)
+        {
+            element?.TryRefresh();
+            return element;
+        }
+
+        public static bool TryRefresh(this SciterElement element)
+        {
+            return element?.TryRefreshInternal() == true;
+        }
+
+        public static SciterElement Refresh(this SciterElement element, Rectangle rectangle)
+        {
+            element?.TryRefresh(rectangle: rectangle);
+            return element;
+        }
+
+        public static bool TryRefresh(this SciterElement element, Rectangle rectangle)
+        {
+            var rect = new PInvokeUtils.RECT
+            {
+                Left = rectangle.Left,
+                Top = rectangle.Top,
+                Right = rectangle.Right,
+                Bottom = rectangle.Bottom
+            };
+            
+            return element?.TryRefreshInternal(rect: rect) == true;
+        }
+        
+
+        #endregion
+        
         #region Element
 
         /// <summary>
@@ -53,36 +123,47 @@ namespace SciterCore
         //TODO: Add TryAppendChildElement
         
         
-        public static void DetachElement(this SciterElement element)
+        public static void Delete(this SciterElement element)
         {
-            element?.TryDetachElementInternal();
+            element?.TryDelete();
         }
         
-        public static bool TryDetachElement(this SciterElement element)
+        public static bool TryDelete(this SciterElement element)
         {
-            return element?.TryDetachElementInternal() == true;
+            return element?.TryDeleteInternal() == true;
         }
 
-        public static SciterElement CloneElement(this SciterElement element)
+        public static SciterElement Detach(this SciterElement element)
         {
-            return element?.CloneElementInternal();
+            element?.TryDetach();
+            return element;
         }
         
-        public static bool TryCloneElement(this SciterElement element, out SciterElement clonedElement)
+        public static bool TryDetach(this SciterElement element)
+        {
+            return element?.TryDetachInternal() == true;
+        }
+
+        public static SciterElement Clone(this SciterElement element)
+        {
+            return element?.CloneInternal();
+        }
+        
+        public static bool TryClone(this SciterElement element, out SciterElement clonedElement)
         {
             clonedElement = default;
-            return element?.TryCloneElementInternal(out clonedElement) == true;
+            return element?.TryCloneInternal(out clonedElement) == true;
         }
 
-        public static SciterElement GetChildElement(this SciterElement element, int index)
+        public static SciterElement GetChildAtIndex(this SciterElement element, int index)
         {
-            return element?.GetChildElementInternal(index: Convert.ToUInt32(index));
+            return element.GetChildAtIndexInternal(index: Convert.ToUInt32(index));
         }
         
-        public static bool TryGetChildElement(this SciterElement element, int index, out SciterElement getElement)
+        public static bool TryGetChildAtIndex(this SciterElement element, int index, out SciterElement childElement)
         {
-            getElement = default;
-            return element?.TryGetChildElementInternal(index: Convert.ToUInt32(index), out getElement) == true;
+            childElement = default;
+            return element?.TryGetChildAtIndexInternal(index: Convert.ToUInt32(index), out childElement) == true;
         }
 
         public static SciterNode CastToNode(this SciterElement element)
@@ -122,66 +203,95 @@ namespace SciterCore
         
         #endregion
         
-        #region Attribute
+        #region Attributes
 
         public static int AttributeCount(this SciterElement element)
         {
-            return Convert.ToInt32(element?.AttributeCountInternal ?? 0);
+            return Convert.ToInt32(element?.GetAttributeCountInternal() ?? 0);
+        }
+
+        public static string GetAttributeValue(this SciterElement element, int index)
+        {
+            return element?.GetAttributeValueInternal(index: Convert.ToUInt32(index));
         }
         
-        public static string GetAttribute(this SciterElement element, uint n)
+        public static bool TryGetAttributeValue(this SciterElement element, int index, out string value)
         {
-            return element?.GetAttributeInternal(n: n);
+            value = default;
+            return element?.TryGetAttributeValueInternal(index: Convert.ToUInt32(index), value: out value) == true;
         }
         
-        public static string GetAttribute(this SciterElement element, string name)
+        public static string GetAttributeValue(this SciterElement element, string key)
         {
-            return element?.GetAttributeInternal(name: name);
+            return element?.GetAttributeValueInternal(key: key);
         }
         
-        public static string GetAttributeName(this SciterElement element, uint n)
+        public static bool TryGetAttributeValue(this SciterElement element, string key, out string value)
         {
-            return element?.GetAttributeNameInternal(n: n);
+            value = default;
+            return element?.TryGetAttributeValueInternal(key: key, value: out value) == true;
         }
         
-        public static SciterElement RemoveAttributeInternal(this SciterElement element, string name)
+        public static string GetAttributeName(this SciterElement element, int index)
         {
-            element?.RemoveAttributeInternal(name: name);
+            return element?.GetAttributeNameInternal(index: Convert.ToUInt32(index));
+        }
+        
+        public static bool TryGetAttributeName(this SciterElement element, int index, out string value)
+        {
+            value = default;
+            return element?.TryGetAttributeNameInternal(index: Convert.ToUInt32(index), out value) == true;
+        }
+        
+        public static SciterElement RemoveAttribute(this SciterElement element, string key)
+        {
+            element?.RemoveAttributeInternal(key: key);
+            return element;
+        }
+
+        public static SciterElement SetAttributeValue(this SciterElement element, string key, string value)
+        {
+            element?.SetAttributeValueInternal(key: key, value: value);
             return element;
         }
         
-        public static SciterElement SetAttribute(this SciterElement element, string name, object value)
+        public static SciterElement SetAttributeValue(this SciterElement element, string key, Func<string> func)
         {
-            element?.SetAttributeInternal(name: name, value: value);
+            return element?.SetAttributeValue(key: key, value: func?.Invoke());
+        }
+
+        public static SciterElement SetAttributeValue<T>(this SciterElement element, string key, Func<T, string> func, T @object)
+        {
+            return element?.SetAttributeValue(key: key, value: func?.Invoke(@object));
+        }
+        
+        #endregion Attributes
+        
+        #region Styles
+        
+        public static string GetStyleValue(this SciterElement element, string key)
+        {
+            return element?.GetStyleValueInternal(key: key);
+        }
+        
+        public static bool TryGetStyleValue(this SciterElement element, string key, out string style)
+        {
+            style = null;
+            return element?.TryGetStyleValueInternal(key: key, out style) == true;
+        }
+        
+        public static SciterElement SetStyleValue(this SciterElement element, string key, string value)
+        {
+            element?.SetStyleValueInternal(key: key, value: value);
             return element;
         }
         
-        public static SciterElement SetAttribute(this SciterElement element, string name, Func<object> func)
+        public static bool TrySetStyleValue(this SciterElement element, string key, string value)
         {
-            return element?.SetAttribute(name: name, value: func?.Invoke());
+            return element?.TrySetStyleValueInternal(key: key, value: value) == true;
         }
         
-        public static SciterElement SetAttribute(this SciterElement element, string name, Func<SciterElement, object> func)
-        {
-            return element?.SetAttribute(name: name, value: func?.Invoke(element));
-        }
-        
-        #endregion Attribute
-        
-        #region Style
-        
-        public static string GetStyle(this SciterElement element, string name)
-        {
-            return element?.GetStyleInternal(name: name);
-        }
-        
-        public static SciterElement SetStyle(this SciterElement element, string name, string value)
-        {
-            element?.SetStyleInternal(name: name, value: value);
-            return element;
-        }
-        
-        #endregion Style
+        #endregion Styles
 
         #region Url
         
@@ -465,7 +575,7 @@ namespace SciterCore
             return element?.TryAttachEventHandlerWithoutValidation(eventHandler: eventHandlerFunc.Invoke()) == true;
         }
         
-        #endregion
+        #endregion Events
         
         #region State
 
@@ -494,6 +604,93 @@ namespace SciterCore
             return element?.TrySetElementStateInternal(bitsToSet: (SciterXDom.ELEMENT_STATE_BITS)statesToSet, bitsToClear: (SciterXDom.ELEMENT_STATE_BITS)statesToClear, update: update) == true;
         }
         
+        #endregion State
+        
+        #region Query HTML
+        public static string GetTag(this SciterElement element)
+        {
+            return element.GetTagInternal();
+        }
+		
+        public static bool TryGetTag(this SciterElement element, out string tag)
+        {
+            tag = default;
+            return element?.TryGetTagInternal(out tag) == true;
+        }
+        
+        public static string GetHtml(this SciterElement element)
+        {
+            return element.GetHtmlInternal();
+        }
+		
+        public static bool TryGetHtml(this SciterElement element, out string html)
+        {
+            html = default;
+            return element?.TryGetHtmlInternal(html: out html) == true;
+        }
+        
+        public static SciterElement SetHtml(this SciterElement element, string html)
+        {
+            element?.SetHtmlInternal(html: html);
+            return element;
+        }
+		
+        public static bool TrySetHtml(this SciterElement element, string html)
+        {
+            return element?.TrySetHtmlInternal(html: html) == true;
+        }
+        
+        public static string GetInnerHtml(this SciterElement element)
+        {
+            return element.GetInnerHtmlInternal();
+        }
+		
+        public static bool TryGetInnerHtml(this SciterElement element, out string innerHtml)
+        {
+            innerHtml = default;
+            return element?.TryGetInnerHtmlInternal(out innerHtml) == true;
+        }
+        
+        public static string GetText(this SciterElement element)
+        {
+            return element.GetTextInternal();
+        }
+		
+        public static bool TryGetText(this SciterElement element, out string text)
+        {
+            text = default;
+            return element?.TryGetTextInternal(text: out text) == true;
+        }
+        
+        public static SciterElement SetText(this SciterElement element, string text)
+        {
+            element?.SetTextInternal(text: text);
+            return element;
+        }
+		
+        public static bool TrySetText(this SciterElement element, string text)
+        {
+            return element?.TrySetTextInternal(text: text) == true;
+        }
+
+        #endregion Query HTML
+        
+        #region Helpers
+		
+        public static bool IsChildOf(this SciterElement element, SciterElement parent)
+        {
+            var parentElement = element;
+			
+            while(parentElement != null)
+            {
+                if (parentElement.Handle == parent.Handle)
+                    return true;
+
+                parentElement = parentElement?.Parent;
+            }
+            return false;
+        }
+
         #endregion
     }
 }

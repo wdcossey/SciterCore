@@ -12,7 +12,7 @@ namespace SciterTest.Graphics.Behaviors
 		{
 			if(prms.cmd == SciterBehaviors.DRAW_EVENTS.DRAW_CONTENT)
 			{
-				SciterText txt = SciterText.Create("hi", se._he);
+				SciterText txt = SciterText.Create("hi", se.Handle);
 
 				using(SciterGraphics g = new SciterGraphics(prms.gfx))
 				{

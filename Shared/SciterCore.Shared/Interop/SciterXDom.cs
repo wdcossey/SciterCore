@@ -60,6 +60,7 @@ namespace SciterCore.Interop
 		public delegate void LPCSTR_RECEIVER(IntPtr str, uint str_length, IntPtr param);
 
 
+		[Flags]
 		public enum ELEMENT_AREAS : uint
 		{
 			ROOT_RELATIVE = 0x01,       // - or this flag if you want to get HTMLayout window relative coordinates,
