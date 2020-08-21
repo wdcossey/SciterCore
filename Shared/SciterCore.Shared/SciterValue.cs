@@ -457,8 +457,10 @@ namespace SciterCore
 		public bool IsBytes => _data.t == (uint) Interop.SciterValue.VALUE_TYPE.T_BYTES;
 		public bool IsObject => _data.t == (uint) Interop.SciterValue.VALUE_TYPE.T_OBJECT;
 		public bool IsDomElement => _data.t == (uint) Interop.SciterValue.VALUE_TYPE.T_DOM_OBJECT;
+		public bool IsResource => _data.t == (uint) Interop.SciterValue.VALUE_TYPE.T_RESOURCE;
 		public bool IsNativeFunction => _api.ValueIsNativeFunctor(ref _data) != 0;
 		public bool IsColor => _data.t == (uint) Interop.SciterValue.VALUE_TYPE.T_COLOR;
+		public bool IsAsset => _data.t == (uint) Interop.SciterValue.VALUE_TYPE.T_ASSET;
 		public bool IsDuration => _data.t == (uint) Interop.SciterValue.VALUE_TYPE.T_DURATION;
 		public bool IsAngle => _data.t == (uint) Interop.SciterValue.VALUE_TYPE.T_ANGLE;
 		public bool IsNull => _data.t == (uint)Interop.SciterValue.VALUE_TYPE.T_NULL;

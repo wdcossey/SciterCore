@@ -3,7 +3,7 @@
 namespace SciterCore
 {
 	[Flags]
-    public enum ElementState : int
+    public enum ElementState : long
     {
 	    None		     = 0,
 	    

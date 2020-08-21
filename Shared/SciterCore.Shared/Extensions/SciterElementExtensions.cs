@@ -67,15 +67,7 @@ namespace SciterCore
 
         public static bool TryRefresh(this SciterElement element, Rectangle rectangle)
         {
-            var rect = new PInvokeUtils.RECT
-            {
-                Left = rectangle.Left,
-                Top = rectangle.Top,
-                Right = rectangle.Right,
-                Bottom = rectangle.Bottom
-            };
-            
-            return element?.TryRefreshInternal(rect: rect) == true;
+            return element?.TryRefreshInternal(rectangle: rectangle) == true;
         }
         
 
@@ -84,17 +76,17 @@ namespace SciterCore
         #region Element
 
         /// <summary>
-        /// Creates, appends and returns a new <see cref="SciterElement"/> with the given <paramref name="tagName"/>.
+        /// Creates, appends and returns a new <see cref="SciterElement"/> with the given <paramref name="tag"/>.
         /// </summary>
         /// <param name="parent"></param>
-        /// <param name="tagName"></param>
+        /// <param name="tag"></param>
         /// <param name="text"></param>
         /// <returns>The newly created child <see cref="SciterElement"/></returns>
         /// <exception cref="ArgumentNullException">If the <paramref name="parent"/> is null.</exception>
-        /// <exception cref="ArgumentNullException">If the <paramref name="tagName"/> is null.</exception>
-        public static SciterElement AppendChildElement(this SciterElement parent, string tagName, string text = null)
+        /// <exception cref="ArgumentNullException">If the <paramref name="tag"/> is null.</exception>
+        public static SciterElement AppendChildElement(this SciterElement parent, string tag, string text = null)
         {
-            return parent?.AppendChildElement(childElement: SciterElement.Create(tagName: tagName, text));
+            return parent?.AppendChildElement(childElement: SciterElement.Create(tag: tag, text));
         }
 
         //TODO: Add TryAppendChildElement
@@ -157,13 +149,13 @@ namespace SciterCore
 
         public static SciterElement GetChildAtIndex(this SciterElement element, int index)
         {
-            return element.GetChildAtIndexInternal(index: Convert.ToUInt32(index));
+            return element.GetChildAtIndexInternal(index: index);
         }
         
         public static bool TryGetChildAtIndex(this SciterElement element, int index, out SciterElement childElement)
         {
             childElement = default;
-            return element?.TryGetChildAtIndexInternal(index: Convert.ToUInt32(index), out childElement) == true;
+            return element?.TryGetChildAtIndexInternal(index: index, out childElement) == true;
         }
 
         public static SciterNode CastToNode(this SciterElement element)
@@ -207,18 +199,18 @@ namespace SciterCore
 
         public static int AttributeCount(this SciterElement element)
         {
-            return Convert.ToInt32(element?.GetAttributeCountInternal() ?? 0);
+            return element?.GetAttributeCountInternal() ?? 0;
         }
 
         public static string GetAttributeValue(this SciterElement element, int index)
         {
-            return element?.GetAttributeValueInternal(index: Convert.ToUInt32(index));
+            return element?.GetAttributeValueInternal(index: index);
         }
         
         public static bool TryGetAttributeValue(this SciterElement element, int index, out string value)
         {
             value = default;
-            return element?.TryGetAttributeValueInternal(index: Convert.ToUInt32(index), value: out value) == true;
+            return element?.TryGetAttributeValueInternal(index: index, value: out value) == true;
         }
         
         public static string GetAttributeValue(this SciterElement element, string key)
@@ -234,13 +226,13 @@ namespace SciterCore
         
         public static string GetAttributeName(this SciterElement element, int index)
         {
-            return element?.GetAttributeNameInternal(index: Convert.ToUInt32(index));
+            return element?.GetAttributeNameInternal(index: index);
         }
         
         public static bool TryGetAttributeName(this SciterElement element, int index, out string value)
         {
             value = default;
-            return element?.TryGetAttributeNameInternal(index: Convert.ToUInt32(index), out value) == true;
+            return element?.TryGetAttributeNameInternal(index: index, out value) == true;
         }
         
         public static SciterElement RemoveAttribute(this SciterElement element, string key)
@@ -295,9 +287,14 @@ namespace SciterCore
 
         #region Url
         
-        public static string CombineUrlInternal(this SciterElement element, string url = "")
+        public static string CombineUrl(this SciterElement element, string url = "")
         {
             return element.CombineUrlInternal(url: url);
+        }
+        
+        public static bool TryCombineUrl(this SciterElement element, string url, out string value)
+        {
+            return element.TryCombineUrlInternal(url: url, value: out value);
         }
         
         #endregion Url
@@ -306,7 +303,7 @@ namespace SciterCore
         
         public static int ChildCount(this SciterElement element)
         {
-            return Convert.ToInt32(element?.ChildCountInternal ?? 0);
+            return element?.GetChildCountInternal() ?? 0;
         }
         
         #endregion
@@ -375,7 +372,7 @@ namespace SciterCore
             if (index < 0)
                 throw new ArgumentOutOfRangeException(nameof(index), @"Index must be greater than or equal to 0.");
 
-            return parent?.InsertElementInternal(element: element, index: Convert.ToUInt32(index)) == true;
+            return parent?.InsertElementInternal(element: element, index: index) == true;
         }
 
         /// <summary>
@@ -413,38 +410,38 @@ namespace SciterCore
         }
 
         /// <summary>
-        /// Creates a new <see cref="SciterElement"/> with the given <paramref name="tagName"/> and appends it to the <paramref name="parent"/>.
+        /// Creates a new <see cref="SciterElement"/> with the given <paramref name="tag"/> and appends it to the <paramref name="parent"/>.
         /// </summary>
         /// <param name="parent"></param>
-        /// <param name="tagName"></param>
+        /// <param name="tag"></param>
         /// <param name="text"></param>
         /// <param name="callback"></param>
         /// <returns>The Parent <see cref="SciterElement"/> of the newly created <see cref="SciterElement"/></returns>
-        /// <exception cref="ArgumentNullException">If the <paramref name="tagName"/> is null.</exception>
-        public static SciterElement AppendElement(this SciterElement parent, string tagName, string text = null, Action<SciterElement> callback = null)
+        /// <exception cref="ArgumentNullException">If the <paramref name="tag"/> is null.</exception>
+        public static SciterElement AppendElement(this SciterElement parent, string tag, string text = null, Action<SciterElement> callback = null)
         { 
-            parent?.TryAppendElement(tagName: tagName, element: out _, text: text, callback: callback);
+            parent?.TryAppendElement(tag: tag, element: out _, text: text, callback: callback);
             return parent;
         }
 
         /// <summary>
-        /// Creates a new <see cref="SciterElement"/> with the given <paramref name="tagName"/> and appends it to the <paramref name="parent"/>.
+        /// Creates a new <see cref="SciterElement"/> with the given <paramref name="tag"/> and appends it to the <paramref name="parent"/>.
         /// </summary>
         /// <param name="parent"></param>
-        /// <param name="tagName"></param>
+        /// <param name="tag"></param>
         /// <param name="element">The newly created <see cref="SciterElement"/></param>
         /// <param name="text"></param>
         /// <param name="callback"></param>
         /// <returns>The Parent <see cref="SciterElement"/> of the newly created <see cref="SciterElement"/></returns>
-        /// <exception cref="ArgumentNullException">If the <paramref name="tagName"/> is null.</exception>
-        public static bool TryAppendElement(this SciterElement parent, string tagName, out SciterElement element, string text = null, Action<SciterElement> callback = null)
+        /// <exception cref="ArgumentNullException">If the <paramref name="tag"/> is null.</exception>
+        public static bool TryAppendElement(this SciterElement parent, string tag, out SciterElement element, string text = null, Action<SciterElement> callback = null)
         {
-            if (string.IsNullOrWhiteSpace(tagName))
-                throw new ArgumentNullException(nameof(tagName), @"TagName cannot be null or empty.");
+            if (string.IsNullOrWhiteSpace(tag))
+                throw new ArgumentNullException(nameof(tag), @"Tag cannot be null or empty.");
 
             element = null;
             
-            var result = parent?.TryAppendElementInternal(tagName: tagName, out element, text: text) == true;
+            var result = parent?.TryAppendElementInternal(tag: tag, out element, text: text) == true;
             
             callback?.Invoke(element);
 
@@ -511,8 +508,7 @@ namespace SciterCore
 
         public static bool TryTransformHtml(this SciterElement element, string html, ElementHtmlReplacement replacement)
         {
-            var value = Convert.ToUInt32((int)replacement);
-            return element?.TransformHtmlInternal(html: html, replacement: (SciterXDom.SET_ELEMENT_HTML)value) == true;
+            return element?.TransformHtmlInternal(html: html, replacement: replacement) == true;
         }
 
         #endregion DOM Manipulation
@@ -530,7 +526,7 @@ namespace SciterCore
             if (eventHandler == null)
                 throw new ArgumentNullException(nameof(eventHandler), @"EventHandler cannot be null.");
             
-            return element?.AttachEventHandlerInternal(eventHandler) == true;
+            return element?.TryAttachEventHandlerInternal(eventHandler) == true;
         }
 		
         public static SciterElement AttachEventHandlerWithoutValidation(this SciterElement element, SciterEventHandler eventHandler)
@@ -544,7 +540,7 @@ namespace SciterCore
             if (eventHandler == null)
                 return false;
             
-            return element?.AttachEventHandlerInternal(eventHandler) == true;
+            return element?.TryAttachEventHandlerInternal(eventHandler) == true;
         }
 		
         public static SciterElement AttachEventHandler(this SciterElement element, Func<SciterEventHandler> eventHandlerFunc)
@@ -574,34 +570,127 @@ namespace SciterCore
             
             return element?.TryAttachEventHandlerWithoutValidation(eventHandler: eventHandlerFunc.Invoke()) == true;
         }
-        
-        #endregion Events
-        
-        #region State
 
-        public static ElementState GetElementState(this SciterElement element)
+        public static SciterElement DetachEventHandler(this SciterElement element, SciterEventHandler eventHandler)
         {
-            element.TryGetElementState(elementState: out var elementState);
-            return elementState;
-        }
-
-        public static bool TryGetElementState(this SciterElement element, out ElementState elementState)
-        {
-            SciterXDom.ELEMENT_STATE_BITS stateBits = default;
-            var result = element?.TryGetElementStateInternal(stateBits: out stateBits) == true;
-            elementState = (ElementState)(uint)(result ? stateBits : 0);
-            return result;
-        }
-
-        public static SciterElement SetElementState(this SciterElement element, ElementState statesToSet, ElementState statesToClear = ElementState.None, bool update = true)
-        {
-            element?.TrySetElementState(statesToSet: statesToSet, statesToClear: statesToClear, update: update);
+            element?.TryDetachEventHandler(eventHandler: eventHandler);
             return element;
         }
 
-        public static bool TrySetElementState(this SciterElement element, ElementState statesToSet, ElementState statesToClear = ElementState.None, bool update = true)
+        public static bool TryDetachEventHandler(this SciterElement element, SciterEventHandler eventHandler)
         {
-            return element?.TrySetElementStateInternal(bitsToSet: (SciterXDom.ELEMENT_STATE_BITS)statesToSet, bitsToClear: (SciterXDom.ELEMENT_STATE_BITS)statesToClear, update: update) == true;
+            return element?.TryDetachEventHandlerInternal(eventHandler: eventHandler) == true;
+        }
+        
+        public static SciterElement DetachEventHandlerWithoutValidation(this SciterElement element, SciterEventHandler eventHandler)
+        {
+            element?.TryDetachEventHandlerWithoutValidation(eventHandler: eventHandler);
+            return element;
+        }
+		
+        public static bool TryDetachEventHandlerWithoutValidation(this SciterElement element, SciterEventHandler eventHandler)
+        {
+            if (eventHandler == null)
+                return false;
+            
+            return element?.TryDetachEventHandlerInternal(eventHandler: eventHandler) == true;
+        }
+        
+        public static bool SendEvent(this SciterElement element, int eventCode, int reason = 0, SciterElement source = null)
+        {
+            return element?.SendEventInternal(eventCode: eventCode, reason: reason, source: source) == true;
+        }
+		
+        public static bool TrySendEvent(this SciterElement element, int eventCode, out bool handled, int reason = 0, SciterElement source = null)
+        {
+            handled = default;
+            return element?.TrySendEventInternal(eventCode: eventCode, handled: out handled, reason: reason, source: source) == true;
+        }
+        
+        public static void PostEvent(this SciterElement element, int eventCode, int reason = 0, SciterElement source = null)
+        {
+            element?.TryPostEvent(eventCode: eventCode, reason: reason, source: source);
+        }
+		
+        public static bool TryPostEvent(this SciterElement element, int eventCode, int reason = 0, SciterElement source = null)
+        {
+            return element?.TryPostEventInternal(eventCode: eventCode, reason: reason, source: source) == true;
+        }
+        
+        public static void FireEvent(this SciterElement element, SciterBehaviors.BEHAVIOR_EVENT_PARAMS @params, bool post = true)
+        {
+            element?.FireEventInternal(@params: @params, post: post);
+        }
+		
+        public static bool TryFireEvent(this SciterElement element, SciterBehaviors.BEHAVIOR_EVENT_PARAMS @params, out bool handled, bool post = true)
+        {
+            handled = default;
+            return element?.TryFireEventInternal(@params: @params, out handled, post: post) == true;
+        }
+        
+        #endregion Events
+        
+        #region Location and Size
+        
+        public static Rectangle GetLocation(this SciterElement element, ElementArea area = ElementArea.RootRelative | ElementArea.ContentBox)
+        {
+            return element.GetLocationInternal(area: area);
+        }
+        
+        public static bool TryGetLocation(this SciterElement element, out Rectangle value, ElementArea area = ElementArea.RootRelative | ElementArea.ContentBox)
+        {
+            return element.TryGetLocationInternal(value: out value, area: area);
+        }
+
+        public static Size GetSize(this SciterElement element)
+        {
+            return element.GetSizeInternal();
+        }
+		
+        public static bool TryGetSize(this SciterElement element, out Size value)
+        {
+            return element.TryGetSizeInternal(value: out value);
+        }
+        
+        #endregion Location and Size
+        
+        #region State
+        
+        public static ElementState GetState(this SciterElement element)
+        {
+            return element.GetStateInternal();
+        }
+
+        public static bool TryGetState(this SciterElement element, out ElementState elementState)
+        {
+            elementState = default;
+            var result = element?.TryGetStateInternal(state: out elementState) == true;
+            return result;
+        }
+        
+        /*public static ElementState GetState(this SciterElement element)
+        {
+            element.TryGetState(elementState: out var elementState);
+            return elementState;
+        }
+
+        public static bool TryGetState(this SciterElement element, out ElementState elementState)
+        {
+            SciterXDom.ELEMENT_STATE_BITS stateBits = default;
+            var result = element?.TryGetStateInternal(stateBits: out stateBits) == true;
+            elementState = (ElementState)(uint)(result ? stateBits : 0);
+            return result;
+        }*/
+
+        public static SciterElement SetState(this SciterElement element, ElementState statesToSet, ElementState statesToClear = ElementState.None, bool update = true)
+        {
+            element?.TrySetState(statesToSet: statesToSet, statesToClear: statesToClear, update: update);
+            return element;
+        }
+
+        public static bool TrySetState(this SciterElement element, ElementState statesToSet, ElementState statesToClear = ElementState.None, bool update = true)
+        {
+            return element?.TrySetStateInternal(bitsToSet: (SciterXDom.ELEMENT_STATE_BITS)statesToSet, bitsToClear: (SciterXDom.ELEMENT_STATE_BITS)statesToClear, update: update) == true;
         }
         
         #endregion State
@@ -674,6 +763,34 @@ namespace SciterCore
         }
 
         #endregion Query HTML
+
+        #region Handles
+
+        /// <summary>
+        /// Gets the native Handle of the containing window
+        /// </summary>
+        /// <param name="element"></param>
+        /// <param name="rootWindow"><para>true: Sciter window.</para><para>false: Nearest windowed parent element</para></param>
+        /// <returns>Native Handle of the containing window</returns>
+        public static IntPtr GetWindowHandle(this SciterElement element, bool rootWindow = true)
+        {
+            return element?.GetWindowHandleInternal(rootWindow: rootWindow) ?? IntPtr.Zero;
+        }
+
+        /// <summary>
+        /// Attempts to get the native Handle of the containing window
+        /// </summary>
+        /// <param name="element"></param>
+        /// <param name="rootWindow"><para>true: Sciter window.</para><para>false: Nearest windowed parent element</para></param>
+        /// <param name="value"><see cref="IntPtr"/> of the native handle</param>
+        /// <returns><para>true: Successful.</para><para>false: Failed</para></returns>
+        public static bool TryGetWindowHandle(this SciterElement element, bool rootWindow, out IntPtr value)
+        {
+            value = IntPtr.Zero;
+            return element?.TryGetWindowHandleInternal(rootWindow: rootWindow, out value) == true;
+        }
+
+        #endregion Handles
         
         #region Helpers
 		
@@ -691,6 +808,107 @@ namespace SciterCore
             return false;
         }
 
+        #endregion
+        
+        #region Scripting
+        
+        /// <summary>
+        /// <para>Call scripting method attached to the element (directly or through of scripting behavior)</para>
+        /// <para>Example: <br/>var elem = ...<br/>elem.foo = function() {...}</para>
+        /// </summary>
+        /// <param name="element"></param>
+        /// <param name="method"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public static SciterValue CallMethod(this SciterElement element, string method, params SciterValue[] args)
+        {
+            return element?.CallMethodInternal(method: method, args: args);
+        }
+
+        /// <summary>
+        /// <para>Tries calling scripting method attached to the element (directly or through of scripting behavior)</para>
+        /// <para>Example: <br/>var elem = ...<br/>elem.foo = function() {...}</para>
+        /// </summary>
+        /// <param name="element"></param>
+        /// <param name="method"></param>
+        /// <param name="value"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public static bool TryCallMethod(this SciterElement element, string method, out SciterValue value, params SciterValue[] args)
+        {
+            value = default;
+            return element?.TryCallMethodInternal(method: method, value: out value, args: args) == true;
+        }
+        
+        /// <summary>
+        /// <para>Call scripting function defined on global level</para>
+        /// <para>Example: <br/>function foo() {...}</para>
+        /// </summary>
+        /// <param name="element"></param>
+        /// <param name="function"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public static SciterValue CallFunction(this SciterElement element, string function, params SciterValue[] args)
+        {
+            return element?.CallFunctionInternal(function: function, args: args);
+        }
+
+        /// <summary>
+        /// <para>Tries calling scripting function defined on global level</para>
+        /// <para>Example: <br/>function foo() {...}</para>
+        /// </summary>
+        /// <param name="element"></param>
+        /// <param name="function"></param>
+        /// <param name="value"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public static bool TryCallFunction(this SciterElement element, string function, out SciterValue value, params SciterValue[] args)
+        {
+            value = default;
+            return element?.TryCallFunctionInternal(function: function, value: out value, args: args) == true;
+        }
+        
+        /// <summary>
+        /// <para>Evaluates the script in element context:
+        /// `this` in script will be the element and in namespace of element's document.</para>
+        /// </summary>
+        /// <param name="element"></param>
+        /// <param name="script"></param>
+        /// <returns></returns>
+        public static SciterValue EvaluateScript(this SciterElement element, string script)
+        {
+            return element?.EvaluateScriptInternal(script: script);
+        }
+        
+        /// <summary>
+        /// <para>Attempts to evaluate script in element context:
+        /// `this` in script will be the element and in namespace of element's document.</para>
+        /// </summary>
+        /// <param name="element"></param>
+        /// <param name="script"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static bool TryEvaluateScript(this SciterElement element, string script, out SciterValue value)
+        {
+            value = default;
+            return element?.TryEvaluateScriptInternal(script: script, value: out value) == true;
+        }
+        
+        #endregion Scripting
+        
+        #region Highlight
+        
+        public static SciterElement SetHighlight(this SciterElement element, bool value)
+        {
+            element?.TrySetHighlight(value);
+            return element;
+        }
+        
+        public static bool TrySetHighlight(this SciterElement element, bool value)
+        {
+            return element?.TrySetHighlightInternal(value) == true;
+        }
+        
         #endregion
     }
 }

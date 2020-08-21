@@ -753,7 +753,7 @@ namespace SciterCore.Interop
 			public delegate bool SCITER_CLOSE_ARCHIVE(IntPtr harc);
 
 			// SCDOM_RESULT function( const BEHAVIOR_EVENT_PARAMS* evt, BOOL post, BOOL *handled ) SciterFireEvent;
-			public delegate int SCITER_FIRE_EVENT(ref SciterBehaviors.BEHAVIOR_EVENT_PARAMS evt, bool post, out bool handled);
+			public delegate SciterXDom.SCDOM_RESULT SCITER_FIRE_EVENT(ref SciterBehaviors.BEHAVIOR_EVENT_PARAMS evt, bool post, out bool handled);
 
 			// LPVOID function(HWINDOW hwnd) SciterGetCallbackParam;
 			public delegate IntPtr SCITER_GET_CALLBACK_PARAM(IntPtr hwnd);

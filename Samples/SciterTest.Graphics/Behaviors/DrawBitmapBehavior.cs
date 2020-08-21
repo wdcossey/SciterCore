@@ -9,6 +9,47 @@ using SciterGraphics = SciterCore.SciterGraphics;
 namespace SciterTest.Graphics.Behaviors
 {
 
+    [SciterBehavior("draw-checkered-background")]
+    internal class CheckeredBackgroundBitmapBehavior : SciterEventHandler
+    {
+        protected override bool OnDraw(SciterElement se, SciterBehaviors.DRAW_PARAMS prms)
+        {
+            if (prms.cmd == SciterBehaviors.DRAW_EVENTS.DRAW_BACKGROUND)
+            {
+                /*using (var bitmap = new SKBitmap(width: prms.area.Width, height: prms.area.Height, colorType: SKColorType.Rgba8888, alphaType: SKAlphaType.Premul))
+                using (var canvas = new SKCanvas(bitmap: bitmap))
+                {
+                    
+                    var color1 = SKColor.Parse("#0000FF");
+                    var color2 = SKColor.Parse("#FF0000");
+                    var scale = 10.0f;
+                    SKPath path = new SKPath();
+                    path.AddRect(new SKRect(0, 0, scale, scale));
+                    SKMatrix matrix = SKMatrix.MakeScale(2 * scale, scale);
+                    matrix.SkewX = 0;
+                    matrix.SkewY = 0;
+                    SKPaint paint = new SKPaint();
+                    paint.PathEffect = SKPathEffect.Create2DPath(matrix, path);
+                    paint.IsAntialias = true;
+                    paint.Color = color2;
+                    canvas.Clear(color1.WithAlpha(255));
+                    SKRect bounds = new SKRect(0, 0, 256, 256);
+                    bounds.Offset(scale, scale);
+                    canvas.DrawRect(bounds, paint);
+                    
+                    //canvas.Clear(color: SKColor.Parse("#FF0059").WithAlpha(255));
+//
+                    var img = bitmap.ToSciterImage();
+                    var gfx = new SciterGraphics(prms.gfx);
+                    gfx.BlendImage(img, prms.area.Left, prms.area.Top);
+                }*/
+            }
+
+            // Resume normal drawing
+            return false;
+        }
+    } 
+    
     [SciterBehavior("draw-alt-attribute")]
     internal class InfoBitmapBehavior : SciterEventHandler
     {
@@ -25,17 +66,21 @@ namespace SciterTest.Graphics.Behaviors
                     paint.IsAntialias = true;
                     paint.TextSize = 14f;
 
-                    var altText = se.Attributes["alt"];
+                    var hasAltText = se.Attributes.TryGetValue("alt", out var altText);
 
-                    SKRect textBounds = new SKRect();
-                    paint.MeasureText(altText, ref textBounds);
+                    if (hasAltText)
+                    {
+                        SKRect textBounds = new SKRect();
+                        paint.MeasureText(altText, ref textBounds);
 
-                    paint.Color = new SKColor(0, 0, 0, 127);
-                    canvas.DrawRect(bitmap.Width, bitmap.Height, -(textBounds.Width + 10), -(textBounds.Height + 10), paint);
+                        paint.Color = new SKColor(0, 0, 0, 127);
+                        canvas.DrawRect(bitmap.Width, bitmap.Height, -(textBounds.Width + 10),
+                            -(textBounds.Height + 10), paint);
 
-                    paint.Color = new SKColor(255, 255, 255);
-                    paint.TextAlign = SKTextAlign.Right;
-                    canvas.DrawText(altText, bitmap.Width - 5, bitmap.Height - 5, paint);
+                        paint.Color = new SKColor(255, 255, 255);
+                        paint.TextAlign = SKTextAlign.Right;
+                        canvas.DrawText(altText, bitmap.Width - 5, bitmap.Height - 5, paint);
+                    }
 
                     var img = bitmap.ToSciterImage();
                     var gfx = new SciterGraphics(prms.gfx);
@@ -68,16 +113,14 @@ namespace SciterTest.Graphics.Behaviors
         {
             if (prms.cmd == _drawEvent)
             {
-                using (SKBitmap bitmap = new SKBitmap(width: prms.area.Width, height: prms.area.Height, colorType: SKColorType.Rgba8888, alphaType: SKAlphaType.Premul))
-                using (SKCanvas canvas = new SKCanvas(bitmap))
-                using (SKPaint paint = new SKPaint())
+                using (var bitmap = new SKBitmap(width: prms.area.Width, height: prms.area.Height, colorType: SKColorType.Rgba8888, alphaType: SKAlphaType.Premul))
+                using (var canvas = new SKCanvas(bitmap: bitmap))
                 {
                     canvas.Clear(color: SKColor.Parse("#445F59").WithAlpha(255));
 
                     var img = bitmap.ToSciterImage();
                     var gfx = new SciterGraphics(prms.gfx);
                     gfx.BlendImage(img, prms.area.Left, prms.area.Top);
-                    //return true;
                 }
             }
 
@@ -202,7 +245,6 @@ namespace SciterTest.Graphics.Behaviors
         {
             if (prms.cmd == _drawEvent)
             {
-
                 using (SKBitmap bitmap = new SKBitmap(width: prms.area.Width, height: prms.area.Height, colorType: SKColorType.Rgba8888, alphaType: SKAlphaType.Premul))
                 using (SKCanvas canvas = new SKCanvas(bitmap))
                 using (SKPaint paint = new SKPaint())

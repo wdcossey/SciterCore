@@ -55,11 +55,12 @@ namespace SciterCore.Interop
 			T_BYTES = 12,		// sequence of bytes - e.g. image data
 			T_OBJECT = 13,		// scripting object proxy (TISCRIPT/SCITER)
 			T_DOM_OBJECT = 14,  // DOM object (CSSS!), use get_object_data to get HELEMENT 
-			//T_RESOURCE = 15,  // 15 - other thing derived from tool::resource
+			T_RESOURCE = 15,  // 15 - other thing derived from tool::resource
 			//T_RANGE = 16,     // 16 - N..M, integer range.
 			T_DURATION = 17,	// double, seconds
 			T_ANGLE = 18,		// double, radians
 			T_COLOR = 19,		// [unsigned] INT, ABGR
+			T_ASSET = 21,      // sciter::om::iasset* add_ref'ed pointer
 		}
 
 		public enum VALUE_UNIT_TYPE : uint
@@ -100,6 +101,11 @@ namespace SciterCore.Interop
 			UT_OBJECT_ERROR = 5,    // type T_OBJECT of type Error
 		}
 
+		public enum VALUE_UNIT_UNDEFINED : uint 
+		{
+			UT_NOTHING = 1 // T_UNDEFINED && UT_NOTHING -  'nothing' a.k.a. 'void' value in script 
+		};
+		
 		// Sciter or TIScript specific
 		public enum VALUE_UNIT_TYPE_STRING : uint
 		{
@@ -116,8 +122,7 @@ namespace SciterCore.Interop
 		public delegate bool NATIVE_FUNCTOR_RELEASE(IntPtr tag);
         // alias BOOL function(LPVOID param, const VALUE* pkey, const VALUE* pval) KeyValueCallback;
 		public delegate bool KEY_VALUE_CALLBACK(IntPtr param, ref VALUE pkey, ref VALUE pval);
-
-
+		
 		public enum VALUE_STRING_CVT_TYPE : uint
 		{
 			CVT_SIMPLE,        //< simple conversion of terminal values 

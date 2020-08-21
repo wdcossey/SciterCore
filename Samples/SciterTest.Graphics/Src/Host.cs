@@ -16,6 +16,8 @@ namespace SciterTest.Graphics
 		public Host(SciterWindow window)
 			: base(window)
 		{
+			RegisterBehaviorHandler(typeof(CheckeredBackgroundBitmapBehavior));
+			
 			RegisterBehaviorHandler(typeof(InfoBitmapBehavior));
 
 			RegisterBehaviorHandler(typeof(SolidBitmapBehavior));

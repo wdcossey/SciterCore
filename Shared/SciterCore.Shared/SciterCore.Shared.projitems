@@ -9,8 +9,11 @@
     <Import_RootNamespace>SciterCore</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Enums\ElementArea.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\ElementHtmlReplacement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\ElementState.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\DomResultExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\DrawingExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\SciterElementExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\PInvokeGTK.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\PInvokeUtils.cs" />
@@ -35,6 +38,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)SciterEventHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SciterGraphics.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SciterHost.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SciterNode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SciterRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SciterValue.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SciterWindow.cs" />
