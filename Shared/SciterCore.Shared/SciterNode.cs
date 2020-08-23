@@ -15,103 +15,146 @@ namespace SciterCore
 		
 		public SciterNode(IntPtr nodeHandle)
 		{
-			Debug.Assert(nodeHandle != IntPtr.Zero);
 			if(nodeHandle == IntPtr.Zero)
 				throw new ArgumentException("IntPtr.Zero received at SciterNode constructor");
 
 			_nodeHandle = nodeHandle;
 		}
 
-		public static SciterNode MakeTextNode(string text)
+		internal SciterNode CreateTextNodeInternal(string text)
 		{
-			Api.SciterCreateTextNode(text, (uint)text.Length, out var nodeHandle);
-			return nodeHandle != IntPtr.Zero ? new SciterNode(nodeHandle) : null;
+			TryCreateTextNodeInternal(text: text, out var result);
+			return result;
 		}
 
-		public static SciterNode MakeCommentNode(string text)
+		internal bool TryCreateTextNodeInternal(string text, out SciterNode value)
 		{
-			Api.SciterCreateCommentNode(text, (uint)text.Length, out var nodeHandle);
-			return nodeHandle != IntPtr.Zero ? new SciterNode(nodeHandle) : null;
+			var result = Api.SciterCreateTextNode(text, Convert.ToUInt32(text.Length), out var nodeHandle)
+				.IsOk();
+			
+			value = result ? new SciterNode(nodeHandle) : default;
+			
+			return result;
 		}
 
-		public uint ChildrenCount
+		internal SciterNode CreateCommentNodeInternal(string text)
 		{
-			get
-			{
-				Api.SciterNodeChildrenCount(Handle, out var count);
-				return count;
-			}
+			TryCreateCommentNodeInternal(text: text, out var result);
+			return result;
 		}
 
-		public SciterElement ToElement()
+		internal bool TryCreateCommentNodeInternal(string text, out SciterNode value)
 		{
-			var r = Api.SciterNodeCastToElement(Handle, out var elementHandle);
-			Debug.Assert(r == SciterXDom.SCDOM_RESULT.SCDOM_OK);
-			return new SciterElement(elementHandle);
+			var result= Api.SciterCreateCommentNode(text, Convert.ToUInt32(text.Length), out var nodeHandle)
+				.IsOk();
+			
+			value = result ? new SciterNode(nodeHandle) : default;
+			
+			return result;
 		}
 
-		public bool IsText
+		public int ChildCount => GetChildCountInternal();
+
+		internal int GetChildCountInternal()
 		{
-			get
-			{
-				var r = Api.SciterNodeType(Handle, out var nodeType);
-				Debug.Assert(r == SciterXDom.SCDOM_RESULT.SCDOM_OK);
-				return nodeType == SciterXDom.NODE_TYPE.NT_TEXT;
-			}
+			TryGetChildCountInternal(out var result);
+			return result;
 		}
+
+		internal bool TryGetChildCountInternal(out int value)
+		{
+			var result = Api.SciterNodeChildrenCount(this.Handle, out var count)
+				.IsOk();
+			value = result ? Convert.ToInt32(count) : 0;
+			return result;
+		}
+
+		internal SciterElement CastToElementInternal()
+		{
+			TryCastToElementInternal(out var result);
+			return result;
+		}
+
+		internal bool TryCastToElementInternal(out SciterElement value)
+		{
+			var result = Api.SciterNodeCastToElement(this.Handle, out var elementHandle).IsOk();
+			value = result ? new SciterElement(elementHandle) : default;
+			return result;
+		}
+
+		public NodeType NodeType => GetNodeType();
 		
-		public bool IsComment
+		private NodeType GetNodeType()
 		{
-			get
-			{
-				var r = Api.SciterNodeType(Handle, out var nodeType);
-				Debug.Assert(r == SciterXDom.SCDOM_RESULT.SCDOM_OK);
-				return nodeType == SciterXDom.NODE_TYPE.NT_COMMENT;
-			}
-		}
-		
-		public bool IsElement
-		{
-			get
-			{
-				var r = Api.SciterNodeType(Handle, out var nodeType);
-				Debug.Assert(r == SciterXDom.SCDOM_RESULT.SCDOM_OK);
-				return nodeType == SciterXDom.NODE_TYPE.NT_ELEMENT;
-			}
+			var result = Api.SciterNodeType(this.Handle, out var nodeType)
+				.IsOk();
+
+			return result ? (NodeType)(int)nodeType : NodeType.Undefined;
 		}
 
-		public SciterNode this[uint idx] => GetChild(idx);
+		public SciterNode this[int childIndex] => GetChildInternal(childIndex);
+
+		#region Text
 
 		public string Text
 		{
-			get
-			{
-				string outText = null;
-
-				var domResult = Api.SciterNodeGetText(
-					Handle, 
-					(IntPtr str, uint strLength, IntPtr param) =>
-						{
-							if(str != IntPtr.Zero)
-								outText = Marshal.PtrToStringUni(str, (int)strLength);
-						}, 
-					IntPtr.Zero);
-				
-				if(domResult == SciterXDom.SCDOM_RESULT.SCDOM_OK_NOT_HANDLED)
-					Debug.Assert(outText == null);
-				
-				return (domResult == SciterXDom.SCDOM_RESULT.SCDOM_OK || (domResult == SciterXDom.SCDOM_RESULT.SCDOM_OK_NOT_HANDLED && outText == null)) ? outText : null;
-			}
+			get => GetTextInternal();
+			set => SetTextInternal(value);
 		}
-
-		#region DOM navigation
 		
-		public SciterNode GetChild(uint idx)
+		internal string GetTextInternal()
 		{
-			Api.SciterNodeNthChild(Handle, idx, out var nodeHandle);
+			TryGetTextInternal(out var result);
+			return result;
+		}
+		
+		internal bool TryGetTextInternal(out string text)
+		{
+			string outText = default;
+
+			var domResult = Api.SciterNodeGetText(
+				this.Handle, 
+				(IntPtr strPtr, uint strLength, IntPtr param) =>
+				{
+					outText = Marshal.PtrToStringUni(strPtr, (int)strLength);
+				}, 
+				IntPtr.Zero);
+			
+			text = outText;
+			
+			return domResult.IsOk() || (domResult.IsOkNotHandled() && text == null);
+		}
+		
+		internal void SetTextInternal(string text)
+		{
+			TrySetTextInternal(text: text);
+		}
+		
+		internal bool TrySetTextInternal(string text)
+		{
+			return Api.SciterNodeSetText(this.Handle, text, Convert.ToUInt32(text.Length))
+				.IsOk();
+		}
+		
+		#endregion Text
+		
+		#region DOM Navigation
+		
+		internal SciterNode GetChildInternal(int index)
+		{
+			Api.SciterNodeNthChild(this.Handle, Convert.ToUInt32(index), out var nodeHandle);
 			return nodeHandle == IntPtr.Zero ? null : new SciterNode(nodeHandle);
 		}
 		
-		#endregion
+		internal bool TryGetChildInternal(int index, out SciterNode value)
+		{
+			var result = Api.SciterNodeNthChild(this.Handle, Convert.ToUInt32(index), out var nodeHandle)
+				.IsOk();
+			
+			value = result ? new SciterNode(nodeHandle) : default;
+			return result;
+		}
+		
+		#endregion DOM Navigation
 	}
 }

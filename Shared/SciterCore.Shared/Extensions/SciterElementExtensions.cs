@@ -301,9 +301,15 @@ namespace SciterCore
 
         #region Child
         
-        public static int ChildCount(this SciterElement element)
+        public static int GetChildCount(this SciterElement element)
         {
             return element?.GetChildCountInternal() ?? 0;
+        }
+        
+        public static bool TryGetChildCount(this SciterElement element, out int value)
+        {
+            value = default;
+            return element?.TryGetChildCountInternal(out value) == true;
         }
         
         #endregion
