@@ -58,6 +58,9 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Attributes\SciterBehaviorAttributeTests.cs" />
+    <Compile Include="PolygonPointTests.cs" />
+    <Compile Include="PolylinePointTests.cs" />
     <Compile Include="RGBAColorTests.cs" />
     <Compile Include="UnitTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

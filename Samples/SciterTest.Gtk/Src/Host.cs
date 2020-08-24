@@ -16,7 +16,7 @@ namespace SciterTest.Gtk
 		{
 			var host = this;
 
-			host.RegisterBehaviorHandler(() => new DrawGeometryBehavior("draw-geometry"))
+			host.RegisterBehaviorHandler(typeof(DrawGeometryBehavior))
 				.AttachEventHandler(new HostEventHandler());
 
 			host.SetupPage(page: "index.html");

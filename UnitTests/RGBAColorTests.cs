@@ -44,19 +44,7 @@ namespace SciterCore.UnitTests
             Assert.AreEqual(b, rgba.B);
             Assert.AreEqual(a, rgba.A);
         }
-        
-        [TestCase(255, 0, 0, 127)]
-        [TestCase(0, 0, 0, 0)]
-        [TestCase(255, 0, 0, 255)]
-        public void RGBAColor_fromColor(int r, int g, int b, int a)
-        {
-            var rgba = RGBAColor.FromColor(Color.FromArgb(a, r, g, b));
-            Assert.AreEqual(r, rgba.R);
-            Assert.AreEqual(g, rgba.G);
-            Assert.AreEqual(b, rgba.B);
-            Assert.AreEqual(a, rgba.A);
-        }
-        
+
         [TestCase(255, 0, 0, .5d)]
         [TestCase(0, 0, 0, .25d)]
         [TestCase(255, 0, 0, .5d)]
@@ -67,6 +55,18 @@ namespace SciterCore.UnitTests
             Assert.AreEqual(g, rgba.G);
             Assert.AreEqual(b, rgba.B);
             Assert.AreEqual((int)(a * byte.MaxValue), rgba.A);
+        }
+
+        [TestCase(255, 0, 0, 127)]
+        [TestCase(0, 0, 0, 0)]
+        [TestCase(255, 0, 0, 255)]
+        public void RGBAColor_fromColor(int r, int g, int b, int a)
+        {
+            var rgba = RGBAColor.FromColor(Color.FromArgb(a, r, g, b));
+            Assert.AreEqual(r, rgba.R);
+            Assert.AreEqual(g, rgba.G);
+            Assert.AreEqual(b, rgba.B);
+            Assert.AreEqual(a, rgba.A);
         }
     }
 }

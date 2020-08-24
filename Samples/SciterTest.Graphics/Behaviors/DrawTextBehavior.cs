@@ -10,18 +10,17 @@ namespace SciterTest.Graphics.Behaviors
 	{
 		protected override bool OnDraw(SciterElement se, SciterBehaviors.DRAW_PARAMS prms)
 		{
-			if(prms.cmd == SciterBehaviors.DRAW_EVENTS.DRAW_CONTENT)
+			if (prms.cmd != SciterBehaviors.DRAW_EVENTS.DRAW_CONTENT) 
+				return false;
+			
+			var txt = SciterText.CreateForElement("hi", se);
+
+			using(var g = new SciterGraphics(prms.gfx))
 			{
-				SciterText txt = SciterText.Create("hi", se.Handle);
-
-				using(SciterGraphics g = new SciterGraphics(prms.gfx))
-				{
-					g.DrawText(txt, 0, 0, 7);
-				}
-
-				return true;
+				g.DrawText(txt, 0, 0, 1);
 			}
-			return false;
+
+			return true;
 		}
 	}
 }

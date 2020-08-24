@@ -76,10 +76,10 @@ namespace SciterCore
 		/// <summary>
 		/// Focus gained by Tab traversal
 		/// </summary>
-		Tabfocus         = 0x00020000,
+		TabFocus         = 0x00020000,
 		
 		/// <summary>
-		/// Element is empty (text.size() == 0 && subs.size() == 0) 
+		/// Element is empty (text.size() == 0 &amp; subs.size() == 0) 
 		/// If element has behavior attached then the behavior is responsible for the value of this flag.
 		/// </summary>
 		Empty            = 0x00040000, 
@@ -129,16 +129,16 @@ namespace SciterCore
 		/// <summary>
 		/// This element is out of flow - Popup 
 		/// </summary>
-	    Popup            = 0x08000000,
+	    PopUp            = 0x08000000,
 
 		/// <summary>
 		/// The Element or one of its containers has dir=ltr declared
 		/// </summary>
-		IsLtr           = 0x10000000,
+		IsLeftToRight           = 0x10000000,
 		
 		/// <summary>
 		/// The Element or one of its containers has dir=rtl declared
 		/// </summary>
-		IsRtl           = 0x20000000,
+		IsRightToLeft           = 0x20000000,
     }
 }

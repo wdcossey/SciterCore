@@ -91,12 +91,6 @@
     </NativeReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="SiteResource.bin">
-      <LogicalName>SiteResource</LogicalName>
-      <IncludeInPackage>false</IncludeInPackage>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="res\icons8-visual-studio-2019.svg" />
     <None Include="res\logo.png" />
   </ItemGroup>

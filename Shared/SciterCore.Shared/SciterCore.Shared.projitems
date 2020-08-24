@@ -9,14 +9,27 @@
     <Import_RootNamespace>SciterCore</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Enums\DrawPathMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\ElementArea.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\ElementHtmlReplacement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\ElementState.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Enums\LineCapType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Enums\LineJoinType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\NodeType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\DomResultExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\DrawingExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\GraphinResultExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\SciterElementExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\SciterGraphicsExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\SciterNodeExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\SciterTextExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\PolygonPoint.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\PolylinePoint.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\SciterGraphics.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\SciterImage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\SciterPath.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\SciterText.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\TextMetrics.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\PInvokeGTK.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\PInvokeUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\PInvokeWindows.cs" />
@@ -39,7 +52,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)SciterDebugOutputHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SciterElement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SciterEventHandler.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SciterGraphics.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SciterHost.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SciterNode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SciterRequest.cs" />

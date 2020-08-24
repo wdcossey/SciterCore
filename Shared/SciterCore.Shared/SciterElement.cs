@@ -37,7 +37,7 @@ namespace SciterCore
 		public SciterElement(IntPtr elementHandle)
 		{
 			if(elementHandle == IntPtr.Zero)
-				throw new ArgumentException("IntPtr.Zero received at SciterElement constructor");
+				throw new ArgumentException($"IntPtr.Zero received at {nameof(SciterElement)} constructor.");
 
 			Api.Sciter_UseElement(elementHandle);
 			_elementHandle = elementHandle;

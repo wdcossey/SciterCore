@@ -379,7 +379,7 @@ namespace SciterCore
 		/// <summary>
 		/// Loads the page resource from the given URL or file path
 		/// </summary>
-		/// <param name="url">URL or file path of the page</param>
+		/// <param name="uri">URL or file path of the page</param>
 		public SciterWindow LoadPage(Uri uri)
 		{
 			return LoadPage(uri: uri, out _);
@@ -388,7 +388,7 @@ namespace SciterCore
         /// <summary>
         /// Loads the page resource from the given URL or file path
         /// </summary>
-        /// <param name="url">URL or file path of the page</param>
+        /// <param name="uri">URL or file path of the page</param>
         /// <param name="loadResult">Result of <see cref="Sciter.SciterApi.SciterLoadFile"/></param>
         public SciterWindow LoadPage(Uri uri, out bool loadResult)
 		{

@@ -35,20 +35,18 @@ namespace SciterTest.Mac
 			if(prms.cmd != SciterCore.Interop.SciterBehaviors.DRAW_EVENTS.DRAW_CONTENT)
 				return false;
 			
-			using(SciterGraphics gfx = new SciterGraphics(prms.gfx))
+			using(SciterGraphics graphics = new SciterGraphics(prms.gfx))
 			{
-				gfx.StateSave();
-				gfx.Translate(prms.area.Left, prms.area.Top);
-
-				gfx.FillColor = new RGBAColor(255, 0, 0);
-				gfx.LineColor = RGBAColor.Black;
-				gfx.LineWidth = 1;
-				//gfx.DrawPath(_svg._spath, SciterSharp.Interop.SciterXGraphics.DRAW_PATH_MODE.DRAW_FILL_AND_STROKE);
-
-				gfx.Translate(prms.area.Left+10, prms.area.Top+10);
-				gfx.BlendImage(_simg, 0, 0);
-
-				gfx.StateRestore();
+				graphics
+					.SaveState()
+					.Translate(prms.area.Left, prms.area.Top)
+					.SetFillColor(255, 0, 0)
+					.SetLineColor(RGBAColor.Black)
+					.SetLineWidth(1)
+					//.DrawPath(_svg._spath, SciterSharp.Interop.SciterXGraphics.DRAW_PATH_MODE.DRAW_FILL_AND_STROKE);
+					.Translate(prms.area.Left+10, prms.area.Top+10)
+					.BlendImage(_simg, 0, 0)
+					.RestoreState();
 			}
 			return true;
 		}

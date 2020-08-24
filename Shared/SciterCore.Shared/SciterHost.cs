@@ -317,7 +317,7 @@ namespace SciterCore
 		public SciterHost RegisterBehaviorHandler<THandler>(THandler eventHandler, string behaviorName = null)
 			where THandler : SciterEventHandler
 		{
-			var entry = new EventHandlerRegistry(eventHandler: eventHandler, name: behaviorName);
+			var entry = new EventHandlerRegistry(eventHandler: eventHandler, name: behaviorName ?? eventHandler.Name);
 			_behaviorMap[entry.Name] = entry;
 			return this;
 		}
