@@ -249,12 +249,27 @@ namespace SciterCore
         
         public static SciterElement SetAttributeValue(this SciterElement element, string key, Func<string> func)
         {
-            return element?.SetAttributeValue(key: key, value: func?.Invoke());
+            return element.SetAttributeValue(key: key, value: func?.Invoke());
         }
 
         public static SciterElement SetAttributeValue<T>(this SciterElement element, string key, Func<T, string> func, T @object)
         {
-            return element?.SetAttributeValue(key: key, value: func?.Invoke(@object));
+            return element.SetAttributeValue(key: key, value: func?.Invoke(@object));
+        }
+        
+        public static bool TrySetAttributeValue(this SciterElement element, string key, string value)
+        {
+            return element?.TrySetAttributeValueInternal(key: key, value: value) == true;
+        }
+        
+        public static bool TrySetAttributeValue(this SciterElement element, string key, Func<string> func)
+        {
+            return element.TrySetAttributeValue(key: key, value: func?.Invoke());
+        }
+
+        public static bool TrySetAttributeValue<T>(this SciterElement element, string key, Func<T, string> func, T @object)
+        {
+            return element.TrySetAttributeValue(key: key, value: func?.Invoke(@object));
         }
         
         #endregion Attributes
@@ -579,18 +594,21 @@ namespace SciterCore
 
         public static SciterElement DetachEventHandler(this SciterElement element, SciterEventHandler eventHandler)
         {
-            element?.TryDetachEventHandler(eventHandler: eventHandler);
+            element.TryDetachEventHandler(eventHandler: eventHandler);
             return element;
         }
 
         public static bool TryDetachEventHandler(this SciterElement element, SciterEventHandler eventHandler)
         {
+            if (eventHandler == null)
+                throw new ArgumentNullException(nameof(eventHandler), @"EventHandler cannot be null.");
+            
             return element?.TryDetachEventHandlerInternal(eventHandler: eventHandler) == true;
         }
         
         public static SciterElement DetachEventHandlerWithoutValidation(this SciterElement element, SciterEventHandler eventHandler)
         {
-            element?.TryDetachEventHandlerWithoutValidation(eventHandler: eventHandler);
+            element?.DetachEventHandlerInternal(eventHandler: eventHandler);
             return element;
         }
 		
@@ -602,9 +620,9 @@ namespace SciterCore
             return element?.TryDetachEventHandlerInternal(eventHandler: eventHandler) == true;
         }
         
-        public static bool SendEvent(this SciterElement element, int eventCode, int reason = 0, SciterElement source = null)
+        public static void SendEvent(this SciterElement element, int eventCode, int reason = 0, SciterElement source = null)
         {
-            return element?.SendEventInternal(eventCode: eventCode, reason: reason, source: source) == true;
+            element?.SendEventInternal(eventCode: eventCode, reason: reason, source: source);
         }
 		
         public static bool TrySendEvent(this SciterElement element, int eventCode, out bool handled, int reason = 0, SciterElement source = null)
@@ -615,7 +633,7 @@ namespace SciterCore
         
         public static void PostEvent(this SciterElement element, int eventCode, int reason = 0, SciterElement source = null)
         {
-            element?.TryPostEvent(eventCode: eventCode, reason: reason, source: source);
+            element?.PostEventInternal(eventCode: eventCode, reason: reason, source: source);
         }
 		
         public static bool TryPostEvent(this SciterElement element, int eventCode, int reason = 0, SciterElement source = null)
@@ -724,12 +742,14 @@ namespace SciterCore
             return element?.TryGetHtmlInternal(html: out html) == true;
         }
         
+        //TODO: Missing parameters
         public static SciterElement SetHtml(this SciterElement element, string html)
         {
             element?.SetHtmlInternal(html: html);
             return element;
         }
 		
+        //TODO: Missing parameters
         public static bool TrySetHtml(this SciterElement element, string html)
         {
             return element?.TrySetHtmlInternal(html: html) == true;

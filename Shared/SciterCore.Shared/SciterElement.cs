@@ -17,11 +17,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.Text;
 using System.Runtime.InteropServices;
 using SciterCore.Interop;
+// ReSharper disable UnusedMember.Global
+// ReSharper disable ArrangeThisQualifier
+// ReSharper disable RedundantLambdaParameterType
 
 namespace SciterCore
 {
@@ -34,7 +36,6 @@ namespace SciterCore
 		
 		public SciterElement(IntPtr elementHandle)
 		{
-			Debug.Assert(elementHandle != IntPtr.Zero);
 			if(elementHandle == IntPtr.Zero)
 				throw new ArgumentException("IntPtr.Zero received at SciterElement constructor");
 
@@ -156,7 +157,7 @@ namespace SciterCore
 				return ClearTextInternal();
 
 			var data = Encoding.UTF8.GetBytes(html);
-			return Api.SciterSetElementHtml(this.Handle, data, (uint) data.Length, @where)
+			return Api.SciterSetElementHtml(this.Handle, data, (uint) data.Length, where)
 				.IsOk();
 		}
 		
@@ -328,9 +329,13 @@ namespace SciterCore
 
         internal void SetAttributeValueInternal(string key, string value)
         {
-            var result = Api.SciterSetAttributeByName(this.Handle, key, value)
+	        TrySetAttributeValueInternal(key: key, value: value);
+        }
+
+        internal bool TrySetAttributeValueInternal(string key, string value)
+        {
+            return Api.SciterSetAttributeByName(this.Handle, key, value)
 	            .IsOk();
-            Debug.Assert(result);
         }
 
         internal void RemoveAttributeInternal(string key)
@@ -782,22 +787,33 @@ namespace SciterCore
 				.IsOk();
 		}
 		
+		internal void DetachEventHandlerInternal(SciterEventHandler eventHandler)
+		{
+			TryDetachEventHandlerInternal(null);
+		}
+		
 		internal bool TryDetachEventHandlerInternal(SciterEventHandler eventHandler)
 		{
 			return Api.SciterDetachEventHandler(this.Handle, eventHandler.EventProc, IntPtr.Zero)
 				.IsOk();
 		}
 
-		internal bool SendEventInternal(int eventCode, int reason = 0, SciterElement source = null)
+		internal void SendEventInternal(int eventCode, int reason = 0, SciterElement source = null)
 		{
-			TrySendEventInternal(eventCode: eventCode, handled: out var handled, reason: reason, source: source);
-			return handled;
+			TrySendEventInternal(eventCode: eventCode, handled: out _, reason: reason, source: source);
 		}
 
 		internal bool TrySendEventInternal(int eventCode, out bool handled, int reason = 0, SciterElement source = null)
 		{
-			return Api.SciterSendEvent(this.Handle, Convert.ToUInt32(eventCode), source == null ? IntPtr.Zero : source.Handle, new IntPtr(Convert.ToUInt32(reason)), out handled)
+			var result = Api.SciterSendEvent(this.Handle, Convert.ToUInt32(eventCode), source == null ? IntPtr.Zero : source.Handle, new IntPtr(Convert.ToUInt32(reason)), out handled)
 				.IsOk();
+
+			return result && handled;
+		}
+
+		internal void PostEventInternal(int eventCode, int reason = 0, SciterElement source = null)
+		{
+			TryPostEventInternal(eventCode: eventCode, reason: reason, source: source);
 		}
 
 		internal bool TryPostEventInternal(int eventCode, int reason = 0, SciterElement source = null)
@@ -806,10 +822,9 @@ namespace SciterCore
 				.IsOk();
 		}
 
-		internal bool FireEventInternal(SciterBehaviors.BEHAVIOR_EVENT_PARAMS @params, bool post = true)
+		internal void FireEventInternal(SciterBehaviors.BEHAVIOR_EVENT_PARAMS @params, bool post = true)
 		{
-			TryFireEventInternal(@params: @params, handled: out var handled, post: post);
-			return handled;
+			TryFireEventInternal(@params: @params, handled: out _, post: post);
 		}
 
 		internal bool TryFireEventInternal(SciterBehaviors.BEHAVIOR_EVENT_PARAMS @params, out bool handled, bool post = true)

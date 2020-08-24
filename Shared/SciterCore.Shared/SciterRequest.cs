@@ -22,7 +22,7 @@ namespace SciterCore
 {
 	public class SciterRequest
 	{
-		private static Interop.SciterRequest.SciterRequestApi _requestApi = Interop.Sciter.RequestApi;
+		private static readonly Interop.SciterRequest.SciterRequestApi RequestApi = Interop.Sciter.RequestApi;
 		public readonly IntPtr _hrq;
 
 		private SciterRequest() 
@@ -40,14 +40,16 @@ namespace SciterCore
 		{
 			get
 			{
-				string strval = null;
-				Interop.SciterXDom.LPCSTR_RECEIVER frcv = (IntPtr str, uint str_length, IntPtr param) =>
-				{
-					strval = Marshal.PtrToStringAnsi(str, (int)str_length);
-				};
-
-				_requestApi.RequestUrl(_hrq, frcv, IntPtr.Zero);
-				return strval;
+				string result = null;
+				RequestApi.RequestUrl(
+					_hrq, 
+					(IntPtr str, uint strLength, IntPtr param) =>
+						{
+							result = Marshal.PtrToStringAnsi(str, (int)strLength);
+						}, 
+					IntPtr.Zero);
+				
+				return result;
 			}
 		}
 
@@ -55,14 +57,17 @@ namespace SciterCore
 		{
 			get
 			{
-				string strval = null;
-				Interop.SciterXDom.LPCSTR_RECEIVER frcv = (IntPtr str, uint str_length, IntPtr param) =>
-				{
-					strval = Marshal.PtrToStringAnsi(str, (int)str_length);
-				};
+				string result = null;
 
-				_requestApi.RequestContentUrl(_hrq, frcv, IntPtr.Zero);
-				return strval;
+				RequestApi.RequestContentUrl(
+					_hrq, 
+					(IntPtr str, uint strLength, IntPtr param) =>
+						{
+							result = Marshal.PtrToStringAnsi(str, (int)strLength);
+						},
+					IntPtr.Zero);
+				
+				return result;
 			}
 		}
 
@@ -71,24 +76,24 @@ namespace SciterCore
 			get
 			{
 				Interop.SciterRequest.SciterResourceType rv;
-				_requestApi.RequestGetRequestedDataType(_hrq, out rv);
+				RequestApi.RequestGetRequestedDataType(_hrq, out rv);
 				return rv;
 			}
 		}
 
-		public void Suceeded(uint status, byte[] dataOrNull = null)
+		public void Succeeded(uint status, byte[] dataOrNull = null)
 		{
-			_requestApi.RequestSetSucceeded(_hrq, status, dataOrNull, dataOrNull == null ? 0 : (uint)dataOrNull.Length);
+			RequestApi.RequestSetSucceeded(_hrq, status, dataOrNull, dataOrNull == null ? 0 : (uint)dataOrNull.Length);
 		}
 
 		public void Failed(uint status, byte[] dataOrNull = null)
 		{
-			_requestApi.RequestSetFailed(_hrq, status, dataOrNull, dataOrNull == null ? 0 : (uint)dataOrNull.Length);
+			RequestApi.RequestSetFailed(_hrq, status, dataOrNull, dataOrNull == null ? 0 : (uint)dataOrNull.Length);
 		}
 
 		public void AppendData(byte[] data)
 		{
-			_requestApi.RequestAppendDataChunk(_hrq, data, (uint)data.Length);
+			RequestApi.RequestAppendDataChunk(_hrq, data, (uint)data.Length);
 		}
 	}
 }

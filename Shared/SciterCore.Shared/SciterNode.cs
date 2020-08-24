@@ -1,7 +1,10 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 using SciterCore.Interop;
+
+// ReSharper disable RedundantLambdaParameterType
+// ReSharper disable ArrangeThisQualifier
+// ReSharper disable UnusedMember.Global
 
 namespace SciterCore
 {
@@ -116,7 +119,7 @@ namespace SciterCore
 				this.Handle, 
 				(IntPtr strPtr, uint strLength, IntPtr param) =>
 				{
-					outText = Marshal.PtrToStringUni(strPtr, (int)strLength);
+					outText = Marshal.PtrToStringUni(strPtr, Convert.ToInt32(strLength));
 				}, 
 				IntPtr.Zero);
 			
