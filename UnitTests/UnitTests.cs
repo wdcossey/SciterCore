@@ -82,46 +82,6 @@ namespace SciterCore.UnitTests
 		}
 
 		[Test]
-		public void TestColor_AlphaAsInt()
-		{
-			// RGBA
-			var rgba = new RGBAColor(255, 5, 5);
-			Assert.IsTrue(rgba.R == 255);
-			Assert.IsTrue(rgba.G == 5);
-			Assert.IsTrue(rgba.B == 5);
-			Assert.IsTrue(rgba.A == 255);
-
-			// RGBA
-			rgba = new RGBAColor(0, 0, 255, 127);
-			Assert.IsTrue(rgba.R == 0);
-			Assert.IsTrue(rgba.G == 0);
-			Assert.IsTrue(rgba.B == 255);
-			Assert.IsTrue(rgba.A == 127);
-		}
-
-		[Test]
-		public void TestColor_AlphaAsDouble()
-		{			
-			var rgba = new RGBAColor(255, 0, 0, .5d);
-			Assert.IsTrue(rgba.R == 255);
-			Assert.IsTrue(rgba.G == 0);
-			Assert.IsTrue(rgba.B == 0);
-			Assert.IsTrue(rgba.A == 127);
-			
-			rgba = new RGBAColor(0, 0, 0, .25d);
-			Assert.IsTrue(rgba.R == 0);
-			Assert.IsTrue(rgba.G == 0);
-			Assert.IsTrue(rgba.B == 0);
-			Assert.IsTrue(rgba.A == 63);
-			
-			rgba = new RGBAColor(0, 0, 0, 25d);
-			Assert.IsTrue(rgba.R == 0);
-			Assert.IsTrue(rgba.G == 0);
-			Assert.IsTrue(rgba.B == 0);
-			Assert.IsTrue(rgba.A == 255);
-		}
-
-		[Test]
 		public void TestColor_Invalid()
 		{			
 			var invalid = RGBAColor.Invalid;
@@ -169,13 +129,14 @@ namespace SciterCore.UnitTests
 		[Ignore("")]
 		public void TestDebugOutputHandler()
         {
-            SciterWindow window = new SciterWindow();
+            SciterWindow window = new SciterWindow()
+	            .CreateMainWindow(640, 480)
+	            .SetTitle("Wtf");
 
             TestableDebugOutputHandler odh = new TestableDebugOutputHandler(window: window);
 
             window
-                .CreateMainWindow(640, 480)
-                .SetTitle("Wtf")
+                
                 .LoadHtml(@"
 <html>
 <style>
@@ -200,7 +161,7 @@ namespace SciterCore.UnitTests
 				PInvokeWindows.DispatchMessage(ref msg);
 			}
 
-			Assert.IsTrue(odh.msgs.Count == 1);
+			Assert.AreEqual(1, odh.msgs.Count);
 		}
 	}
 }

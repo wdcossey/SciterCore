@@ -27,7 +27,7 @@ namespace SciterCore
 {
 	public class SciterArchive : IDisposable
 	{
-        private static readonly Sciter.SciterApi _api = Sciter.Api;
+        private static readonly Sciter.SciterApi Api = Sciter.Api;
 		private IntPtr _handle;
 		private GCHandle _pinnedArray;
 
@@ -98,16 +98,16 @@ namespace SciterCore
 
 				await stream.ReadAsync(buffer, 0, buffer.Length);
 
-				return Open(buffer);
+				return Open(buffer: buffer);
 			}
 		}
 		
-		public SciterArchive Open(byte[] res_array)
+		public SciterArchive Open(byte[] buffer)
 		{
 			ArchiveAlreadyOpened();
 
-			_pinnedArray = GCHandle.Alloc(res_array, GCHandleType.Pinned);
-			_handle = _api.SciterOpenArchive(_pinnedArray.AddrOfPinnedObject(), (uint) res_array.Length);
+			_pinnedArray = GCHandle.Alloc(buffer, GCHandleType.Pinned);
+			_handle = Api.SciterOpenArchive(_pinnedArray.AddrOfPinnedObject(), Convert.ToUInt32(buffer.Length));
 			Debug.Assert(_handle != IntPtr.Zero);
 
 			return this;
@@ -121,7 +121,7 @@ namespace SciterCore
 		{
 			ArchiveNotOpened();
 			
-			_api.SciterCloseArchive(_handle);
+			Api.SciterCloseArchive(_handle);
 			_handle = IntPtr.Zero;
 			_pinnedArray.Free();
 		}
@@ -148,21 +148,19 @@ namespace SciterCore
 		
 		public byte[] GetItem(Uri uri)
 		{
-			if (IsOpen && uri.GetLeftPart(UriPartial.Scheme).Equals(this.Uri.GetLeftPart(UriPartial.Scheme)))
-			{
-				var path = uri.GetComponents(UriComponents.Path, UriFormat.SafeUnescaped);
+			if (!IsOpen || !uri.GetLeftPart(UriPartial.Scheme).Equals(this.Uri.GetLeftPart(UriPartial.Scheme)))
+				return null;
+			
+			var path = uri.GetComponents(UriComponents.Path, UriFormat.SafeUnescaped);
 
-				bool found = _api.SciterGetArchiveItem(_handle, path, out var dataPtr, out var dataLenth);
+			var found = Api.SciterGetArchiveItem(_handle, path, out var dataPtr, out var dataLength);
 
-				if(found)
-				{
-					byte[] res = new byte[dataLenth];
-					Marshal.Copy(dataPtr, res, 0, (int) dataLenth);
-
-					return res;
-				}
-			}
-			return null;
+			if (!found) 
+				return null;
+				
+			var result = new byte[dataLength];
+			Marshal.Copy(dataPtr, result, 0, Convert.ToInt32(dataLength));
+			return result;
 		}
 
 		public byte[] GetItem(string uriString)
@@ -186,17 +184,13 @@ namespace SciterCore
         private void ArchiveNotOpened()
 		{
 			if(_handle == IntPtr.Zero)
-			{
-				throw new Exception("You haven't yet opened this archive.");
-			}
+				throw new InvalidOperationException("Archive not opened.");
 		}
 		
 		private void ArchiveAlreadyOpened()
 		{
 			if(_handle != IntPtr.Zero)
-			{
-				throw new Exception("Archive already open.");
-			}
+				throw new InvalidOperationException("Archive already opened.");
 		}
 
 		#endregion

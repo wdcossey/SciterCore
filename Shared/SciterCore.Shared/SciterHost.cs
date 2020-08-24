@@ -30,7 +30,7 @@ namespace SciterCore
 	{
 		const int INVOKE_NOTIFICATION = 0x8206241;
 
-		private static Sciter.SciterApi _api = Sciter.Api;
+		private static readonly Sciter.SciterApi Api = Sciter.Api;
 
 		private IntPtr _windowHandle;
 		private Dictionary<string, EventHandlerRegistry> _behaviorMap = new Dictionary<string, EventHandlerRegistry>();
@@ -107,7 +107,7 @@ namespace SciterCore
 
 			// Register a global event handler for this Sciter window
 			_hostCallback = HandleNotification;
-			_api.SciterSetCallback(hwnd, Marshal.GetFunctionPointerForDelegate(_hostCallback), IntPtr.Zero);
+			Api.SciterSetCallback(hwnd, Marshal.GetFunctionPointerForDelegate(_hostCallback), IntPtr.Zero);
 
 			return this;
 		}
@@ -152,7 +152,7 @@ namespace SciterCore
 			Debug.Assert(_windowEventHandler == null, "You can attach only a single SciterEventHandler per SciterHost/Window");
 			
 			_windowEventHandler = eventHandler;
-			_api.SciterWindowAttachEventHandler(WindowHandle, eventHandler.EventProc, IntPtr.Zero, (uint)SciterBehaviors.EVENT_GROUPS.HANDLE_ALL);
+			Api.SciterWindowAttachEventHandler(WindowHandle, eventHandler.EventProc, IntPtr.Zero, (uint)SciterBehaviors.EVENT_GROUPS.HANDLE_ALL);
 
 			return this;
 		}
@@ -165,7 +165,7 @@ namespace SciterCore
 			Debug.Assert(_windowEventHandler != null);
 			if(_windowEventHandler != null)
 			{
-				_api.SciterWindowDetachEventHandler(WindowHandle, _windowEventHandler.EventProc, IntPtr.Zero);
+				Api.SciterWindowDetachEventHandler(WindowHandle, _windowEventHandler.EventProc, IntPtr.Zero);
 				_windowEventHandler = null;
 			}
 
@@ -178,7 +178,7 @@ namespace SciterCore
 			Debug.Assert(name != null);
 
 			Interop.SciterValue.VALUE vret = new Interop.SciterValue.VALUE();
-			_api.SciterCall(WindowHandle, name, (uint)args.Length, SciterValue.ToVALUEArray(args), out vret);
+			Api.SciterCall(WindowHandle, name, (uint)args.Length, SciterValue.ToVALUEArray(args), out vret);
 			return new SciterValue(vret);
 		}
 
@@ -188,7 +188,7 @@ namespace SciterCore
 			Debug.Assert(script != null);
 
 			Interop.SciterValue.VALUE vret = new Interop.SciterValue.VALUE();
-			_api.SciterEval(WindowHandle, script, (uint)script.Length, out vret);
+			Api.SciterEval(WindowHandle, script, (uint)script.Length, out vret);
 			return new SciterValue(vret);
 		}
 
@@ -303,7 +303,7 @@ namespace SciterCore
 		public IntPtr PostNotification(IntPtr wparam, IntPtr lparam, uint timeout = 0)
 		{
 			Debug.Assert(WindowHandle != IntPtr.Zero, "Call SciterHost.SetupWindow() first");
-			return _api.SciterPostCallback(WindowHandle, wparam, lparam, timeout);
+			return Api.SciterPostCallback(WindowHandle, wparam, lparam, timeout);
 		}
 
 		// Behavior factory
@@ -335,7 +335,7 @@ namespace SciterCore
 			{
 				Debug.Assert(WindowHandle != IntPtr.Zero, "Call SciterHost.SetupWindow() first");
 				IntPtr heRoot;
-				_api.SciterGetRootElement(WindowHandle, out heRoot);
+				Api.SciterGetRootElement(WindowHandle, out heRoot);
 				Debug.Assert(heRoot != IntPtr.Zero);
 				return new SciterElement(heRoot);
 			}
@@ -347,7 +347,7 @@ namespace SciterCore
 			{
 				Debug.Assert(WindowHandle != IntPtr.Zero, "Call SciterHost.SetupWindow() first");
 				IntPtr heFocus;
-				_api.SciterGetRootElement(WindowHandle, out heFocus);
+				Api.SciterGetRootElement(WindowHandle, out heFocus);
 				Debug.Assert(heFocus != IntPtr.Zero);
 				return new SciterElement(heFocus);
 			}
@@ -396,7 +396,7 @@ namespace SciterCore
 				case SciterXDef.SCITER_CALLBACK_CODE.SC_ENGINE_DESTROYED:
 					if(_windowEventHandler != null)
 					{
-						_api.SciterWindowDetachEventHandler(WindowHandle, _windowEventHandler.EventProc, IntPtr.Zero);
+						Api.SciterWindowDetachEventHandler(WindowHandle, _windowEventHandler.EventProc, IntPtr.Zero);
 						_windowEventHandler = null;
 					}
 
@@ -445,7 +445,7 @@ namespace SciterCore
 			{
 				_consoleArchive?.GetItem(uri, (data, path) => 
 				{ 
-					_api.SciterDataReady(WindowHandle, path, data, (uint) data.Length);
+					Api.SciterDataReady(WindowHandle, path, data, (uint) data.Length);
 				});
 			}
 
