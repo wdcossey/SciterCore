@@ -37,11 +37,12 @@ using CoreGraphics;
 namespace SciterCore
 {
 	
-	public class SciterGraphics : IDisposable
+	public sealed class SciterGraphics : IDisposable
 	{
 		private static readonly Interop.SciterGraphics.SciterGraphicsApi GraphicsApi = Interop.Sciter.GraphicsApi;
 		private readonly IntPtr _graphicsHandle;
 
+		// ReSharper disable once ConvertToAutoProperty
 		public IntPtr Handle => _graphicsHandle;
 
 		private SciterGraphics() 
@@ -235,33 +236,33 @@ namespace SciterCore
 				.IsOk();
 		}
 		
-		public RGBAColor LineColor
+		public SciterColor LineColor
 		{
 			set => SetLineColorInternal(value);
 		}
 
-		internal void SetLineColorInternal(RGBAColor lineColor)
+		internal void SetLineColorInternal(SciterColor lineColor)
 		{
 			TrySetLineColorInternal(lineColor: lineColor);
 		}
 		
-		internal bool TrySetLineColorInternal(RGBAColor lineColor)
+		internal bool TrySetLineColorInternal(SciterColor lineColor)
 		{
 			return GraphicsApi.gLineColor(this.Handle, lineColor.Value)
 				.IsOk();
 		}
 		
-		public RGBAColor FillColor
+		public SciterColor FillColor
 		{
 			set => SetFillColorInternal(value);
 		}
 		
-		internal void SetFillColorInternal(RGBAColor fillColor)
+		internal void SetFillColorInternal(SciterColor fillColor)
 		{
 			TrySetFillColorInternal(fillColor: fillColor);
 		}
 		
-		internal bool TrySetFillColorInternal(RGBAColor fillColor)
+		internal bool TrySetFillColorInternal(SciterColor fillColor)
 		{
 			return GraphicsApi.gFillColor(this.Handle, fillColor.Value)
 				.IsOk();
@@ -410,10 +411,11 @@ namespace SciterCore
 		
 		#endregion
 
-		#region IDisposable Support
+		#region IDisposable
+		
 		private bool _disposedValue = false;
 
-		protected virtual void Dispose(bool disposing)
+		private void Dispose(bool disposing)
 		{
 			if (_disposedValue) 
 				return;
@@ -436,6 +438,7 @@ namespace SciterCore
 			// TODO: uncomment the following line if the finalizer is overridden above.
 			// GC.SuppressFinalize(this);
 		}
+		
 		#endregion
 	}
 }

@@ -17,8 +17,8 @@ namespace SciterTest.Graphics.Behaviors
 				{
 					graphics.SaveState()
 						.Translate(prms.area.Left, prms.area.Top)
-						.SetLineColor(new RGBAColor(0, 255, 255, .75d))
-						.SetFillColor(new RGBAColor(127, 78, 194, .75d))
+						.SetLineColor(new SciterColor(0, 255, 255, .75d))
+						.SetFillColor(new SciterColor(127, 78, 194, .75d))
 						.SetLineWidth(4)
 						.DrawPolygon(() => new List<PolygonPoint>
 						{

@@ -514,10 +514,10 @@ namespace SciterCore
 			return ret;
 		}
 
-		public RGBAColor GetColor()
+		public SciterColor GetColor()
 		{
 			Debug.Assert(IsColor);
-			return new RGBAColor((uint) Get(0));
+			return new SciterColor((uint) Get(0));
 		}
 
 		public double GetAngle()

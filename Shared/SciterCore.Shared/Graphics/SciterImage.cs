@@ -1,6 +1,9 @@
-﻿using System;
+﻿
+using System;
 using System.Diagnostics;
+using System.Drawing;
 using System.Runtime.InteropServices;
+
 #if WINDOWS && !WPF
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -13,9 +16,16 @@ using Foundation;
 using CoreGraphics;
 #endif
 
+// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable ArrangeThisQualifier
+// ReSharper disable UnusedMethodReturnValue.Global
+// ReSharper disable UnusedMember.Global
+// ReSharper disable RedundantLambdaParameterType
+// ReSharper disable ConvertToAutoProperty
+
 namespace SciterCore
 {
-    public class SciterImage : IDisposable
+    public sealed class SciterImage : IDisposable
 	{
 		private static readonly Interop.SciterGraphics.SciterGraphicsApi GraphicsApi = Interop.Sciter.GraphicsApi;
 
@@ -23,70 +33,118 @@ namespace SciterCore
 
 		public IntPtr Handle => _imageHandle;
 		
-		private SciterImage() 
+		private SciterImage(IntPtr imageHandle) 
 		{ 
-			// non-user usable
-		}
-
-		public SciterImage(SciterValue sv)
-			: this()
-		{
-			Interop.SciterValue.VALUE v = sv.ToVALUE();
-			var r = GraphicsApi.vUnWrapImage(ref v, out var imageHandle);
-			Debug.Assert(r == Interop.SciterGraphics.GRAPHIN_RESULT.GRAPHIN_OK);
 			_imageHandle = imageHandle;
 		}
 
-		public SciterValue ToSV()
+		public static SciterImage Create(SciterValue sciterValue)
 		{
-			Interop.SciterValue.VALUE v;
-			var r = GraphicsApi.vWrapImage(this.Handle, out v);
-			return new SciterValue(v);
+			TryCreate(sciterImage: out var result, sciterValue: sciterValue);
+			return result;
 		}
 
-		public SciterImage(uint width, uint height, bool withAlpha)
+		public static bool TryCreate(out SciterImage sciterImage, SciterValue sciterValue)
 		{
-			var r = GraphicsApi.imageCreate(out var himg, width, height, withAlpha);
-			Debug.Assert(r == Interop.SciterGraphics.GRAPHIN_RESULT.GRAPHIN_OK);
-			_imageHandle = himg;
+			var v = sciterValue.ToVALUE();
+			var result = GraphicsApi.vUnWrapImage(ref v, out var imageHandle)
+				.IsOk();
+			
+			sciterImage = result ? new SciterImage(imageHandle: imageHandle) : default;
+			return result;
+		}
+
+		public SciterValue ToSciterValue()
+		{
+			TryToSciterValue(sciterValue: out var result);
+			return result;
+		}
+
+		public bool TryToSciterValue(out SciterValue sciterValue)
+		{
+			var result = GraphicsApi.vWrapImage(this.Handle, out var value)
+				.IsOk();
+			
+			sciterValue = result ? new SciterValue(value: value) : default;
+			return result;
+		}
+
+		public static SciterImage Create(int width, int height, bool withAlpha)
+		{
+			TryCreate(out var result, width: width, height: height, withAlpha: withAlpha);
+			return result;
+		}
+
+		public static bool TryCreate(out SciterImage sciterImage, int width, int height, bool withAlpha)
+		{
+			var result = GraphicsApi.imageCreate(out var imageHandle, Convert.ToUInt32(width), Convert.ToUInt32(height), withAlpha)
+				.IsOk();
+			
+			sciterImage = result ? new SciterImage(imageHandle: imageHandle) : default;
+			return result;
 		}
 
 		/// <summary>
 		/// Loads image from PNG or JPG image buffer
 		/// </summary>
-		public SciterImage(byte[] data)
+		public static SciterImage Create(byte[] data)
 		{
-			var r = GraphicsApi.imageLoad(data, (uint) data.Length, out var imageHandle);
-			Debug.Assert(r == Interop.SciterGraphics.GRAPHIN_RESULT.GRAPHIN_OK);
-			_imageHandle = imageHandle;
+			TryCreate(out var result, data: data);
+			return result;
 		}
 
 		/// <summary>
-		/// Loads image from RAW BGRA pixmap data
-		/// Size of pixmap data is pixmapWidth*pixmapHeight*4
-		/// construct image from B[n+0],G[n+1],R[n+2],A[n+3] data
+		/// Loads image from PNG or JPG image buffer
 		/// </summary>
-		public SciterImage(IntPtr data, uint width, uint height, bool withAlpha)
+		public static bool TryCreate(out SciterImage sciterImage, byte[] data)
 		{
-			var r = GraphicsApi.imageCreateFromPixmap(out var imageHandle, width, height, withAlpha, data);
-			Debug.Assert(r == Interop.SciterGraphics.GRAPHIN_RESULT.GRAPHIN_OK);
-			_imageHandle = imageHandle;
+			var result = GraphicsApi.imageLoad(data, (uint) data.Length, out var imageHandle)
+				.IsOk();
+			
+			sciterImage = result ? new SciterImage(imageHandle: imageHandle) : default;
+			return result;
+		}
+
+		/// <summary>
+		/// <para>Loads image from RAW BGRA pixmap data</para>
+		/// <para>Size of pixmap data is pixmapWidth * pixmapHeight*4
+		/// construct image from B[n+0],G[n+1],R[n+2],A[n+3] data</para>
+		/// </summary>
+		public static SciterImage Create(IntPtr data, uint width, uint height, bool withAlpha)
+		{
+			TryCreate(out var result, data: data, width: width, height: height, withAlpha: withAlpha);
+			return result;
+		}
+
+		/// <summary>
+		/// <para>Loads image from RAW BGRA pixmap data</para>
+		/// <para>Size of pixmap data is pixmapWidth * pixmapHeight*4
+		/// construct image from B[n+0],G[n+1],R[n+2],A[n+3] data</para>
+		/// </summary>
+		public static bool TryCreate(out SciterImage sciterImage, IntPtr data, uint width, uint height, bool withAlpha)
+		{
+			var result = GraphicsApi.imageCreateFromPixmap(out var imageHandle, width, height, withAlpha, data)
+				.IsOk();
+
+			sciterImage = result ? new SciterImage(imageHandle: imageHandle) : default;
+			return result;
 		}
 
 #if WINDOWS && !WPF
-		public SciterImage(Bitmap bmp)
+		public static SciterImage Create(Bitmap bmp)
 		{
 			var data = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppPArgb);
-			Debug.Assert(bmp.Width*4 == data.Stride);
+			Debug.Assert(bmp.Width * 4 == data.Stride);
 
-			var r = GraphicsApi.imageCreateFromPixmap(out var imageHandle, (uint) bmp.Width, (uint) bmp.Height, true, data.Scan0);
-			Debug.Assert(r == Interop.SciterGraphics.GRAPHIN_RESULT.GRAPHIN_OK);
-			_imageHandle = imageHandle;
+			var result = GraphicsApi.imageCreateFromPixmap(out var imageHandle, (uint) bmp.Width, (uint) bmp.Height, true, data.Scan0)
+				.IsOk();
 
 			bmp.UnlockBits(data);
+
+			return result ? new SciterImage(imageHandle: imageHandle) : default;
 		}
 #elif WINDOWS && WPF
-		public SciterImage(BitmapSource bmp)
+		public static SciterImage Create(BitmapSource bmp)
 		{
             WriteableBitmap bitmap = new WriteableBitmap(bmp);
             bitmap.Lock();
@@ -94,15 +152,16 @@ namespace SciterCore
 			//var data = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppPArgb);
 			Debug.Assert(bmp.Width*4 == bitmap.BackBufferStride);
 
-			var r = GraphicsApi.imageCreateFromPixmap(out var imageHandle, (uint) bmp.Width, (uint) bmp.Height, true, bitmap.BackBuffer);
-			Debug.Assert(r == Interop.SciterGraphics.GRAPHIN_RESULT.GRAPHIN_OK);
-			_imageHandle = imageHandle;
+			var result = GraphicsApi.imageCreateFromPixmap(out var imageHandle, (uint) bmp.Width, (uint) bmp.Height, true, bitmap.BackBuffer)
+				.IsOk();
 
             bitmap.Unlock();
+
+			return result ? new SciterImage(imageHandle: imageHandle) : default;
 		}
 
 #elif OSX && XAMARIN
-		public SciterImage(CGImage img)
+		public static SciterImage Create(CGImage img)
 		{
 			if(img.BitsPerPixel != 32)
 				throw new Exception("Unsupported BitsPerPixel");
@@ -113,9 +172,10 @@ namespace SciterCore
 			
 			using(var data = img.DataProvider.CopyData())
 			{
-				var r = GraphicsApi.imageCreateFromPixmap(out var imageHandle, (uint) img.Width, (uint) img.Height, true, data.Bytes);
-				Debug.Assert(r == Interop.SciterGraphics.GRAPHIN_RESULT.GRAPHIN_OK);
-				_imageHandle = imageHandle;
+				var result = GraphicsApi.imageCreateFromPixmap(out var imageHandle, (uint) img.Width, (uint) img.Height, true, data.Bytes)
+					.IsOk();
+
+				return result ? new SciterImage(imageHandle: imageHandle) : default;
 			}
 		}
 #endif
@@ -125,45 +185,74 @@ namespace SciterCore
 		/// </summary>
 		/// <param name="encoding">The output image type</param>
 		/// <param name="quality">png: 0, jpeg/WebP: 10 - 100</param>
-		public byte[] Save(Interop.SciterGraphics.SCITER_IMAGE_ENCODING encoding, uint quality = 0)
+		internal byte[] SaveInternal(ImageEncoding encoding, uint quality = 0)
 		{
-			byte[] ret = null;
-			Interop.SciterGraphics.SciterGraphicsApi.image_write_function _proc = (IntPtr prm, IntPtr data, uint data_length) =>
-			{
-				Debug.Assert(ret == null);
-				byte[] buffer = new byte[data_length];
-				Marshal.Copy(data, buffer, 0, (int) data_length);
-				ret = buffer;
-				return true;
-			};
-			GraphicsApi.imageSave(this.Handle, _proc, IntPtr.Zero, encoding, quality);
-			return ret;
+			TrySaveInternal(buffer: out var result, encoding: encoding, quality: quality);
+			return result;
+		}
+		
+		/// <summary>
+		/// Save this image to png/jpeg/WebP stream of bytes
+		/// </summary>
+		/// <param name="encoding">The output image type</param>
+		/// <param name="quality">png: 0, jpeg/WebP: 10 - 100</param>
+		internal bool TrySaveInternal(out byte[] buffer, ImageEncoding encoding, uint quality = 0)
+		{
+			byte[] outBuffer = null;
+			var result = GraphicsApi.imageSave(
+				himg: this.Handle, 
+				pfn: (IntPtr prm, IntPtr data, uint dataLength) =>
+					{
+						Debug.Assert(outBuffer == null);
+						var tmpBuffer = new byte[dataLength];
+						Marshal.Copy(data, tmpBuffer, 0, Convert.ToInt32(dataLength));
+						outBuffer = tmpBuffer;
+						return true;
+					},
+				prm: IntPtr.Zero, 
+				bpp: (Interop.SciterGraphics.SCITER_IMAGE_ENCODING)(int)encoding, 
+				quality: quality)
+				.IsOk();
+
+			buffer = result ? outBuffer : null;
+			return result;
 		}
 
-		public Interop.PInvokeUtils.SIZE Dimension
+		public Size Dimension => GetDimensionsInternal();
+
+		internal Size GetDimensionsInternal()
 		{
-			get
-			{
-				uint width, height;
-				bool usesAlpha;
-				var r = GraphicsApi.imageGetInfo(this.Handle, out width, out height, out usesAlpha);
-				Debug.Assert(r == Interop.SciterGraphics.GRAPHIN_RESULT.GRAPHIN_OK);
-				return new Interop.PInvokeUtils.SIZE() { cx = (int)width, cy = (int)height };
-			}
+			TryGetDimensionsInternal(size: out var result);
+			return result;
 		}
 
-		public void Clear(RGBAColor color)
+		internal bool TryGetDimensionsInternal(out Size size)
 		{
-			var r = GraphicsApi.imageClear(this.Handle, color.Value);
-			Debug.Assert(r == Interop.SciterGraphics.GRAPHIN_RESULT.GRAPHIN_OK);
+			var result = GraphicsApi.imageGetInfo(himg: this.Handle, width: out var width, height: out var height, usesAlpha: out _)
+					.IsOk();
+			
+			size = result ? new Size(width: Convert.ToInt32(width), height: Convert.ToInt32(height)) : default;
+			return result;
 		}
 
-		#region IDisposable Support
-		private bool disposedValue = false; // To detect redundant calls
-
-		protected virtual void Dispose(bool disposing)
+		internal void ClearInternal(SciterColor color)
 		{
-			if(!disposedValue)
+			TryClearInternal(color: color);
+		}
+
+		internal bool TryClearInternal(SciterColor color)
+		{
+			return GraphicsApi.imageClear(this.Handle, color.Value)
+				.IsOk();
+		}
+
+		#region IDisposable
+		
+		private bool _disposedValue = false; // To detect redundant calls
+
+		private void Dispose(bool disposing)
+		{
+			if(!_disposedValue)
 			{
 				if(disposing)
 				{
@@ -171,7 +260,7 @@ namespace SciterCore
 				}
 
 				GraphicsApi.imageRelease(this.Handle);
-				disposedValue = true;
+				_disposedValue = true;
 			}
 		}
 
@@ -185,6 +274,7 @@ namespace SciterCore
 			Dispose(true);
 			GC.SuppressFinalize(this);
 		}
+		
 		#endregion
 	}
 }

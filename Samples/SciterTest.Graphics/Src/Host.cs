@@ -16,21 +16,21 @@ namespace SciterTest.Graphics
 		public Host(SciterWindow window)
 			: base(window)
 		{
-			RegisterBehaviorHandler(typeof(CheckeredBackgroundBitmapBehavior));
+			RegisterBehaviorHandler<CheckeredBackgroundBitmapBehavior>();
 			
-			RegisterBehaviorHandler(typeof(InfoBitmapBehavior));
+			RegisterBehaviorHandler<InfoBitmapBehavior>();
 
-			RegisterBehaviorHandler(typeof(SolidBitmapBehavior));
-			RegisterBehaviorHandler(typeof(SolidForegroundBitmapBehavior));
+			RegisterBehaviorHandler<SolidBitmapBehavior>();
+			RegisterBehaviorHandler<SolidForegroundBitmapBehavior>();
 
-			RegisterBehaviorHandler(typeof(LinearBitmapBehavior));
-			RegisterBehaviorHandler(typeof(LinearForegroundBitmapBehavior));
+			RegisterBehaviorHandler<LinearBitmapBehavior>();
+			RegisterBehaviorHandler<LinearForegroundBitmapBehavior>();
 
-			RegisterBehaviorHandler(typeof(RadialBitmapBehavior));
-			RegisterBehaviorHandler(typeof(RadialForegroundBitmapBehavior));
+			RegisterBehaviorHandler<RadialBitmapBehavior>();
+			RegisterBehaviorHandler<RadialForegroundBitmapBehavior>();
 
-			RegisterBehaviorHandler(typeof(DrawTextBehavior));
-			RegisterBehaviorHandler(typeof(DrawGeometryBehavior));
+			RegisterBehaviorHandler<DrawTextBehavior>();
+			RegisterBehaviorHandler<DrawGeometryBehavior>();
 
 	        AttachEventHandler(new HostEventHandler());
 
@@ -48,8 +48,8 @@ namespace SciterTest.Graphics
 	{
 		protected override bool OnScriptCall(SciterElement se, string name, SciterValue[] args, out SciterValue result)
 		{
-			var r = new SciterImage(args[0]);
-			var b = r.Save(SciterGraphics.SCITER_IMAGE_ENCODING.SCITER_IMAGE_ENCODING_PNG);
+			var r = SciterImage.Create(args[0]);
+			var b = r.Save(ImageEncoding.Png);
 			File.WriteAllBytes("d:/test.png", b);
 
 			result = null;

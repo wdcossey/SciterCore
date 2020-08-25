@@ -1,5 +1,10 @@
 ﻿using System;
 
+// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable UnusedMember.Global
+// ReSharper disable ConvertToAutoProperty
+// ReSharper disable UnusedMethodReturnValue.Global
+
 namespace SciterCore
 {
     public class SciterText
@@ -21,7 +26,7 @@ namespace SciterCore
 
 		public static SciterText CreateForElement(string text, SciterElement element, string className = null)
 		{
-			return CreateForElement(text: text, elementHandle: element.Handle, className: className);
+			return CreateForElement(text: text, elementHandle: element?.Handle ?? IntPtr.Zero, className: className);
 		}
 
 		public static SciterText CreateForElement(string text, IntPtr elementHandle, string className = null)
@@ -32,13 +37,13 @@ namespace SciterCore
 
 		public static bool TryCreateForElement(out SciterText sciterText, string text, SciterElement element, string className = null)
 		{
-			return TryCreateForElement(out sciterText, text: text, elementHandle: element.Handle, className: className);
+			return TryCreateForElement(out sciterText, text: text, elementHandle: element?.Handle ?? IntPtr.Zero, className: className);
 		}
 
 		public static bool TryCreateForElement(out SciterText sciterText, string text, IntPtr elementHandle, string className = null)
 		{
 			if (elementHandle == IntPtr.Zero)
-				throw new ArgumentOutOfRangeException(nameof(elementHandle), $"IntPtr.Zero received at {nameof(SciterText)} constructor.");
+				throw new ArgumentOutOfRangeException(nameof(elementHandle), $@"IntPtr.Zero received at {nameof(TryCreateForElement)}.");
 			
 			var result = GraphicsApi.textCreateForElement(out var textHandle, text, (uint) text.Length, elementHandle, className)
 				.IsOk();

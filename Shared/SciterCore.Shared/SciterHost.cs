@@ -314,6 +314,14 @@ namespace SciterCore
 			return this;
 		}
 
+		public SciterHost RegisterBehaviorHandler<TType>(string behaviorName = null)
+			where TType : SciterEventHandler
+		{
+			var entry = new EventHandlerRegistry(type: typeof(TType), name: behaviorName);
+			_behaviorMap[entry.Name] = entry;
+			return this;
+		}
+
 		public SciterHost RegisterBehaviorHandler<THandler>(THandler eventHandler, string behaviorName = null)
 			where THandler : SciterEventHandler
 		{

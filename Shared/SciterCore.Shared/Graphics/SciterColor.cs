@@ -1,13 +1,15 @@
 ﻿using System;
 #if WINDOWS
 using System.Drawing;
+#endif
+
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable InconsistentNaming
-#endif
+// ReSharper disable ConvertToAutoPropertyWhenPossible
 
 namespace SciterCore
 {
-    public struct RGBAColor
+    public readonly struct SciterColor
     {
         private static readonly Interop.SciterGraphics.SciterGraphicsApi GraphicsApi = Interop.Sciter.GraphicsApi;
         private readonly uint _value;
@@ -19,34 +21,30 @@ namespace SciterCore
         public byte B => (byte) ((_value >> 16) & 0xFF);
         public byte A => (byte) ((_value >> 24) & 0xFF);
 
-        public RGBAColor(int r, int g, int b, double a = 1d)
+        public SciterColor(int r, int g, int b, double a = 1d)
             : this (r, g, b, (int)(Math.Min(Math.Max(a, 0d), 1d) * byte.MaxValue))
         {
 
         }
 
-        public RGBAColor(int r, int g, int b, int a)
+        public SciterColor(int r, int g, int b, int a)
         {
             _value = GraphicsApi.RGBA((uint)GetMinMaxValue(r), (uint)GetMinMaxValue(g), (uint)GetMinMaxValue(b), (uint)GetMinMaxValue(a));
         }
 
-        public RGBAColor(uint value)
+        public SciterColor(uint value)
         {
             _value = value;
         }
-
-        public static RGBAColor White = new RGBAColor(255, 255, 255);
-        public static RGBAColor Black = new RGBAColor(0, 0, 0);
-        public static RGBAColor Invalid = new RGBAColor(-1, -1, -1);
-
+        
 #if WINDOWS
-        public static RGBAColor FromColor(Color color)
+        public static SciterColor FromColor(Color color)
         {
-            return new RGBAColor(color.R, color.G, color.B, color.A);
+            return new SciterColor(color.R, color.G, color.B, color.A);
         }
 
         // ReSharper disable once InconsistentNaming
-        public static uint ToRGBAColor(Color color)
+        public static uint ToSciterColor(Color color)
         {
             return GraphicsApi.RGBA(color.R, color.G, color.B, color.A);
         }

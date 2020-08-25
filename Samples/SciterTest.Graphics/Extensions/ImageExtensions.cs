@@ -7,7 +7,7 @@ namespace SciterTest.Graphics.Extensions
     {
         public static SciterImage ToSciterImage(this SKBitmap bitmap)
         {
-            return new SciterImage(bitmap.GetPixels(), (uint)bitmap.Width, (uint)bitmap.Height, true);
+            return SciterImage.Create(bitmap.GetPixels(), (uint)bitmap.Width, (uint)bitmap.Height, true);
         }
     }
 }

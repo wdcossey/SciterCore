@@ -23,7 +23,7 @@ namespace SciterTest.Mac
 			//ctx.AddPath(_svg._cgpath);
 			//ctx.DrawPath(CGPathDrawingMode.FillStroke);
 
-			_simg = new SciterImage(ctx.ToImage());
+			_simg = SciterImage.Create(ctx.ToImage());
 			//element.SetStyle("width", img.Width + "px");
 			//element.SetStyle("height", img.Height + "px");
 		}
@@ -41,7 +41,7 @@ namespace SciterTest.Mac
 					.SaveState()
 					.Translate(prms.area.Left, prms.area.Top)
 					.SetFillColor(255, 0, 0)
-					.SetLineColor(RGBAColor.Black)
+					.SetLineColor(SciterColors.Black)
 					.SetLineWidth(1)
 					//.DrawPath(_svg._spath, SciterSharp.Interop.SciterXGraphics.DRAW_PATH_MODE.DRAW_FILL_AND_STROKE);
 					.Translate(prms.area.Left+10, prms.area.Top+10)

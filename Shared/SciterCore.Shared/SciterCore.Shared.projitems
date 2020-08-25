@@ -16,15 +16,19 @@
     <Compile Include="$(MSBuildThisFileDirectory)Enums\LineCapType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\LineJoinType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\NodeType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Enums\ImageEncoding.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\DomResultExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\DrawingExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\GraphinResultExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\SciterElementExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\SciterGraphicsExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\SciterImageExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\SciterNodeExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\SciterTextExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\PolygonPoint.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\PolylinePoint.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\SciterColor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\SciterColors.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\SciterGraphics.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\SciterImage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\SciterPath.cs" />
@@ -46,7 +50,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Interop\TIScript.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LibVersion.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MessageBox.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)RGBAColor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SciterApplication.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SciterArchive.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SciterDebugOutputHandler.cs" />

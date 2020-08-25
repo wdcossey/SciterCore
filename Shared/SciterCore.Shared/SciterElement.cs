@@ -21,13 +21,17 @@ using System.Drawing;
 using System.Text;
 using System.Runtime.InteropServices;
 using SciterCore.Interop;
+
+// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable UnusedMethodReturnValue.Global
 // ReSharper disable UnusedMember.Global
 // ReSharper disable ArrangeThisQualifier
 // ReSharper disable RedundantLambdaParameterType
+// ReSharper disable ConvertToAutoProperty
 
 namespace SciterCore
 {
-	public class SciterElement : IDisposable
+	public sealed class SciterElement : IDisposable
 	{
 		private static readonly Sciter.SciterApi Api = Sciter.Api;
 		private readonly IntPtr _elementHandle;
@@ -55,43 +59,7 @@ namespace SciterCore
 			Api.Sciter_UseElement(this.Handle);
 			_elementHandle = elementHandle;
 		}
-
-		#region IDisposable Support
-		private bool _disposedValue = false; // To detect redundant calls
-
-		protected virtual void Dispose(bool disposing)
-		{
-			if(!_disposedValue)
-			{
-				if(disposing)
-				{
-					// TODO: dispose managed state (managed objects).
-				}
-
-				// TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
-				// TODO: set large fields to null.
-				Api.Sciter_UnuseElement(this.Handle);
-
-				_disposedValue = true;
-			}
-		}
-
-		~SciterElement()
-		{
-			// Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-			Dispose(false);
-		}
-
-		// This code added to correctly implement the disposable pattern.
-		public void Dispose()
-		{
-			// Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-			Dispose(true);
-			// TODO: uncomment the following line if the finalizer is overridden above.
-			GC.SuppressFinalize(this);
-		}
-		#endregion
-
+		
 		public static SciterElement Create(string tag, string text = null)
 		{
 			TryCreate(tag: tag, element: out var element, text: text);
@@ -789,7 +757,7 @@ namespace SciterCore
 		
 		internal void DetachEventHandlerInternal(SciterEventHandler eventHandler)
 		{
-			TryDetachEventHandlerInternal(null);
+			TryDetachEventHandlerInternal(eventHandler: eventHandler);
 		}
 		
 		internal bool TryDetachEventHandlerInternal(SciterEventHandler eventHandler)
@@ -1022,6 +990,42 @@ namespace SciterCore
 		
 		#endregion
 		
+		#region IDisposable
+		
+		private bool _disposedValue = false; // To detect redundant calls
 
+		private void Dispose(bool disposing)
+		{
+			if(!_disposedValue)
+			{
+				if(disposing)
+				{
+					// TODO: dispose managed state (managed objects).
+				}
+
+				// TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
+				// TODO: set large fields to null.
+				Api.Sciter_UnuseElement(this.Handle);
+
+				_disposedValue = true;
+			}
+		}
+
+		~SciterElement()
+		{
+			// Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+			Dispose(false);
+		}
+
+		// This code added to correctly implement the disposable pattern.
+		public void Dispose()
+		{
+			// Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+			Dispose(true);
+			// TODO: uncomment the following line if the finalizer is overridden above.
+			GC.SuppressFinalize(this);
+		}
+		
+		#endregion
 	}
 }
