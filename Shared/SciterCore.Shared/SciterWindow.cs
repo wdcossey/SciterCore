@@ -150,13 +150,13 @@ namespace SciterCore
 
 		public SciterWindow CreateMainWindow(int width, int height, SciterXDef.SCITER_CREATE_WINDOW_FLAGS creationFlags = DefaultCreateFlags)
 		{
-			PInvokeUtils.RECT frame = new PInvokeUtils.RECT(width, height);
+			var frame = new PInvokeUtils.RECT(width, height);
 			return CreateWindow(frame, creationFlags);
 		}
 
 		public SciterWindow CreateOwnedWindow(IntPtr owner, int width, int height, SciterXDef.SCITER_CREATE_WINDOW_FLAGS creationFlags = DefaultCreateFlags)
 		{
-			PInvokeUtils.RECT frame = new PInvokeUtils.RECT(width, height);
+			var frame = new PInvokeUtils.RECT(width, height);
             return CreateWindow(frame, creationFlags, owner);
 		}
 

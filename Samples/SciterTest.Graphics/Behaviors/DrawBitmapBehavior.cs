@@ -40,7 +40,7 @@ namespace SciterTest.Graphics.Behaviors
                     //canvas.Clear(color: SKColor.Parse("#FF0059").WithAlpha(255));
 //
                     var img = bitmap.ToSciterImage();
-                    var gfx = new SciterGraphics(prms.gfx);
+                    var gfx = SciterGraphics.Create(prms.gfx);
                     gfx.BlendImage(img, prms.area.Left, prms.area.Top);
                 }*/
             }
@@ -83,7 +83,7 @@ namespace SciterTest.Graphics.Behaviors
                     }
 
                     var img = bitmap.ToSciterImage();
-                    var gfx = new SciterGraphics(prms.gfx);
+                    var gfx = SciterGraphics.Create(prms.gfx);
                     gfx.BlendImage(img, prms.area.Left, prms.area.Top);
                 }
             }
@@ -119,7 +119,7 @@ namespace SciterTest.Graphics.Behaviors
                     canvas.Clear(color: SKColor.Parse("#445F59").WithAlpha(255));
 
                     var img = bitmap.ToSciterImage();
-                    var gfx = new SciterGraphics(prms.gfx);
+                    var gfx = SciterGraphics.Create(prms.gfx);
                     gfx.BlendImage(img, prms.area.Left, prms.area.Top);
                 }
             }
@@ -167,7 +167,7 @@ namespace SciterTest.Graphics.Behaviors
                     canvas.DrawRect(new SKRect(0, 0, prms.area.Width, prms.area.Height), paint);
 
                     var img = bitmap.ToSciterImage();
-                    var gfx = new SciterGraphics(prms.gfx);
+                    var gfx = SciterGraphics.Create(prms.gfx);
                     gfx.BlendImage(img, prms.area.Left, prms.area.Top);
                     //return true;
                 }
@@ -263,7 +263,7 @@ namespace SciterTest.Graphics.Behaviors
                     canvas.DrawRect(new SKRect(0, 0, prms.area.Width, prms.area.Height), paint);
 
                     var img = bitmap.ToSciterImage();
-                    var gfx = new SciterGraphics(prms.gfx);
+                    var gfx = SciterGraphics.Create(prms.gfx);
                     gfx.BlendImage(img, prms.area.Left, prms.area.Top);
                     //return true;
                 }
@@ -321,7 +321,7 @@ namespace SciterTest.Graphics.Behaviors
                     canvas.DrawRect(new SKRect(0, 0, prms.area.Width, prms.area.Height), paint);
 
                     var img = bitmap.ToSciterImage();
-                    var gfx = new SciterGraphics(prms.gfx);
+                    var gfx = SciterGraphics.Create(prms.gfx);
                     gfx.BlendImage(img, prms.area.Left, prms.area.Top);
 
                     //return true;

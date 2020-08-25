@@ -35,7 +35,7 @@ namespace SciterTest.Mac
 			if(prms.cmd != SciterCore.Interop.SciterBehaviors.DRAW_EVENTS.DRAW_CONTENT)
 				return false;
 			
-			using(SciterGraphics graphics = new SciterGraphics(prms.gfx))
+			using(SciterGraphics graphics = SciterGraphics.Create(prms.gfx))
 			{
 				graphics
 					.SaveState()

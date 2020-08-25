@@ -15,7 +15,7 @@ namespace SciterTest.Graphics.Behaviors
 			
 			var txt = SciterText.CreateForElement("hi", se);
 
-			using(var g = new SciterGraphics(prms.gfx))
+			using(var g = SciterGraphics.Create(prms.gfx))
 			{
 				g.DrawText(txt, 0, 0, 1);
 			}

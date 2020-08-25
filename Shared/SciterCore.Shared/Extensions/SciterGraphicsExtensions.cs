@@ -65,13 +65,13 @@ namespace SciterCore
             return graphics?.TryDrawLineInternal(x1: x1, y1: y1, x2: x2, y2: y2) == true;
         }
 
-        public static SciterGraphics DrawPolygon(this SciterGraphics graphics, IEnumerable<PolygonPoint> points)
+        public static SciterGraphics DrawPolygon(this SciterGraphics graphics, IList<PolygonPoint> points)
         {
             graphics?.DrawPolygonInternal(points: points);
             return graphics;
         }
 
-        public static SciterGraphics DrawPolygon(this SciterGraphics graphics, Func<IEnumerable<PolygonPoint>> pointsFunc)
+        public static SciterGraphics DrawPolygon(this SciterGraphics graphics, Func<IList<PolygonPoint>> pointsFunc)
         {
             if (pointsFunc == null)
                 throw new ArgumentNullException(nameof(pointsFunc), @"Cannot be null.");
@@ -79,12 +79,12 @@ namespace SciterCore
             return graphics?.DrawPolygon(points: pointsFunc.Invoke());
         }
 
-        public static bool TryDrawPolygon(this SciterGraphics graphics, IEnumerable<PolygonPoint> points)
+        public static bool TryDrawPolygon(this SciterGraphics graphics, IList<PolygonPoint> points)
         {
             return graphics?.TryDrawPolygonInternal(points: points) == true;
         }
 
-        public static bool TryDrawPolygon(this SciterGraphics graphics, Func<IEnumerable<PolygonPoint>> pointsFunc)
+        public static bool TryDrawPolygon(this SciterGraphics graphics, Func<IList<PolygonPoint>> pointsFunc)
         {
             if (pointsFunc == null)
                 throw new ArgumentNullException(nameof(pointsFunc), @"Cannot be null.");
@@ -92,13 +92,13 @@ namespace SciterCore
             return graphics?.TryDrawPolygon(points: pointsFunc.Invoke()) == true;
         }
 
-        public static SciterGraphics DrawPolyline(this SciterGraphics graphics, IEnumerable<PolylinePoint> points)
+        public static SciterGraphics DrawPolyline(this SciterGraphics graphics, IList<PolylinePoint> points)
         {
             graphics?.DrawPolylineInternal(points: points);
             return graphics;
         }
 
-        public static SciterGraphics DrawPolyline(this SciterGraphics graphics, Func<IEnumerable<PolylinePoint>> pointsFunc)
+        public static SciterGraphics DrawPolyline(this SciterGraphics graphics, Func<IList<PolylinePoint>> pointsFunc)
         {
             if (pointsFunc == null)
                 throw new ArgumentNullException(nameof(pointsFunc), @"Cannot be null.");
@@ -107,12 +107,12 @@ namespace SciterCore
             return graphics;
         }
 
-        public static bool TryDrawPolyline(this SciterGraphics graphics, IEnumerable<PolylinePoint> points)
+        public static bool TryDrawPolyline(this SciterGraphics graphics, IList<PolylinePoint> points)
         {
             return graphics?.TryDrawPolylineInternal(points: points) == true;
         }
 
-        public static bool TryDrawPolyline(this SciterGraphics graphics, Func<IEnumerable<PolylinePoint>> pointsFunc)
+        public static bool TryDrawPolyline(this SciterGraphics graphics, Func<IList<PolylinePoint>> pointsFunc)
         {
             if (pointsFunc == null)
                 throw new ArgumentNullException(nameof(pointsFunc), @"Cannot be null.");

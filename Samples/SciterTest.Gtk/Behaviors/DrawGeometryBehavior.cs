@@ -14,7 +14,7 @@ namespace SciterTest.Gtk.Behaviors
 		{
 			if (prms.cmd == SciterBehaviors.DRAW_EVENTS.DRAW_CONTENT)
 			{
-				using (var graphics = new SciterGraphics(prms.gfx))
+				using (var graphics = SciterGraphics.Create(prms.gfx))
 				{
 					graphics
 						.SaveState()

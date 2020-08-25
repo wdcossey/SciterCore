@@ -59,6 +59,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Attributes\SciterBehaviorAttributeTests.cs" />
+    <Compile Include="Graphics\SciterGraphicsTests.cs" />
     <Compile Include="Graphics\SciterImageTests.cs" />
     <Compile Include="PolygonPointTests.cs" />
     <Compile Include="PolylinePointTests.cs" />

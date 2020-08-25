@@ -17,6 +17,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 #if WINDOWS && !WPF
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -45,19 +46,18 @@ namespace SciterCore
 		// ReSharper disable once ConvertToAutoProperty
 		public IntPtr Handle => _graphicsHandle;
 
-		private SciterGraphics() 
-		{ 
-			//
-		}
-
-		public SciterGraphics(IntPtr graphicsHandle)
-			: this()
+		internal SciterGraphics(IntPtr graphicsHandle)
 		{
 			if(graphicsHandle == IntPtr.Zero)
 				throw new ArgumentException($"IntPtr.Zero received at {nameof(SciterGraphics)} constructor.");
 			
 			_graphicsHandle = graphicsHandle;
 			GraphicsApi.gAddRef(graphicsHandle);
+		}
+
+		public static SciterGraphics Create(IntPtr graphicsHandle)
+		{
+			return new SciterGraphics(graphicsHandle: graphicsHandle);
 		}
 
 		public static SciterGraphics Create(SciterValue sciterValue)
@@ -139,12 +139,12 @@ namespace SciterCore
 				.IsOk();
 		}
 
-		internal void DrawPolygonInternal(IEnumerable<PolygonPoint> points)
+		internal void DrawPolygonInternal(IList<PolygonPoint> points)
 		{
 			TryDrawPolygonInternal(points: points);
 		}
 
-		internal bool TryDrawPolygonInternal(IEnumerable<PolygonPoint> points)
+		internal bool TryDrawPolygonInternal(IList<PolygonPoint> points)
 		{
 			var pointList = new List<float>();
 			foreach(var point in points)
@@ -152,24 +152,25 @@ namespace SciterCore
 				pointList.Add(point.X);
 				pointList.Add(point.Y);
 			}
-			return GraphicsApi.gPolygon(this.Handle, pointList.ToArray(), Convert.ToUInt32(pointList.Count))
+			
+			return GraphicsApi.gPolygon(this.Handle, pointList.ToArray(), Convert.ToUInt32(points.Count()))
 				.IsOk();
 		}
 
-		internal void DrawPolylineInternal(IEnumerable<PolylinePoint> points)
+		internal void DrawPolylineInternal(IList<PolylinePoint> points)
 		{
 			TryDrawPolylineInternal(points: points);
 		}
 
-		internal bool TryDrawPolylineInternal(IEnumerable<PolylinePoint> points)
+		internal bool TryDrawPolylineInternal(IList<PolylinePoint> points)
 		{
-			List<float> pointList = new List<float>();
+			var pointList = new List<float>();
 			foreach(var point in points)
 			{
 				pointList.Add(point.X);
 				pointList.Add(point.Y);
 			}
-			return GraphicsApi.gPolyline(this.Handle, pointList.ToArray(), Convert.ToUInt32(pointList.Count))
+			return GraphicsApi.gPolyline(this.Handle, pointList.ToArray(), Convert.ToUInt32(points.Count))
 				.IsOk();
 		}
 
