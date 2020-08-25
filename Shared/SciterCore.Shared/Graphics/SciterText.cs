@@ -28,16 +28,16 @@ namespace SciterCore
 		{
 			return CreateForElement(text: text, elementHandle: element?.Handle ?? IntPtr.Zero, className: className);
 		}
+		
+		public static bool TryCreateForElement(out SciterText sciterText, string text, SciterElement element, string className = null)
+		{
+			return TryCreateForElement(out sciterText, text: text, elementHandle: element?.Handle ?? IntPtr.Zero, className: className);
+		}
 
 		public static SciterText CreateForElement(string text, IntPtr elementHandle, string className = null)
 		{
 			TryCreateForElement(out var result, text: text, elementHandle: elementHandle, className: className);
 			return result;
-		}
-
-		public static bool TryCreateForElement(out SciterText sciterText, string text, SciterElement element, string className = null)
-		{
-			return TryCreateForElement(out sciterText, text: text, elementHandle: element?.Handle ?? IntPtr.Zero, className: className);
 		}
 
 		public static bool TryCreateForElement(out SciterText sciterText, string text, IntPtr elementHandle, string className = null)

@@ -92,7 +92,7 @@ namespace SciterCore
 			if(IsObjectError) what = nameof(IsObjectError);
 #if WINDOWS
 			if(IsDate)
-				what += " - " + GetDate().ToString();
+				what += $" - {GetDate()}";
 #endif
 			if (IsMap)
 			{

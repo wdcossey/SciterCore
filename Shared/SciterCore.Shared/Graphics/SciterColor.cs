@@ -21,33 +21,59 @@ namespace SciterCore
         public byte B => (byte) ((_value >> 16) & 0xFF);
         public byte A => (byte) ((_value >> 24) & 0xFF);
 
-        public SciterColor(int r, int g, int b, double a = 1d)
-            : this (r, g, b, (int)(Math.Min(Math.Max(a, 0d), 1d) * byte.MaxValue))
+        internal SciterColor(uint value)
         {
-
+            _value = value;
         }
 
-        public SciterColor(int r, int g, int b, int a)
+        internal SciterColor(int r, int g, int b)
+            : this(r: r, g:g, b:b, 1d)
+        {
+           
+        }
+
+        internal SciterColor(int r, int g, int b, int a)
         {
             _value = GraphicsApi.RGBA((uint)GetMinMaxValue(r), (uint)GetMinMaxValue(g), (uint)GetMinMaxValue(b), (uint)GetMinMaxValue(a));
         }
 
-        public SciterColor(uint value)
+        internal SciterColor(int r, int g, int b, double a = 1d)
+            : this(r, g, b, (int)(Math.Min(Math.Max(a, 0d), 1d) * byte.MaxValue))
         {
-            _value = value;
+            
         }
         
+        public static SciterColor Create(uint value)
+        {
+            return new SciterColor(value: value);
+        }
+        
+        public static SciterColor Create(int r, int g, int b)
+        {
+            return new SciterColor(r, g, b);
+        }
+        
+        public static SciterColor Create(int r, int g, int b, double a = 1d)
+        {
+            return new SciterColor(r, g, b, a);
+        }
+
+        public static SciterColor Create(int r, int g, int b, int a = byte.MaxValue)
+        {
+            return new SciterColor(r, g, b, a);
+        }
+
 #if WINDOWS
-        public static SciterColor FromColor(Color color)
+        public static SciterColor Create(Color color)
         {
             return new SciterColor(color.R, color.G, color.B, color.A);
         }
 
         // ReSharper disable once InconsistentNaming
-        public static uint ToSciterColor(Color color)
-        {
-            return GraphicsApi.RGBA(color.R, color.G, color.B, color.A);
-        }
+        //public static uint ToSciterColor(Color color)
+        //{
+        //    return GraphicsApi.RGBA(color.R, color.G, color.B, color.A);
+        //}
 #endif
 
         private static int GetMinMaxValue(int value)

@@ -74,11 +74,11 @@ namespace SciterCore.UnitTests
 			var c = gapi.gPopClip(hgfx);
 
 			// RGBA
-			var rgba = new SciterColor(1, 2, 3, 4);
-			Assert.AreEqual(1, rgba.R);
-			Assert.AreEqual(2, rgba.G);
-			Assert.AreEqual(3, rgba.B);
-			Assert.AreEqual(4, rgba.A);
+			var actual = SciterColor.Create(1, 2, 3, 4);
+			Assert.AreEqual(1, actual.R);
+			Assert.AreEqual(2, actual.G);
+			Assert.AreEqual(3, actual.B);
+			Assert.AreEqual(4, actual.A);
 		}
 
 		[Test]
@@ -86,8 +86,8 @@ namespace SciterCore.UnitTests
 		{			
 			var invalid = SciterColors.Invalid;
 
-			var rgba = new SciterColor(-1, -255, -1000);
-			Assert.AreEqual(invalid.Value, rgba.Value);
+			var actual = SciterColor.Create(-1, -255, -1000);
+			Assert.AreEqual(invalid.Value, actual.Value);
 		}
 
 		private class TestableDebugOutputHandler : SciterDebugOutputHandler

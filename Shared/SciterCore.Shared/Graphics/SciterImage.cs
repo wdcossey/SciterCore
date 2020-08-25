@@ -77,7 +77,7 @@ namespace SciterCore
 
 		public static bool TryCreate(out SciterImage sciterImage, int width, int height, bool withAlpha)
 		{
-			var result = GraphicsApi.imageCreate(out var imageHandle, Convert.ToUInt32(width), Convert.ToUInt32(height), withAlpha)
+			var result = GraphicsApi.imageCreate(out var imageHandle, Convert.ToUInt32(Math.Max(width, 0)), Convert.ToUInt32(Math.Max(height, 0)), withAlpha)
 				.IsOk();
 			
 			sciterImage = result ? new SciterImage(imageHandle: imageHandle) : default;
@@ -218,7 +218,7 @@ namespace SciterCore
 			return result;
 		}
 
-		public Size Dimension => GetDimensionsInternal();
+		public Size Dimensions => GetDimensionsInternal();
 
 		internal Size GetDimensionsInternal()
 		{
