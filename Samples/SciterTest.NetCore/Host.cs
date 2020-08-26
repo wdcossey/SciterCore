@@ -43,7 +43,7 @@ namespace SciterTest.NetCore
 		public bool Host_HelloSciter(SciterElement el, SciterValue[] args, out SciterValue result)
 		{
 			var stackFrame = new StackTrace(true).GetFrame(0);//.GetFileName();
-			result = new SciterValue($"<h2>Hello Sciter from C# in .Net Core!</h2><code>Method: {stackFrame.GetMethod().Name}<br/>File: <a href=\"{new Uri(stackFrame.GetFileName()).AbsoluteUri}\">{Path.GetFileName(stackFrame.GetFileName())}</a><br/>Line: {stackFrame.GetFileLineNumber()}<br/>Column: {stackFrame.GetFileColumnNumber()}</code>");
+			result = new SciterValue($"<h2>Hello Sciter from C# in .Net Core!</h2><code>Method: {stackFrame?.GetMethod()?.Name}<br/>File: <a href=\"{new Uri(stackFrame?.GetFileName())?.AbsoluteUri}\">{Path.GetFileName(stackFrame?.GetFileName())}</a><br/>Line: {stackFrame?.GetFileLineNumber()}<br/>Column: {stackFrame?.GetFileColumnNumber()}</code>");
 			return true;
 		}
 

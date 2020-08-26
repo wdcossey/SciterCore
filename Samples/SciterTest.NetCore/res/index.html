@@ -2,9 +2,45 @@
 <head>
 	<style>
 		html {
-			background: transparent;
+			background-color: #1e2835;
+			color: rgba(160,180,200,.85);
+			border-color: #e6e6e6;
 		}
-		h1 { color: blue; font-size: 30px; }
+		
+		body {
+			
+		}
+
+		code {
+			color: rgba(160,180,200,.85);
+			opacity: .6;
+		}
+		
+		a {
+			color: #53a6fa!important;
+			text-decoration: none;
+			cursor: pointer;
+			outline: 0;
+		}
+		a:hover {
+			color: #53a6fa!important;
+		}
+		
+		h1 { 
+			color: blue; 
+			font-size: 30px; 
+		}
+		
+		h2 {
+			color: rgb(160,180,200);
+
+		}
+		
+		h3 {
+			color: rgb(160,180,200);
+
+		}
+		
 	</style>
 
 	<script type="text/tiscript">
@@ -14,7 +50,7 @@
 		var version_minor = Sciter.VERSION & 0xFFFF;
 		var revision_major = Sciter.REVISION >> 16;
 		var revision_minor = Sciter.REVISION & 0xFFFF;
-		$(h3).text = "Sciter version: " + String.printf("%d.%d.%d.%d", version_major, version_minor, revision_major, revision_minor);
+		$(#sciterVersion).text = "Sciter version: " + String.printf("%d.%d.%d.%d", version_major, version_minor, revision_major, revision_minor);
 
 		//$$(a).on("click", function(evt) {
 		//	Sciter.launch(this.@#href);
@@ -36,20 +72,26 @@
 </head>
 
 <body>
-	<div style="background: rgb(200, 200, 200)">
+
+	<div style="width: 1*; display: inline-block; white-space: nowrap; background-color: #243140; box-shadow: 0 0 8dip rgba(0,0,0,.25);">
 		<img src="logo.png"
 			 alt="Sciter Logo"
 			 height="96" />
 
-		<img src="icons8-visual-studio-code-2019.svg"
+		<img style="float: right; margin-right: 10dip;"
+			 src="icons8-visual-studio-code-2019.svg"
 			 alt="icons8 - Visual Studio Code"
 			 height="96" />
 	</div>
 
-	<div #helloSciter />
-	<h3 />
+	<div>
+		<div #helloSciter />
+		<h3 #sciterVersion />
 
-	If you are new to C# Sciter, read our introductory article:
-	<a href="http://www.codeproject.com/Articles/1057199/Sciter-HTML-Csharp-based-desktop-apps-walkthrough">Walk-through for writing apps with SciterSharp</a>
+		If you are new to C# Sciter, read the introductory article:
+		<a href="http://www.codeproject.com/Articles/1057199/Sciter-HTML-Csharp-based-desktop-apps-walkthrough">Walk-through for writing apps with SciterSharp</a>
+	</div>
+
+	
 </body>
 </html>
