@@ -82,6 +82,31 @@ namespace SciterCore
 			sciterText = result ? new SciterText(textHandle) : default;
 			return result;
 		}
+
+		/// <summary>
+		/// create text layout using explicit style declaration
+		/// </summary>
+		/// <param name="text"></param>
+		/// <param name="element"></param>
+		/// <param name="style"></param>
+		/// <returns></returns>
+		public static SciterText CreateForElementAndStyle(string text, SciterElement element, string style)
+		{
+			return CreateForElementAndStyle(text: text, elementHandle: element.Handle, style: style);
+		}
+
+		/// <summary>
+		/// create text layout using explicit style declaration
+		/// </summary>
+		/// <param name="sciterText"></param>
+		/// <param name="text"></param>
+		/// <param name="element"></param>
+		/// <param name="style"></param>
+		/// <returns></returns>
+		public static bool TryCreateForElementAndStyle(out SciterText sciterText, string text, SciterElement element, string style)
+		{
+			return TryCreateForElementAndStyle(sciterText: out sciterText, text: text, elementHandle: element.Handle, style: style);
+		}
 		
 		public static SciterText FromValue(SciterValue sciterValue)
 		{

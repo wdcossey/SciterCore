@@ -41,7 +41,7 @@ namespace SciterTest.Mac
 					.SaveState()
 					.Translate(prms.area.Left, prms.area.Top)
 					.SetFillColor(255, 0, 0)
-					.SetLineColor(SciterColors.Black)
+					.SetLineColor(SciterColor.Black)
 					.SetLineWidth(1)
 					//.DrawPath(_svg._spath, SciterSharp.Interop.SciterXGraphics.DRAW_PATH_MODE.DRAW_FILL_AND_STROKE);
 					.Translate(prms.area.Left+10, prms.area.Top+10)

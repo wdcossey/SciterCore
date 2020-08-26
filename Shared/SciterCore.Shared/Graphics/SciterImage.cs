@@ -181,7 +181,7 @@ namespace SciterCore
 #endif
 
 		/// <summary>
-		/// Save this image to png/jpeg/WebP stream of bytes
+		/// Save this image to raw/png/jpeg/WebP stream of bytes
 		/// </summary>
 		/// <param name="encoding">The output image type</param>
 		/// <param name="quality">png: 0, jpeg/WebP: 10 - 100</param>
@@ -194,6 +194,7 @@ namespace SciterCore
 		/// <summary>
 		/// Save this image to png/jpeg/WebP stream of bytes
 		/// </summary>
+		/// <param name="buffer"></param>
 		/// <param name="encoding">The output image type</param>
 		/// <param name="quality">png: 0, jpeg/WebP: 10 - 100</param>
 		internal bool TrySaveInternal(out byte[] buffer, ImageEncoding encoding, uint quality = 0)

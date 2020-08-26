@@ -269,22 +269,55 @@ namespace SciterCore.UnitTests.Graphics
             var host = new SciterHost(_sciterWindow);
             host.RegisterBehaviorHandler(() => new DrawContentBehavior(_sciterWindow, (element, prms) =>
             {
-                if (prms.cmd != SciterBehaviors.DRAW_EVENTS.DRAW_CONTENT) 
-                    return false;
-                
-                using(var graphics = SciterGraphics.Create(prms.gfx))
+                switch (prms.cmd)
                 {
-                    for (int i = 0; i < 20; i++)
-                    {
-                        graphics.SaveState()
-                            .Translate(prms.area.Left, prms.area.Top)
-                            .SetLineColor(random.Next(byte.MinValue, byte.MaxValue),
-                                random.Next(byte.MinValue, byte.MaxValue), random.Next(byte.MinValue, byte.MaxValue),
-                                random.Next(byte.MinValue, byte.MaxValue))
-                            .SetLineWidth(random.Next(2, 10))
-                            .DrawEllipse(prms.area.Width / 2, prms.area.Height / 2, random.Next(byte.MinValue, prms.area.Width / 2), random.Next(byte.MinValue, prms.area.Height / 2))
-                            .RestoreState();
-                    }
+                    case SciterBehaviors.DRAW_EVENTS.DRAW_CONTENT:
+                        using(var graphics = SciterGraphics.Create(prms.gfx))
+                        {
+                            for (int i = 0; i < 20; i++)
+                            {
+                                var color = SciterColor.Create(random.Next(byte.MinValue, byte.MaxValue),
+                                    random.Next(byte.MinValue, byte.MaxValue),
+                                    random.Next(byte.MinValue, byte.MaxValue),
+                                    random.Next(byte.MinValue, byte.MaxValue));
+                                
+                                graphics.SaveState()
+                                    .Translate(prms.area.Left, prms.area.Top)
+                                    .SetLineColor(color)
+                                    .SetLineWidth(random.Next(1, 4))
+                                    .DrawEllipse(prms.area.Width / 2, prms.area.Height / 2, random.Next(byte.MinValue, prms.area.Width / 2), random.Next(byte.MinValue, prms.area.Height / 2))
+                                    //.DrawPath(
+                                    //    SciterPath
+                                    //        .Create()
+                                    //        .MoveTo(prms.area.Width / 2, prms.area.Height / 2)
+                                    //        .ArcTo(random.Next(byte.MinValue, prms.area.Width), random.Next(byte.MinValue, prms.area.Height), random.Next(0, 360), random.Next(byte.MinValue, byte.MaxValue), random.Next(byte.MinValue, byte.MaxValue), false, true)
+                                    //        .LineTo(random.Next(byte.MinValue, prms.area.Width / 2), random.Next(byte.MinValue, prms.area.Height / 2))
+                                    //        .BezierCurveTo(random.Next(byte.MinValue, byte.MaxValue), random.Next(byte.MinValue, byte.MaxValue), random.Next(byte.MinValue, byte.MaxValue), random.Next(byte.MinValue, byte.MaxValue), random.Next(byte.MinValue, prms.area.Width / 2), random.Next(byte.MinValue, prms.area.Height / 2))
+                                    //        .QuadraticCurveTo(random.Next(byte.MinValue, byte.MaxValue), random.Next(byte.MinValue, byte.MaxValue), random.Next(byte.MinValue, prms.area.Width / 2), random.Next(byte.MinValue, prms.area.Height / 2))
+                                    //    , DrawPathMode.StrokeOnly)
+                                    //.DrawEllipse(prms.area.Width / 2, prms.area.Height / 2, 50f, 50f)
+                                    //.SetLineColor(SciterColor.Transparent)
+                                    //.SetFillColor(color)
+                                    //.DrawPath(
+                                    //    SciterPath
+                                    //        .Create()
+                                    //        .MoveTo(prms.area.Width / 2, prms.area.Height / 2 - 50)
+                                    //        .ArcTo(prms.area.Width / 2, prms.area.Height / 2, 90, 25,  25, false, true)
+                                    //        .ArcTo(prms.area.Width / 2, prms.area.Height / 2 + 50, 90, 25,  25, false, false)
+                                    //        .ArcTo(prms.area.Width / 2, prms.area.Height / 2 - 50, 90, 50,  50, false, false)
+                                    //    , DrawPathMode.FillOnly)
+//
+                                    //.DrawEllipse(prms.area.Width / 2, prms.area.Height / 2 - 25, 6f, 6f)
+                                    //.DrawEllipse(prms.area.Width / 2, prms.area.Height / 2 + 25, 6f, 6f)
+                                    .RestoreState();
+                            }
+                        }
+                        break;
+                    case SciterBehaviors.DRAW_EVENTS.DRAW_BACKGROUND:
+                    case SciterBehaviors.DRAW_EVENTS.DRAW_FOREGROUND:
+                    case SciterBehaviors.DRAW_EVENTS.DRAW_OUTLINE:
+                    default:
+                        return false;
                 }
                 
                 element?.Window?.Close();

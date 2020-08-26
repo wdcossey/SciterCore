@@ -168,7 +168,7 @@ namespace SciterCore.UnitTests.Graphics
         public void Create_and_clear_image(byte r, byte g, byte b, byte alpha)
         {
             _sciterImage = SciterImage.Create(1, 1, true);
-            _sciterImage.Clear(SciterColor.Create(r: r, g: g, b: b, a: alpha));
+            _sciterImage.Clear(SciterColor.Create(r: r, g: g, b: b, alpha: alpha));
             
             var buffer = _sciterImage.Save(ImageEncoding.Raw);
             
@@ -183,7 +183,7 @@ namespace SciterCore.UnitTests.Graphics
         public void Create_and_try_clear_image(byte r, byte g, byte b, byte alpha)
         {
             _sciterImage = SciterImage.Create(1, 1, true);
-            var clearResult = _sciterImage.TryClear(SciterColor.Create(r: r, g: g, b: b, a: alpha));
+            var clearResult = _sciterImage.TryClear(SciterColor.Create(r: r, g: g, b: b, alpha: alpha));
             
             var buffer = _sciterImage.Save(ImageEncoding.Raw);
             

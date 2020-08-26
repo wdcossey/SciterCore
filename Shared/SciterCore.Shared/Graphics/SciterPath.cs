@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 
 // ReSharper disable ArrangeThisQualifier
 // ReSharper disable ConvertToAutoProperty
@@ -17,71 +16,152 @@ namespace SciterCore
 		// non-user usable
 		private SciterPath(IntPtr pathHandle)
 		{
-			if(pathHandle == IntPtr.Zero)
-				throw new ArgumentException($"IntPtr.Zero received at {nameof(SciterPath)} constructor.");
+			if (pathHandle == IntPtr.Zero)
+				throw new ArgumentOutOfRangeException(
+					paramName: nameof(pathHandle),
+					message: $"IntPtr.Zero received at {nameof(SciterPath)} constructor.");
 			
 			_pathHandle = pathHandle;
 		}
 
+		#region Create
+		
 		public static SciterPath Create()
+		{
+			TryCreatePrivate(sciterPath: out var result, ignoreResult: true);
+			return result;
+		}
+		
+		public static bool TryCreate(out SciterPath sciterPath)
+		{
+			return TryCreatePrivate(sciterPath: out sciterPath, ignoreResult: false);
+		}
+
+		private static bool TryCreatePrivate(out SciterPath sciterPath, bool ignoreResult)
 		{
 			var result= GraphicsApi.pathCreate(out var pathHandle)
 				.IsOk();
-
-			var st = new SciterPath(pathHandle);
-			return st;
+			
+			sciterPath = (result || ignoreResult) ? new SciterPath(pathHandle: pathHandle) : default;
+			
+			return result;
 		}
+		
+		#endregion
 
-		public static SciterPath FromSV(SciterValue sv)
+		#region Create w/ SciterValue
+
+		public static SciterPath Create(SciterValue sciterValue)
 		{
-			Interop.SciterValue.VALUE v = sv.ToVALUE();
-			var result= GraphicsApi.vUnWrapPath(ref v, out var pathHandle)
+			TryCreatePrivate(sciterPath: out var result, sciterValue: sciterValue, ignoreResult: true);
+			return result;
+		}
+		
+		public static bool TryCreate(out SciterPath sciterPath, SciterValue sciterValue)
+		{
+			return TryCreatePrivate(sciterPath: out sciterPath, sciterValue: sciterValue, ignoreResult: false);
+		}
+		
+		private static bool TryCreatePrivate(out SciterPath sciterPath, SciterValue sciterValue, bool ignoreResult)
+		{
+			var value = sciterValue.ToVALUE();
+			var result= GraphicsApi.vUnWrapPath(ref value, out var pathHandle)
 				.IsOk();
 
-			var st = new SciterPath(pathHandle);
-			return st;
+			sciterPath = (result || ignoreResult) ? new SciterPath(pathHandle: pathHandle) : default;
+			
+			return result;
 		}
+		
+		#endregion
 
-		public SciterValue ToSV()
+		#region ToValue
+		
+		internal SciterValue ToValueInternal()
 		{
-			var result= GraphicsApi.vWrapPath(this.Handle, out var v)
+			TryToValuePrivate(sciterValue: out var result, ignoreResult: true);
+			return result;
+		}
+		
+		internal bool TryToValueInternal(out SciterValue sciterValue)
+		{
+			return TryToValuePrivate(sciterValue: out sciterValue, ignoreResult: false);
+		}
+		
+		private bool TryToValuePrivate(out SciterValue sciterValue, bool ignoreResult)
+		{
+			var result= GraphicsApi.vWrapPath(this.Handle, out var value)
 				.IsOk();
-			return new SciterValue(v);
+
+			sciterValue =  (result || ignoreResult) ? new SciterValue(value) : default;
+			return result;
+		}
+		
+		#endregion
+
+		internal void MoveToInternal(float x, float y, bool relative = false)
+		{
+			TryMoveToInternal(x: x, y: y, relative: relative);
 		}
 
-		public void MoveTo(float x, float y, bool relative = false)
+		internal bool TryMoveToInternal(float x, float y, bool relative = false)
 		{
-			var result= GraphicsApi.pathMoveTo(this.Handle, x, y, relative)
+			return GraphicsApi.pathMoveTo(this.Handle, x, y, relative)
 				.IsOk();
 		}
 
-		public void LineTo(float x, float y, bool relative = false)
+		internal void LineToInternal(float x, float y, bool relative = false)
 		{
-			var result= GraphicsApi.pathLineTo(this.Handle, x, y, relative)
+			TryLineToInternal(x: x, y: y, relative: relative);
+		}
+
+		internal bool TryLineToInternal(float x, float y, bool relative = false)
+		{
+			return GraphicsApi.pathLineTo(this.Handle, x, y, relative)
 				.IsOk();
 		}
 
-		public void ArcTo(float x, float y, float angle, float rx, float ry, bool isLargeArc, bool clockwise, bool relative = false)
+		internal void ArcToInternal(float x, float y, float angle, float rx, float ry, bool isLargeArc, bool clockwise, bool relative = false)
 		{
-			var result= GraphicsApi.pathArcTo(this.Handle, x, y, angle, rx, ry, isLargeArc, clockwise, relative)
+			TryArcToInternal(x: x, y: y, angle: angle, rx: rx, ry: ry, isLargeArc: isLargeArc, clockwise: clockwise, relative: relative);
+		}
+
+		internal bool TryArcToInternal(float x, float y, float angle, float rx, float ry, bool isLargeArc, bool clockwise, bool relative = false)
+		{
+			return GraphicsApi.pathArcTo(this.Handle, x, y, angle, rx, ry, isLargeArc, clockwise, relative)
 				.IsOk();
 		}
 
-		public void QuadraticCurveTo(float xc, float yc, float x, float y, bool relative = false)
+		internal void QuadraticCurveToInternal(float xc, float yc, float x, float y, bool relative = false)
 		{
-			var result= GraphicsApi.pathQuadraticCurveTo(this.Handle, xc, yc, x, y, relative)
+			TryQuadraticCurveToInternal(xc: xc, yc: yc, x: x, y: y, relative: relative);
+		}
+
+		internal bool TryQuadraticCurveToInternal(float xc, float yc, float x, float y, bool relative = false)
+		{
+			return GraphicsApi.pathQuadraticCurveTo(this.Handle, xc, yc, x, y, relative)
 				.IsOk();
 		}
 
-		public void BezierCurveTo(float xc1, float yc1, float xc2, float yc2, float x, float y, bool relative = false)
+		internal void BezierCurveToInternal(float xc1, float yc1, float xc2, float yc2, float x, float y, bool relative = false)
 		{
-			var result= GraphicsApi.pathBezierCurveTo(this.Handle, xc1, yc1, xc2, yc2, x, y, relative)
+			TryBezierCurveToInternal(xc1: xc1, yc1: yc1, xc2: xc2, yc2: yc2, x: x, y: y, relative: relative);
+		}
+
+		internal bool TryBezierCurveToInternal(float xc1, float yc1, float xc2, float yc2, float x, float y, bool relative = false)
+		{
+			return GraphicsApi.pathBezierCurveTo(this.Handle, xc1, yc1, xc2, yc2, x, y, relative)
 				.IsOk();
 		}
 
-		public void ClosePath()
+		internal void ClosePathInternal()
 		{
-			var result= GraphicsApi.pathClosePath(this.Handle)
+			TryClosePathInternal();
+		}
+
+		internal bool TryClosePathInternal()
+		{
+			return GraphicsApi.pathClosePath(this.Handle)
 				.IsOk();
 		}
 

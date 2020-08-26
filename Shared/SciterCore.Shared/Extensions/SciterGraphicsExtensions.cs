@@ -176,7 +176,7 @@ namespace SciterCore
         
         public static SciterGraphics SetLineColor(this SciterGraphics graphics, int r, int g, int b, double a = 1d)
         {
-            graphics?.SetLineColor(lineColor: new SciterColor(r: r, g: g, b: b, a: a));
+            graphics?.SetLineColor(lineColor: new SciterColor(r: r, g: g, b: b, alpha: a));
             return graphics;
         }
 
@@ -193,7 +193,7 @@ namespace SciterCore
 
         public static bool TrySetLineColor(this SciterGraphics graphics, int r, int g, int b, double a = 1d)
         {
-            return graphics?.TrySetLineColor(lineColor: new SciterColor(r: r, g: g, b: b, a: a)) == true;
+            return graphics?.TrySetLineColor(lineColor: new SciterColor(r: r, g: g, b: b, alpha: a)) == true;
         }
 
         public static bool TrySetLineColor(this SciterGraphics graphics, int r, int g, int b, int a = 255)
@@ -209,14 +209,14 @@ namespace SciterCore
 
         public static SciterGraphics SetFillColor(this SciterGraphics graphics, int r, int g, int b)
         {
-            graphics?.SetFillColor(fillColor: new SciterColor(r: r, g: g, b: b, a: 1d));
+            graphics?.SetFillColor(fillColor: new SciterColor(r: r, g: g, b: b, alpha: 1d));
             return graphics;
         }
 
         // ReSharper disable once MethodOverloadWithOptionalParameter
         public static SciterGraphics SetFillColor(this SciterGraphics graphics, int r, int g, int b, double a = 1d)
         {
-            graphics?.SetFillColor(fillColor: new SciterColor(r: r, g: g, b: b, a: a));
+            graphics?.SetFillColor(fillColor: new SciterColor(r: r, g: g, b: b, alpha: a));
             return graphics;
         }
 
@@ -234,7 +234,7 @@ namespace SciterCore
         
         public static bool TrySetFillColor(this SciterGraphics graphics, int r, int g, int b, double a = 1d)
         {
-            return graphics?.TrySetFillColor(fillColor: new SciterColor(r: r, g: g, b: b, a: a)) == true;
+            return graphics?.TrySetFillColor(fillColor: new SciterColor(r: r, g: g, b: b, alpha: a)) == true;
         }
 
         public static bool TrySetFillColor(this SciterGraphics graphics, int r, int g, int b, int a = 255)
