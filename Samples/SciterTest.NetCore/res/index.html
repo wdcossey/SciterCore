@@ -17,7 +17,7 @@
 		}
 		
 		a {
-			color: #53a6fa!important;
+			color: #53a6fa !important;
 			text-decoration: none;
 			cursor: pointer;
 			outline: 0;
@@ -40,18 +40,61 @@
 			color: rgb(160,180,200);
 
 		}
+
+		@const TOOLBAR_HEIGHT: 96dip;
+		@const FOOTER_HEIGHT: 32dip;
+		
+		body { margin: 0; }
+
+		main {
+			flow:stack;
+			size:*;
+		}
+
+		toolbar {
+			height: @TOOLBAR_HEIGHT;
+			z-index:1;
+			background-color: rgba(36, 49, 64, 0.55);
+			box-shadow: 0 0 2dip 2dip rgba(0, 0, 0, 0.25);
+			backdrop-filter: blur(10dip);
+		}
+
+		section {
+			size:*;
+			overflow:auto;
+			margin: @TOOLBAR_HEIGHT 0 @FOOTER_HEIGHT 0;
+			clip-box: margin-box;
+			border-spacing:20dip;
+		}
+
+		footer {
+			overflow:auto;
+			position: fixed;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			height: @FOOTER_HEIGHT;
+			background-color: rgba(36, 49, 64, 0.55);
+			box-shadow: 0 0 2dip 2dip rgba(0, 0, 0, 0.25);
+			backdrop-filter: blur(10dip);
+		}
+		
 		
 	</style>
 
 	<script type="text/tiscript">
 		$(#helloSciter).html = view.Host_HelloSciter();
+		
+		//var jsonData = parseData(view.Host_HelloSciter());
+		//$(#helloSciter).text = jsonData.method;
+		//$(span.method).text = jsonData.method;
 
 		var version_major = Sciter.VERSION >> 16;
 		var version_minor = Sciter.VERSION & 0xFFFF;
 		var revision_major = Sciter.REVISION >> 16;
 		var revision_minor = Sciter.REVISION & 0xFFFF;
-		$(#sciterVersion).text = "Sciter version: " + String.printf("%d.%d.%d.%d", version_major, version_minor, revision_major, revision_minor);
-
+		$(span.version).text = String.printf("%d.%d.%d.%d (%d)", version_major, version_minor, revision_major, revision_minor, Sciter.BUILD);
+		
 		//$$(a).on("click", function(evt) {
 		//	Sciter.launch(this.@#href);
 		//	return true;
@@ -73,24 +116,46 @@
 
 <body>
 
-	<div style="width: 1*; display: inline-block; white-space: nowrap; background-color: #243140; box-shadow: 0 0 8dip rgba(0,0,0,.25);">
-		<img src="logo.png"
-			 alt="Sciter Logo"
-			 height="96" />
+	<main>
+		<toolbar>
+			<div style="width: 1*; display: inline-block; white-space: nowrap;">
+				<img src="logo.png"
+					 alt="Sciter Logo"
+					 height="96dip" />
 
-		<img style="float: right; margin-right: 10dip;"
-			 src="icons8-visual-studio-code-2019.svg"
-			 alt="icons8 - Visual Studio Code"
-			 height="96" />
-	</div>
+				<img style="float: right; margin-right: 10dip;"
+					 src="icons8-visual-studio-code-2019.svg"
+					 alt="icons8 - Visual Studio Code"
+					 height="96dip" />
+			</div>
+		</toolbar>
+		<section>
+			<div style="margin: 20dip">
+				<div #helloSciter />
+				
+				<p/>
 
-	<div>
-		<div #helloSciter />
-		<h3 #sciterVersion />
+				If you are new to C# Sciter, read the introductory article:
+				<a href="http://www.codeproject.com/Articles/1057199/Sciter-HTML-Csharp-based-desktop-apps-walkthrough">Walk-through for writing apps with SciterSharp</a>
+			</div>
+		</section>
+		
+		<footer>
+			<div style=" flow:horizontal; border-spacing:*;height:*;">
+				<div style="margin-top:*; margin-bottom:*; margin-left: 8dip; ">
+					<a href="https://github.com/wdcossey/SciterCore" >SciterCore</a>
+				</div>
+				
+				<div style="margin-top:*; margin-bottom:*; margin-right: 8dip;">
+					<a href="https://sciter.com/">Sciter</a>
+					<span.version style="margin:0 auto;">Version</span.version>
+				</div>
 
-		If you are new to C# Sciter, read the introductory article:
-		<a href="http://www.codeproject.com/Articles/1057199/Sciter-HTML-Csharp-based-desktop-apps-walkthrough">Walk-through for writing apps with SciterSharp</a>
-	</div>
+			</div>
+		</footer>
+	</main>
+
+	
 
 	
 </body>

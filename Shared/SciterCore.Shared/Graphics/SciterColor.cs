@@ -31,19 +31,13 @@ namespace SciterCore
             _value = value;
         }
         
-        internal SciterColor(int r, int g, int b, int a)
+        internal SciterColor(int r, int g, int b, int alpha)
         {
-            _value = GraphicsApi.RGBA((uint)GetMinMaxValue(r), (uint)GetMinMaxValue(g), (uint)GetMinMaxValue(b), (uint)GetMinMaxValue(a));
+            _value = GraphicsApi.RGBA((uint)GetMinMaxValue(r), (uint)GetMinMaxValue(g), (uint)GetMinMaxValue(b), (uint)GetMinMaxValue(alpha));
         }
 
-        internal SciterColor(int r, int g, int b)
-            : this(r: r, g:g, b:b, alpha: 1d)
-        {
-           
-        }
-
-        internal SciterColor(int r, int g, int b, double alpha)
-            : this(r, g, b, (int)(Math.Min(Math.Max(alpha, 0d), 1d) * byte.MaxValue))
+        internal SciterColor(int r, int g, int b, float alpha = 1f)
+            : this(r, g, b, (int)(Math.Min(Math.Max(alpha, 0f), 1f) * byte.MaxValue))
         {
             
         }
@@ -66,7 +60,7 @@ namespace SciterCore
         /// <param name="b"></param>
         /// <param name="alpha">Range between 0.0f and 1.0f</param>
         /// <returns></returns>
-        public static SciterColor Create(int r, int g, int b, double alpha = 1d)
+        public static SciterColor Create(int r, int g, int b, float alpha = 1f)
         {
             return new SciterColor(r, g, b, alpha);
         }

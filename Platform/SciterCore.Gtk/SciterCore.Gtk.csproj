@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>SciterCore</RootNamespace>
     <AssemblyName>SciterCore.Gtk</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">

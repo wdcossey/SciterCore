@@ -19,8 +19,8 @@ namespace SciterTest.Gtk.Behaviors
 					graphics
 						.SaveState()
 						.Translate(prms.area.Left, prms.area.Top)
-						.SetLineColor(0, 255, 255, .75d)
-	                    .SetFillColor(127, 78, 194, .75d)
+						.SetLineColor(0, 255, 255, .75f)
+	                    .SetFillColor(127, 78, 194, .75f)
 	                    .SetLineWidth(4)
 	                    .DrawPolygon(() => new List<PolygonPoint>
 	                    {
@@ -31,10 +31,10 @@ namespace SciterTest.Gtk.Behaviors
 		                    PolygonPoint.Create(17.0f, 49.0f),
 	                    })
 	                    .SetLineWidth(0)
-	                    .SetLineColor(127, 78, 194, .75d)
-	                    .SetFillColor(SciterColor.Create(0, 255, 255, .75d))
+	                    .SetLineColor(127, 78, 194, .75f)
+	                    .SetFillColor(SciterColor.Create(0, 255, 255, .75f))
 	                    .DrawEllipse(200, 50, 50, 50)
-	                    .SetFillColor(SciterColor.Create(127, 78, 194, .75d))
+	                    .SetFillColor(SciterColor.Create(127, 78, 194, .75f))
 	                    .DrawEllipse(225, 100, 50, 50)
 	                    .SetFillColor(255, 0, 0, 127)
 	                    .DrawEllipse(175, 100, 50, 50)

@@ -90,16 +90,16 @@ namespace SciterTest.Gtk
 			_window.LoadPage(uri: uri);
 		}
 
-		protected override SciterXDef.LoadResult OnLoadData(SciterXDef.SCN_LOAD_DATA sld)
+		protected override LoadResult OnLoadData(LoadData args)
 		{
 			// load resource from SciterArchive
-			_archive?.GetItem(sld.uri, (data, path) => 
+			_archive?.GetItem(args.Uri, (data, path) => 
 			{ 
 				_api.SciterDataReady(_window.Handle, path, data, (uint) data.Length);
 			});
 
 			// call base to ensure LibConsole is loaded
-			return base.OnLoadData(sld);
+			return base.OnLoadData(args);
 		}
 	}
 }

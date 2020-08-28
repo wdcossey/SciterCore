@@ -33,6 +33,7 @@ namespace SciterCore
 		private static readonly Sciter.SciterApi Api = Sciter.Api;
 
 		private IntPtr _windowHandle;
+		
 		private Dictionary<string, EventHandlerRegistry> _behaviorMap = new Dictionary<string, EventHandlerRegistry>();
 
 		private SciterXDef.SCITER_HOST_CALLBACK _hostCallback;
@@ -342,9 +343,7 @@ namespace SciterCore
 			get
 			{
 				Debug.Assert(WindowHandle != IntPtr.Zero, "Call SciterHost.SetupWindow() first");
-				IntPtr heRoot;
-				Api.SciterGetRootElement(WindowHandle, out heRoot);
-				Debug.Assert(heRoot != IntPtr.Zero);
+				Api.SciterGetRootElement(WindowHandle, out var heRoot);
 				return new SciterElement(heRoot);
 			}
 		}
@@ -354,9 +353,7 @@ namespace SciterCore
 			get
 			{
 				Debug.Assert(WindowHandle != IntPtr.Zero, "Call SciterHost.SetupWindow() first");
-				IntPtr heFocus;
-				Api.SciterGetRootElement(WindowHandle, out heFocus);
-				Debug.Assert(heFocus != IntPtr.Zero);
+				Api.SciterGetRootElement(WindowHandle, out var heFocus);
 				return new SciterElement(heFocus);
 			}
 		}
@@ -370,36 +367,35 @@ namespace SciterCore
         // Notification handler
         private uint HandleNotification(IntPtr ptrNotification, IntPtr callbackParam)
 		{
-			SciterXDef.SCITER_CALLBACK_NOTIFICATION scn = (SciterXDef.SCITER_CALLBACK_NOTIFICATION)Marshal.PtrToStructure(ptrNotification, typeof(SciterXDef.SCITER_CALLBACK_NOTIFICATION));
+			var scn = Marshal.PtrToStructure<SciterXDef.SCITER_CALLBACK_NOTIFICATION>(ptrNotification);
 
 			switch(scn.code)
 			{
 				case SciterXDef.SCITER_CALLBACK_CODE.SC_LOAD_DATA:
-					SciterXDef.SCN_LOAD_DATA sld = (SciterXDef.SCN_LOAD_DATA)Marshal.PtrToStructure(ptrNotification, typeof(SciterXDef.SCN_LOAD_DATA));
-					return (uint)OnLoadData(sld);
+					var sld = Marshal.PtrToStructure<SciterXDef.SCN_LOAD_DATA>(ptrNotification);
+					return (uint)OnLoadData(sld.Convert());
 
 				case SciterXDef.SCITER_CALLBACK_CODE.SC_DATA_LOADED:
-					SciterXDef.SCN_DATA_LOADED sdl = (SciterXDef.SCN_DATA_LOADED)Marshal.PtrToStructure(ptrNotification, typeof(SciterXDef.SCN_DATA_LOADED));
-					OnDataLoaded(sdl);
+					var sdl = Marshal.PtrToStructure<SciterXDef.SCN_DATA_LOADED>(ptrNotification);
+					OnDataLoaded(args: sdl.Convert());
 					return 0;
 
 				case SciterXDef.SCITER_CALLBACK_CODE.SC_ATTACH_BEHAVIOR:
-					SciterXDef.SCN_ATTACH_BEHAVIOR sab = (SciterXDef.SCN_ATTACH_BEHAVIOR)Marshal.PtrToStructure(ptrNotification, typeof(SciterXDef.SCN_ATTACH_BEHAVIOR));
-					SciterEventHandler elementEvh;
-					string behaviorName = Marshal.PtrToStringAnsi(sab.behaviorName);
-					bool res = OnAttachBehavior(new SciterElement(sab.elem), behaviorName, out elementEvh);
-					if(res)
-					{
-						SciterBehaviors.ELEMENT_EVENT_PROC proc = elementEvh.EventProc;
-						IntPtr ptrProc = Marshal.GetFunctionPointerForDelegate(proc);
+					var sab = Marshal.PtrToStructure<SciterXDef.SCN_ATTACH_BEHAVIOR>(ptrNotification);
+					var behaviorName = Marshal.PtrToStringAnsi(sab.behaviorName);
+					var attachResult = OnAttachBehavior(new SciterElement(sab.elem), behaviorName, out var eventHandler);
+					
+					if (!attachResult) 
+						return 0;
+					
+					var proc = eventHandler.EventProc;
+					var ptrProc = Marshal.GetFunctionPointerForDelegate(proc);
 
-						IntPtr EVENTPROC_OFFSET = Marshal.OffsetOf(typeof(SciterXDef.SCN_ATTACH_BEHAVIOR), "elementProc");
-						IntPtr EVENTPROC_OFFSET2 = Marshal.OffsetOf(typeof(SciterXDef.SCN_ATTACH_BEHAVIOR), "elementTag");
-						Marshal.WriteIntPtr(ptrNotification, EVENTPROC_OFFSET.ToInt32(), ptrProc);
-						Marshal.WriteInt32(ptrNotification, EVENTPROC_OFFSET2.ToInt32(), 0);
-						return 1;
-					}
-					return 0;
+					var EVENTPROC_OFFSET = Marshal.OffsetOf<SciterXDef.SCN_ATTACH_BEHAVIOR>("elementProc");
+					var EVENTPROC_OFFSET2 = Marshal.OffsetOf<SciterXDef.SCN_ATTACH_BEHAVIOR>("elementTag");
+					Marshal.WriteIntPtr(ptrNotification, EVENTPROC_OFFSET.ToInt32(), ptrProc);
+					Marshal.WriteInt32(ptrNotification, EVENTPROC_OFFSET2.ToInt32(), 0);
+					return 1;
 
 				case SciterXDef.SCITER_CALLBACK_CODE.SC_ENGINE_DESTROYED:
 					if(_windowEventHandler != null)
@@ -412,13 +408,13 @@ namespace SciterCore
 					return 0;
 
 				case SciterXDef.SCITER_CALLBACK_CODE.SC_POSTED_NOTIFICATION:
-					SciterXDef.SCN_POSTED_NOTIFICATION spn = (SciterXDef.SCN_POSTED_NOTIFICATION)Marshal.PtrToStructure(ptrNotification, typeof(SciterXDef.SCN_POSTED_NOTIFICATION));
-					IntPtr lreturn = IntPtr.Zero;
+					var spn = Marshal.PtrToStructure<SciterXDef.SCN_POSTED_NOTIFICATION>(ptrNotification);
+					var lreturn = IntPtr.Zero;
 					if(spn.wparam.ToInt32() == INVOKE_NOTIFICATION)
 					{
-						GCHandle handle = GCHandle.FromIntPtr(spn.lparam);
-						Action cbk = (Action)handle.Target;
-						cbk();
+						var handle = GCHandle.FromIntPtr(spn.lparam);
+						var cbk = (Action)handle.Target;
+						cbk?.Invoke();
 						handle.Free();
 					}
 					else
@@ -426,13 +422,13 @@ namespace SciterCore
 						lreturn = OnPostedNotification(spn.wparam, spn.lparam);
 					}
 
-					IntPtr OFFSET_LRESULT = Marshal.OffsetOf(typeof(SciterXDef.SCN_POSTED_NOTIFICATION), "lreturn");
+					var OFFSET_LRESULT = Marshal.OffsetOf<SciterXDef.SCN_POSTED_NOTIFICATION>("lreturn");
 					Marshal.WriteIntPtr(ptrNotification, OFFSET_LRESULT.ToInt32(), lreturn);
 					return 0;
 
 				case SciterXDef.SCITER_CALLBACK_CODE.SC_GRAPHICS_CRITICAL_FAILURE:
-					SciterXDef.SCN_GRAPHICS_CRITICAL_FAILURE cgf = (SciterXDef.SCN_GRAPHICS_CRITICAL_FAILURE)Marshal.PtrToStructure(ptrNotification, typeof(SciterXDef.SCN_GRAPHICS_CRITICAL_FAILURE));
-					OnGraphicsCriticalFailure(cgf.hwnd);
+					var cgf = Marshal.PtrToStructure<SciterXDef.SCN_GRAPHICS_CRITICAL_FAILURE>(ptrNotification);
+					OnGraphicsCriticalFailure(handle: cgf.hwnd, code: cgf.code);
 					return 0;
 
 				default:
@@ -442,54 +438,46 @@ namespace SciterCore
 			return 0;
 		}
 
-		// Overridables
-		protected virtual SciterXDef.LoadResult OnLoadData(SciterXDef.SCN_LOAD_DATA sld)
+		#region Overridables
+		
+		protected virtual LoadResult OnLoadData(LoadData /*SciterXDef.SCN_LOAD_DATA*/ args)
 		{
 			Debug.Assert(WindowHandle != IntPtr.Zero, "Call SciterHost.SetupWindow() first");
-
-			var uri = new Uri(sld.uri);
-
+			
 			if(InjectLibConsole)
 			{
-				_consoleArchive?.GetItem(uri, (data, path) => 
+				_consoleArchive?.GetItem(args.Uri, (data, path) => 
 				{ 
 					Api.SciterDataReady(WindowHandle, path, data, (uint) data.Length);
 				});
 			}
 
-			return (uint)SciterXDef.LoadResult.LOAD_OK;
+			return LoadResult.Ok;
 		}
 
-		protected virtual void OnDataLoaded(SciterXDef.SCN_DATA_LOADED sdl)
-        {
-            //
-        }
+		protected virtual void OnDataLoaded(DataLoaded args) { }
 
-		protected virtual bool OnAttachBehavior(SciterElement el, string behaviorName, out SciterEventHandler elementEvh)
+		protected virtual bool OnAttachBehavior(SciterElement el, string behaviorName, out SciterEventHandler eventHandler)
 		{
 			// returns a new SciterEventHandler if the behaviorName was registered by a previous RegisterBehaviorHandler() call
 			if (_behaviorMap.ContainsKey(behaviorName))
 			{
-				elementEvh = _behaviorMap[behaviorName].EventHandler;
+				eventHandler = _behaviorMap[behaviorName].EventHandler;
 				return true;
 			}
-			elementEvh = null;
+			eventHandler = null;
 			return false;
 		}
 
-		protected virtual void OnEngineDestroyed()
-        {
-            //
-        }
+		protected virtual void OnEngineDestroyed() { }
 
 		protected virtual IntPtr OnPostedNotification(IntPtr wparam, IntPtr lparam)
         {
             return IntPtr.Zero;
         }
 
-		protected virtual void OnGraphicsCriticalFailure(IntPtr hwnd)
-        {
-            //
-        }
+		protected virtual void OnGraphicsCriticalFailure(IntPtr handle, uint code) { }
+		
+		#endregion
 	}
 }

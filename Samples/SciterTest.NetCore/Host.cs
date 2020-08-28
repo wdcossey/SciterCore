@@ -36,13 +36,24 @@ namespace SciterTest.NetCore
 
 	public class HostEvh : SciterEventHandler
 	{
-		// A dynamic script call handler. Any call in TIScript to function 'view.Host_HelloWorld()' with invoke this method
-		// Notice that signature of these handlers is always the same
-		// (Hint: install OmniCode snippets which adds the 'ssh' snippet to C# editor so you can easily declare 'Siter Handler' methods)
-		// (see: https://github.com/MISoftware/OmniCode-Snippets)
+		/// A dynamic script call handler. Any call in TIScript to function 'view.Host_HelloSciter()' with invoke this method
+		/// Notice that signature of these handlers is always the same
+		/// (Hint: install OmniCode snippets which adds the 'ssh' snippet to C# editor so you can easily declare 'Siter Handler' methods)
+		/// (see: https://github.com/MISoftware/OmniCode-Snippets)
 		public bool Host_HelloSciter(SciterElement el, SciterValue[] args, out SciterValue result)
 		{
-			var stackFrame = new StackTrace(true).GetFrame(0);//.GetFileName();
+			var stackTrace = new StackTrace(true);
+			var stackFrame = stackTrace.GetFrame(0);
+				
+			/*result = new SciterValue(System.Text.Json.JsonSerializer.Serialize(new
+			{
+				method = stackFrame?.GetMethod()?.Name,
+				uri = new Uri(stackFrame?.GetFileName())?.AbsoluteUri,
+				fileName = Path.GetFileName(stackFrame?.GetFileName()),
+				lineNumber = stackFrame?.GetFileLineNumber(),
+				columnNumber = stackFrame?.GetFileColumnNumber()
+			}));*/
+			
 			result = new SciterValue($"<h2>Hello Sciter from C# in .Net Core!</h2><code>Method: {stackFrame?.GetMethod()?.Name}<br/>File: <a href=\"{new Uri(stackFrame?.GetFileName())?.AbsoluteUri}\">{Path.GetFileName(stackFrame?.GetFileName())}</a><br/>Line: {stackFrame?.GetFileLineNumber()}<br/>Column: {stackFrame?.GetFileColumnNumber()}</code>");
 			return true;
 		}
@@ -97,18 +108,16 @@ namespace SciterTest.NetCore
 			_window.LoadPage(uri: uri);
 		}
 
-		protected override SciterXDef.LoadResult OnLoadData(SciterXDef.SCN_LOAD_DATA sld)
+		protected override LoadResult OnLoadData(LoadData args)
 		{
-			var uri = new Uri(sld.uri);
-
 			// load resource from SciterArchive
-			_archive?.GetItem(uri, (data, path) => 
-			{ 
+			_archive?.GetItem(args.Uri, (data, path) => 
+			{
 				_api.SciterDataReady(_window.Handle, path, data, (uint) data.Length);
 			});
 
 			// call base to ensure LibConsole is loaded
-			return base.OnLoadData(sld);
+			return base.OnLoadData(args);
 		}
 	}
 }

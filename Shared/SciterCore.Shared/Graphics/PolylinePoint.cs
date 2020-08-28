@@ -6,6 +6,8 @@
         
         public float Y { get; }
         
+        public float[] Value => new[] {X, Y};
+        
         private PolylinePoint(float x, float y)
         {
             X = x;

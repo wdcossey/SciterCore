@@ -48,9 +48,9 @@ namespace SciterTest.Mac
                 .Show();
 		}
 
-		protected override global::SciterCore.Interop.SciterXDef.LoadResult OnLoadData(global::SciterCore.Interop.SciterXDef.SCN_LOAD_DATA sld)
+		protected override LoadResult OnLoadData(LoadData args)
 		{
-			return base.OnLoadData(sld);
+			return base.OnLoadData(args);
 		}
 	}
 

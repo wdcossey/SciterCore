@@ -147,12 +147,10 @@ namespace SciterCore
 		internal bool TryDrawPolygonInternal(IList<PolygonPoint> points)
 		{
 			var pointList = new List<float>();
-			foreach(var point in points)
-			{
-				pointList.Add(point.X);
-				pointList.Add(point.Y);
-			}
 			
+			foreach(var point in points)
+				pointList.AddRange(point.Value);
+
 			return GraphicsApi.gPolygon(this.Handle, pointList.ToArray(), Convert.ToUInt32(points.Count()))
 				.IsOk();
 		}
@@ -165,11 +163,10 @@ namespace SciterCore
 		internal bool TryDrawPolylineInternal(IList<PolylinePoint> points)
 		{
 			var pointList = new List<float>();
+			
 			foreach(var point in points)
-			{
-				pointList.Add(point.X);
-				pointList.Add(point.Y);
-			}
+				pointList.AddRange(point.Value);
+			
 			return GraphicsApi.gPolyline(this.Handle, pointList.ToArray(), Convert.ToUInt32(points.Count))
 				.IsOk();
 		}

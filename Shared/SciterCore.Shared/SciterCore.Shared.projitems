@@ -15,11 +15,14 @@
     <Compile Include="$(MSBuildThisFileDirectory)Enums\ElementState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\LineCapType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\LineJoinType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Enums\LoadResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\NodeType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\ImageEncoding.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Enums\SciterResourceType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\DomResultExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\DrawingExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\GraphinResultExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\InteropExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\SciterElementExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\SciterGraphicsExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\SciterImageExtensions.cs" />
@@ -64,6 +67,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)EventHandlerRegistry.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Attributes\SciterBehaviorAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\BehaviorAttributeExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Structs\LoadDataNotification.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)LibConsole\console.tis" />

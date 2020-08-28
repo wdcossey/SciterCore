@@ -117,14 +117,14 @@ namespace SciterCore.WinForms
             return this;
         }
 
-        protected override SciterXDef.LoadResult OnLoadData(SciterXDef.SCN_LOAD_DATA sld)
+        protected override LoadResult OnLoadData(LoadData sld)
         {
-            var args = new InternalGetArchiveItemEventArgs(sld.uri);
+            var args = new InternalGetArchiveItemEventArgs(sld.Uri);
                 
             InternalGetItem?.Invoke(this, args);
             
             // load resource from SciterArchive
-            _archive?.GetItem(uriString: args.Uri, onFound: (data, path) =>
+            _archive?.GetItem(uri: args.Uri, onFound: (data, path) =>
             {
                _api.SciterDataReady(WindowHandle, path, data, (uint)data.Length);
             });
@@ -135,9 +135,9 @@ namespace SciterCore.WinForms
     
     internal class InternalGetArchiveItemEventArgs : EventArgs
     {
-        public string Uri { get; set; }
+        public Uri Uri { get; set; }
 
-        public InternalGetArchiveItemEventArgs(string uri)
+        public InternalGetArchiveItemEventArgs(Uri uri)
         {
             Uri = uri;
         }
@@ -146,9 +146,9 @@ namespace SciterCore.WinForms
     public class GetArchiveItemEventArgs : EventArgs
     {
         public string BaseAddress { get; set; }
-        public string Path { get; set; }
+        public Uri Path { get; set; }
 
-        public GetArchiveItemEventArgs(string baseAddress, string path)
+        public GetArchiveItemEventArgs(string baseAddress, Uri path)
         {
             BaseAddress = baseAddress;
             Path = path;

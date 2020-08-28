@@ -24,7 +24,7 @@ namespace SciterCore.Interop
 {
 	public static class SciterXDef
 	{
-		public enum LoadResult : uint
+		internal enum LoadResult : uint
 		{
 			/// <summary>
 			/// do default loading if data not set
@@ -75,7 +75,7 @@ namespace SciterCore.Interop
 		public delegate uint SCITER_HOST_CALLBACK(IntPtr ns /*SCITER_CALLBACK_NOTIFICATION*/, IntPtr callbackParam);
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct SCN_LOAD_DATA
+		internal struct SCN_LOAD_DATA
 		{
 			public uint code;				// UINT - [in] one of the codes above.
 			public IntPtr hwnd;				// HWINDOW - [in] HWINDOW of the window this callback was attached to.
@@ -94,7 +94,7 @@ namespace SciterCore.Interop
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct SCN_DATA_LOADED
+		internal struct SCN_DATA_LOADED
 		{
 			public uint code;	// UINT - [in] one of the codes above.
 			public IntPtr hwnd;	// HWINDOW - [in] HWINDOW of the window this callback was attached to.

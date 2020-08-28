@@ -174,15 +174,21 @@ namespace SciterCore
             return graphics;
         }
         
-        public static SciterGraphics SetLineColor(this SciterGraphics graphics, int r, int g, int b, double a = 1d)
+        public static SciterGraphics SetLineColor(this SciterGraphics graphics, int r, int g, int b)
         {
-            graphics?.SetLineColor(lineColor: new SciterColor(r: r, g: g, b: b, alpha: a));
+            graphics?.SetLineColor(r: r, g: g, b: b, alpha: 1f);
+            return graphics;
+        }
+        
+        public static SciterGraphics SetLineColor(this SciterGraphics graphics, int r, int g, int b, float alpha)
+        {
+            graphics?.SetLineColor(lineColor: new SciterColor(r: r, g: g, b: b, alpha: alpha));
             return graphics;
         }
 
-        public static SciterGraphics SetLineColor(this SciterGraphics graphics, int r, int g, int b, int a = 255)
+        public static SciterGraphics SetLineColor(this SciterGraphics graphics, int r, int g, int b, int alpha)
         {
-            graphics?.SetLineColor(lineColor: new SciterColor(r: r, g: g, b: b, a: a));
+            graphics?.SetLineColor(lineColor: new SciterColor(r: r, g: g, b: b, alpha: alpha));
             return graphics;
         }
 
@@ -191,14 +197,19 @@ namespace SciterCore
             return graphics?.TrySetLineColorInternal(lineColor: lineColor) == true;
         }
 
-        public static bool TrySetLineColor(this SciterGraphics graphics, int r, int g, int b, double a = 1d)
+        public static bool TrySetLineColor(this SciterGraphics graphics, int r, int g, int b)
         {
-            return graphics?.TrySetLineColor(lineColor: new SciterColor(r: r, g: g, b: b, alpha: a)) == true;
+            return graphics?.TrySetLineColor(r: r, g: g, b: b, alpha: 1f) == true;
         }
 
-        public static bool TrySetLineColor(this SciterGraphics graphics, int r, int g, int b, int a = 255)
+        public static bool TrySetLineColor(this SciterGraphics graphics, int r, int g, int b, float alpha = 1f)
         {
-            return graphics?.TrySetLineColor(lineColor: new SciterColor(r: r, g: g, b: b, a: a)) == true;
+            return graphics?.TrySetLineColor(lineColor: new SciterColor(r: r, g: g, b: b, alpha: alpha)) == true;
+        }
+
+        public static bool TrySetLineColor(this SciterGraphics graphics, int r, int g, int b, int alpha = 255)
+        {
+            return graphics?.TrySetLineColor(lineColor: new SciterColor(r: r, g: g, b: b, alpha: alpha)) == true;
         }
 
         public static SciterGraphics SetFillColor(this SciterGraphics graphics, SciterColor fillColor)
@@ -209,21 +220,21 @@ namespace SciterCore
 
         public static SciterGraphics SetFillColor(this SciterGraphics graphics, int r, int g, int b)
         {
-            graphics?.SetFillColor(fillColor: new SciterColor(r: r, g: g, b: b, alpha: 1d));
+            graphics?.SetFillColor(fillColor: new SciterColor(r: r, g: g, b: b, alpha: 1f));
             return graphics;
         }
 
         // ReSharper disable once MethodOverloadWithOptionalParameter
-        public static SciterGraphics SetFillColor(this SciterGraphics graphics, int r, int g, int b, double a = 1d)
+        public static SciterGraphics SetFillColor(this SciterGraphics graphics, int r, int g, int b, float alpha = 1f)
         {
-            graphics?.SetFillColor(fillColor: new SciterColor(r: r, g: g, b: b, alpha: a));
+            graphics?.SetFillColor(fillColor: new SciterColor(r: r, g: g, b: b, alpha: alpha));
             return graphics;
         }
 
         // ReSharper disable once MethodOverloadWithOptionalParameter
-        public static SciterGraphics SetFillColor(this SciterGraphics graphics, int r, int g, int b, int a = byte.MaxValue)
+        public static SciterGraphics SetFillColor(this SciterGraphics graphics, int r, int g, int b, int alpha = byte.MaxValue)
         {
-            graphics?.SetFillColor(fillColor: new SciterColor(r: r, g: g, b: b, a: a));
+            graphics?.SetFillColor(fillColor: new SciterColor(r: r, g: g, b: b, alpha: alpha));
             return graphics;
         }
 
@@ -232,14 +243,14 @@ namespace SciterCore
             return graphics?.TrySetFillColorInternal(fillColor: fillColor) == true;
         }
         
-        public static bool TrySetFillColor(this SciterGraphics graphics, int r, int g, int b, double a = 1d)
+        public static bool TrySetFillColor(this SciterGraphics graphics, int r, int g, int b, float alpha = 1f)
         {
-            return graphics?.TrySetFillColor(fillColor: new SciterColor(r: r, g: g, b: b, alpha: a)) == true;
+            return graphics?.TrySetFillColor(fillColor: new SciterColor(r: r, g: g, b: b, alpha: alpha)) == true;
         }
 
-        public static bool TrySetFillColor(this SciterGraphics graphics, int r, int g, int b, int a = 255)
+        public static bool TrySetFillColor(this SciterGraphics graphics, int r, int g, int b, int alpha = 255)
         {
-            return graphics?.TrySetFillColor(fillColor: new SciterColor(r: r, g: g, b: b, a: a)) == true;
+            return graphics?.TrySetFillColor(fillColor: new SciterColor(r: r, g: g, b: b, alpha: alpha)) == true;
         }
         
         #endregion Drawing Attributes

@@ -78,10 +78,10 @@ namespace SciterCore.UnitTests
             Assert.AreEqual(0, actual.A);
         }
 
-        [TestCase(255, 0, 0, .5d)]
-        [TestCase(0, 0, 0, .25d)]
-        [TestCase(255, 0, 0, .5d)]
-        public void Alpha_as_double(int r, int g, int b, double a)
+        [TestCase(255, 0, 0, .5f)]
+        [TestCase(0, 0, 0, .25f)]
+        [TestCase(255, 0, 0, .5f)]
+        public void Alpha_as_float(int r, int g, int b, float a)
         {
             var actual = SciterColor.Create(r, g, b, a);
             Assert.AreEqual(r, actual.R);

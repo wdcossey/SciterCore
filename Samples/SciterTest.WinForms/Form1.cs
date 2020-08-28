@@ -19,10 +19,10 @@ namespace SciterTest.WinForms
 
 		private void SciterHostOnGetArchiveItem(object sender, GetArchiveItemEventArgs e)
 		{
-			switch (e.Path)
+			switch (e.Path.OriginalString)
 			{
 				case "archive://app/icons8-visual-studio-code-2019.svg" :
-					e.Path = $"{e.BaseAddress}icons8-visual-studio-2019.svg";
+					e.Path = new Uri($"{e.BaseAddress}icons8-visual-studio-2019.svg");
 					break;
 			}
 		}

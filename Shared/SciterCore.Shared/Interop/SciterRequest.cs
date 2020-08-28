@@ -70,7 +70,7 @@ namespace SciterCore.Interop
 			public FPTR_RequestUrl						RequestUrl;
 			public FPTR_RequestContentUrl				RequestContentUrl;
 			public FPTR_RequestGetRequestType			RequestGetRequestType;
-			public FPTR_RequestGetRequestedDataType		RequestGetRequestedDataType;
+			public FPTR_RequestGetRequestedDataType	    RequestGetRequestedDataType;
 			public FPTR_RequestGetReceivedDataType		RequestGetReceivedDataType;
 			public FPTR_RequestGetNumberOfParameters	RequestGetNumberOfParameters;
 			public FPTR_RequestGetNthParameterName		RequestGetNthParameterName;

@@ -104,17 +104,15 @@ namespace SciterTest.Graphics
 			_window.LoadPage(uri: uri);
 		}
 
-		protected override SciterXDef.LoadResult OnLoadData(SciterXDef.SCN_LOAD_DATA sld)
+		protected override LoadResult OnLoadData(LoadData args)
 		{
-			var uri = new Uri(sld.uri);
-
 			// load resource from SciterArchive
-			_archive?.GetItem(uri, (data, path) => 
+			_archive?.GetItem(args.Uri, (data, path) => 
 			{ 
 				_api.SciterDataReady(_window.Handle, path, data, (uint) data.Length);
 			});
 
-			return base.OnLoadData(sld);
+			return base.OnLoadData(args);
 		}
 	}
 }
