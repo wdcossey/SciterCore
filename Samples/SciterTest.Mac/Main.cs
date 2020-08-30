@@ -15,6 +15,7 @@ namespace SciterTest.Mac
 		static void Main(string[] args)
 		{
 			Debug.WriteLine(Sciter.Version());
+
 			Sciter.Api.SciterSetOption(
 				IntPtr.Zero, 
 				SciterXDef.SCITER_RT_OPTIONS.SCITER_SET_GFX_LAYER, 
@@ -22,11 +23,12 @@ namespace SciterTest.Mac
 
 			NSApplication.Init();
 
+            var wnd = new SciterWindow()
+					.CreateMainWindow(800, 600);
 
 			host = new Host(() =>
 			{
-				return new SciterWindow()
-					.CreateMainWindow(800, 600);
+				return wnd;
 			});
 
 			//host.DebugInspect();

@@ -76,7 +76,7 @@ namespace SciterCore.Interop
 		//		[DllImport("sciter-osx-64", EntryPoint = "SciterAPI")]
 		//		private static extern IntPtr SciterAPI64();
 		//#endif
-#if WINDOWS || NETCORE
+#if WINDOWS
 		[DllImport("sciter.dll", EntryPoint = "SciterAPI")]
 #elif GTKMONO
 		[DllImport("sciter-gtk-64.so")]
@@ -93,7 +93,7 @@ namespace SciterCore.Interop
 				IntPtr apiPtr;
 
                 
-#if WINDOWS || NETCORE
+#if WINDOWS
 				var codeBasePath = new Uri(typeof(SciterApi).Assembly.CodeBase).LocalPath;
                 var codeBaseDirectory = Path.GetDirectoryName(codeBasePath);
                 var is64 = Environment.Is64BitProcess;
@@ -186,7 +186,7 @@ namespace SciterCore.Interop
 			public readonly SCITER_VERSION SciterVersion;
 			public readonly SCITER_DATA_READY SciterDataReady;
 			public readonly SCITER_DATA_READY_ASYNC SciterDataReadyAsync;
-#if WINDOWS || NETCORE
+#if WINDOWS
 			public readonly SCITER_PROC SciterProc;
 			public readonly SCITER_PROC_ND SciterProcND;
 #endif
@@ -203,13 +203,13 @@ namespace SciterCore.Interop
 			public readonly SCITER_CALL SciterCall;
 			public readonly SCITER_EVAL SciterEval;
 			public readonly SCITER_UPDATE_WINDOW SciterUpdateWindow;
-#if WINDOWS || NETCORE
+#if WINDOWS
 			public readonly SCITER_TRANSLATE_MESSAGE SciterTranslateMessage;
 #endif
 			public readonly SCITER_SET_OPTION SciterSetOption;
 			public readonly SCITER_GET_PPI SciterGetPPI;
 			public readonly SCITER_GET_VIEW_EXPANDO SciterGetViewExpando;
-#if WINDOWS || NETCORE
+#if WINDOWS
 			public readonly SCITER_RENDER_D2D SciterRenderD2D;
 			public readonly SCITER_D2D_FACTORY SciterD2DFactory;
 			public readonly SCITER_DW_FACTORY SciterDWFactory;
@@ -374,7 +374,7 @@ namespace SciterCore.Interop
 			public readonly GET_SCITER_GRAPHICS_API GetSciterGraphicsAPI;
 			public readonly GET_SCITER_REQUEST_API GetSciterRequestAPI;
 
-#if WINDOWS || NETCORE
+#if WINDOWS
 			public readonly SCITER_CREATE_ON_DIRECT_X_WINDOW SciterCreateOnDirectXWindow;
 			public readonly SCITER_RENDER_ON_DIRECT_X_WINDOW SciterRenderOnDirectXWindow;
 			public readonly SCITER_RENDER_ON_DIRECT_X_TEXTURE SciterRenderOnDirectXTexture;
@@ -399,7 +399,7 @@ namespace SciterCore.Interop
 			// BOOL	function(HWINDOW hwnd, LPCWSTR uri, LPCBYTE data, UINT dataLength, LPVOID requestId) SciterDataReadyAsync;
 			public delegate bool SCITER_DATA_READY_ASYNC(IntPtr hwnd, string uri, byte[] data, uint dataLength, IntPtr requestId);
 
-#if WINDOWS || NETCORE
+#if WINDOWS
 			// LRESULT	function(HWINDOW hwnd, UINT msg, WPARAM wParam, LPARAM lParam) SciterProc;
 			public delegate IntPtr SCITER_PROC(IntPtr hwnd, uint msg, IntPtr wParam, IntPtr lParam);
 			// LRESULT	function(HWINDOW hwnd, UINT msg, WPARAM wParam, LPARAM lParam, BOOL* pbHandled) SciterProcND;
@@ -431,7 +431,7 @@ namespace SciterCore.Interop
 			public delegate bool SCITER_EVAL(IntPtr hwnd, [MarshalAs(UnmanagedType.LPWStr)]string script, uint scriptLength, out SciterValue.VALUE pretval);
 			// VOID	function(HWINDOW hwnd) SciterUpdateWindow;
 			public delegate bool SCITER_UPDATE_WINDOW(IntPtr hwnd);
-#if WINDOWS || NETCORE
+#if WINDOWS
 			// BOOL	function(MSG* lpMsg) SciterTranslateMessage;
 			public delegate bool SCITER_TRANSLATE_MESSAGE(IntPtr lpMsg);// TODO: MSG
 #endif
@@ -441,7 +441,7 @@ namespace SciterCore.Interop
 			public delegate void SCITER_GET_PPI(IntPtr hwnd, ref uint px, ref uint py);
 			// BOOL	function(HWINDOW hwnd, VALUE* pval ) SciterGetViewExpando;
 			public delegate bool SCITER_GET_VIEW_EXPANDO(IntPtr hwnd, out SciterValue.VALUE pval);
-#if WINDOWS || NETCORE
+#if WINDOWS
 			// BOOL	function(HWINDOW hWndSciter, ID2D1RenderTarget* prt) SciterRenderD2D;
 			public delegate bool SCITER_RENDER_D2D(IntPtr hwnd, IntPtr prt);// TODO
 			// BOOL	function(ID2D1Factory ** ppf) SciterD2DFactory;
@@ -770,7 +770,7 @@ namespace SciterCore.Interop
 			// LPSciterRequestAPI SCFN(GetSciterRequestAPI )();
 			public delegate IntPtr GET_SCITER_REQUEST_API();
 
-#if WINDOWS || NETCORE
+#if WINDOWS
 			// BOOL SCFN(SciterCreateOnDirectXWindow ) (HWINDOW hwnd, IDXGISwapChain* pSwapChain);
 			public delegate bool SCITER_CREATE_ON_DIRECT_X_WINDOW(IntPtr hwnd, IntPtr pSwapChain);
 			// BOOL SCFN(SciterRenderOnDirectXWindow ) (HWINDOW hwnd, HELEMENT elementToRenderOrNull, BOOL frontLayer);

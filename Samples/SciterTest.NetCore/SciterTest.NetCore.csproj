@@ -3,12 +3,35 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <RuntimeIdentifiers>osx-x64</RuntimeIdentifiers>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>TRACE;NETCORE</DefineConstants>
+    <DefineConstants>TRACE;NETCORE;OSX;DEBUG;NETCOREAPP;NETCOREAPP3_1</DefineConstants>
+    <CustomCommands>
+      <CustomCommands>
+        <Command>
+          <type>BeforeBuild</type>
+          <command>sh ${SolutionDir}/scripts/packOSX.sh ${ProjectDir}/res ${ProjectDir}/SiteResource.bin</command>
+        </Command>
+      </CustomCommands>
+    </CustomCommands>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
   </PropertyGroup>
-
+  
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>TRACE;NETCORE;OSX;DEBUG;NETCOREAPP;NETCOREAPP3_1</DefineConstants>
+    <CustomCommands>
+      <CustomCommands>
+        <Command>
+          <type>BeforeBuild</type>
+          <command>sh ${SolutionDir}/scripts/packOSX.sh ${ProjectDir}/res ${ProjectDir}/SiteResource.bin</command>
+        </Command>
+      </CustomCommands>
+    </CustomCommands>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+  </PropertyGroup>
+    
   <ItemGroup>
     <None Remove="SiteResource.bin" />
   </ItemGroup>
@@ -20,22 +43,54 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.3" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.3" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="3.1.3" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="3.1.3" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.3" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.3" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.3" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="3.1.3" />
+    <PackageReference Include="Dotnet.Bundle" Version="0.9.12" />
   </ItemGroup>
-
+  
   <ItemGroup>
-    <ProjectReference Include="..\..\SciterCore\SciterCore.Binaries.Windows.csproj" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Contents.json" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\AppIcon-128.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\AppIcon-128%402x.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\AppIcon-16.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\AppIcon-16%402x.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\AppIcon-256.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\AppIcon-256%402x.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\AppIcon-32.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\AppIcon-32%402x.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\AppIcon-512.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\AppIcon-512%402x.png" />
+    <ImageAsset Include="Assets.xcassets\Contents.json" />
   </ItemGroup>
-  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="rem $(SolutionDir)scripts\packWindows.bat &quot;$(SolutionDir)SciterCore\LibConsole&quot; &quot;$(ProjectDir)LibConsole.bin&quot;&#xD;&#xA;$(SolutionDir)scripts\packWindows.bat &quot;$(ProjectDir)res&quot; &quot;$(ProjectDir)SiteResource.bin&quot;" />
-  </Target>
-
+    
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\Documents\GitHub\DevZH.UI\src\DevZH.UI\DevZH.UI.csproj" />
+  </ItemGroup>
+    
+  <ItemGroup>
+    <None Include="..\..\sciter-sdk\bin.osx\sciter-osx-64.dylib">
+      <Link>sciter-osx-64.dylib</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="AppName.icns">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Startup.cs" />
+  </ItemGroup>
   <Import Project="..\..\SciterCore\SciterCore.Shared.projitems" Label="Shared" Condition="Exists('..\..\SciterCore\SciterCore.Shared.projitems')" />
+    
+  <PropertyGroup>
+    <CFBundleName>SciterCore</CFBundleName> <!-- Also defines .app file name -->
+    <CFBundleDisplayName>SciterCore</CFBundleDisplayName>
+    <CFBundleIdentifier>com.example</CFBundleIdentifier>
+    <CFBundleVersion>1.0.0</CFBundleVersion>
+    <CFBundlePackageType>AAPL</CFBundlePackageType>
+    <CFBundleSignature>????</CFBundleSignature>
+    <CFBundleExecutable>SciterTest.NetCore</CFBundleExecutable>
+    <CFBundleIconFile>AppName.icns</CFBundleIconFile> <!-- Will be copied from output directory -->
+    <NSPrincipalClass>NSApplication</NSPrincipalClass>
+    <NSHighResolutionCapable>true</NSHighResolutionCapable>
+  </PropertyGroup>
 </Project>

@@ -28,7 +28,7 @@ namespace SciterCore.Interop
 	{
 		public static void RunMsgLoop()
 		{
-#if WINDOWS || NETCORE
+#if WINDOWS
 			PInvokeWindows.MSG msg;
 			while(PInvokeWindows.GetMessage(out msg, IntPtr.Zero, 0, 0) != 0)
 			{

@@ -236,7 +236,7 @@ namespace SciterCore
 				Thread.Sleep(1000);
 				EvalScript("view.connectToInspector()");
 
-#if OSX
+#if OSX && !NETCORE
 				var app_inspector = AppKit.NSRunningApplication.GetRunningApplications("terrainformatica.inspector");
 				if(app_inspector.Length==1)
 					app_inspector[0].Activate(AppKit.NSApplicationActivationOptions.ActivateAllWindows);

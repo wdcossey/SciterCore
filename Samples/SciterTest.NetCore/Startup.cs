@@ -10,7 +10,7 @@ namespace SciterTest.NetCore
 {
     public class Startup : IHostedService
     {
-        public static Window AppWindow { get; private set; }// must keep a reference to survive GC
+        //public static Window AppWindow { get; private set; }// must keep a reference to survive GC
         public static Host AppHost { get; private set; }
 
         public async Task StartAsync(CancellationToken cancellationToken)
@@ -33,10 +33,10 @@ namespace SciterTest.NetCore
                 Run 'sudo bash install-libsciter.sh' contained in this package to install it in your system.
             */
             // Create the window
-            AppWindow = new Window();
+            //AppWindow = new Window();
 
             // Prepares SciterHost and then load the page
-            AppHost = new Host(AppWindow);
+            //AppHost = new Host(AppWindow);
 
 
             // Run message loop

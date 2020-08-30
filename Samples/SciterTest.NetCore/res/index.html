@@ -1,42 +1,45 @@
-<html window-blurbehind="none" theme="light">
+<html window-blurbehind="ultra-dark" theme="dark">
 <head>
 	<style>
 		html {
 			background: transparent;
+            color: white;
 		}
 		h1 { color: blue; font-size: 30px; }
 	</style>
 
-	<script type="text/tiscript">
-		$(#helloSciter).html = view.Host_HelloSciter();
+    <script type="text/tiscript">
+        $(#helloSciter).html = view.Host_HelloSciter();
 
-		var version_major = Sciter.VERSION >> 16;
-		var version_minor = Sciter.VERSION & 0xFFFF;
-		var revision_major = Sciter.REVISION >> 16;
-		var revision_minor = Sciter.REVISION & 0xFFFF;
-		$(h3).text = "Sciter version: " + String.printf("%d.%d.%d.%d", version_major, version_minor, revision_major, revision_minor);
+        var version_major = Sciter.VERSION >> 16;
+        var version_minor = Sciter.VERSION & 0xFFFF;
+        var revision_major = Sciter.REVISION >> 16;
+        var revision_minor = Sciter.REVISION & 0xFFFF;
+        $(h3).text = "Sciter version: " + String.printf("%d.%d.%d.%d", version_major, version_minor, revision_major, revision_minor);
 
-		//$$(a).on("click", function(evt) {
-		//	Sciter.launch(this.@#href);
-		//	return true;
-		//});
+        //$$(a).on("click", function(evt) {
+        //	Sciter.launch(this.@#href);
+        //	return true;
+        //});
 
-		for(var (i,child) in $$(a) ) {
-			child.on("click", function(evt) {
-				Sciter.launch(this.@#href);
-				return true;
-			});
-		}
+        for(var (i,child) in $$(a) ) {
+            child.on("click", function(evt) {
+                Sciter.launch(this.@#href);
+                return true;
+            });
+        }
 
-		$(#icons8).on("click", function(evt) {
-			Sciter.launch("https://icons8.com/");
-			return true;
-		});
-	</script>
+        //$(#icons8).on("click", function(evt) {
+        //	Sciter.launch("https://icons8.com/");
+        //	return true;
+        //});
+
+        view.state = View.WINDOW_SHOWN;
+    </script>
 </head>
 
 <body>
-	<div style="background: rgb(200, 200, 200)">
+	<div style="background: rgba(50, 50, 50, 0.5)">
 		<img src="logo.png"
 			 alt="Sciter Logo"
 			 height="96" />
@@ -50,6 +53,6 @@
 	<h3 />
 
 	If you are new to C# Sciter, read our introductory article:
-	<a href="http://www.codeproject.com/Articles/1057199/Sciter-HTML-Csharp-based-desktop-apps-walkthrough">Walk-through for writing apps with SciterSharp</a>
+	<a href="http://www.codeproject.com/Articles/1057199/Sciter-HTML-Csharp-based-desktop-apps-walkthrough">Walk-through for writing apps with SciterCore</a>
 </body>
 </html>

@@ -33,7 +33,11 @@ namespace SciterCore
         {
             Host = host;
 
-            return Run(() => { PInvokeUtils.RunMsgLoop();  });
+            return Run(() => {
+#if !OSX
+                PInvokeUtils.RunMsgLoop();
+#endif
+            });
 
             //return Run(() => { host.Show(); });
             //window.Show();
