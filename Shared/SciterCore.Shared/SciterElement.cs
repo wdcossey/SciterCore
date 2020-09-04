@@ -803,13 +803,13 @@ namespace SciterCore
 		#endregion
 
 		#region Location and Size
-		internal Rectangle GetLocationInternal(ElementArea area = ElementArea.RootRelative | ElementArea.ContentBox)
+		internal SciterRectangle GetLocationInternal(ElementArea area = ElementArea.RootRelative | ElementArea.ContentBox)
 		{
 			TryGetLocationInternal(out var result, area);
 			return result;
 		}
 		
-		internal bool TryGetLocationInternal(out Rectangle value, ElementArea area = ElementArea.RootRelative | ElementArea.ContentBox)
+		internal bool TryGetLocationInternal(out SciterRectangle value, ElementArea area = ElementArea.RootRelative | ElementArea.ContentBox)
 		{
 			var result = Api.SciterGetElementLocation(this.Handle, out var rect, (SciterXDom.ELEMENT_AREAS)Convert.ToUInt32(area))
 				.IsOk();
@@ -817,15 +817,15 @@ namespace SciterCore
 			return result;
 		}
 
-		public Size Size => GetSizeInternal();
+		public SciterSize Size => GetSizeInternal();
 
-		internal Size GetSizeInternal()
+		internal SciterSize GetSizeInternal()
 		{
 			TryGetSizeInternal(value: out var result);
 			return result;
 		}
 		
-		internal bool TryGetSizeInternal(out Size value)
+		internal bool TryGetSizeInternal(out SciterSize value)
 		{
 			var result = Api.SciterGetElementLocation(this.Handle, out var rect, SciterXDom.ELEMENT_AREAS.ROOT_RELATIVE | SciterXDom.ELEMENT_AREAS.PADDING_BOX)
 				.IsOk();
@@ -850,7 +850,7 @@ namespace SciterCore
 				.IsOk();
 		}
 
-		internal bool TryRefreshInternal(Rectangle rectangle)
+		internal bool TryRefreshInternal(SciterRectangle rectangle)
 		{
 			return Api.SciterRefreshElementArea(this.Handle, rectangle.ToRect())
 				.IsOk();

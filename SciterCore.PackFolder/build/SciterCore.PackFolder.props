@@ -3,6 +3,11 @@
   when it targets a single framework, or in classic (pre 2017) csproj projects.
 -->
 <Project TreatAsLocalProperty="SciterCorePackFolderTaskFolder;SciterCorePackFolderTaskAssembly">
+
+  <PropertyGroup>
+    <SciterCorePackDirectory Condition=" '$(SciterCorePackDirectory)' == '' ">wwwroot</SciterCorePackDirectory>
+    <SciterCorePackType Condition=" '$(SciterCorePackType)' == '' ">binary</SciterCorePackType>
+  </PropertyGroup>
   
   <PropertyGroup>
     <SciterCorePackFolderTaskFolder>$(MSBuildThisFileDirectory)..\..\scripts\</SciterCorePackFolderTaskFolder>
@@ -13,7 +18,7 @@
   
   <Target Name="SciterCorePackFolderPreBuild" BeforeTargets="PreBuildEvent" >
     <MakeDir Directories="$(ProjectDir).sciter" />
-    <Exec Command="$(SciterCorePackFolderTaskFolder)$(SciterCorePackFolderTaskAssembly) &quot;$(ProjectDir)res&quot; &quot;$(ProjectDir).sciter\$(ProjectName).bin&quot; -binary" />
+    <Exec Command="$(SciterCorePackFolderTaskFolder)$(SciterCorePackFolderTaskAssembly) &quot;$(ProjectDir)$(SciterCorePackDirectory)&quot; &quot;$(ProjectDir).sciter\$(ProjectName).bin&quot; -binary" />
   </Target>
 
   <Target Name="SciterCorePackFolderEmbedLocal" BeforeTargets="PrepareForBuild">

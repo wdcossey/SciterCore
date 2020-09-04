@@ -121,7 +121,6 @@ namespace SciterCore.Interop
 			// REQUEST_RESULT SCFN(RequestGetReceivedDataType)( HREQUEST rq, LPCSTR_RECEIVER* rcv, LPVOID rcv_param );
 			public delegate REQUEST_RESULT FPTR_RequestGetReceivedDataType(IntPtr rq, SciterXDom.LPCSTR_RECEIVER rcv, IntPtr rcv_param);
 
-
 			// get number of request parameters passed
 			// REQUEST_RESULT SCFN(RequestGetNumberOfParameters)( HREQUEST rq, UINT* pNumber );
 			public delegate REQUEST_RESULT FPTR_RequestGetNumberOfParameters(IntPtr rq, out uint pNumber);

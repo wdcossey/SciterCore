@@ -8,14 +8,14 @@ namespace SciterTest.Graphics.Behaviors
 	[SciterBehavior("draw-text")]
 	class DrawTextBehavior : SciterEventHandler
 	{
-		protected override bool OnDraw(SciterElement se, SciterBehaviors.DRAW_PARAMS prms)
+		protected override bool OnDraw(SciterElement se, DrawEventArgs args)
 		{
-			if (prms.cmd != SciterBehaviors.DRAW_EVENTS.DRAW_CONTENT) 
+			if (args.DrawEvent != DrawEvent.Content) 
 				return false;
 			
 			var txt = SciterText.CreateForElement("hi", se);
 
-			using(var g = SciterGraphics.Create(prms.gfx))
+			using(var g = SciterGraphics.Create(args.Handle))
 			{
 				g.DrawText(txt, 0, 0, 1);
 			}

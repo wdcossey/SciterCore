@@ -117,11 +117,11 @@ namespace SciterCore.WinForms
             return this;
         }
 
-        protected override LoadResult OnLoadData(LoadData sld)
+        protected override LoadResult OnLoadData(object sender, LoadDataEventArgs args)
         {
-            var args = new InternalGetArchiveItemEventArgs(sld.Uri);
+            var intArgs = new InternalGetArchiveItemEventArgs(args.Uri);
                 
-            InternalGetItem?.Invoke(this, args);
+            InternalGetItem?.Invoke(this, intArgs);
             
             // load resource from SciterArchive
             _archive?.GetItem(uri: args.Uri, onFound: (data, path) =>
@@ -129,7 +129,7 @@ namespace SciterCore.WinForms
                _api.SciterDataReady(WindowHandle, path, data, (uint)data.Length);
             });
 
-            return base.OnLoadData(sld);
+            return base.OnLoadData(sender: sender, args: args);
         }
     }
     

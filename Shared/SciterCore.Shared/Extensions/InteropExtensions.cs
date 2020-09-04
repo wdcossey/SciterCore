@@ -4,9 +4,9 @@ namespace SciterCore.Interop
 {
     internal static class InteropExtensions
     {
-        internal static LoadData Convert(this SciterXDef.SCN_LOAD_DATA loadData)
+        internal static LoadDataEventArgs Convert(this SciterXDef.SCN_LOAD_DATA loadData)
         {
-            return new LoadData
+            return new LoadDataEventArgs
             {
                 Code = loadData.code,
                 Data = loadData.outData,
@@ -15,26 +15,26 @@ namespace SciterCore.Interop
                 Principal = loadData.principal,
                 Uri = new Uri(loadData.uri, UriKind.RelativeOrAbsolute),
                 DataSize = loadData.outDataSize,
-                DataType = (SciterResourceType)(long)loadData.dataType,
+                DataType = (SciterResourceType)unchecked((int)loadData.dataType),
                 RequestId = loadData.requestId
             };
         }
         
-        internal static DataLoaded Convert(this SciterXDef.SCN_DATA_LOADED loadData)
+        internal static DataLoadedEventArgs Convert(this SciterXDef.SCN_DATA_LOADED loadData)
         {
-            return new DataLoaded
+            return new DataLoadedEventArgs
             {
                 Code = loadData.code,
                 Data = loadData.data,
                 Handle = loadData.hwnd,
                 Uri = loadData.uri,
                 DataSize = loadData.dataSize,
-                DataType = (SciterResourceType)(long)loadData.dataType,
+                DataType = (SciterResourceType)unchecked((int)loadData.dataType),
                 Status = loadData.status,
             };
         }
         
-        internal static SciterXDef.SCN_DATA_LOADED Convert(this DataLoaded loadData)
+        internal static SciterXDef.SCN_DATA_LOADED Convert(this DataLoadedEventArgs loadData)
         {
             return new SciterXDef.SCN_DATA_LOADED
             {
@@ -45,6 +45,17 @@ namespace SciterCore.Interop
                 dataSize = loadData.DataSize,
                 dataType = (SciterRequest.SciterResourceType)(uint)loadData.DataType,
                 status = loadData.Status,
+            };
+        }
+        
+        internal static DrawEventArgs Convert(this SciterBehaviors.DRAW_PARAMS @params)
+        {
+            return new DrawEventArgs
+            {
+                Area = new SciterRectangle(@params.area.Left, @params.area.Top, @params.area.Right, @params.area.Bottom),
+                DrawEvent =  (DrawEvent)(int)@params.cmd,
+                Handle = @params.gfx,
+                Reserved = @params.reserved,
             };
         }
     }

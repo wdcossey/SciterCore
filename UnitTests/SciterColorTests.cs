@@ -27,7 +27,7 @@ namespace SciterCore.UnitTests
         [TestCase(255, 0, 0, 127, 2130706687u)]
         [TestCase(0, 0, 0, 0, 0u)]
         [TestCase(255, 0, 0, 255, 4278190335u)]
-        public void SciterColor_toSciterColor(int r, int g, int b, int a, uint exp)
+        public void rgba_to_SciterColor(int r, int g, int b, int a, uint exp)
         {
             var actual = SciterColor.Create(Color.FromArgb(a, r, g, b));
             Assert.AreEqual(exp, actual.Value);

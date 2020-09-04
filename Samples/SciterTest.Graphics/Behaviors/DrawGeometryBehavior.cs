@@ -9,14 +9,14 @@ namespace SciterTest.Graphics.Behaviors
 	[SciterBehavior("draw-geometry")]
 	class DrawGeometryBehavior : SciterEventHandler
 	{
-		protected override bool OnDraw(SciterElement se, SciterBehaviors.DRAW_PARAMS prms)
+		protected override bool OnDraw(SciterElement se, DrawEventArgs args)
 		{
-			if(prms.cmd == SciterBehaviors.DRAW_EVENTS.DRAW_CONTENT)
+			if (args.DrawEvent == DrawEvent.Content)
 			{
-				using(var graphics = SciterGraphics.Create(prms.gfx))
+				using(var graphics = SciterGraphics.Create(args.Handle))
 				{
 					graphics.SaveState()
-						.Translate(prms.area.Left, prms.area.Top)
+						.Translate(args.Area.Left, args.Area.Top)
 						.SetLineColor(SciterColor.Create(0, 255, 255, .75f))
 						.SetFillColor(SciterColor.Create(127, 78, 194, .75f))
 						.SetLineWidth(4)

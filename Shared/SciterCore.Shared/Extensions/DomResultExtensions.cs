@@ -1,4 +1,6 @@
 ﻿using System.Linq;
+// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable UnusedMember.Global
 
 namespace SciterCore.Interop
 {

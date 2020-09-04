@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using SciterCore.Interop;
 
 // ReSharper disable UnusedType.Global
@@ -59,13 +58,13 @@ namespace SciterCore
             return element?.TryRefreshInternal() == true;
         }
 
-        public static SciterElement Refresh(this SciterElement element, Rectangle rectangle)
+        public static SciterElement Refresh(this SciterElement element, SciterRectangle rectangle)
         {
             element?.TryRefresh(rectangle: rectangle);
             return element;
         }
 
-        public static bool TryRefresh(this SciterElement element, Rectangle rectangle)
+        public static bool TryRefresh(this SciterElement element, SciterRectangle rectangle)
         {
             return element?.TryRefreshInternal(rectangle: rectangle) == true;
         }
@@ -656,22 +655,22 @@ namespace SciterCore
         
         #region Location and Size
         
-        public static Rectangle GetLocation(this SciterElement element, ElementArea area = ElementArea.RootRelative | ElementArea.ContentBox)
+        public static SciterRectangle GetLocation(this SciterElement element, ElementArea area = ElementArea.RootRelative | ElementArea.ContentBox)
         {
             return element.GetLocationInternal(area: area);
         }
         
-        public static bool TryGetLocation(this SciterElement element, out Rectangle value, ElementArea area = ElementArea.RootRelative | ElementArea.ContentBox)
+        public static bool TryGetLocation(this SciterElement element, out SciterRectangle value, ElementArea area = ElementArea.RootRelative | ElementArea.ContentBox)
         {
             return element.TryGetLocationInternal(value: out value, area: area);
         }
 
-        public static Size GetSize(this SciterElement element)
+        public static SciterSize GetSize(this SciterElement element)
         {
             return element.GetSizeInternal();
         }
 		
-        public static bool TryGetSize(this SciterElement element, out Size value)
+        public static bool TryGetSize(this SciterElement element, out SciterSize value)
         {
             return element.TryGetSizeInternal(value: out value);
         }

@@ -1,6 +1,6 @@
 ﻿namespace SciterCore
 {
-    public enum SciterResourceType : long
+    public enum SciterResourceType : int
     {
         Html = 0,
         Image = 1,
@@ -10,6 +10,6 @@
         Raw = 5,
         Font,
         Sound, // wav bytes
-        ForceDword = 0xffffffff
+        ForceDword = unchecked((int)0xffffffff)
     }
 }

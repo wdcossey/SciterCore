@@ -1,10 +1,8 @@
-﻿using System.Drawing;
-
-namespace SciterCore.Interop
+﻿namespace SciterCore.Interop
 {
     internal static class DrawingExtensions
     {
-        internal static PInvokeUtils.RECT ToRect(this Rectangle rectangle)
+        internal static PInvokeUtils.RECT ToRect(this SciterRectangle rectangle)
         {
             return new PInvokeUtils.RECT
             {
@@ -15,14 +13,14 @@ namespace SciterCore.Interop
             };
         }
         
-        internal static Rectangle ToRectangle(this PInvokeUtils.RECT rect)
+        internal static SciterRectangle ToRectangle(this PInvokeUtils.RECT rect)
         {
-            return new Rectangle(rect.Left, rect.Top, rect.Right, rect.Bottom);
+            return new SciterRectangle(rect.Left, rect.Top, rect.Right, rect.Bottom);
         }
         
-        internal static Size ToSize(this PInvokeUtils.RECT rect)
+        internal static SciterSize ToSize(this PInvokeUtils.RECT rect)
         {
-            return new Size(rect.Width, rect.Height);
+            return new SciterSize(rect.Width, rect.Height);
         }
         
     }

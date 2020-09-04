@@ -1,7 +1,11 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
+using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
 using SciterCore;
 using SciterCore.Interop;
 using SciterValue = SciterCore.SciterValue;
@@ -40,22 +44,69 @@ namespace SciterTest.NetCore
 		/// Notice that signature of these handlers is always the same
 		/// (Hint: install OmniCode snippets which adds the 'ssh' snippet to C# editor so you can easily declare 'Siter Handler' methods)
 		/// (see: https://github.com/MISoftware/OmniCode-Snippets)
-		public bool Host_HelloSciter(SciterElement el, SciterValue[] args, out SciterValue result)
+		public Task<SciterValue> HelloSciterCore(SciterElement element, SciterValue[] args)
 		{
 			var stackTrace = new StackTrace(true);
 			var stackFrame = stackTrace.GetFrame(0);
 				
-			/*result = new SciterValue(System.Text.Json.JsonSerializer.Serialize(new
+			var value = SciterValue.Create(System.Text.Json.JsonSerializer.Serialize(new
 			{
-				method = stackFrame?.GetMethod()?.Name,
-				uri = new Uri(stackFrame?.GetFileName())?.AbsoluteUri,
-				fileName = Path.GetFileName(stackFrame?.GetFileName()),
-				lineNumber = stackFrame?.GetFileLineNumber(),
-				columnNumber = stackFrame?.GetFileColumnNumber()
-			}));*/
+				MethodName = stackFrame?.GetMethod()?.Name,
+				FileUri = new Uri(stackFrame?.GetFileName())?.AbsoluteUri,
+				FileName = Path.GetFileName(stackFrame?.GetFileName()),
+				LineNumber = stackFrame?.GetFileLineNumber(),
+				ColumnNumber = stackFrame?.GetFileColumnNumber()
+			}, options: new JsonSerializerOptions() { WriteIndented = true }));
 			
-			result = new SciterValue($"<h2>Hello Sciter from C# in .Net Core!</h2><code>Method: {stackFrame?.GetMethod()?.Name}<br/>File: <a href=\"{new Uri(stackFrame?.GetFileName())?.AbsoluteUri}\">{Path.GetFileName(stackFrame?.GetFileName())}</a><br/>Line: {stackFrame?.GetFileLineNumber()}<br/>Column: {stackFrame?.GetFileColumnNumber()}</code>");
-			return true;
+			//value = SciterValue.Create($"<h2>Hello Sciter from C# in .Net Core!</h2><code>Method: {stackFrame?.GetMethod()?.Name}<br/>File: <a href=\"{new Uri(stackFrame?.GetFileName())?.AbsoluteUri}\">{Path.GetFileName(stackFrame?.GetFileName())}</a><br/>Line: {stackFrame?.GetFileLineNumber()}<br/>Column: {stackFrame?.GetFileColumnNumber()}</code>");
+			return Task.FromResult(value);
+		}
+		
+		public Task<SciterValue> StackTrace(SciterElement element, SciterValue[] args)
+		{
+			var stackTrace = new StackTrace(true);
+			var stackFrame = stackTrace.GetFrame(0);
+			
+			var value = SciterValue.FromJsonString(System.Text.Json.JsonSerializer.Serialize(new
+			{
+				MethodName = stackFrame?.GetMethod()?.Name,
+				Parameters = stackFrame?.GetMethod()?.GetParameters().Select(s => new { s.Name, s.Position, Type = s.ParameterType.Name}),
+				FileUri = new Uri(stackFrame?.GetFileName())?.AbsoluteUri,
+				FileName = Path.GetFileName(stackFrame?.GetFileName()),
+				LineNumber = stackFrame?.GetFileLineNumber(),
+				ColumnNumber = stackFrame?.GetFileColumnNumber()
+			}));
+			
+			return Task.FromResult(value);
+		}
+		
+		public async Task<SciterValue> GetRuntimeInfo(SciterElement element, SciterValue[] args)
+		{
+			//Simulate a delay
+			//await Task.Delay(3500);
+			
+			var value = SciterValue.FromJsonString(System.Text.Json.JsonSerializer.Serialize(new
+			{
+				FrameworkDescription = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription,
+				ProcessArchitecture = System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture.ToString(),
+				OSArchitecture = System.Runtime.InteropServices.RuntimeInformation.OSArchitecture.ToString(),
+				OSDescription = System.Runtime.InteropServices.RuntimeInformation.OSDescription,
+				SystemVersion = System.Runtime.InteropServices.RuntimeEnvironment.GetSystemVersion()
+			}));
+			
+			return value;
+		}
+		
+		public async Task<SciterValue> createAccount(SciterElement element, SciterValue[] args) {
+			//std::thread t(add_account_thread,props,whenCreated); 
+			//t.detach(); 
+
+			await Task.Delay(5000);
+			//Thread.Sleep(100000);
+
+			Random random = new Random();
+			//Api.SciterPostCallback(WindowHandle, wparam, lparam, timeout);
+			return SciterValue.Create(random.Next(int.MinValue, int.MaxValue));
 		}
 
 		// (Hint: to overload C# methods of SciterEventHandler base class, type 'override', press space, and VS/Xamarin will suggest the methods you can override)
@@ -108,7 +159,7 @@ namespace SciterTest.NetCore
 			_window.LoadPage(uri: uri);
 		}
 
-		protected override LoadResult OnLoadData(LoadData args)
+		protected override LoadResult OnLoadData(object sender, LoadDataEventArgs args)
 		{
 			// load resource from SciterArchive
 			_archive?.GetItem(args.Uri, (data, path) => 
@@ -117,7 +168,17 @@ namespace SciterTest.NetCore
 			});
 
 			// call base to ensure LibConsole is loaded
-			return base.OnLoadData(args);
+			return base.OnLoadData(sender: sender, args: args);
+		}
+
+		protected override void OnEngineDestroyed(object sender, EngineDestroyedEventArgs args)
+		{
+			base.OnEngineDestroyed(sender, args);
+		}
+
+		protected override IntPtr OnPostedNotification(IntPtr wparam, IntPtr lparam)
+		{
+			return base.OnPostedNotification(wparam, lparam);
 		}
 	}
 }

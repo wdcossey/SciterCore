@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 #if WINDOWS
 using System.Drawing;
 
@@ -11,7 +12,7 @@ using System.Drawing;
 
 namespace SciterCore
 {
-    public readonly struct SciterColor
+    public readonly struct SciterColor : IConvertible
     {
         private static readonly Interop.SciterGraphics.SciterGraphicsApi GraphicsApi = Interop.Sciter.GraphicsApi;
         private readonly uint _value;
@@ -25,7 +26,7 @@ namespace SciterCore
         public byte B => (byte) ((_value >> 16) & 0xFF);
         
         public byte A => (byte) ((_value >> 24) & 0xFF);
-
+        
         internal SciterColor(uint value)
         {
             _value = value;
@@ -95,6 +96,26 @@ namespace SciterCore
         {
             // ReSharper disable once RedundantCast
             return (int)Math.Min(Math.Max(value, -1), byte.MaxValue);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is SciterColor color)
+                return this.Value.Equals(color.Value);
+
+            return false;
+        }
+
+        [ExcludeFromCodeCoverage]
+        public bool Equals(SciterColor other)
+        {
+            return Value == other.Value;
+        }
+
+        [ExcludeFromCodeCoverage]
+        public override int GetHashCode()
+        {
+            return (int) Value;
         }
 
         #region Color List
@@ -242,6 +263,95 @@ namespace SciterCore
         public static SciterColor LightPink => new SciterColor(255, 182, 193);
         public static SciterColor YellowGreen => new SciterColor(154, 205, 50);
 
+        #endregion
+
+        #region IConvertible
+        
+        public TypeCode GetTypeCode()
+        {
+            return TypeCode.UInt32;
+        }
+
+        public bool ToBoolean(IFormatProvider provider)
+        {
+            throw new NotImplementedException();
+        }
+
+        public char ToChar(IFormatProvider provider)
+        {
+            throw new NotImplementedException();
+        }
+
+        public sbyte ToSByte(IFormatProvider provider)
+        {
+            throw new NotImplementedException();
+        }
+
+        public byte ToByte(IFormatProvider provider)
+        {
+            throw new NotImplementedException();
+        }
+
+        public short ToInt16(IFormatProvider provider)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ushort ToUInt16(IFormatProvider provider)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int ToInt32(IFormatProvider provider)
+        {
+            return (int)Value;
+        }
+
+        public uint ToUInt32(IFormatProvider provider)
+        {
+            return Value;
+        }
+
+        public long ToInt64(IFormatProvider provider)
+        {
+            return (long)Value;
+        }
+
+        public ulong ToUInt64(IFormatProvider provider)
+        {
+            return Value;
+        }
+
+        public float ToSingle(IFormatProvider provider)
+        {
+            return Value;
+        }
+
+        public double ToDouble(IFormatProvider provider)
+        {
+            return Value;
+        }
+
+        public decimal ToDecimal(IFormatProvider provider)
+        {
+            return Value;
+        }
+
+        public DateTime ToDateTime(IFormatProvider provider)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string ToString(IFormatProvider provider)
+        {
+            throw new NotImplementedException();
+        }
+
+        public object ToType(Type conversionType, IFormatProvider provider)
+        {
+            throw new NotImplementedException();
+        }
+        
         #endregion
     }
 }

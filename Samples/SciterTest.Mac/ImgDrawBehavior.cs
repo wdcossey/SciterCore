@@ -29,22 +29,21 @@ namespace SciterTest.Mac
 		}
 
 		protected override bool OnDraw(
-			SciterElement element, 
-			SciterCore.Interop.SciterBehaviors.DRAW_PARAMS prms)
+			SciterElement element, DrawEventArgs args)
 		{
-			if(prms.cmd != SciterCore.Interop.SciterBehaviors.DRAW_EVENTS.DRAW_CONTENT)
+			if(args.DrawEvent != DrawEvent.Content)
 				return false;
 			
-			using(SciterGraphics graphics = SciterGraphics.Create(prms.gfx))
+			using(SciterGraphics graphics = SciterGraphics.Create(args.Handle))
 			{
 				graphics
 					.SaveState()
-					.Translate(prms.area.Left, prms.area.Top)
+					.Translate(args.Area.Left, args.Area.Top)
 					.SetFillColor(255, 0, 0)
 					.SetLineColor(SciterColor.Black)
 					.SetLineWidth(1)
 					//.DrawPath(_svg._spath, SciterSharp.Interop.SciterXGraphics.DRAW_PATH_MODE.DRAW_FILL_AND_STROKE);
-					.Translate(prms.area.Left+10, prms.area.Top+10)
+					.Translate(args.Area.Left+10, args.Area.Top+10)
 					.BlendImage(_simg, 0, 0)
 					.RestoreState();
 			}

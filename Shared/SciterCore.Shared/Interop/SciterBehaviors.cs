@@ -348,7 +348,7 @@ namespace SciterCore.Interop
 			public SciterValue.VALUE data;		// packaged drag data
 		}
 
-		public enum DRAW_EVENTS : uint
+		internal enum DRAW_EVENTS : uint
 		{
 			DRAW_BACKGROUND = 0,
 			DRAW_CONTENT = 1,
@@ -359,7 +359,7 @@ namespace SciterCore.Interop
 		//struct SCITER_GRAPHICS;
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct DRAW_PARAMS
+		internal struct DRAW_PARAMS
 		{
 			public DRAW_EVENTS			cmd;
 			public IntPtr				gfx;	// HGFX - hdc to paint on

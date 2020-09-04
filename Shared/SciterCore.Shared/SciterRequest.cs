@@ -23,17 +23,13 @@ namespace SciterCore
 	public class SciterRequest
 	{
 		private static readonly Interop.SciterRequest.SciterRequestApi RequestApi = Interop.Sciter.RequestApi;
-		public readonly IntPtr _hrq;
-
-		private SciterRequest() 
+		private readonly IntPtr _requestHandle;
+		
+		public IntPtr Handle => _requestHandle;
+		
+		private SciterRequest(IntPtr requestHandle) 
 		{
-			//
-		}
-
-		public SciterRequest(IntPtr hrq)
-			: this()
-		{
-			_hrq = hrq;
+			_requestHandle = requestHandle;
 		}
 
 		public string Url
@@ -42,7 +38,7 @@ namespace SciterCore
 			{
 				string result = null;
 				RequestApi.RequestUrl(
-					_hrq, 
+					Handle, 
 					(IntPtr str, uint strLength, IntPtr param) =>
 						{
 							result = Marshal.PtrToStringAnsi(str, (int)strLength);
@@ -60,7 +56,7 @@ namespace SciterCore
 				string result = null;
 
 				RequestApi.RequestContentUrl(
-					_hrq, 
+					Handle, 
 					(IntPtr str, uint strLength, IntPtr param) =>
 						{
 							result = Marshal.PtrToStringAnsi(str, (int)strLength);
@@ -71,29 +67,28 @@ namespace SciterCore
 			}
 		}
 
-		public Interop.SciterRequest.SciterResourceType RequestedType
+		public SciterResourceType RequestedType
 		{
 			get
 			{
-				Interop.SciterRequest.SciterResourceType rv;
-				RequestApi.RequestGetRequestedDataType(_hrq, out rv);
-				return rv;
+				RequestApi.RequestGetRequestedDataType(Handle, out var rv);
+				return (SciterResourceType)unchecked((int)rv);
 			}
 		}
 
 		public void Succeeded(uint status, byte[] dataOrNull = null)
 		{
-			RequestApi.RequestSetSucceeded(_hrq, status, dataOrNull, dataOrNull == null ? 0 : (uint)dataOrNull.Length);
+			RequestApi.RequestSetSucceeded(Handle, status, dataOrNull, dataOrNull == null ? 0 : (uint)dataOrNull.Length);
 		}
 
 		public void Failed(uint status, byte[] dataOrNull = null)
 		{
-			RequestApi.RequestSetFailed(_hrq, status, dataOrNull, dataOrNull == null ? 0 : (uint)dataOrNull.Length);
+			RequestApi.RequestSetFailed(Handle, status, dataOrNull, dataOrNull == null ? 0 : (uint)dataOrNull.Length);
 		}
 
 		public void AppendData(byte[] data)
 		{
-			RequestApi.RequestAppendDataChunk(_hrq, data, (uint)data.Length);
+			RequestApi.RequestAppendDataChunk(Handle, data, (uint)data.Length);
 		}
 	}
 }

@@ -71,7 +71,7 @@ namespace SciterTest.Core
 			_window.LoadPage(uri: uri);
 		}
 
-		protected override LoadResult OnLoadData(LoadData args)
+		protected override LoadResult OnLoadData(object sender, LoadDataEventArgs args)
 		{
 			// load resource from SciterArchive
 			_archive?.GetItem(args.Uri, (data, path) => 
@@ -79,7 +79,7 @@ namespace SciterTest.Core
 				_api.SciterDataReady(_window.Handle, path, data, (uint) data.Length);
 			});
 			
-			return base.OnLoadData(args);
+			return base.OnLoadData(sender: sender, args: args);
 		}
 	}
 }

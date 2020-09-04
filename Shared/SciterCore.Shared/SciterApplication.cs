@@ -52,7 +52,7 @@ namespace SciterCore
                 QueueMain(action);
                 //NativeMethods.Main();
             }
-            catch (Exception ex)
+            catch
             {
                 return -1;
             }

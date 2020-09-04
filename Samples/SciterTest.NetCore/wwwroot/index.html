@@ -1,0 +1,252 @@
+<html window-blurbehind="none" theme="light">
+<head>
+	<style>
+		html {
+			background-color: #1e2835;
+			color: rgba(160,180,200,.85);
+			border-color: #e6e6e6;
+		}
+		
+		body {
+			overflow: hidden;
+		}
+
+		code {
+			color: rgba(160,180,200,.85);
+			opacity: .6;
+		}
+		
+		a {
+			color: #53a6fa !important;
+			text-decoration: none;
+			cursor: pointer;
+			outline: 0;
+		}
+		a:hover {
+			color: #53a6fa !important;
+		}
+		
+		h1 { 
+			color: blue; 
+			font-size: 30px; 
+		}
+		
+		h2 {
+			color: rgb(160,180,200);
+
+		}
+		
+		h3 {
+			color: rgb(160,180,200);
+
+		}
+
+		@const TOOLBAR_HEIGHT: 96dip;
+		@const FOOTER_HEIGHT: 32dip;
+		
+		body { margin: 0; }
+
+		main {
+			flow:stack;
+			size:*;
+		}
+
+		toolbar {
+			height: @TOOLBAR_HEIGHT;
+			z-index:1;
+			background-color: rgba(36, 49, 64, 0.55);
+			box-shadow: 0 0 4dip 4dip rgba(0, 0, 0, 0.25);
+			backdrop-filter: blur(10dip);
+		}
+
+		section {
+			size:*;
+			overflow:auto;
+			margin: @TOOLBAR_HEIGHT 0 @FOOTER_HEIGHT 0;
+			clip-box: margin-box;
+			border-spacing:20dip;
+			overflow: scroll-indicator;
+		}
+
+		footer {
+			overflow:auto;
+			position: fixed;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			height: @FOOTER_HEIGHT;
+			background-color: rgba(36, 49, 64, 0.55);
+			box-shadow: 0 0 4dip 4dip rgba(0, 0, 0, 0.25);
+			backdrop-filter: blur(10dip);
+		}
+
+		card {
+			display: block;
+			padding: 16dip;
+			border-radius: 4dip;
+			color: white;
+			background-color: rgba(36, 49, 64, 1);
+			box-shadow: 0 2px 1px -1px rgba(0,0,0,.2), 0 1px 2px 0 rgba(0,0,0,.14), 0 1px 3px 0 rgba(0,0,0,.12);
+		}
+
+		card > cardcontent
+		{
+			display: block;
+			visibility: collapse;
+			width: 1*;
+			opacity: 0;
+			transition: height cubic-in-out 0.4s 0.4s, opacity cubic-in-out 0.4s 0.4s;
+		}
+
+		card > cardcontent[state="visible"]
+		{
+			height:max-content;
+			opacity: 1;
+			visibility: visible;
+		}
+		
+	</style>
+	
+	<script type="text/tiscript"></script>
+	<script type="text/tiscript">
+	
+		view.StackTrace(function(value) {
+			$(#stMethodName).text = value.MethodName;
+			$(#stFileUri).text = value.FileName;
+			$(#stFileUri).attributes["href"] = value.FileUri;
+			$(#stLineNumber).text = value.LineNumber;
+			$(#stColumnNumber).text = value.ColumnNumber;
+			
+			var args = [];
+			
+			for(var (index, val) in value.Parameters)
+				args.push("<b>" + val.Type + "</b> " + val.Name);
+				
+			$(#stParameters).html += "(" + args.join(", ") + ")";
+			
+			$(#stContent).attributes["state"] = "visible";
+		});
+
+		//.HelloSciterCore();
+		view.HelloSciterCore(function(value) {
+		   	$(#helloSciter).html = "<pre><code>" + value + "</code><pre>";
+		});
+		
+		view.GetRuntimeInfo(function(value) {
+			$(#frameworkDescription).text = value.FrameworkDescription;
+			//$(#systemVersion).text = value.SystemVersion;
+			$(#processArchitecture).text = value.ProcessArchitecture;
+			$(#osArchitecture).text = value.OSArchitecture;
+			$(#osDescription).text = value.OSDescription;
+			$(#osContent).attributes["state"] = "visible";
+		});
+
+		var version_major = Sciter.VERSION >> 16;
+		var version_minor = Sciter.VERSION & 0xFFFF;
+		var revision_major = Sciter.REVISION >> 16;
+		var revision_minor = Sciter.REVISION & 0xFFFF;
+		$(span.version).text = String.printf("%d.%d.%d.%d (%d)", version_major, version_minor, revision_major, revision_minor, Sciter.BUILD);
+		
+		//$$(a).on("click", function(evt) {
+		//	Sciter.launch(this.@#href);
+		//	return true;
+		//});
+		
+		for(var (i,child) in $$(a) ) {
+			child.on("click", function(evt) {
+				Sciter.launch(this.@#href);
+				return true;
+			});
+		}
+  
+		function self.ready() {
+		}   
+    
+		//$(#icons8).on("click", function(evt) {
+		//	Sciter.launch("https://icons8.com/");
+		//	return true;
+		//});
+	</script>
+	
+</head>
+
+<body>
+
+	<main>
+		<toolbar>
+			<div style="width: 1*; display: inline-block; white-space: nowrap;">
+				<img src="logo.png"
+					 alt="Sciter Logo"
+					 height="96dip" />
+
+				<img style="float: right; margin-right: 10dip;"
+					 src="icons8-visual-studio-code-2019.svg"
+					 alt="icons8 - Visual Studio Code"
+					 height="96dip" />
+			</div>
+		</toolbar>
+		<section>
+			<div style="margin: 20dip">
+				<div #helloSciter />
+				
+				<p/>
+
+
+				<card #info style="width: 1*">
+					<div style="display:inline-block;">
+						<div style="font-size: 20dip; vertical-align: center; font-family: Roboto,Helvetica Neue,sans-serif;font-weight: 500;">RuntimeInformation</div>
+						<div style="font-size: 14dip;font-family: Roboto,Helvetica Neue,sans-serif;font-weight: 400;opacity: 0.6;margin-bottom: 16dip">Provides information about the .NET runtime installation.</div>
+					</div>
+
+					<cardcontent #osContent>
+						<div><span>Operating System:</span> <span #osDescription style="font-weight: bold;"></span></div>
+						<div><span>Framework:</span> <span #frameworkDescription style="font-weight: bold;"></span></div>
+						<div><span>OS Architecture:</span> <span #osArchitecture style="font-weight: bold;"></span></div>
+						<div><span>Process Architecture:</span> <span #processArchitecture style="font-weight: bold;"></span></div>
+					</cardcontent>
+
+				</card>
+				
+				<p/>
+
+				<card #info style="width: 1*; margin-bottom: 16dip">
+					<div style="font-size: 20dip; vertical-align: center; font-family: Roboto,Helvetica Neue,sans-serif;font-weight: 500;">StackFrame</div>
+					<div style="font-size: 14dip;font-family: Roboto,Helvetica Neue,sans-serif;font-weight: 400;opacity: 0.6;margin-bottom: 16dip">StackFrame corresponding to the calling stack frame.</div>
+
+					<cardcontent #stContent>
+						<div><span>Method:</span>&nbsp;<span #stMethodName style="font-weight: bold;"></span></div>
+						<div><span>Arguments:</span>&nbsp;<span #stParameters></span></div>
+						<div><span>File:</span>&nbsp;<a #stFileUri></a></div>
+						<div><span>Line #:</span>&nbsp;<span #stLineNumber style="font-weight: bold;"></span></div>
+						<div><span>Column #:</span>&nbsp;<span #stColumnNumber style="font-weight: bold;"></span></div>
+					</cardcontent>
+				</card>
+				
+				
+				
+
+				If you are new to C# Sciter, read the introductory article:
+				<a href="http://www.codeproject.com/Articles/1057199/Sciter-HTML-Csharp-based-desktop-apps-walkthrough">Walk-through for writing apps with SciterSharp</a>
+			</div>
+		</section>
+		
+		<footer>
+			<div style=" flow:horizontal; border-spacing:*;height:*;">
+				<div style="margin-top:*; margin-bottom:*; margin-left: 8dip; ">
+					<a href="https://github.com/wdcossey/SciterCore" >SciterCore</a>
+				</div>
+				
+				<div style="margin-top:*; margin-bottom:*; margin-right: 8dip;">
+					<a href="https://sciter.com/">Sciter</a>
+					<span.version style="margin:0 auto;">Version</span.version>
+				</div>
+
+			</div>
+		</footer>
+	</main>
+
+	
+
+	
+</body>
+</html>

@@ -15,17 +15,17 @@ namespace SciterCore.UnitTests.Graphics
         class DrawContentBehavior : SciterEventHandler
         {
             private readonly SciterWindow _window;
-            private readonly Func<SciterElement, SciterBehaviors.DRAW_PARAMS, bool> _drawCallback;
+            private readonly Func<SciterElement, DrawEventArgs, bool> _drawCallback;
 
-            public DrawContentBehavior(SciterWindow window, Func<SciterElement, SciterBehaviors.DRAW_PARAMS, bool> drawCallback)
+            public DrawContentBehavior(SciterWindow window, Func<SciterElement, DrawEventArgs, bool> drawCallback)
             {
                 _window = window;
                 _drawCallback = drawCallback;
             }
 
-            protected override bool OnDraw(SciterElement se, SciterBehaviors.DRAW_PARAMS prms)
+            protected override bool OnDraw(SciterElement se, DrawEventArgs args)
             {
-                return _drawCallback.Invoke(se, prms);
+                return _drawCallback.Invoke(se, args);
             }
         }
         
@@ -87,17 +87,17 @@ namespace SciterCore.UnitTests.Graphics
             var random = new Random();
             
             var host = new SciterHost(_sciterWindow);
-            host.RegisterBehaviorHandler(() => new DrawContentBehavior(_sciterWindow, (element, prms) =>
+            host.RegisterBehaviorHandler(() => new DrawContentBehavior(_sciterWindow, (element, args) =>
             {
-                if (prms.cmd != SciterBehaviors.DRAW_EVENTS.DRAW_CONTENT) 
+                if (args.DrawEvent != DrawEvent.Content) 
                     return false;
                 
-                using(var graphics = SciterGraphics.Create(prms.gfx))
+                using(var graphics = SciterGraphics.Create(args.Handle))
                 {
                     for (int i = 0; i < 10; i++)
                     {
                         graphics.SaveState()
-                            .Translate(prms.area.Left, prms.area.Top)
+                            .Translate(args.Area.Left, args.Area.Top)
                             .SetLineColor(random.Next(byte.MinValue, byte.MaxValue),
                                 random.Next(byte.MinValue, byte.MaxValue), random.Next(byte.MinValue, byte.MaxValue),
                                 random.Next(byte.MinValue, byte.MaxValue))
@@ -107,10 +107,10 @@ namespace SciterCore.UnitTests.Graphics
                             .SetLineWidth(random.Next(2, 10))
                             .SetLineCap(lineCap)
                             .SetLineJoin(lineJoin)
-                            .DrawLine(random.Next(byte.MinValue, prms.area.Width),
-                                random.Next(byte.MinValue, prms.area.Height),
-                                random.Next(byte.MinValue, prms.area.Width),
-                                random.Next(byte.MinValue, prms.area.Height))
+                            .DrawLine(random.Next(byte.MinValue, args.Area.Width),
+                                random.Next(byte.MinValue, args.Area.Height),
+                                random.Next(byte.MinValue, args.Area.Width),
+                                random.Next(byte.MinValue, args.Area.Height))
                             .RestoreState();
                     }
                 }
@@ -140,15 +140,15 @@ namespace SciterCore.UnitTests.Graphics
             var host = new SciterHost(_sciterWindow);
             host.RegisterBehaviorHandler(() => new DrawContentBehavior(_sciterWindow, (element, prms) =>
             {
-                if (prms.cmd != SciterBehaviors.DRAW_EVENTS.DRAW_CONTENT) 
+                if (prms.DrawEvent != DrawEvent.Content) 
                     return false;
                 
-                using(var graphics = SciterGraphics.Create(prms.gfx))
+                using(var graphics = SciterGraphics.Create(prms.Handle))
                 {
                     for (int i = 0; i < 10; i++)
                     {
                         graphics.SaveState()
-                            .Translate(prms.area.Left, prms.area.Top)
+                            .Translate(prms.Area.Left, prms.Area.Top)
                             .SetFillColor(random.Next(byte.MinValue, byte.MaxValue),
                                 random.Next(byte.MinValue, byte.MaxValue), random.Next(byte.MinValue, byte.MaxValue),
                                 random.Next(byte.MinValue, byte.MaxValue))
@@ -158,8 +158,8 @@ namespace SciterCore.UnitTests.Graphics
                                 for (var j = 0; j < random.Next(3, 12); j++)
                                 {
                                     result.Add(PolygonPoint.Create(
-                                        random.Next(byte.MinValue, prms.area.Width),
-                                        random.Next(byte.MinValue, prms.area.Height)));
+                                        random.Next(byte.MinValue, prms.Area.Width),
+                                        random.Next(byte.MinValue, prms.Area.Height)));
                                 }
                                 return result;
                             })
@@ -212,15 +212,15 @@ namespace SciterCore.UnitTests.Graphics
             var host = new SciterHost(_sciterWindow);
             host.RegisterBehaviorHandler(() => new DrawContentBehavior(_sciterWindow, (element, prms) =>
             {
-                if (prms.cmd != SciterBehaviors.DRAW_EVENTS.DRAW_CONTENT) 
+                if (prms.DrawEvent != DrawEvent.Content) 
                     return false;
                 
-                using(var graphics = SciterGraphics.Create(prms.gfx))
+                using(var graphics = SciterGraphics.Create(prms.Handle))
                 {
                     for (int i = 0; i < 10; i++)
                     {
                         graphics.SaveState()
-                            .Translate(prms.area.Left, prms.area.Top)
+                            .Translate(prms.Area.Left, prms.Area.Top)
                             .SetLineColor(random.Next(byte.MinValue, byte.MaxValue),
                                 random.Next(byte.MinValue, byte.MaxValue), random.Next(byte.MinValue, byte.MaxValue),
                                 random.Next(byte.MinValue, byte.MaxValue))
@@ -233,8 +233,8 @@ namespace SciterCore.UnitTests.Graphics
                                 for (var j = 0; j < random.Next(3, 12); j++)
                                 {
                                     result.Add(PolylinePoint.Create(
-                                        random.Next(byte.MinValue, prms.area.Width),
-                                        random.Next(byte.MinValue, prms.area.Height)));
+                                        random.Next(byte.MinValue, prms.Area.Width),
+                                        random.Next(byte.MinValue, prms.Area.Height)));
                                 }
                                 return result;
                             })
@@ -269,10 +269,10 @@ namespace SciterCore.UnitTests.Graphics
             var host = new SciterHost(_sciterWindow);
             host.RegisterBehaviorHandler(() => new DrawContentBehavior(_sciterWindow, (element, prms) =>
             {
-                switch (prms.cmd)
+                switch (prms.DrawEvent)
                 {
-                    case SciterBehaviors.DRAW_EVENTS.DRAW_CONTENT:
-                        using(var graphics = SciterGraphics.Create(prms.gfx))
+                    case DrawEvent.Content:
+                        using(var graphics = SciterGraphics.Create(prms.Handle))
                         {
                             for (int i = 0; i < 20; i++)
                             {
@@ -282,10 +282,10 @@ namespace SciterCore.UnitTests.Graphics
                                     random.Next(byte.MinValue, byte.MaxValue));
                                 
                                 graphics.SaveState()
-                                    .Translate(prms.area.Left, prms.area.Top)
+                                    .Translate(prms.Area.Left, prms.Area.Top)
                                     .SetLineColor(color)
                                     .SetLineWidth(random.Next(1, 4))
-                                    .DrawEllipse(prms.area.Width / 2, prms.area.Height / 2, random.Next(byte.MinValue, prms.area.Width / 2), random.Next(byte.MinValue, prms.area.Height / 2))
+                                    .DrawEllipse(prms.Area.Width / 2, prms.Area.Height / 2, random.Next(byte.MinValue, prms.Area.Width / 2), random.Next(byte.MinValue, prms.Area.Height / 2))
                                     //.DrawPath(
                                     //    SciterPath
                                     //        .Create()
@@ -313,9 +313,9 @@ namespace SciterCore.UnitTests.Graphics
                             }
                         }
                         break;
-                    case SciterBehaviors.DRAW_EVENTS.DRAW_BACKGROUND:
-                    case SciterBehaviors.DRAW_EVENTS.DRAW_FOREGROUND:
-                    case SciterBehaviors.DRAW_EVENTS.DRAW_OUTLINE:
+                    case DrawEvent.Background:
+                    case DrawEvent.Foreground:
+                    case DrawEvent.Outline:
                     default:
                         return false;
                 }
@@ -347,15 +347,15 @@ namespace SciterCore.UnitTests.Graphics
             var host = new SciterHost(_sciterWindow);
             host.RegisterBehaviorHandler(() => new DrawContentBehavior(_sciterWindow, (element, prms) =>
             {
-                if (prms.cmd != SciterBehaviors.DRAW_EVENTS.DRAW_CONTENT) 
+                if (prms.DrawEvent != DrawEvent.Content) 
                     return false;
                 
-                using(var graphics = SciterGraphics.Create(prms.gfx))
+                using(var graphics = SciterGraphics.Create(prms.Handle))
                 {
                     for (int i = 0; i < 20; i++)
                     {
                         graphics.SaveState()
-                            .Translate(prms.area.Left, prms.area.Top)
+                            .Translate(prms.Area.Left, prms.Area.Top)
                             .SetLineColor(random.Next(byte.MinValue, byte.MaxValue),
                                 random.Next(byte.MinValue, byte.MaxValue), random.Next(byte.MinValue, byte.MaxValue),
                                 random.Next(byte.MinValue, byte.MaxValue))
@@ -363,7 +363,7 @@ namespace SciterCore.UnitTests.Graphics
                                 random.Next(byte.MinValue, byte.MaxValue), random.Next(byte.MinValue, byte.MaxValue),
                                 random.Next(byte.MinValue, byte.MaxValue))
                             .SetLineWidth(random.Next(2, 10))
-                            .DrawRectangle(random.Next(byte.MinValue, prms.area.Width), random.Next(byte.MinValue, prms.area.Height), random.Next(byte.MinValue, prms.area.Width), random.Next(byte.MinValue, prms.area.Height))
+                            .DrawRectangle(random.Next(byte.MinValue, prms.Area.Width), random.Next(byte.MinValue, prms.Area.Height), random.Next(byte.MinValue, prms.Area.Width), random.Next(byte.MinValue, prms.Area.Height))
                             .RestoreState();
                     }
                 }
@@ -395,15 +395,15 @@ namespace SciterCore.UnitTests.Graphics
             var host = new SciterHost(_sciterWindow);
             host.RegisterBehaviorHandler(() => new DrawContentBehavior(_sciterWindow, (element, prms) =>
             {
-                if (prms.cmd != SciterBehaviors.DRAW_EVENTS.DRAW_CONTENT) 
+                if (prms.DrawEvent != DrawEvent.Content) 
                     return false;
                 
-                using(var graphics = SciterGraphics.Create(prms.gfx))
+                using(var graphics = SciterGraphics.Create(prms.Handle))
                 {
                     for (int i = 0; i < 20; i++)
                     {
                         graphics.SaveState()
-                            .Translate(prms.area.Left, prms.area.Top)
+                            .Translate(prms.Area.Left, prms.Area.Top)
                             .SetLineColor(random.Next(byte.MinValue, byte.MaxValue),
                                 random.Next(byte.MinValue, byte.MaxValue), random.Next(byte.MinValue, byte.MaxValue),
                                 random.Next(byte.MinValue, byte.MaxValue))
@@ -411,7 +411,7 @@ namespace SciterCore.UnitTests.Graphics
                                 random.Next(byte.MinValue, byte.MaxValue), random.Next(byte.MinValue, byte.MaxValue),
                                 random.Next(byte.MinValue, byte.MaxValue))
                             .SetLineWidth(random.Next(2, 10))
-                            .DrawText(SciterText.CreateForElementAndStyle("The quick brown fox jumps over the lazy dog", element.Handle, $"color: rgba({random.Next(byte.MinValue, byte.MaxValue)}, {random.Next(byte.MinValue, byte.MaxValue)}, {random.Next(byte.MinValue, byte.MaxValue)});font-size: {random.Next(12, 48)}dip;"), random.Next(byte.MinValue, prms.area.Width), random.Next(byte.MinValue, prms.area.Height), 5)
+                            .DrawText(SciterText.CreateForElementAndStyle("The quick brown fox jumps over the lazy dog", element.Handle, $"color: rgba({random.Next(byte.MinValue, byte.MaxValue)}, {random.Next(byte.MinValue, byte.MaxValue)}, {random.Next(byte.MinValue, byte.MaxValue)});font-size: {random.Next(12, 48)}dip;"), random.Next(byte.MinValue, prms.Area.Width), random.Next(byte.MinValue, prms.Area.Height), 5)
                             .RestoreState();
                     }
                 }

@@ -23,9 +23,9 @@ namespace SciterCore.UnitTests
 			int[] arr = new int[] { 1, 2, 3 };
 			//SciterValue res = SciterValue.FromList(arr);
 			SciterCore.SciterValue res = new SciterCore.SciterValue();
-			res.Append(new SciterCore.SciterValue(1));
-			res.Append(new SciterCore.SciterValue(1));
-			res.Append(new SciterCore.SciterValue(1));
+			res.Append(SciterValue.Create(1));
+			res.Append(SciterValue.Create(1));
+			res.Append(SciterValue.Create(1));
 			string r = res.ToString();
 			string r2 = res.ToString();
 			string r3 = res.ToJsonString(SciterCore.Interop.SciterValue.VALUE_STRING_CVT_TYPE.CVT_JSON_LITERAL);
@@ -38,14 +38,14 @@ namespace SciterCore.UnitTests
 
 				SciterCore.SciterValue sv2 = SciterCore.SciterValue.FromJsonString("{one: 1, two: 2, three: 3}");
 				sv2["one"] = SciterCore.SciterValue.Undefined;
-				Assert.IsTrue(sv2["two"].Get(0)==2);
+				Assert.IsTrue(sv2["two"].AsInt32(0)==2);
 			}
 
 			// Datetime
 			{
 				var now = DateTime.Now;
-				SciterCore.SciterValue sv = new SciterCore.SciterValue(now);
-				Assert.IsTrue(sv.GetDate() == now);
+				SciterValue sv = SciterValue.Create(now);
+				Assert.IsTrue(sv.AsDateTime(false) == now);
 			}
 
 			// SciterValue.AsDictionary

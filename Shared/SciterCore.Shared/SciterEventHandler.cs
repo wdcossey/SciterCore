@@ -18,7 +18,11 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Threading;
+using System.Threading.Tasks;
 using SciterCore.Interop;
 
 namespace SciterCore
@@ -33,7 +37,7 @@ namespace SciterCore
 			Debug.Assert(_is_attached == false);
 		}
 #endif
-
+		
 		private static List<SciterEventHandler> _attached_handlers = new List<SciterEventHandler>();// we keep a copy of all attached instances to guard from GC removal
 
 		public SciterEventHandler()
@@ -50,7 +54,9 @@ namespace SciterCore
 		
 		public string Name { get; internal set; }
 		
-		internal readonly SciterBehaviors.ELEMENT_EVENT_PROC EventProc;// keep a copy of the delegate so it survives GC
+		public delegate bool WorkDelegate(IntPtr tag, IntPtr he, uint evtg, IntPtr prms);
+		
+		internal readonly WorkDelegate EventProc;// keep a copy of the delegate so it survives GC
 		
 		// Overridables
 		protected virtual void Subscription(
@@ -114,7 +120,7 @@ namespace SciterCore
 
 		protected virtual bool OnDraw(
 			SciterElement element,
-			SciterBehaviors.DRAW_PARAMS prms)
+			DrawEventArgs args)
 		{
 			return false;
 		}
@@ -126,17 +132,31 @@ namespace SciterCore
 			return false;
 		}
 		
-		protected virtual bool OnScriptCall(
+		protected virtual ScriptEventResult OnScriptCall(
 			SciterElement element, 
-			string name, 
-			SciterValue[] args, 
-			out SciterValue result)
+			MethodInfo method, 
+			SciterValue[] args)
 		{
-			result = null;
-
-			var method = GetType().GetMethod(name);
 			if(method != null)
 			{
+				//Check if the method returns a Task and has a callback in the args
+				if (method.ReturnType.GetMethod(nameof(Task.GetAwaiter)) != null &&
+				    args.Any(a => a.IsFunction || a.IsObjectFunction))
+				{
+					((Task<SciterValue>) method.Invoke(this, new object[] {element, args})).ContinueWith(task =>
+					{
+						if (task.IsFaulted)
+							return;
+						
+						// Safe to call `First` here as the check is done above.
+						args.First(f => f.IsObjectFunction || f.IsFunction).Call(task.Result);
+					});
+					
+					// Tasks should return Successful, the callback function will be fired when the Task completes. 
+					return ScriptEventResult.Successful(null);
+				}
+				
+				
 				// This base class tries to handle it by searching for a method with the same 'name'
 				var mparams = method.GetParameters();
 
@@ -147,9 +167,13 @@ namespace SciterCore
 						(method.ReturnType == typeof(void) || method.ReturnType == typeof(SciterValue)))
 					{
 						var ret = method.Invoke(this, null);
+
+						SciterValue value = null;
+						
 						if(method.ReturnType == typeof(SciterValue))
-							result = (SciterValue)ret;
-						return true;
+							value = (SciterValue)ret;
+						
+						return ScriptEventResult.Successful(value);
 					}
 				}
 
@@ -161,9 +185,13 @@ namespace SciterCore
 					{
 						object[] call_parameters = new object[] { args };
 						var ret = method.Invoke(this, call_parameters);
+						
+						SciterValue value = null;
+						
 						if(method.ReturnType == typeof(SciterValue))
-							result = (SciterValue)ret;
-						return true;
+							value = (SciterValue)ret;
+						
+						return ScriptEventResult.Successful(value);
 					}
 				}
 
@@ -178,14 +206,13 @@ namespace SciterCore
 						object[] call_parameters = new object[] { element, args, null };
 						bool res = (bool)method.Invoke(this, call_parameters);
 						Debug.Assert(call_parameters[2] == null || call_parameters[2].GetType().IsAssignableFrom(typeof(SciterValue)));
-						result = call_parameters[2] as SciterValue;
-						return res;
+						return ScriptEventResult.Successful(call_parameters[2] as SciterValue);
 					}
 				}
 			}
 
 			// not handled
-			return false;
+			return ScriptEventResult.Failed();
 		}
 
 		protected virtual bool OnEvent(
@@ -305,7 +332,7 @@ namespace SciterCore
 				case SciterBehaviors.EVENT_GROUPS.HANDLE_DRAW:
 					{
 						SciterBehaviors.DRAW_PARAMS p = (SciterBehaviors.DRAW_PARAMS)Marshal.PtrToStructure(prms, typeof(SciterBehaviors.DRAW_PARAMS));
-						return OnDraw(se, p);
+						return OnDraw(se, p.Convert());
 					}
 
 				case SciterBehaviors.EVENT_GROUPS.HANDLE_TIMER:
@@ -360,15 +387,22 @@ namespace SciterCore
 						SciterBehaviors.SCRIPTING_METHOD_PARAMS p = (SciterBehaviors.SCRIPTING_METHOD_PARAMS)Marshal.PtrToStructure(prms, typeof(SciterBehaviors.SCRIPTING_METHOD_PARAMS));
 						SciterBehaviors.SCRIPTING_METHOD_PARAMS_Wraper pw = new SciterBehaviors.SCRIPTING_METHOD_PARAMS_Wraper(p);
 
-						bool bOK = OnScriptCall(se, pw.name, pw.args, out pw.result);
-						if(bOK && pw.result != null)
+						var methodInfo = GetType().GetMethod(pw.name);
+
+						if (methodInfo == null)
+							return false;
+
+						var scriptResult = OnScriptCall(se, methodInfo, pw.args);
+						
+						if (scriptResult.IsSuccessful && scriptResult.Value != null)
 						{
-							Interop.SciterValue.VALUE vres = pw.result.ToVALUE();
+							//pw.result = scriptResult.Value;
+							Interop.SciterValue.VALUE vres = scriptResult.Value.ToVALUE();
 							IntPtr vptr = IntPtr.Add(prms, RESULT_OFFSET.ToInt32());
 							Marshal.StructureToPtr(vres, vptr, false);
 						}
 
-						return bOK;
+						return scriptResult.IsSuccessful;
 					}
 
 				case SciterBehaviors.EVENT_GROUPS.HANDLE_TISCRIPT_METHOD_CALL:
@@ -401,4 +435,6 @@ namespace SciterCore
 			}
 		}
 	}
+	
+	
 }

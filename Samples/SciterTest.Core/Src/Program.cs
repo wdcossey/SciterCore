@@ -33,7 +33,7 @@ namespace SciterTest.Core
 		{
 			var list = new List<int> { 123 };
 
-			var ss = SciterValue.FromObject(new { aa = list });
+			var ss = SciterValue.Create(new { aa = list });
 
 			Console.WriteLine("Sciter: " + Sciter.Version());
 			Console.WriteLine("Bitness: " + IntPtr.Size);

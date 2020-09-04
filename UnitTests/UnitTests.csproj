@@ -64,6 +64,7 @@
     <Compile Include="PolygonPointTests.cs" />
     <Compile Include="PolylinePointTests.cs" />
     <Compile Include="SciterColorTests.cs" />
+    <Compile Include="SciterValueTests.cs" />
     <Compile Include="UnitTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

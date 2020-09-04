@@ -14,8 +14,11 @@
     <tags>Sciter SciterCore WinForms WPF Gtk Xamarin</tags>
   </metadata>
   <files>
-    <file src="build\**\*.targets" target="build\any" />
-    <file src="build\**\*.targets" target="buildMultiTargeting\any" />
+  <!--
+    <file src="build\**\*.targets" target="build\net461" />
+    <file src="build\**\*.targets" target="build\netstandard2.0" />
+    <file src="build\**\*.targets" target="buildMultiTargeting\net461" />
+	-->
     <file src="..\..\sciter-sdk\bin.lnx\x64\libsciter-gtk.so" target="runtimes\linux-x64\native\libsciter-gtk.so" />
     <file src="..\..\sciter-sdk\bin.osx\sciter-osx-64.dylib" target="runtimes\osx\native\sciter-osx-64.dylib" />
     <file src="..\..\sciter-sdk\bin.win\x32\sciter.dll" target="runtimes\win-x86\native\sciter.dll" />

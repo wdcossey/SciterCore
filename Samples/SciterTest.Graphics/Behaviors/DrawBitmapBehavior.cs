@@ -12,9 +12,9 @@ namespace SciterTest.Graphics.Behaviors
     [SciterBehavior("draw-checkered-background")]
     internal class CheckeredBackgroundBitmapBehavior : SciterEventHandler
     {
-        protected override bool OnDraw(SciterElement se, SciterBehaviors.DRAW_PARAMS prms)
+        protected override bool OnDraw(SciterElement se, DrawEventArgs args)
         {
-            if (prms.cmd == SciterBehaviors.DRAW_EVENTS.DRAW_BACKGROUND)
+            if (args.DrawEvent == DrawEvent.Background)
             {
                 /*using (var bitmap = new SKBitmap(width: prms.area.Width, height: prms.area.Height, colorType: SKColorType.Rgba8888, alphaType: SKAlphaType.Premul))
                 using (var canvas = new SKCanvas(bitmap: bitmap))
@@ -53,11 +53,11 @@ namespace SciterTest.Graphics.Behaviors
     [SciterBehavior("draw-alt-attribute")]
     internal class InfoBitmapBehavior : SciterEventHandler
     {
-        protected override bool OnDraw(SciterElement se, SciterBehaviors.DRAW_PARAMS prms)
+        protected override bool OnDraw(SciterElement se, DrawEventArgs args)
         {
-            if (prms.cmd == SciterBehaviors.DRAW_EVENTS.DRAW_FOREGROUND)
+            if (args.DrawEvent == DrawEvent.Foreground)
             {
-                using (SKBitmap bitmap = new SKBitmap(width: prms.area.Width, height: prms.area.Height, colorType: SKColorType.Rgba8888, alphaType: SKAlphaType.Premul))
+                using (SKBitmap bitmap = new SKBitmap(width: args.Area.Width, height: args.Area.Height, colorType: SKColorType.Rgba8888, alphaType: SKAlphaType.Premul))
                 using (SKCanvas canvas = new SKCanvas(bitmap))
                 using (SKPaint paint = new SKPaint())
                 {
@@ -83,8 +83,8 @@ namespace SciterTest.Graphics.Behaviors
                     }
 
                     var img = bitmap.ToSciterImage();
-                    var gfx = SciterGraphics.Create(prms.gfx);
-                    gfx.BlendImage(img, prms.area.Left, prms.area.Top);
+                    var gfx = SciterGraphics.Create(args.Handle);
+                    gfx.BlendImage(img, args.Area.Left, args.Area.Top);
                 }
             }
 
@@ -96,35 +96,35 @@ namespace SciterTest.Graphics.Behaviors
     [SciterBehavior("draw-solid-background")]
     internal class SolidBitmapBehavior : InfoBitmapBehavior
     {
-        protected readonly SciterBehaviors.DRAW_EVENTS _drawEvent = SciterBehaviors.DRAW_EVENTS.DRAW_BACKGROUND;
+        protected readonly DrawEvent _drawEvent = DrawEvent.Background;
 
         public SolidBitmapBehavior()
         {
 
         }
 
-        public SolidBitmapBehavior(SciterBehaviors.DRAW_EVENTS drawEvent)
+        public SolidBitmapBehavior(DrawEvent drawEvent)
             : this()
         {
             _drawEvent = drawEvent;
         }
 
-        protected override bool OnDraw(SciterElement se, SciterBehaviors.DRAW_PARAMS prms)
+        protected override bool OnDraw(SciterElement se, DrawEventArgs args)
         {
-            if (prms.cmd == _drawEvent)
+            if (args.DrawEvent == _drawEvent)
             {
-                using (var bitmap = new SKBitmap(width: prms.area.Width, height: prms.area.Height, colorType: SKColorType.Rgba8888, alphaType: SKAlphaType.Premul))
+                using (var bitmap = new SKBitmap(width: args.Area.Width, height: args.Area.Height, colorType: SKColorType.Rgba8888, alphaType: SKAlphaType.Premul))
                 using (var canvas = new SKCanvas(bitmap: bitmap))
                 {
                     canvas.Clear(color: SKColor.Parse("#445F59").WithAlpha(255));
 
                     var img = bitmap.ToSciterImage();
-                    var gfx = SciterGraphics.Create(prms.gfx);
-                    gfx.BlendImage(img, prms.area.Left, prms.area.Top);
+                    var gfx = SciterGraphics.Create(args.Handle);
+                    gfx.BlendImage(img, args.Area.Left, args.Area.Top);
                 }
             }
 
-            return base.OnDraw(se, prms);
+            return base.OnDraw(se, args);
         }
     }
 
@@ -133,7 +133,7 @@ namespace SciterTest.Graphics.Behaviors
     {
 
         public SolidForegroundBitmapBehavior()
-            : base(SciterBehaviors.DRAW_EVENTS.DRAW_FOREGROUND)
+            : base(DrawEvent.Foreground)
         {
 
         }
@@ -142,12 +142,12 @@ namespace SciterTest.Graphics.Behaviors
     [SciterBehavior("draw-bitmap")]
     internal class DrawBitmapBehavior : InfoBitmapBehavior
     {
-		protected override bool OnDraw(SciterElement se, SciterBehaviors.DRAW_PARAMS prms)
+		protected override bool OnDraw(SciterElement se, DrawEventArgs args)
 		{
-            if (prms.cmd == SciterBehaviors.DRAW_EVENTS.DRAW_BACKGROUND)
+            if (args.DrawEvent == DrawEvent.Background)
             {
 
-                using (SKBitmap bitmap = new SKBitmap(width: prms.area.Width, height: prms.area.Height, colorType: SKColorType.Rgba8888, alphaType: SKAlphaType.Premul))
+                using (SKBitmap bitmap = new SKBitmap(width: args.Area.Width, height: args.Area.Height, colorType: SKColorType.Rgba8888, alphaType: SKAlphaType.Premul))
                 using (SKCanvas canvas = new SKCanvas(bitmap))
                 using (SKPaint paint = new SKPaint())
                 {
@@ -158,17 +158,17 @@ namespace SciterTest.Graphics.Behaviors
                     paint.Shader = SKShader.CreateLinearGradient(
                                         //new SKPoint(prms.area.Width / 2f, prms.area.Height / 2f),
                                         new SKPoint(0, 0),
-                                        new SKPoint(prms.area.Width, prms.area.Height),
+                                        new SKPoint(args.Area.Width, args.Area.Height),
                                         //Math.Max(prms.area.Width, prms.area.Height) / 10f,
                                         new SKColor[] { SKColor.Parse("#FF75B7FE"), SKColor.Parse("#00000000") },
                                         null,
                                         SKShaderTileMode.Clamp);
 
-                    canvas.DrawRect(new SKRect(0, 0, prms.area.Width, prms.area.Height), paint);
+                    canvas.DrawRect(new SKRect(0, 0, args.Area.Width, args.Area.Height), paint);
 
                     var img = bitmap.ToSciterImage();
-                    var gfx = SciterGraphics.Create(prms.gfx);
-                    gfx.BlendImage(img, prms.area.Left, prms.area.Top);
+                    var gfx = SciterGraphics.Create(args.Handle);
+                    gfx.BlendImage(img, args.Area.Left, args.Area.Top);
                     //return true;
                 }
 
@@ -221,31 +221,31 @@ namespace SciterTest.Graphics.Behaviors
                 
             }
 
-            return base.OnDraw(se, prms);
+            return base.OnDraw(se, args);
 		}
 	}
 
     [SciterBehavior("draw-linear-background")]
     internal class LinearBitmapBehavior : InfoBitmapBehavior
     {
-        protected readonly SciterBehaviors.DRAW_EVENTS _drawEvent = SciterBehaviors.DRAW_EVENTS.DRAW_BACKGROUND;
+        protected readonly DrawEvent _drawEvent = DrawEvent.Background;
 
         public LinearBitmapBehavior()
         {
 
         }
 
-        public LinearBitmapBehavior(SciterBehaviors.DRAW_EVENTS drawEvent)
+        public LinearBitmapBehavior(DrawEvent drawEvent)
             : this()
         {
             _drawEvent = drawEvent;
         }
 
-        protected override bool OnDraw(SciterElement se, SciterBehaviors.DRAW_PARAMS prms)
+        protected override bool OnDraw(SciterElement se, DrawEventArgs args)
         {
-            if (prms.cmd == _drawEvent)
+            if (args.DrawEvent == _drawEvent)
             {
-                using (SKBitmap bitmap = new SKBitmap(width: prms.area.Width, height: prms.area.Height, colorType: SKColorType.Rgba8888, alphaType: SKAlphaType.Premul))
+                using (SKBitmap bitmap = new SKBitmap(width: args.Area.Width, height: args.Area.Height, colorType: SKColorType.Rgba8888, alphaType: SKAlphaType.Premul))
                 using (SKCanvas canvas = new SKCanvas(bitmap))
                 using (SKPaint paint = new SKPaint())
                 {
@@ -254,22 +254,22 @@ namespace SciterTest.Graphics.Behaviors
                     canvas.Clear();
 
                     paint.Shader = SKShader.CreateLinearGradient(
-                                        new SKPoint(prms.area.Width / 2f, 0),
-                                        new SKPoint(prms.area.Width / 2f, prms.area.Height),
+                                        new SKPoint(args.Area.Width / 2f, 0),
+                                        new SKPoint(args.Area.Width / 2f, args.Area.Height),
                                         new SKColor[] { SKColor.Parse("#00000000"), SKColor.Parse("#FF75B7FE") },
                                         null,
                                         SKShaderTileMode.Clamp);
 
-                    canvas.DrawRect(new SKRect(0, 0, prms.area.Width, prms.area.Height), paint);
+                    canvas.DrawRect(new SKRect(0, 0, args.Area.Width, args.Area.Height), paint);
 
                     var img = bitmap.ToSciterImage();
-                    var gfx = SciterGraphics.Create(prms.gfx);
-                    gfx.BlendImage(img, prms.area.Left, prms.area.Top);
+                    var gfx = SciterGraphics.Create(args.Handle);
+                    gfx.BlendImage(img, args.Area.Left, args.Area.Top);
                     //return true;
                 }
             }
 
-            return base.OnDraw(se, prms);
+            return base.OnDraw(se, args);
         }
     }
 
@@ -278,7 +278,7 @@ namespace SciterTest.Graphics.Behaviors
     {
 
         public LinearForegroundBitmapBehavior()
-            : base(SciterBehaviors.DRAW_EVENTS.DRAW_FOREGROUND)
+            : base(DrawEvent.Foreground)
         {
 
         }
@@ -287,24 +287,24 @@ namespace SciterTest.Graphics.Behaviors
     [SciterBehavior("draw-radial-background")]
     internal class RadialBitmapBehavior : InfoBitmapBehavior
     {
-        protected readonly SciterBehaviors.DRAW_EVENTS _drawEvent = SciterBehaviors.DRAW_EVENTS.DRAW_BACKGROUND;
+        protected readonly DrawEvent _drawEvent = DrawEvent.Background;
 
         public RadialBitmapBehavior()
         {
 
         }
 
-        public RadialBitmapBehavior(SciterBehaviors.DRAW_EVENTS drawEvent)
+        public RadialBitmapBehavior(DrawEvent drawEvent)
             : this()
         {
             _drawEvent = drawEvent;
         }
 
-        protected override bool OnDraw(SciterElement se, SciterBehaviors.DRAW_PARAMS prms)
+        protected override bool OnDraw(SciterElement se, DrawEventArgs args)
         {
-            if (prms.cmd == _drawEvent)
+            if (args.DrawEvent == _drawEvent)
             {
-                using (SKBitmap bitmap = new SKBitmap(width: prms.area.Width, height: prms.area.Height, colorType: SKColorType.Rgba8888, alphaType: SKAlphaType.Premul))
+                using (SKBitmap bitmap = new SKBitmap(width: args.Area.Width, height: args.Area.Height, colorType: SKColorType.Rgba8888, alphaType: SKAlphaType.Premul))
                 using (SKCanvas canvas = new SKCanvas(bitmap))
                 using (SKPaint paint = new SKPaint())
                 {
@@ -312,23 +312,23 @@ namespace SciterTest.Graphics.Behaviors
                     canvas.Clear();
 
                     paint.Shader = SKShader.CreateRadialGradient(
-                                        new SKPoint(prms.area.Width / 2f, prms.area.Height / 2f),
-                                        Math.Max(prms.area.Width, prms.area.Height) / 10f,
+                                        new SKPoint(args.Area.Width / 2f, args.Area.Height / 2f),
+                                        Math.Max(args.Area.Width, args.Area.Height) / 10f,
                                         new SKColor[] { SKColor.Parse("#77FFFFFF"), SKColor.Parse("#33FFFFFF"), SKColor.Parse("#00000000") },
                                         null,
                                         SKShaderTileMode.Mirror);
 
-                    canvas.DrawRect(new SKRect(0, 0, prms.area.Width, prms.area.Height), paint);
+                    canvas.DrawRect(new SKRect(0, 0, args.Area.Width, args.Area.Height), paint);
 
                     var img = bitmap.ToSciterImage();
-                    var gfx = SciterGraphics.Create(prms.gfx);
-                    gfx.BlendImage(img, prms.area.Left, prms.area.Top);
+                    var gfx = SciterGraphics.Create(args.Handle);
+                    gfx.BlendImage(img, args.Area.Left, args.Area.Top);
 
                     //return true;
                 }
             }
 
-            return base.OnDraw(se, prms);
+            return base.OnDraw(se, args);
         }
     }
 
@@ -337,7 +337,7 @@ namespace SciterTest.Graphics.Behaviors
     {
 
         public RadialForegroundBitmapBehavior()
-            :base(SciterBehaviors.DRAW_EVENTS.DRAW_FOREGROUND)
+            :base(DrawEvent.Foreground)
         {
 
         }

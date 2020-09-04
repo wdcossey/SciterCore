@@ -37,7 +37,7 @@ namespace SciterTest.Gtk
 		public bool Host_HelloSciter(SciterElement el, SciterValue[] args, out SciterValue result)
 		{
 			var stackFrame = new StackTrace(true).GetFrame(0);//.GetFileName();
-			result = new SciterValue($"<h2>Hello Sciter from C#!</h2><code>Method: {stackFrame.GetMethod().Name}<br/>File: <a href=\"{new Uri(stackFrame.GetFileName()).AbsoluteUri}\">{Path.GetFileName(stackFrame.GetFileName())}</a><br/>Line: {stackFrame.GetFileLineNumber()}<br/>Column: {stackFrame.GetFileColumnNumber()}</code>");
+			result = SciterValue.Create($"<h2>Hello Sciter from C#!</h2><code>Method: {stackFrame.GetMethod().Name}<br/>File: <a href=\"{new Uri(stackFrame.GetFileName()).AbsoluteUri}\">{Path.GetFileName(stackFrame.GetFileName())}</a><br/>Line: {stackFrame.GetFileLineNumber()}<br/>Column: {stackFrame.GetFileColumnNumber()}</code>");
 			return true;
 		}
 
@@ -90,7 +90,7 @@ namespace SciterTest.Gtk
 			_window.LoadPage(uri: uri);
 		}
 
-		protected override LoadResult OnLoadData(LoadData args)
+		protected override LoadResult OnLoadData(object sender, LoadDataEventArgs args)
 		{
 			// load resource from SciterArchive
 			_archive?.GetItem(args.Uri, (data, path) => 
@@ -99,7 +99,7 @@ namespace SciterTest.Gtk
 			});
 
 			// call base to ensure LibConsole is loaded
-			return base.OnLoadData(args);
+			return base.OnLoadData(sender: sender, args: args);
 		}
 	}
 }

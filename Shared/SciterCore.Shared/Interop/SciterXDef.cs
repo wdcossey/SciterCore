@@ -49,7 +49,7 @@ namespace SciterCore.Interop
 			LOAD_MYSELF = 3,
 		}
 
-		public enum SCITER_CALLBACK_CODE : uint
+		internal enum SCITER_CALLBACK_CODE : uint
 		{
 			SC_LOAD_DATA = 0x01,
 
@@ -66,7 +66,7 @@ namespace SciterCore.Interop
 
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct SCITER_CALLBACK_NOTIFICATION
+		internal struct SCITER_CALLBACK_NOTIFICATION
 		{
 			public SCITER_CALLBACK_CODE code;// SC_LOAD_DATA or SC_DATA_LOADED or ..
 			public IntPtr hwnd;
@@ -112,7 +112,7 @@ namespace SciterCore.Interop
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct SCN_ATTACH_BEHAVIOR
+		internal struct SCN_ATTACH_BEHAVIOR
 		{
 			public uint code;			// UINT - [in] one of the codes above.
 			public IntPtr hwnd;			// HWINDOW - [in] HWINDOW of the window this callback was attached to.

@@ -9,6 +9,8 @@
     <Import_RootNamespace>SciterCore</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Enums\CallbackCode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Enums\DrawEvent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\DrawPathMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\ElementArea.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\ElementHtmlReplacement.cs" />
@@ -19,6 +21,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Enums\NodeType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\ImageEncoding.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\SciterResourceType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EventArgs\DataLoadedEventArgs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EventArgs\DrawEventArgs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EventArgs\EngineDestroyedEventArgs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EventArgs\LoadDataEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\DomResultExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\DrawingExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\GraphinResultExtensions.cs" />
@@ -29,12 +35,15 @@
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\SciterNodeExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\SciterPathExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\SciterTextExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ValueResultExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\PolygonPoint.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\PolylinePoint.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\SciterColor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\SciterGraphics.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\SciterImage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\SciterPath.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\SciterRectangle.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\SciterSize.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\SciterText.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\TextMetrics.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\PInvokeGTK.cs" />
@@ -61,13 +70,13 @@
     <Compile Include="$(MSBuildThisFileDirectory)SciterHost.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SciterNode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SciterRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SciterScriptResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SciterValue.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SciterWindow.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\WindowExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EventHandlerRegistry.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Attributes\SciterBehaviorAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\BehaviorAttributeExtensions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Structs\LoadDataNotification.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)LibConsole\console.tis" />
