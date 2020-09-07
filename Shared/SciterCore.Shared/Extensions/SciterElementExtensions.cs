@@ -197,9 +197,9 @@ namespace SciterCore
 
         #region Classes
 
-        private static readonly string ClassSeparator = " ";
-        
-        private static readonly string[] ClassSeparatorArray = new string[] { ClassSeparator };
+        private const string ClassSeparator = " ";
+
+        private static readonly string[] ClassSeparatorArray = { ClassSeparator };
         
         public static bool HasClass(this SciterElement element, params string[] input)
         {
