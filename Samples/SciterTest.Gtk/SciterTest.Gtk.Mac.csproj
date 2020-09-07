@@ -72,7 +72,6 @@
   <ItemGroup>
     <None Include="Info.plist" />
     <None Include="Entitlements.plist" />
-    <None Include="res\index.html" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Src\Host.cs" />
@@ -91,8 +90,7 @@
     </NativeReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="res\icons8-visual-studio-2019.svg" />
-    <None Include="res\logo.png" />
+    <None Include="wwwroot\**" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Platform\SciterCore.Mac\SciterCore.Mac.csproj">

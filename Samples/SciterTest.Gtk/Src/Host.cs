@@ -75,7 +75,7 @@ namespace SciterTest.Gtk
 			location += "\\..\\..";
 #endif
 
-			string path = Path.Combine(location, "res", page);
+			string path = Path.Combine(location, "wwwroot", page);
 
 			Uri uri = new Uri(path, UriKind.Absolute);
 

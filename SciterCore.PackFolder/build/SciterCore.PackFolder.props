@@ -27,6 +27,10 @@
         <LogicalName>SciterResource</LogicalName>
       </EmbeddedResource>
     </ItemGroup>
+
+    <ItemGroup>
+      <None Include="$(SciterCorePackDirectory)\**" />
+    </ItemGroup>
   </Target>
   
 </Project>

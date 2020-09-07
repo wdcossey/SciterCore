@@ -308,7 +308,7 @@ namespace SciterCore
 			fnfi = (IntPtr tag, uint argc, IntPtr argv, out Interop.SciterValue.VALUE retval) =>
 			{
 				// Get the list of SciterXValue.VALUE from the ptr
-				SciterValue[] args = new SciterValue[argc];
+				var args = new SciterValue[argc];
 				for(var i = 0; i < argc; i++)
 					args[i] = new SciterValue((Interop.SciterValue.VALUE)Marshal.PtrToStructure(IntPtr.Add(argv, i * Marshal.SizeOf(typeof(Interop.SciterValue.VALUE))), typeof(Interop.SciterValue.VALUE)));
 
@@ -620,7 +620,9 @@ namespace SciterCore
 
 		public double AsDuration()
 		{
-			Debug.Assert(IsDuration);
+			if(!IsDuration)
+				ThrowTypeException(nameof(Interop.SciterValue.VALUE_TYPE.T_DURATION));
+
 			return AsDouble();
 		}
 

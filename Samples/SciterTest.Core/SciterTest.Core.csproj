@@ -64,12 +64,6 @@
     <Compile Include="Src\Program.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
-    <EmbeddedResource Include="SiteResource.bin">
-      <LogicalName>SiteResource</LogicalName>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -79,10 +73,7 @@
     <None Include="Resources\IconMain.ico" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="res\index.html" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="res\glyphs.html" />
+    <None Include="wwwroot\**" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Platform\SciterCore.WinForms\SciterCore.WinForms.csproj">
@@ -91,9 +82,6 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PreBuildEvent>$(SolutionDir)scripts\packWindows.bat "$(ProjectDir)res" "$(ProjectDir)SiteResource.bin"</PreBuildEvent>
-  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

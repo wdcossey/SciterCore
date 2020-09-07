@@ -10,7 +10,7 @@
         Title="MainWindow" Height="450" Width="800">
     
     <Grid >
-        <local:SciterControl Source="/res/index.html">
+        <local:SciterControl Source="/wwwroot/index.html">
             
         </local:SciterControl>
     </Grid>

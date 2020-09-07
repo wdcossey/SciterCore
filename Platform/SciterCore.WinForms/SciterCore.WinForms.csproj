@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" TreatAsLocalProperty="TaskFolder;PackSourceFolder;PackOutputFile;TaskAssembly">
-  <Import Project="..\..\packages\SciterCore.PackFolder.0.0.55-alpha\build\any\SciterCore.PackFolder.props" Condition="Exists('..\..\packages\SciterCore.PackFolder.0.0.55-alpha\build\any\SciterCore.PackFolder.props')" />
+  <Import Project="..\..\packages\SciterCore.PackFolder.0.0.91-alpha\build\any\SciterCore.PackFolder.props" Condition="Exists('..\..\packages\SciterCore.PackFolder.0.0.91-alpha\build\any\SciterCore.PackFolder.props')" />
   <Import Project="$(SolutionDir)Shared\SciterCore.Shared.WinForms\SciterCore.Shared.WinForms.projitems" Label="Shared" Condition="Exists('$(SolutionDir)Shared\SciterCore.Shared.WinForms\SciterCore.Shared.WinForms.projitems')" />
   <Import Project="$(SolutionDir)Shared\SciterCore.Shared\SciterCore.Shared.projitems" Label="Shared" Condition="Exists('$(SolutionDir)Shared\SciterCore.Shared\SciterCore.Shared.projitems')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
@@ -98,6 +98,6 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105.The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\..\packages\SciterCore.Binaries.0.0.55-alpha\build\any\SciterCore.Binaries.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\SciterCore.Binaries.0.0.55-alpha\build\any\SciterCore.Binaries.targets'))" />
-    <Error Condition="!Exists('..\..\packages\SciterCore.PackFolder.0.0.55-alpha\build\any\SciterCore.PackFolder.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\SciterCore.PackFolder.0.0.55-alpha\build\any\SciterCore.PackFolder.props'))" />
+    <Error Condition="!Exists('..\..\packages\SciterCore.PackFolder.0.0.91-alpha\build\any\SciterCore.PackFolder.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\SciterCore.PackFolder.0.0.91-alpha\build\any\SciterCore.PackFolder.props'))" />
   </Target>
 </Project>

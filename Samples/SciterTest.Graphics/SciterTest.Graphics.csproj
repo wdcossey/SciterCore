@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\packages\SciterCore.PackFolder.0.0.91-alpha\build\any\SciterCore.PackFolder.props" Condition="Exists('..\..\packages\SciterCore.PackFolder.0.0.91-alpha\build\any\SciterCore.PackFolder.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -93,7 +94,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <EmbeddedResource Include="SiteResource.bin" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -106,15 +106,7 @@
     <None Include="Resources\IconMain.ico" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="res\index.html" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="res\test.html" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="res\icons8-c-sharp-logo.svg" />
-    <None Include="res\icons8-visual-studio-2019.svg" />
-    <None Include="res\logo.png" />
+    <None Include="wwwroot\**" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Platform\SciterCore.WinForms\SciterCore.WinForms.csproj">
@@ -123,9 +115,6 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PreBuildEvent>$(SolutionDir)scripts\packWindows.bat "$(ProjectDir)res" "$(ProjectDir)SiteResource.bin"</PreBuildEvent>
-  </PropertyGroup>
   <Import Project="..\..\packages\SkiaSharp.1.68.1.1\build\net45\SkiaSharp.targets" Condition="Exists('..\..\packages\SkiaSharp.1.68.1.1\build\net45\SkiaSharp.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
@@ -133,6 +122,7 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\..\packages\SkiaSharp.1.68.1.1\build\net45\SkiaSharp.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\SkiaSharp.1.68.1.1\build\net45\SkiaSharp.targets'))" />
     <Error Condition="!Exists('..\..\packages\SciterCore.Binaries.0.0.55-alpha\build\any\SciterCore.Binaries.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\SciterCore.Binaries.0.0.55-alpha\build\any\SciterCore.Binaries.targets'))" />
+    <Error Condition="!Exists('..\..\packages\SciterCore.PackFolder.0.0.91-alpha\build\any\SciterCore.PackFolder.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\SciterCore.PackFolder.0.0.91-alpha\build\any\SciterCore.PackFolder.props'))" />
   </Target>
   <Import Project="..\..\packages\SciterCore.Binaries.0.0.55-alpha\build\any\SciterCore.Binaries.targets" Condition="Exists('..\..\packages\SciterCore.Binaries.0.0.55-alpha\build\any\SciterCore.Binaries.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

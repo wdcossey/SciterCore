@@ -73,14 +73,14 @@ namespace SciterTest.Graphics
 			_window = window;
 
 #if !DEBUG
-			_archive.Open("SciterTest.Graphics.SiteResource.bin");
+			_archive.Open();
 #endif
 		}
 
 		public void SetupPage(string page)
 		{
 #if DEBUG
-			string location = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+			var location = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
 #if OSX
 			location += "\\..\\..\\..\\..\\..\\";
@@ -88,9 +88,9 @@ namespace SciterTest.Graphics
 			location += "\\..\\..";
 #endif
 
-			string path = Path.Combine(location, "res", page);
+			var path = Path.Combine(location, "wwwroot", page);
 
-			Uri uri = new Uri(path, UriKind.Absolute);
+			var uri = new Uri(path, UriKind.Absolute);
 
 			Debug.Assert(uri.IsFile);
 

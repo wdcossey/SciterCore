@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\packages\SciterCore.PackFolder.0.0.91-alpha\build\any\SciterCore.PackFolder.props" Condition="Exists('..\..\packages\SciterCore.PackFolder.0.0.91-alpha\build\any\SciterCore.PackFolder.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
@@ -30,14 +31,6 @@
     <PlatformTarget>x64</PlatformTarget>
     <AOTMode>None</AOTMode>
     <PackageSigningKey>3rd Party Mac Developer Installer</PackageSigningKey>
-    <CustomCommands>
-      <CustomCommands>
-        <Command>
-          <type>BeforeBuild</type>
-          <command>sh ${SolutionDir}/scripts/packOSX.sh ${ProjectDir}/res ${ProjectDir}/SiteResource.bin</command>
-        </Command>
-      </CustomCommands>
-    </CustomCommands>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
     <Optimize>true</Optimize>
@@ -53,14 +46,6 @@
     <LinkMode>SdkOnly</LinkMode>
     <PlatformTarget>x64</PlatformTarget>
     <DefineConstants>__MACOS__;__UNIFIED__;OSX</DefineConstants>
-    <CustomCommands>
-      <CustomCommands>
-        <Command>
-          <type>BeforeBuild</type>
-          <command>sh ${SolutionDir}/scripts/packOSX.sh ${ProjectDir}/res ${ProjectDir}/SiteResource.bin</command>
-        </Command>
-      </CustomCommands>
-    </CustomCommands>
     <AOTMode>None</AOTMode>
   </PropertyGroup>
   <ItemGroup>
@@ -94,10 +79,9 @@
     <None Include="Info.plist" />
     <None Include="Entitlements.plist" />
     <None Include="packages.config" />
-    <None Include="res\index.html" />
-    <None Include="res\test.html" />
-    <None Include="res\icons8-visual-studio-2019.svg" />
-    <None Include="res\icons8-c-sharp-logo.svg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="wwwroot\**" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Src\Host.cs" />
@@ -108,22 +92,7 @@
     <Compile Include="Behaviors\DrawTextBehavior.cs" />
   </ItemGroup>
   <ItemGroup>
-    <NativeReference Include="..\..\sciter-sdk\bin.osx\sciter-osx-64.dylib">
-      <Kind>Dynamic</Kind>
-      <SmartLink>False</SmartLink>
-    </NativeReference>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="SiteResource.bin">
-      <LogicalName>SiteResource</LogicalName>
-      <IncludeInPackage>false</IncludeInPackage>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
     <InterfaceDefinition Include="MainMenu.xib" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="res\logo.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Platform\SciterCore.Mac\SciterCore.Mac.csproj">
@@ -132,4 +101,10 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105.The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\..\packages\SciterCore.PackFolder.0.0.91-alpha\build\any\SciterCore.PackFolder.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\SciterCore.PackFolder.0.0.91-alpha\build\any\SciterCore.PackFolder.props'))" />
+  </Target>
 </Project>

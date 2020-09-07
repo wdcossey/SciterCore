@@ -1,6 +1,8 @@
 using SciterCore;
 using SciterCore.Interop;
 using System;
+using System.Diagnostics;
+using System.IO;
 using System.Reflection;
 using SciterValue = SciterCore.SciterValue;
 
@@ -53,12 +55,9 @@ namespace SciterTest.WinForms
 
 		public void SetupPage(string page)
 		{
-#if !DEBUG
-			string location = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-
-			location += "\\..\\..";
-
-			string path = Path.Combine(location, "res", page);
+#if DEBUG
+			var location = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+			var path = Path.Combine(location ?? string.Empty, "..\\..", "wwwroot", page);
 			Debug.Assert(File.Exists(path));
 
 			Uri uri = new Uri(path, UriKind.Absolute);

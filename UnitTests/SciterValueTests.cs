@@ -226,8 +226,7 @@ namespace SciterCore.UnitTests
             var actual = SciterValue.Create("Not a Dictionary<>");
             Assert.Throws<InvalidOperationException>(() => actual.AsDictionary());
         }
-        
-        
+
         [Test]
         public void Value_from_Dictionary()
         {

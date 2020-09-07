@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" TreatAsLocalProperty="TaskFolder;PackSourceFolder;PackOutputFile;TaskAssembly">
-  <Import Project="..\..\packages\SciterCore.PackFolder.0.0.55-alpha\build\any\SciterCore.PackFolder.props" Condition="Exists('..\..\packages\SciterCore.PackFolder.0.0.55-alpha\build\any\SciterCore.PackFolder.props')" />
+  <Import Project="..\..\packages\SciterCore.PackFolder.0.0.91-alpha\build\any\SciterCore.PackFolder.props" Condition="Exists('..\..\packages\SciterCore.PackFolder.0.0.91-alpha\build\any\SciterCore.PackFolder.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -76,14 +76,14 @@
     </ItemGroup>
   </Target>
 
-  <Import Project="..\..\packages\SciterCore.Binaries.0.0.55-alpha\build\any\SciterCore.Binaries.targets" Condition="Exists('..\..\packages\SciterCore.Binaries.0.0.55-alpha\build\any\SciterCore.Binaries.targets')" />
-
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105.The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\..\packages\SciterCore.Binaries.0.0.55-alpha\build\any\SciterCore.Binaries.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\SciterCore.Binaries.0.0.55-alpha\build\any\SciterCore.Binaries.targets'))" />
-    <Error Condition="!Exists('..\..\packages\SciterCore.PackFolder.0.0.55-alpha\build\any\SciterCore.PackFolder.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\SciterCore.PackFolder.0.0.55-alpha\build\any\SciterCore.PackFolder.props'))" />
+    <Error Condition="!Exists('..\..\packages\SciterCore.PackFolder.0.0.91-alpha\build\any\SciterCore.PackFolder.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\SciterCore.PackFolder.0.0.91-alpha\build\any\SciterCore.PackFolder.props'))" />
   </Target>
+
+  <Import Project="..\..\packages\SciterCore.Binaries.0.0.55-alpha\build\any\SciterCore.Binaries.targets" Condition="Exists('..\..\packages\SciterCore.Binaries.0.0.55-alpha\build\any\SciterCore.Binaries.targets')" />
   
 </Project>

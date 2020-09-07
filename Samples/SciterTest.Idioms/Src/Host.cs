@@ -52,21 +52,18 @@ namespace SciterTest.Idioms
 			_window = window;
 
 #if !DEBUG
-			_archive.Open($"{this.GetType().Namespace}.SiteResource.bin");
+			_archive.Open();
 #endif
 		}
 
 		public void SetupPage(string page)
 		{
 #if DEBUG
-			string location = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-
-			location += "\\..\\..";
-
-			string path = Path.Combine(location, "res", page);
+			var location = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+			var path = Path.Combine(location ?? string.Empty, "..\\..", "wwwroot", page);
 			Debug.Assert(File.Exists(path));
 
-			Uri uri = new Uri(path, UriKind.Absolute);
+			var uri = new Uri(path, UriKind.Absolute);
 #else
 			Uri uri = new Uri(baseUri: _archive.Uri, page);
 #endif

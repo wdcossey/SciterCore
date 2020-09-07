@@ -33,14 +33,6 @@
     <XamMacArch></XamMacArch>
     <PackageSigningKey>3rd Party Mac Developer Installer</PackageSigningKey>
     <AOTMode>None</AOTMode>
-    <CustomCommands>
-      <CustomCommands>
-        <Command>
-          <type>BeforeBuild</type>
-          <command>sh ${SolutionDir}/scripts/packOSX.sh ${ProjectDir}/res ${ProjectDir}/SiteResource.bin</command>
-        </Command>
-      </CustomCommands>
-    </CustomCommands>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Optimize>true</Optimize>
@@ -59,14 +51,6 @@
     <TlsProvider></TlsProvider>
     <XamMacArch></XamMacArch>
     <AOTMode>None</AOTMode>
-    <CustomCommands>
-      <CustomCommands>
-        <Command>
-          <type>BeforeBuild</type>
-          <command>sh ${SolutionDir}/scripts/packOSX.sh ${ProjectDir}/res ${ProjectDir}/SiteResource.bin</command>
-        </Command>
-      </CustomCommands>
-    </CustomCommands>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -89,12 +73,12 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\" />
-    <Folder Include="res\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />
-    <None Include="res\index.html" />
-    <None Include="res\dlg.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="wwwroot\**" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Main.cs" />
@@ -102,18 +86,13 @@
     <Compile Include="ImgDrawBehavior.cs" />
   </ItemGroup>
   <ItemGroup>
-    <BundleResource Include="res\OXS_Logo.png" />
+    <BundleResource Include="wwwroot\OXS_Logo.png" />
   </ItemGroup>
   <ItemGroup>
     <NativeReference Include="..\..\sciter-sdk\bin.osx\sciter-osx-64.dylib">
       <Kind>Dynamic</Kind>
       <SmartLink>False</SmartLink>
     </NativeReference>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="SiteResource.bin">
-      <LogicalName>SiteResource</LogicalName>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Platform\SciterCore.Mac\SciterCore.Mac.csproj">

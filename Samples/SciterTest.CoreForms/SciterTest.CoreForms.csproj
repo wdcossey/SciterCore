@@ -19,7 +19,7 @@
       <DependentUpon>SciterControl.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
-
+  
   <ItemGroup>
     <PackageReference Include="SciterCore.Binaries" Version="0.0.55-alpha" />
   </ItemGroup>
