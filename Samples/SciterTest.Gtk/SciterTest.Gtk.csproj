@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\packages\SciterCore.PackFolder.0.0.91-alpha\build\any\SciterCore.PackFolder.props" Condition="Exists('..\..\packages\SciterCore.PackFolder.0.0.91-alpha\build\any\SciterCore.PackFolder.props')" />
+  <Import Project="..\..\packages\SciterCore.PackFolder.0.0.93-local\build\net45\SciterCore.PackFolder.props" Condition="Exists('..\..\packages\SciterCore.PackFolder.0.0.93-local\build\net45\SciterCore.PackFolder.props')" />
   <PropertyGroup>
     <ProjectGuid>{95EE3B89-3300-4482-95A3-DC42EC8B3676}</ProjectGuid>
     <OutputType>WinExe</OutputType>
@@ -44,8 +44,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="wwwroot\**" />
   </ItemGroup>
   <ItemGroup>
@@ -59,6 +57,6 @@
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105.The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\..\packages\SciterCore.PackFolder.0.0.91-alpha\build\any\SciterCore.PackFolder.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\SciterCore.PackFolder.0.0.91-alpha\build\any\SciterCore.PackFolder.props'))" />
+    <Error Condition="!Exists('..\..\packages\SciterCore.PackFolder.0.0.93-local\build\net45\SciterCore.PackFolder.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\SciterCore.PackFolder.0.0.93-local\build\net45\SciterCore.PackFolder.props'))" />
   </Target>
 </Project>

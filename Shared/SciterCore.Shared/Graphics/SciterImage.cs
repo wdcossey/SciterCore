@@ -1,7 +1,6 @@
 ﻿
 using System;
 using System.Diagnostics;
-using System.Drawing;
 using System.Runtime.InteropServices;
 
 #if WINDOWS && !WPF
@@ -219,20 +218,20 @@ namespace SciterCore
 			return result;
 		}
 
-		public Size Dimensions => GetDimensionsInternal();
+		public SciterSize Dimensions => GetDimensionsInternal();
 
-		internal Size GetDimensionsInternal()
+		internal SciterSize GetDimensionsInternal()
 		{
 			TryGetDimensionsInternal(size: out var result);
 			return result;
 		}
 
-		internal bool TryGetDimensionsInternal(out Size size)
+		internal bool TryGetDimensionsInternal(out SciterSize size)
 		{
 			var result = GraphicsApi.imageGetInfo(himg: this.Handle, width: out var width, height: out var height, usesAlpha: out _)
 					.IsOk();
 			
-			size = result ? new Size(width: Convert.ToInt32(width), height: Convert.ToInt32(height)) : default;
+			size = result ? new SciterSize(width: Convert.ToInt32(width), height: Convert.ToInt32(height)) : default;
 			return result;
 		}
 

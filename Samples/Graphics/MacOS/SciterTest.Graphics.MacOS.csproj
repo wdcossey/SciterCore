@@ -1,6 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\packages\SciterCore.PackFolder.0.0.91-alpha\build\any\SciterCore.PackFolder.props" Condition="Exists('..\..\packages\SciterCore.PackFolder.0.0.91-alpha\build\any\SciterCore.PackFolder.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
@@ -12,6 +11,7 @@
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <TargetFrameworkIdentifier>Xamarin.Mac</TargetFrameworkIdentifier>
     <MonoMacResourcePrefix>Resources</MonoMacResourcePrefix>
+    <SciterCorePackDirectory>..\common\wwwroot</SciterCorePackDirectory>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
     <DebugSymbols>true</DebugSymbols>
@@ -52,9 +52,6 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="Xamarin.Mac" />
-    <Reference Include="SkiaSharp">
-      <HintPath>..\..\packages\SkiaSharp.1.68.1.1\lib\Xamarin.Mac20\SkiaSharp.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Contents.json" />
@@ -71,40 +68,65 @@
     <ImageAsset Include="Assets.xcassets\Contents.json" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Resources\" />
-    <Folder Include="Behaviors\" />
-    <Folder Include="Extensions\" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Info.plist" />
     <None Include="Entitlements.plist" />
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <None Include="wwwroot\**" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Src\Host.cs" />
-    <Compile Include="Src\ProgramOSX.cs" />
-    <Compile Include="Extensions\ImageExtensions.cs" />
-    <Compile Include="Behaviors\DrawBitmapBehavior.cs" />
-    <Compile Include="Behaviors\DrawGeometryBehavior.cs" />
-    <Compile Include="Behaviors\DrawTextBehavior.cs" />
+    <Compile Include="..\common\Behaviors\DrawBitmapBehavior.cs">
+      <Link>Behaviors\DrawBitmapBehavior.cs</Link>
+    </Compile>
+    <Compile Include="..\common\Behaviors\DrawGeometryBehavior.cs">
+      <Link>Behaviors\DrawGeometryBehavior.cs</Link>
+    </Compile>
+    <Compile Include="..\common\Behaviors\DrawTextBehavior.cs">
+      <Link>Behaviors\DrawTextBehavior.cs</Link>
+    </Compile>
+    <Compile Include="..\common\Extensions\ImageExtensions.cs">
+      <Link>Extensions\ImageExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\common\Src\Host.cs">
+      <Link>Src\Host.cs</Link>
+    </Compile>
+    <Compile Include="..\common\Src\ProgramOSX.cs">
+      <Link>Src\ProgramOSX.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="MainMenu.xib" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Platform\SciterCore.Mac\SciterCore.Mac.csproj">
+    <PackageReference Include="SciterCore.Binaries" Version="0.0.55-alpha" />
+    <PackageReference Include="SciterCore.PackFolder" Version="0.0.93-local" />
+    <PackageReference Include="SkiaSharp" Version="1.68.1.1" />
+    <PackageReference Include="System.Buffers" Version="4.4.0" />
+    <PackageReference Include="System.Memory" Version="4.5.3" />
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.5.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\common\wwwroot\icons8-c-sharp-logo.svg">
+      <Link>wwwroot\icons8-c-sharp-logo.svg</Link>
+    </Content>
+    <Content Include="..\common\wwwroot\icons8-visual-studio-2019.svg">
+      <Link>wwwroot\icons8-visual-studio-2019.svg</Link>
+    </Content>
+    <Content Include="..\common\wwwroot\index.html">
+      <Link>wwwroot\index.html</Link>
+    </Content>
+    <Content Include="..\common\wwwroot\logo.png">
+      <Link>wwwroot\logo.png</Link>
+    </Content>
+    <Content Include="..\common\wwwroot\test.html">
+      <Link>wwwroot\test.html</Link>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Platform\SciterCore.Mac\SciterCore.Mac.csproj">
       <Project>{42bb6ec1-e806-4b5b-a242-1662aae7bf25}</Project>
       <Name>SciterCore.Mac</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105.The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\..\packages\SciterCore.PackFolder.0.0.91-alpha\build\any\SciterCore.PackFolder.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\SciterCore.PackFolder.0.0.91-alpha\build\any\SciterCore.PackFolder.props'))" />
-  </Target>
 </Project>

@@ -1,6 +1,4 @@
-﻿using System.Drawing;
-
-namespace SciterCore
+﻿namespace SciterCore
 {
     public static class SciterImageExtensions
     {
@@ -29,12 +27,13 @@ namespace SciterCore
         }
 
         #endregion Save
-        public static Size GetDimensions(this SciterImage sciterImage)
+        
+        public static SciterSize GetDimensions(this SciterImage sciterImage)
         {
             return sciterImage?.GetDimensionsInternal() ?? default;
         }
 
-        public static bool TryGetDimensions(this SciterImage sciterImage, out Size size)
+        public static bool TryGetDimensions(this SciterImage sciterImage, out SciterSize size)
         {
             size = default;
             return sciterImage?.TryGetDimensionsInternal(out size) == true;

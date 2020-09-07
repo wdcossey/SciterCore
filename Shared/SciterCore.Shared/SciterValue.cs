@@ -738,26 +738,32 @@ namespace SciterCore
 			get
 			{
 				if(!IsObject && !IsMap)
-					throw new ArgumentException("This SciterValue is not an object");
+					ThrowTypeException(nameof(Interop.SciterValue.VALUE_TYPE.T_OBJECT));
+
 				if(IsObject)
-					throw new ArgumentException("Plz, call Isolate() for this SciterValue");
-				List<SciterValue> keys = new List<SciterValue>();
+					throw new ArgumentException($"Please, call {nameof(Isolate)} for this SciterValue");
+				
+				//TODO: yield return IEnumerable<SciterValue>
+				var result = new List<SciterValue>();
+				
 				for(var i = 0; i < Length; i++)
-					keys.Add(GetKey(i));
-				return keys;
+					result.Add(GetKey(i));
+				
+				return result;
 			}
 		}
+		
 		/*public void SetObjectData(IntPtr p)
 		{
 			Debug.Assert(data.u == (uint) SciterXValue.VALUE_UNIT_TYPE_OBJECT.UT_OBJECT_NATIVE);
 			_api.ValueBinaryDataSet(ref data, );
 		}*/
+		
 		public IntPtr GetObjectData()
 		{
 			Api.ValueBinaryData(ref _data, out var p, out var dummy);
 			return p;
 		}
-
 
 		public SciterValue Call(IList<SciterValue> args, SciterValue self = null, string url_or_script_name = null)
 		{
@@ -786,11 +792,10 @@ namespace SciterCore
 		public IEnumerable<SciterValue> AsEnumerable()
 		{
 			if(!IsArray && !IsObject && !IsMap)
-				throw new ArgumentException("This SciterValue is not an array or object");
+				ThrowTypeException(nameof(Interop.SciterValue.VALUE_TYPE.T_ARRAY), nameof(Interop.SciterValue.VALUE_TYPE.T_OBJECT));
+
 			for(var i = 0; i < Length; i++)
-			{
 				yield return this[i];
-			}
 		}
 
 		public IDictionary<SciterValue, SciterValue> AsValueDictionary()
@@ -820,10 +825,10 @@ namespace SciterCore
 
 			return result;
 		}
-
-		private static void ThrowTypeException(string typeName)
+		
+		private static void ThrowTypeException(params string[] typeNames)
 		{
-			throw new InvalidOperationException($"{nameof(SciterValue)} is not of {nameof(Type)} `{typeName}`");
+			throw new InvalidOperationException($"{nameof(SciterValue)} is not of {nameof(Type)} `{string.Join(" | ", typeNames)}`");
 		}
 	}
 }

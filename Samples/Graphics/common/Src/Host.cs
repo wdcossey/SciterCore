@@ -71,35 +71,12 @@ namespace SciterTest.Graphics
 			: base(window)
 		{
 			_window = window;
-
-#if !DEBUG
 			_archive.Open();
-#endif
 		}
 
 		public void SetupPage(string page)
 		{
-#if DEBUG
-			var location = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-
-#if OSX
-			location += "\\..\\..\\..\\..\\..\\";
-#else
-			location += "\\..\\..";
-#endif
-
-			var path = Path.Combine(location, "wwwroot", page);
-
-			var uri = new Uri(path, UriKind.Absolute);
-
-			Debug.Assert(uri.IsFile);
-
-			Debug.Assert(File.Exists(uri.AbsolutePath));
-
-#else
-			Uri uri = new Uri(baseUri: _archive.Uri, page);
-#endif
-
+			var uri = new Uri(baseUri: _archive.Uri, page);
 			_window.LoadPage(uri: uri);
 		}
 

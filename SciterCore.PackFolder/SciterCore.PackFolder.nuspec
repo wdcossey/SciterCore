@@ -14,8 +14,12 @@
     <tags>Sciter SciterCore PackFolder</tags>
   </metadata>
   <files>
-    <file src="build\**\*.props" target="build\any" />
-    <file src="buildMultiTargeting\**\*.props" target="buildMultiTargeting\any" />
+    <file src="build\**\*.props" target="build\net45" />
+    <file src="build\**\*.props" target="build\netstandard2.0" />
+    <file src="build\**\*.props" target="build\Xamarin.Mac20" />
+    <file src="buildMultiTargeting\**\*.props" target="buildMultiTargeting\net45" />
+    <file src="buildMultiTargeting\**\*.props" target="buildMultiTargeting\netstandard2.0" />
+    <file src="buildMultiTargeting\**\*.props" target="buildMultiTargeting\Xamarin.Mac20" />
     <file src="..\sciter-sdk\bin.win\packfolder.exe" target="scripts\packfolder.exe" />
     <file src="..\sciter-sdk\bin.osx\packfolder" target="scripts\packfolder" />
   </files>
