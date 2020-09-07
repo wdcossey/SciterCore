@@ -10,21 +10,32 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Enums\CallbackCode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Enums\CursorType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Enums\DragAndDropMode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Enums\DraggingMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\DrawEvent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\DrawPathMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\ElementArea.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\ElementHtmlReplacement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\ElementState.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Enums\ExchangeEvent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Enums\KeyboardStates.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Enums\KeyEvent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\LineCapType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\LineJoinType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\LoadResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Enums\MouseButton.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Enums\MouseEvents.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\NodeType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\ImageEncoding.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\SciterResourceType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EventArgs\DataLoadedEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EventArgs\DrawEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EventArgs\EngineDestroyedEventArgs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EventArgs\ExchangeEventArgs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EventArgs\KeyEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EventArgs\LoadDataEventArgs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EventArgs\MouseEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\DomResultExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\DrawingExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\GraphinResultExtensions.cs" />
@@ -42,6 +53,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\SciterGraphics.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\SciterImage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\SciterPath.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\SciterPoint.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\SciterRectangle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\SciterSize.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\SciterText.cs" />

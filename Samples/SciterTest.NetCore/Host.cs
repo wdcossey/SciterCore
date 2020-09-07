@@ -2,12 +2,11 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text.Json;
-using System.Threading;
 using System.Threading.Tasks;
 using SciterCore;
 using SciterCore.Interop;
+using SciterTest.NetCore.Behaviors;
 using SciterValue = SciterCore.SciterValue;
 
 namespace SciterTest.NetCore
@@ -23,7 +22,9 @@ namespace SciterTest.NetCore
 			var host = this;
 			host.Setup(wnd);
 			host.AttachEventHandler(new HostEvh());
+			host.RegisterBehaviorHandler<DragDropBehavior>();
 			host.SetupPage("index.html");
+			
 			wnd.Show();
 		}
 		
@@ -80,7 +81,7 @@ namespace SciterTest.NetCore
 			return Task.FromResult(value);
 		}
 		
-		public async Task<SciterValue> GetRuntimeInfo(SciterElement element, SciterValue[] args)
+		public Task<SciterValue> GetRuntimeInfo(SciterElement element, SciterValue[] args)
 		{
 			//Simulate a delay
 			//await Task.Delay(3500);
@@ -94,19 +95,19 @@ namespace SciterTest.NetCore
 				SystemVersion = System.Runtime.InteropServices.RuntimeEnvironment.GetSystemVersion()
 			}));
 			
-			return value;
+			return Task.FromResult(value);
 		}
-		
-		public async Task<SciterValue> createAccount(SciterElement element, SciterValue[] args) {
-			//std::thread t(add_account_thread,props,whenCreated); 
-			//t.detach(); 
 
-			await Task.Delay(5000);
-			//Thread.Sleep(100000);
+		protected override bool OnMouse(SciterElement element, MouseEventArgs args)
+		{
+			//Console.WriteLine($"{args.ButtonState} | {args.Event} | {args.DragMode}");
+			return base.OnMouse(element, args);
+		}
 
-			Random random = new Random();
-			//Api.SciterPostCallback(WindowHandle, wparam, lparam, timeout);
-			return SciterValue.Create(random.Next(int.MinValue, int.MaxValue));
+		protected override bool OnKey(SciterElement element, KeyEventArgs args)
+		{
+			//Console.WriteLine($"{args.Event} | {args.KeyboardState} | {(char)args.KeyCode}");
+			return base.OnKey(element, args);
 		}
 
 		// (Hint: to overload C# methods of SciterEventHandler base class, type 'override', press space, and VS/Xamarin will suggest the methods you can override)

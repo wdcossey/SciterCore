@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using SciterCore.Interop;
 
 // ReSharper disable UnusedType.Global
@@ -192,6 +193,78 @@ namespace SciterCore
             return element?.LastSiblingInternal;
         }
         
+        #endregion
+
+        #region Classes
+
+        private static readonly string ClassSeparator = " ";
+        
+        private static readonly string[] ClassSeparatorArray = new string[] { ClassSeparator };
+        
+        public static bool HasClass(this SciterElement element, params string[] input)
+        {
+            if (element == null || input?.Any() != true)
+                return false;
+            
+            var classes = element.GetAttributeValue("class")?.Split(separator: ClassSeparatorArray, options: StringSplitOptions.RemoveEmptyEntries)?.ToList() ?? new List<string>();
+            
+            return classes.Any(x => input.Any(y => y == x));
+        }
+
+        public static SciterElement AddClass(this SciterElement element, params string[] input)
+        {
+            if (element == null || input?.Any() != true)
+                return element;
+            
+            var classes = element.GetAttributeValue("class")?.Split(separator: ClassSeparatorArray, options: StringSplitOptions.RemoveEmptyEntries)?.ToList() ?? new List<string>();
+
+            var modified = false;
+                
+            foreach (var newClass in input)
+            {
+                if (classes.Contains(newClass))
+                    continue;
+
+                classes.Add(newClass);
+                modified = true;
+            }
+
+            if (modified)
+                element.SetAttributeValue("class", string.Join(ClassSeparator, classes));
+            
+            return element;
+        }
+
+        public static SciterElement RemoveClass(this SciterElement element, params string[] input)
+        {
+            if (element == null || input?.Any() != true)
+                return element;
+            
+            var classes = element.GetAttributeValue("class")?.Split(separator: ClassSeparatorArray, options: StringSplitOptions.RemoveEmptyEntries)?.ToList() ?? new List<string>();
+
+            var modified = false;
+                
+            foreach (var oldClass in input)
+            {
+                if (!classes.Contains(oldClass))
+                    continue;
+
+                classes.Remove(oldClass);
+                modified = true;
+            }
+
+            if (modified)
+                element.SetAttributeValue("class", string.Join(" ", classes));
+            
+            return element;
+        }
+
+        //TODO: Implement ToggleClass
+        //public static int ToggleClass(this SciterElement element, params string[] @class)
+        //{
+        //    return element?.GetAttributeCountInternal() ?? 0;
+        //}
+
         #endregion
         
         #region Attributes

@@ -67,7 +67,7 @@ namespace SciterCore.Interop
 		}
 
 		[Flags]
-		public enum MOUSE_BUTTONS : uint
+		internal enum MOUSE_BUTTONS : uint
 		{
 			MAIN_MOUSE_BUTTON = 0x1,
 			PROP_MOUSE_BUTTON = 0x2,
@@ -75,7 +75,7 @@ namespace SciterCore.Interop
 		}
 
 		[Flags]
-		public enum KEYBOARD_STATES : uint
+		internal enum KEYBOARD_STATES : uint
 		{
 			CONTROL_KEY_PRESSED = 0x1,
 			SHIFT_KEY_PRESSED = 0x2,
@@ -111,14 +111,14 @@ namespace SciterCore.Interop
 			} data;*/
 		};
 		
-		public enum DRAGGING_TYPE : uint
+		internal enum DRAGGING_TYPE : uint
 		{
 			NO_DRAGGING,
 			DRAGGING_MOVE,
 			DRAGGING_COPY,
 		}
 		
-		public enum MOUSE_EVENTS : uint
+		internal enum MOUSE_EVENTS : uint
 		{
 			MOUSE_ENTER = 0,
 			MOUSE_LEAVE,
@@ -138,21 +138,21 @@ namespace SciterCore.Interop
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct MOUSE_PARAMS
+		internal struct MOUSE_PARAMS
 		{
 			public MOUSE_EVENTS			cmd;// MOUSE_EVENTS
-			public IntPtr				target;// HELEMENT
-			public PInvokeUtils.POINT	pos;// POINT
-			public PInvokeUtils.POINT	pos_view;// POINT
-			public uint				button_state;// UINT ->> actually SciterXBehaviorsMOUSE_BUTTONS, but for MOUSE_EVENTS.MOUSE_WHEEL event it is the delta
-			public KEYBOARD_STATES	alt_state;// UINT
-			public uint				cursor_type;// UINT
-			public bool				is_on_icon;// BOOL
-			public IntPtr			dragging;// HELEMENT
-			public uint				dragging_mode;// UINT
+			public IntPtr				target;// HELEMENT target element
+			public PInvokeUtils.POINT	pos;// POINT position of cursor, element relative
+			public PInvokeUtils.POINT	pos_view;// POINT position of cursor, view relative
+			public uint				button_state;// UINT ->> actually SciterXBehaviors MOUSE_BUTTONS, but for MOUSE_EVENTS.MOUSE_WHEEL event it is the delta
+			public KEYBOARD_STATES	alt_state;// UINT KEYBOARD_STATES
+			public uint				cursor_type;// UINT CURSOR_TYPE to set, see CURSOR_TYPE
+			public bool				is_on_icon;// BOOL mouse is over icon (foreground-image, foreground-repeat:no-repeat)
+			public IntPtr			dragging;// HELEMENT element that is being dragged over, this field is not NULL if (cmd & DRAGGING) != 0
+			public uint				dragging_mode;// UINT see DRAGGING_TYPE. 
 		}
 
-		public enum CURSOR_TYPE : uint
+		internal enum CURSOR_TYPE : uint
 		{
 			CURSOR_ARROW,
 			CURSOR_IBEAM,
@@ -172,7 +172,7 @@ namespace SciterCore.Interop
 			CURSOR_DRAG_COPY,
 		}
 		
-		public enum KEY_EVENTS : uint
+		internal enum KEY_EVENTS : uint
 		{
 			KEY_DOWN = 0,
 			KEY_UP,
@@ -180,7 +180,7 @@ namespace SciterCore.Interop
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct KEY_PARAMS
+		internal struct KEY_PARAMS
 		{
 			public KEY_EVENTS	cmd;
 			public IntPtr		target;// HELEMENT
@@ -315,7 +315,7 @@ namespace SciterCore.Interop
 			public double				delta_v;
 		}
 
-		public enum EXCHANGE_CMD
+		internal enum EXCHANGE_CMD
 		{
 			X_DRAG_ENTER = 0,       // drag enters the element
 			X_DRAG_LEAVE = 1,       // drag leaves the element  
@@ -327,7 +327,7 @@ namespace SciterCore.Interop
 			X_WILL_ACCEPT_DROP = 7, // drop target element shall consume this event in order to receive X_DROP 
 		}
 
-		public enum DD_MODES
+		internal enum DD_MODES
 		{
 			DD_MODE_NONE = 0, 			// DROPEFFECT_NONE	( 0 )
 			DD_MODE_COPY = 1, 			// DROPEFFECT_COPY	( 1 )
@@ -337,11 +337,11 @@ namespace SciterCore.Interop
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct EXCHANGE_PARAMS
+		internal struct EXCHANGE_PARAMS
 		{
 			public uint cmd;					// EXCHANGE_EVENTS
-			public int target;					// target element
-			public int source;					// source element (can be null if D&D from external window)
+			public IntPtr target;					// target element
+			public IntPtr source;					// source element (can be null if D&D from external window)
 			public PInvokeUtils.POINT pos;		// position of cursor, element relative
 			public PInvokeUtils.POINT pos_view;	// position of cursor, view relative
 			public uint mode;					// DD_MODE 

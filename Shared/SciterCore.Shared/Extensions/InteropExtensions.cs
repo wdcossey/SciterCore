@@ -53,9 +53,51 @@ namespace SciterCore.Interop
             return new DrawEventArgs
             {
                 Area = new SciterRectangle(@params.area.Left, @params.area.Top, @params.area.Right, @params.area.Bottom),
-                DrawEvent =  (DrawEvent)(int)@params.cmd,
+                DrawEvent =  (DrawEvent)unchecked((int)@params.cmd),
                 Handle = @params.gfx,
                 Reserved = @params.reserved,
+            };
+        }
+        
+        internal static KeyEventArgs Convert(this SciterBehaviors.KEY_PARAMS @params)
+        {
+            return new KeyEventArgs
+            {
+                Event = (KeyEvent)unchecked((int)@params.cmd),
+                KeyboardState = (KeyboardStates)unchecked((int)@params.alt_state),
+                KeyCode = unchecked((int)@params.key_code),
+                TargetElement = @params.target.Equals(IntPtr.Zero) ? null : new SciterElement(@params.target)
+            };
+        }
+        
+        internal static MouseEventArgs Convert(this SciterBehaviors.MOUSE_PARAMS @params)
+        {
+            return new MouseEventArgs
+            {
+                Event = (MouseEvents)unchecked((int)@params.cmd),
+                Cursor = (CursorType)unchecked((int)@params.cursor_type),
+                ButtonState = (MouseButton)unchecked((int)@params.button_state),
+                DragMode = (DraggingMode)unchecked((int)@params.dragging_mode),
+                DragTarget = @params.dragging.Equals(IntPtr.Zero) ? null : new SciterElement(@params.dragging),
+                ElementPosition = new SciterPoint(@params.pos.X, @params.pos.Y),
+                ViewPosition = new SciterPoint(@params.pos_view.X, @params.pos_view.Y),
+                KeyboardState = (KeyboardStates)unchecked((int)@params.alt_state),
+                TargetElement = @params.target.Equals(IntPtr.Zero) ? null : new SciterElement(@params.target),
+                IsOverIcon = @params.is_on_icon
+            };
+        }
+        
+        internal static ExchangeEventArgs Convert(this SciterBehaviors.EXCHANGE_PARAMS @params)
+        {
+            return new ExchangeEventArgs
+            {
+                Event = (ExchangeEvent)unchecked((int)@params.cmd),
+                ElementPosition = new SciterPoint(@params.pos.X, @params.pos.Y),
+                ViewPosition = new SciterPoint(@params.pos_view.X, @params.pos_view.Y),
+                TargetElement = @params.target.Equals(IntPtr.Zero) ? null : new SciterElement(@params.target),
+                SourceElement = @params.source.Equals(IntPtr.Zero) ? null : new SciterElement(@params.target),
+                Mode = (DragAndDropMode)unchecked((int)@params.mode),
+                Value = new SciterCore.SciterValue(@params.data)
             };
         }
     }

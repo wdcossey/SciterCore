@@ -49,6 +49,15 @@
             img[class*=radial-fore] {
                 behavior: draw-radial-foreground;
             }
+
+        img:drop-target /* active drop target element(s) */
+        {
+            background: yellow;
+        }
+        img:drag-over /* drop target element under the dragged item.*/
+        {
+            outline: 1px solid green;
+        }
     </style>
 
     <script type="text/tiscript">

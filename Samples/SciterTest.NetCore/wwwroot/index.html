@@ -87,8 +87,13 @@
 			color: white;
 			background-color: rgba(36, 49, 64, 1);
 			box-shadow: 0 2px 1px -1px rgba(0,0,0,.2), 0 1px 2px 0 rgba(0,0,0,.14), 0 1px 3px 0 rgba(0,0,0,.12);
+			/*behavior: card-drop-behavior;*/
 		}
 
+		/*card.active-target {
+			background:gold;
+		}*/
+		
 		card > cardcontent
 		{
 			display: block;
@@ -108,6 +113,81 @@
 	</style>
 	
 	<script type="text/tiscript"></script>
+
+	<script type="text/tiscript">
+    
+    
+    class DropZone :Behavior 
+    {
+    
+      function onExchange(evt)
+      {
+        if( evt.type == Event.X_WILL_ACCEPT_DROP)
+        {
+          // will accept any data
+          return true;
+        }
+        else if( evt.type == Event.X_DRAG_ENTER)
+        {
+          this.attributes.addClass("active-target");
+          var types = evt.exchangeData();
+          //this.html = types.join("<br>");
+          return true;
+        }
+        else if( evt.type == Event.X_DRAG_LEAVE )
+        {
+          this.attributes.removeClass("active-target");
+          //this.html = "";
+          return true;
+        }
+        else if( evt.type == Event.X_DRAG)
+        {
+          //stdout.println(evt.x,evt.y);
+          return true;
+        }
+        else if( evt.type == Event.X_DROP)
+        {
+          this.attributes.removeClass("active-target");
+          var dl = $(dl);
+          dl.clear();
+          var types = evt.exchangeData();
+          
+          for(var dt in types)  
+            switch(dt) {
+              case #text: {
+                var str = evt.exchangeData(#text);
+                dl.$append(<dt>text</dt><dd><pre>{str}</pre></dd>);
+              } break;
+              case #html: {
+                var (url,html) = evt.exchangeData(#html);
+                dl.$append(<dt>html</dt><dd>url:{url}<pre>{html}</pre></dd>);
+              } break;
+              case #url: {
+                var (caption,url) = evt.exchangeData(#url);
+                dl.$append(<dt>url</dt><dd>caption:{caption}<br>url:{url}</dd>);
+              } break;
+              case #file: {
+                var files = evt.exchangeData(#file);
+                dl.$append(<dt>files</dt><dd>{files.join(" ")}</dd>);
+              } break;
+              case #picture: {
+                var img = evt.exchangeData(#picture);
+                self.bindImage("in-memory:exchange",img);
+                dl.$append(<dt>picture</dt><dd><img src="in-memory:exchange"></dd>);
+              } break;
+              case #json: {
+                var json = evt.exchangeData(#json);
+                dl.$append(<dt>json</dt><dd>{JSON.stringify(json)}</dd>);
+              } break;
+            }
+            
+          return true;
+        }
+      }    
+    }    
+    
+    </script>
+	
 	<script type="text/tiscript">
 	
 		view.StackTrace(function(value) {
@@ -127,7 +207,6 @@
 			$(#stContent).attributes["state"] = "visible";
 		});
 
-		//.HelloSciterCore();
 		view.HelloSciterCore(function(value) {
 		   	$(#helloSciter).html = "<pre><code>" + value + "</code><pre>";
 		});
@@ -192,7 +271,7 @@
 				<p/>
 
 
-				<card #info style="width: 1*">
+				<card style="width: 1*">
 					<div style="display:inline-block;">
 						<div style="font-size: 20dip; vertical-align: center; font-family: Roboto,Helvetica Neue,sans-serif;font-weight: 500;">RuntimeInformation</div>
 						<div style="font-size: 14dip;font-family: Roboto,Helvetica Neue,sans-serif;font-weight: 400;opacity: 0.6;margin-bottom: 16dip">Provides information about the .NET runtime installation.</div>
@@ -209,7 +288,7 @@
 				
 				<p/>
 
-				<card #info style="width: 1*; margin-bottom: 16dip">
+				<card style="width: 1*; margin-bottom: 16dip">
 					<div style="font-size: 20dip; vertical-align: center; font-family: Roboto,Helvetica Neue,sans-serif;font-weight: 500;">StackFrame</div>
 					<div style="font-size: 14dip;font-family: Roboto,Helvetica Neue,sans-serif;font-weight: 400;opacity: 0.6;margin-bottom: 16dip">StackFrame corresponding to the calling stack frame.</div>
 
@@ -222,8 +301,7 @@
 					</cardcontent>
 				</card>
 				
-				
-				
+				<dl></dl>
 
 				If you are new to C# Sciter, read the introductory article:
 				<a href="http://www.codeproject.com/Articles/1057199/Sciter-HTML-Csharp-based-desktop-apps-walkthrough">Walk-through for writing apps with SciterSharp</a>

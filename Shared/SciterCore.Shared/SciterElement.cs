@@ -17,7 +17,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Drawing;
+using System.Collections.ObjectModel;
 using System.Text;
 using System.Runtime.InteropServices;
 using SciterCore.Interop;
@@ -206,16 +206,16 @@ namespace SciterCore
 
 		#region Attributes and Styles
 		
-		public Dictionary<string, string> Attributes
+		public IReadOnlyDictionary<string, string> Attributes
 		{
 			get
 			{
-				var result = new Dictionary<string, string>();
+				var writeableDictionary = new Dictionary<string, string>();
 				for (var n = 0; n < GetAttributeCountInternal(); n++)
 				{
-					result[GetAttributeNameInternal(n)] = GetAttributeValueInternal(n);
+					writeableDictionary[GetAttributeNameInternal(n)] = GetAttributeValueInternal(n);
 				}
-				return result;
+				return new ReadOnlyDictionary<string, string>(writeableDictionary);
 			}
 		}
 

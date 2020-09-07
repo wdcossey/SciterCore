@@ -80,21 +80,21 @@ namespace SciterCore
 
 		protected virtual bool OnMouse(
 			SciterElement element,
-			SciterBehaviors.MOUSE_PARAMS prms)
+			MouseEventArgs args)
 		{
 			return false;
 		}
 
 		protected virtual bool OnKey(
 			SciterElement element,
-			SciterBehaviors.KEY_PARAMS prms)
+			KeyEventArgs args)
 		{
 			return false;
 		}
 
 		protected virtual bool OnFocus(
 			SciterElement element,
-			SciterBehaviors.FOCUS_PARAMS prms)
+			SciterBehaviors.FOCUS_PARAMS args)
 		{
 			return false;
 		}
@@ -248,7 +248,7 @@ namespace SciterCore
 
 		protected virtual bool OnExchange(
 			SciterElement element,
-			SciterBehaviors.EXCHANGE_PARAMS prms)
+			ExchangeEventArgs args)
 		{
 			return false;
 		}
@@ -272,7 +272,7 @@ namespace SciterCore
 
 				case SciterBehaviors.EVENT_GROUPS.HANDLE_INITIALIZATION:
 					{
-						SciterBehaviors.INITIALIZATION_PARAMS p = (SciterBehaviors.INITIALIZATION_PARAMS)Marshal.PtrToStructure(ptr: prms, structureType: typeof(SciterBehaviors.INITIALIZATION_PARAMS));
+						SciterBehaviors.INITIALIZATION_PARAMS p = Marshal.PtrToStructure<SciterBehaviors.INITIALIZATION_PARAMS>(ptr: prms);
 						if(p.cmd == SciterBehaviors.INITIALIZATION_EVENTS.BEHAVIOR_ATTACH)
 						{
 #if DEBUG
@@ -297,7 +297,7 @@ namespace SciterCore
 				case SciterBehaviors.EVENT_GROUPS.HANDLE_SOM:
 				{
 					//SOM_PARAMS *p = (SOM_PARAMS *)prms;
-                    SciterBehaviors.SOM_PARAMS p = (SciterBehaviors.SOM_PARAMS)Marshal.PtrToStructure(ptr: prms, typeof(SciterBehaviors.SOM_PARAMS));
+                    SciterBehaviors.SOM_PARAMS p = Marshal.PtrToStructure<SciterBehaviors.SOM_PARAMS>(ptr: prms);
 
                     if (p.cmd == SciterBehaviors.SOM_EVENTS.SOM_GET_PASSPORT)
                     {
@@ -313,59 +313,59 @@ namespace SciterCore
 				
 				case SciterBehaviors.EVENT_GROUPS.HANDLE_MOUSE:
 					{
-						SciterBehaviors.MOUSE_PARAMS p = (SciterBehaviors.MOUSE_PARAMS)Marshal.PtrToStructure(prms, typeof(SciterBehaviors.MOUSE_PARAMS));
-						return OnMouse(se, p);
+						var @params = Marshal.PtrToStructure<SciterBehaviors.MOUSE_PARAMS>(prms);
+						return OnMouse(se, @params.Convert());
 					}
 
 				case SciterBehaviors.EVENT_GROUPS.HANDLE_KEY:
 					{
-						SciterBehaviors.KEY_PARAMS p = (SciterBehaviors.KEY_PARAMS)Marshal.PtrToStructure(prms, typeof(SciterBehaviors.KEY_PARAMS));
-						return OnKey(se, p);
+						var @params = Marshal.PtrToStructure<SciterBehaviors.KEY_PARAMS>(prms);
+						return OnKey(se, @params.Convert());
 					}
 
 				case SciterBehaviors.EVENT_GROUPS.HANDLE_FOCUS:
 					{
-						SciterBehaviors.FOCUS_PARAMS p = (SciterBehaviors.FOCUS_PARAMS)Marshal.PtrToStructure(prms, typeof(SciterBehaviors.FOCUS_PARAMS));
-						return OnFocus(se, p);
+						var @params = Marshal.PtrToStructure<SciterBehaviors.FOCUS_PARAMS>(prms);
+						return OnFocus(se, @params);
 					}
 
 				case SciterBehaviors.EVENT_GROUPS.HANDLE_DRAW:
 					{
-						SciterBehaviors.DRAW_PARAMS p = (SciterBehaviors.DRAW_PARAMS)Marshal.PtrToStructure(prms, typeof(SciterBehaviors.DRAW_PARAMS));
-						return OnDraw(se, p.Convert());
+						var @params = Marshal.PtrToStructure<SciterBehaviors.DRAW_PARAMS>(prms);
+						return OnDraw(se, @params.Convert());
 					}
 
 				case SciterBehaviors.EVENT_GROUPS.HANDLE_TIMER:
 					{
-						SciterBehaviors.TIMER_PARAMS p = (SciterBehaviors.TIMER_PARAMS)Marshal.PtrToStructure(prms, typeof(SciterBehaviors.TIMER_PARAMS));
-						if(p.timerId != IntPtr.Zero)
-							return OnTimer(se, p.timerId);
+						var @params = Marshal.PtrToStructure<SciterBehaviors.TIMER_PARAMS>(prms);
+						if(@params.timerId != IntPtr.Zero)
+							return OnTimer(se, @params.timerId);
 						return OnTimer(se);
 					}
 
 				case SciterBehaviors.EVENT_GROUPS.HANDLE_BEHAVIOR_EVENT:
 					{
-						SciterBehaviors.BEHAVIOR_EVENT_PARAMS p = (SciterBehaviors.BEHAVIOR_EVENT_PARAMS)Marshal.PtrToStructure(prms, typeof(SciterBehaviors.BEHAVIOR_EVENT_PARAMS));
-						SciterElement se2 = p.he != IntPtr.Zero ? new SciterElement(p.he) : null;
-						return OnEvent(se, se2, p.cmd, p.reason, new SciterValue(p.data));
+						var @params = Marshal.PtrToStructure<SciterBehaviors.BEHAVIOR_EVENT_PARAMS>(prms);
+						SciterElement se2 = @params.he != IntPtr.Zero ? new SciterElement(@params.he) : null;
+						return OnEvent(se, se2, @params.cmd, @params.reason, new SciterValue(@params.data));
 					}
 
 				case SciterBehaviors.EVENT_GROUPS.HANDLE_METHOD_CALL:
 					{
-						SciterXDom.METHOD_PARAMS p = (SciterXDom.METHOD_PARAMS)Marshal.PtrToStructure(prms, typeof(SciterXDom.METHOD_PARAMS));
-						return OnMethodCall(se, p.methodID);
+						var @params = Marshal.PtrToStructure<SciterXDom.METHOD_PARAMS>(prms);
+						return OnMethodCall(se, @params.methodID);
 					}
 
 				case SciterBehaviors.EVENT_GROUPS.HANDLE_DATA_ARRIVED:
 					{
-						SciterBehaviors.DATA_ARRIVED_PARAMS p = (SciterBehaviors.DATA_ARRIVED_PARAMS)Marshal.PtrToStructure(prms, typeof(SciterBehaviors.DATA_ARRIVED_PARAMS));
-						return OnDataArrived(se, p);
+						var @params = Marshal.PtrToStructure<SciterBehaviors.DATA_ARRIVED_PARAMS>(prms);
+						return OnDataArrived(se, @params);
 					}
 
 				case SciterBehaviors.EVENT_GROUPS.HANDLE_SCROLL:
 					{
-						SciterBehaviors.SCROLL_PARAMS p = (SciterBehaviors.SCROLL_PARAMS)Marshal.PtrToStructure(prms, typeof(SciterBehaviors.SCROLL_PARAMS));
-						return OnScroll(se, p);
+						var @params = Marshal.PtrToStructure<SciterBehaviors.SCROLL_PARAMS>(prms);
+						return OnScroll(se, @params);
 					}
 
 				case SciterBehaviors.EVENT_GROUPS.HANDLE_SIZE:
@@ -373,7 +373,7 @@ namespace SciterCore
 
 				case SciterBehaviors.EVENT_GROUPS.HANDLE_SCRIPTING_METHOD_CALL:
 					{
-						IntPtr RESULT_OFFSET = Marshal.OffsetOf(typeof(SciterBehaviors.SCRIPTING_METHOD_PARAMS), "result");
+						IntPtr RESULT_OFFSET = Marshal.OffsetOf(typeof(SciterBehaviors.SCRIPTING_METHOD_PARAMS), nameof(SciterBehaviors.SCRIPTING_METHOD_PARAMS.result));
 #if OSX
 						if(IntPtr.Size == 4)
 							Debug.Assert(RESULT_OFFSET.ToInt32() == 12);
@@ -384,7 +384,7 @@ namespace SciterCore
 						else if(IntPtr.Size == 8)
 							Debug.Assert(RESULT_OFFSET.ToInt32() == 24);
 
-						SciterBehaviors.SCRIPTING_METHOD_PARAMS p = (SciterBehaviors.SCRIPTING_METHOD_PARAMS)Marshal.PtrToStructure(prms, typeof(SciterBehaviors.SCRIPTING_METHOD_PARAMS));
+						SciterBehaviors.SCRIPTING_METHOD_PARAMS p = Marshal.PtrToStructure<SciterBehaviors.SCRIPTING_METHOD_PARAMS>(prms);
 						SciterBehaviors.SCRIPTING_METHOD_PARAMS_Wraper pw = new SciterBehaviors.SCRIPTING_METHOD_PARAMS_Wraper(p);
 
 						var methodInfo = GetType().GetMethod(pw.name);
@@ -419,14 +419,14 @@ namespace SciterCore
 
 				case SciterBehaviors.EVENT_GROUPS.HANDLE_EXCHANGE:
 					{
-						SciterBehaviors.EXCHANGE_PARAMS p = (SciterBehaviors.EXCHANGE_PARAMS)Marshal.PtrToStructure(prms, typeof(SciterBehaviors.EXCHANGE_PARAMS));
-						return OnExchange(se, p);
+						var @params = Marshal.PtrToStructure<SciterBehaviors.EXCHANGE_PARAMS>(prms);
+						return OnExchange(se, @params.Convert());
 					}
 
 				case SciterBehaviors.EVENT_GROUPS.HANDLE_GESTURE:
 					{
-						SciterBehaviors.GESTURE_PARAMS p = (SciterBehaviors.GESTURE_PARAMS)Marshal.PtrToStructure(prms, typeof(SciterBehaviors.GESTURE_PARAMS));
-						return OnGesture(se, p);
+						var @params = Marshal.PtrToStructure<SciterBehaviors.GESTURE_PARAMS>(prms);
+						return OnGesture(se, @params);
 					}
 
 				default:
