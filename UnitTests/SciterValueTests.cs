@@ -91,6 +91,27 @@ namespace SciterCore.UnitTests
 
             Assert.Throws<InvalidOperationException>(() => actual.AsAngle());
         }
+
+        [TestCase(0)]
+        [TestCase(1)]
+        [TestCase(1_000_000_000)]
+        public void Value_from_Currency_as_Int64(long input)
+        {
+            var actual = SciterValue.MakeCurrency(input);
+            
+            Assert.IsTrue(actual.IsCurrency);
+            Assert.AreEqual(input, actual.AsCurrency());
+        }
+        
+        [Test]
+        public void Value_is_not_an_Currency()
+        {
+            var actual = SciterValue.Create("string");
+            
+            Assert.IsFalse(actual.IsCurrency);
+
+            Assert.Throws<InvalidOperationException>(() => actual.AsCurrency());
+        }
         
         [TestCase("this is a string")]
         [TestCase("")]
@@ -134,12 +155,27 @@ namespace SciterCore.UnitTests
             Assert.AreEqual(input, actual.AsDateTime(kind == DateTimeKind.Utc));
         }
         
+        [TestCase(255, 0, 255)]
+        [TestCase(0, 0, 0)]
+        [TestCase(255, 255, 255)]
+        public void Value_from_SciterColor_RGB(byte r, byte g, byte b)
+        {
+            var color = SciterColor.Create(r, g, b);
+            
+            var actual = SciterValue.Create(color);
+            
+            Assert.IsTrue(actual.IsColor);
+            Assert.AreEqual(color, actual.AsColor());
+        }
+        
         [TestCase(255, 0, 255, 0)]
+        [TestCase(0, 0, 0, 0)]
         [TestCase(0, 0, 0, 255)]
         [TestCase(255, 255, 255, 255)]
-        public void Value_from_SciterColor(byte r, byte g, byte b, byte a)
+        [TestCase(127, 127, 127, 127)]
+        public void Value_from_SciterColor_RGBA(byte r, byte g, byte b, byte a)
         {
-            var color = SciterColor.Create(255, 0, 255);
+            var color = SciterColor.Create(r, g, b, a);
             
             var actual = SciterValue.Create(color);
             
@@ -185,14 +221,14 @@ namespace SciterCore.UnitTests
         [Test]
         public void Value_from_Object()
         {
-            var list = new List<int> { 123 };
+            var list = new List<int> { 1, 2, 3 };
             var obj = new { list = list };
             
             var actual = SciterValue.Create(obj);
 
             Assert.IsTrue(actual.IsMap);
             Assert.IsTrue(actual["list"].IsArray);
-            Assert.AreEqual(list[0], actual["list"][0].AsInt32());
+            Assert.AreEqual(list, actual["list"].AsEnumerable().Select(s => s.AsInt32()));
         }
 
         [Test]

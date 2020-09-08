@@ -85,7 +85,7 @@ namespace SciterTest.NetCore
 		{
 			//Simulate a delay
 			//await Task.Delay(3500);
-			
+
 			var value = SciterValue.FromJsonString(System.Text.Json.JsonSerializer.Serialize(new
 			{
 				FrameworkDescription = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription,
@@ -96,6 +96,11 @@ namespace SciterTest.NetCore
 			}));
 			
 			return Task.FromResult(value);
+		}
+		
+		public Task<SciterValue> ThrowException(SciterElement element, SciterValue[] args)
+		{
+			throw new NotImplementedException("This is a fault!");
 		}
 
 		protected override bool OnMouse(SciterElement element, MouseEventArgs args)

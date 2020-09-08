@@ -139,23 +139,33 @@ namespace SciterCore
 		{
 			if(method != null)
 			{
-				//Check if the method returns a Task and has a callback in the args
+				//Check if the method returns Task<SciterValue> and has a callback in the args
 				if (method.ReturnType.GetMethod(nameof(Task.GetAwaiter)) != null &&
-				    args.Any(a => a.IsFunction || a.IsObjectFunction))
+				    args.Any(a => a.IsFunction || a.IsObjectFunction) &&
+				    method.ReturnType.IsGenericType &&
+				    method.ReturnType.GenericTypeArguments.Length == 1 && typeof(SciterValue).IsAssignableFrom(method.ReturnType.GenericTypeArguments[0]))
 				{
-					((Task<SciterValue>) method.Invoke(this, new object[] {element, args})).ContinueWith(task =>
+					// Safe to call `First` here as the check is done above.
+					var callbackFunc = args.First(f => f.IsObjectFunction || f.IsFunction);
+
+					try
 					{
-						if (task.IsFaulted)
-							return;
-						
-						// Safe to call `First` here as the check is done above.
-						args.First(f => f.IsObjectFunction || f.IsFunction).Call(task.Result);
-					});
+						((Task<SciterValue>) method.Invoke(this, new object[] {element, args})).ContinueWith(task =>
+						{
+							if (task.IsFaulted)
+								return;
+
+							callbackFunc.Call(task.Result, SciterValue.Null);
+						});
+					}
+					catch (Exception e)
+					{
+						callbackFunc.Call(SciterValue.Null, SciterValue.MakeError(e?.ToString()));
+					}
 					
 					// Tasks should return Successful, the callback function will be fired when the Task completes. 
-					return ScriptEventResult.Successful(null);
+					return ScriptEventResult.Successful();
 				}
-				
 				
 				// This base class tries to handle it by searching for a method with the same 'name'
 				var mparams = method.GetParameters();
@@ -183,8 +193,8 @@ namespace SciterCore
 					if(mparams.Length==1 && mparams[0].ParameterType.Name == "SciterValue[]" &&
 						(method.ReturnType == typeof(void) || method.ReturnType == typeof(SciterValue)))
 					{
-						object[] call_parameters = new object[] { args };
-						var ret = method.Invoke(this, call_parameters);
+						var parameters = new object[] { args };
+						var ret = method.Invoke(this, parameters);
 						
 						SciterValue value = null;
 						

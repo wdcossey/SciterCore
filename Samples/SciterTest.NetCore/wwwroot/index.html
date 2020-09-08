@@ -86,7 +86,7 @@
 			border-radius: 4dip;
 			color: white;
 			background-color: rgba(36, 49, 64, 1);
-			box-shadow: 0 2px 1px -1px rgba(0,0,0,.2), 0 1px 2px 0 rgba(0,0,0,.14), 0 1px 3px 0 rgba(0,0,0,.12);
+			box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.2), 0 1px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 3px 0 rgba(0, 0, 0, 0.12);
 			/*behavior: card-drop-behavior;*/
 		}
 
@@ -108,6 +108,15 @@
 			height:max-content;
 			opacity: 1;
 			visibility: visible;
+		}
+
+		card > cardcontent.has-exception
+		{
+			color: red;
+			background-color: rgba(0, 0, 0, .25);
+			padding: 8dip;
+			border-radius: 4dip;
+			behavior:htmlarea;
 		}
 		
 	</style>
@@ -211,13 +220,26 @@
 		   	$(#helloSciter).html = "<pre><code>" + value + "</code><pre>";
 		});
 		
-		view.GetRuntimeInfo(function(value) {
-			$(#frameworkDescription).text = value.FrameworkDescription;
-			//$(#systemVersion).text = value.SystemVersion;
-			$(#processArchitecture).text = value.ProcessArchitecture;
-			$(#osArchitecture).text = value.OSArchitecture;
-			$(#osDescription).text = value.OSDescription;
-			$(#osContent).attributes["state"] = "visible";
+		view.GetRuntimeInfo(function(value, error) {
+			if (!error) {
+				$(#frameworkDescription).text = value.FrameworkDescription;
+				//$(#systemVersion).text = value.SystemVersion;
+				$(#processArchitecture).text = value.ProcessArchitecture;
+				$(#osArchitecture).text = value.OSArchitecture;
+				$(#osDescription).text = value.OSDescription;
+				$(#osContent).attributes["state"] = "visible";
+			}
+			else {
+			
+			}
+		});
+		
+		view.ThrowException(function(value, error) {
+			if (error) {
+				$(#exContent).html = error;
+				$(#exContent).attributes["state"] = "visible";
+				$(#exContent).attributes.addClass("has-exception");
+			}
 		});
 
 		var version_major = Sciter.VERSION >> 16;
@@ -298,6 +320,17 @@
 						<div><span>File:</span>&nbsp;<a #stFileUri></a></div>
 						<div><span>Line #:</span>&nbsp;<span #stLineNumber style="font-weight: bold;"></span></div>
 						<div><span>Column #:</span>&nbsp;<span #stColumnNumber style="font-weight: bold;"></span></div>
+					</cardcontent>
+				</card>
+				
+				<p/>
+
+				<card style="width: 1*; margin-bottom: 16dip">
+					<div style="font-size: 20dip; vertical-align: center; font-family: Roboto,Helvetica Neue,sans-serif;font-weight: 500;">Exception Handling</div>
+					<div style="font-size: 14dip;font-family: Roboto,Helvetica Neue,sans-serif;font-weight: 400;opacity: 0.6;margin-bottom: 16dip">Represents errors that occured during execution.</div>
+
+					<cardcontent #exContent>
+						<div><span>Hello:</span>&nbsp;<span style="font-weight: bold;">Sciter</span></div>
 					</cardcontent>
 				</card>
 				

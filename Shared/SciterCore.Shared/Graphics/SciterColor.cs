@@ -118,6 +118,11 @@ namespace SciterCore
             return (int) Value;
         }
 
+        public override string ToString()
+        {
+            return $"{Value:X8}";
+        }
+
         #region Color List
 
         public static SciterColor Invalid => new SciterColor(-1, -1, -1); 

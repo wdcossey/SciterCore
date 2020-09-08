@@ -24,7 +24,10 @@ using System.Text.RegularExpressions;
 using System.Runtime.InteropServices;
 using SciterCore.Interop;
 using System.Reflection;
-using SciterTest.CoreForms.Extensions;
+// ReSharper disable RedundantTypeSpecificationInDefaultExpression
+
+// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable UnusedMember.Global
 
 namespace SciterCore
 {
@@ -66,15 +69,21 @@ namespace SciterCore
 		public override string ToString()
 		{
 			var what = "";
-			if(IsUndefined) what = nameof(IsUndefined);
-			if(IsBool) what = nameof(IsBool);
-			if(IsInt) what = nameof(IsInt);
-			if(IsFloat) what = nameof(IsFloat);
-			if(IsString) what = $"{nameof(IsString)} {AsString("")}";
+			if (IsUndefined) what = nameof(IsUndefined);
+
+			if (IsBool) what += $"{nameof(IsBool)} ({AsBoolean()})";
+
+			if (IsInt) what += $"{nameof(IsInt)} ({AsInt32()})";
+
+			if (IsFloat) what += $"{nameof(IsFloat)} ({AsDouble()})";
+			
+			if (IsString)
+				what = $"{nameof(IsString)} ({AsString(string.Empty)})";
+
 			if(IsSymbol) what = nameof(IsSymbol);
 			if(IsErrorString) what = nameof(IsErrorString);
 			if(IsDate) what = nameof(IsDate);
-			if(IsCurrency) what = nameof(IsCurrency);
+			if(IsCurrency) what = $"{nameof(IsCurrency)} ({AsCurrency()})";
 			if(IsMap) what = nameof(IsMap);
 			if(IsArray) what = nameof(IsArray);
 			if(IsFunction) what = nameof(IsFunction);
@@ -82,9 +91,9 @@ namespace SciterCore
 			if(IsObject) what = nameof(IsObject);
 			if(IsDomElement) what = nameof(IsDomElement);
 			if(IsNativeFunction) what = nameof(IsNativeFunction);
-			if(IsColor) what = nameof(IsColor);
-			if(IsDuration) what = nameof(IsDuration);
-			if(IsAngle) what = nameof(IsAngle);
+			if(IsColor) what = $"{nameof(IsColor)} ({AsColor()})";
+			if(IsDuration) what = $"{nameof(IsDuration)} ({AsDuration()})";
+			if(IsAngle) what =  $"{nameof(IsAngle)} ({AsAngle()})";
 			if(IsNull) what = nameof(IsNull);
 			if(IsObjectNative) what = nameof(IsObjectNative);
 			if(IsObjectArray) what = nameof(IsObjectArray);
@@ -249,7 +258,10 @@ namespace SciterCore
 		private IConvertible FromSciterValue(SciterValue value)
 		{
 			var valueTypeResult = Api.ValueType(ref value._data, out var valueType, out var units).IsOk();
-				
+
+			if (!valueTypeResult)
+				return null;
+			
 			switch ((Interop.SciterValue.VALUE_TYPE)valueType)
 			{
 				case Interop.SciterValue.VALUE_TYPE.T_BOOL:
@@ -408,29 +420,29 @@ namespace SciterCore
 			antiRecurse.Add(antiRecurse);
 
 			var t = value.GetType();
-			if(t.GetInterface("IEnumerable") != null)
+			if(typeof(IEnumerable).IsAssignableFrom(t))
 			{
-				var sv_arr = new SciterValue();
-				var castMethod = typeof(Enumerable).GetMethod("Cast")
+				var valueArray = new SciterValue();
+				var castMethod = typeof(Enumerable).GetMethod(nameof(Enumerable.Cast))
 					.MakeGenericMethod(new Type[] { typeof(object) });
 				var castedObject = (IEnumerable<object>) castMethod.Invoke(null, new object[] { value });
 
 				foreach(var item in castedObject)
 				{
-					sv_arr.Append(FromObjectRecurse(item, ref antiRecurse, depth));
+					valueArray.Append(FromObjectRecurse(item, ref antiRecurse, depth));
 				}
-				return sv_arr;
+				return valueArray;
 			}
 
 			var result = new SciterValue();
 
 			foreach(var prop in t.GetProperties())
 			{
-				if (prop.CanRead)
-				{
-					var val = prop.GetValue(value);
-					result[prop.Name] = FromObjectRecurse(val, ref antiRecurse, depth);
-				}
+				if (!prop.CanRead) 
+					continue;
+				
+				var val = prop.GetValue(value);
+				result[prop.Name] = FromObjectRecurse(val, ref antiRecurse, depth);
 			}
 
 			return result;
@@ -515,18 +527,31 @@ namespace SciterCore
 		//	return sv;
 		//}
 		
-		public static SciterValue MakeDuration(double seconds)
+		
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="value">Duration in seconds</param>
+		/// <returns></returns>
+		public static SciterValue MakeDuration(double value)
 		{
 			var sv = new SciterValue();
-			Api.ValueFloatDataSet(ref sv._data, seconds, (uint)Interop.SciterValue.VALUE_TYPE.T_DURATION, 0);
+			Api.ValueFloatDataSet(ref sv._data, value, (uint)Interop.SciterValue.VALUE_TYPE.T_DURATION, 0);
 			return sv;
 		}
 		
-		public static SciterValue MakeAngle(double seconds)
+		public static SciterValue MakeAngle(double value)
 		{
 			var sv = new SciterValue();
-			Api.ValueFloatDataSet(ref sv._data, seconds, (uint)Interop.SciterValue.VALUE_TYPE.T_ANGLE, 0);
+			Api.ValueFloatDataSet(ref sv._data, value, (uint)Interop.SciterValue.VALUE_TYPE.T_ANGLE, 0);
 			return sv;
+		}
+		
+		public static SciterValue MakeCurrency(long value)
+		{
+			var result = new SciterValue();
+			Api.ValueInt64DataSet(ref result._data, value, (uint) Interop.SciterValue.VALUE_TYPE.T_CURRENCY, 0);
+			return result;
 		}
 
 		public bool IsUndefined => _data.t == (uint)Interop.SciterValue.VALUE_TYPE.T_UNDEFINED;
@@ -576,9 +601,16 @@ namespace SciterCore
 		public uint AsUInt32(uint @default = default(uint))
         {
             return Api.ValueIntData(ref _data, out var pData)
-	            .IsOk() ? (uint)pData : @default;
+	            .IsOk() ? unchecked((uint)pData) : @default;
         }
 
+
+		public long AsInt64(long @default = default(long))
+		{
+			return Api.ValueInt64Data(ref _data, out var pData)
+				.IsOk() ? pData : @default;
+		}
+		
 		public double AsDouble(double @default = default(double))
         {
             return Api.ValueFloatData(ref _data, out var pData)
@@ -607,7 +639,7 @@ namespace SciterCore
 			if(!IsColor)
 				ThrowTypeException(nameof(Interop.SciterValue.VALUE_TYPE.T_COLOR));
 
-			return new SciterColor((uint) AsInt32());
+			return new SciterColor(AsUInt32());
 		}
 
 		public double AsAngle()
@@ -624,6 +656,14 @@ namespace SciterCore
 				ThrowTypeException(nameof(Interop.SciterValue.VALUE_TYPE.T_DURATION));
 
 			return AsDouble();
+		}
+
+		public long AsCurrency()
+		{
+			if(!IsCurrency)
+				ThrowTypeException(nameof(Interop.SciterValue.VALUE_TYPE.T_CURRENCY));
+
+			return AsInt64();
 		}
 
 //#if WINDOWS || OSX || NETCORE
@@ -680,60 +720,59 @@ namespace SciterCore
 			set => SetItem(key, value);
 		}
 		
-		public void SetItem(int i, SciterValue val)
+		public void SetItem(int i, SciterValue value)
 		{
-			var vr = Api.ValueNthElementValueSet(ref _data, i, ref val._data);
-			Debug.Assert(vr == Interop.SciterValue.VALUE_RESULT.HV_OK);
+			var vr = Api.ValueNthElementValueSet(ref _data, i, ref value._data)
+				.IsOk();
+			Debug.Assert(vr);
 		}
 
-		public void SetItem(SciterValue key, SciterValue val)
+		public void SetItem(SciterValue key, SciterValue value)
 		{
-			var vr = Api.ValueSetValueToKey(ref _data, ref key._data, ref val._data);
-			Debug.Assert(vr == Interop.SciterValue.VALUE_RESULT.HV_OK);
+			var vr = Api.ValueSetValueToKey(ref _data, ref key._data, ref value._data)
+				.IsOk();
+			Debug.Assert(vr);
 		}
 
-		public void SetItem(string key, SciterValue val)
+		public void SetItem(string key, SciterValue value)
 		{
-			var svkey = SciterValue.MakeSymbol(key);
-			var vr = Api.ValueSetValueToKey(ref _data, ref svkey._data, ref val._data);
-			Debug.Assert(vr == Interop.SciterValue.VALUE_RESULT.HV_OK);
+			var symbol = SciterValue.MakeSymbol(key);
+			var vr = Api.ValueSetValueToKey(ref _data, ref symbol._data, ref value._data)
+				.IsOk();
+			Debug.Assert(vr);
 		}
 
-		public void Append(SciterValue val)
+		public void Append(SciterValue value)
 		{
-			Api.ValueNthElementValueSet(ref _data, Length, ref val._data);
+			Api.ValueNthElementValueSet(ref _data, Length, ref value._data);
 		}
 
 		public SciterValue GetItem(int n)
 		{
-			var val = new SciterValue();
-			Api.ValueNthElementValue(ref _data, n, out val._data);
-			return val;
+			Api.ValueNthElementValue(ref _data, n, out var value);
+			return new SciterValue(value);
 		}
 
-		public SciterValue GetItem(SciterValue vkey)
+		public SciterValue GetItem(SciterValue key)
 		{
-			var vret = new SciterValue();
-			Api.ValueGetValueOfKey(ref _data, ref vkey._data, out vret._data);
-			return vret;
+			Api.ValueGetValueOfKey(ref _data, ref key._data, out var value);
+			return new SciterValue(value);
 		}
 
-		public SciterValue GetItem(string strkey)
+		public SciterValue GetItem(string key)
 		{
-			var vret = new SciterValue();
-			var vkey = SciterValue.MakeSymbol(strkey);
-			Api.ValueGetValueOfKey(ref _data, ref vkey._data, out vret._data);
-			return vret;
+			var symbol = SciterValue.MakeSymbol(key);
+			Api.ValueGetValueOfKey(ref _data, ref symbol._data, out var value);
+			return new SciterValue(value);
 		}
 
-		public SciterValue GetKey(int n)
+		public SciterValue GetKey(int index)
 		{
-			var vret = new SciterValue();
-			Api.ValueNthElementKey(ref _data, n, out vret._data);
-			return vret;
+			Api.ValueNthElementKey(ref _data, index, out var value);
+			return new SciterValue(value);
 		}
 
-		public List<SciterValue> Keys
+		public IReadOnlyList<SciterValue> Keys
 		{
 			get
 			{
@@ -741,9 +780,8 @@ namespace SciterCore
 					ThrowTypeException(nameof(Interop.SciterValue.VALUE_TYPE.T_OBJECT));
 
 				if(IsObject)
-					throw new ArgumentException($"Please, call {nameof(Isolate)} for this SciterValue");
-				
-				//TODO: yield return IEnumerable<SciterValue>
+					throw new ArgumentException($"Please call {nameof(Isolate)} for this {nameof(SciterValue)}");
+
 				var result = new List<SciterValue>();
 				
 				for(var i = 0; i < Length; i++)
