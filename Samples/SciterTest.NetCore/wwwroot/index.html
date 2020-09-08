@@ -112,90 +112,21 @@
 
 		card > cardcontent.has-exception
 		{
-			color: red;
-			background-color: rgba(0, 0, 0, .25);
+			background-color: #1e2835;
 			padding: 8dip;
-			border-radius: 4dip;
+			border-radius: 0dip;
+			box-shadow: inset 1dip 1dip 2dip 1dip rgba(0, 0, 0, 0.25);
 			behavior:htmlarea;
+		}
+
+		card > cardcontent.has-exception span
+		{
+			color: crimson;
 		}
 		
 	</style>
 	
 	<script type="text/tiscript"></script>
-
-	<script type="text/tiscript">
-    
-    
-    class DropZone :Behavior 
-    {
-    
-      function onExchange(evt)
-      {
-        if( evt.type == Event.X_WILL_ACCEPT_DROP)
-        {
-          // will accept any data
-          return true;
-        }
-        else if( evt.type == Event.X_DRAG_ENTER)
-        {
-          this.attributes.addClass("active-target");
-          var types = evt.exchangeData();
-          //this.html = types.join("<br>");
-          return true;
-        }
-        else if( evt.type == Event.X_DRAG_LEAVE )
-        {
-          this.attributes.removeClass("active-target");
-          //this.html = "";
-          return true;
-        }
-        else if( evt.type == Event.X_DRAG)
-        {
-          //stdout.println(evt.x,evt.y);
-          return true;
-        }
-        else if( evt.type == Event.X_DROP)
-        {
-          this.attributes.removeClass("active-target");
-          var dl = $(dl);
-          dl.clear();
-          var types = evt.exchangeData();
-          
-          for(var dt in types)  
-            switch(dt) {
-              case #text: {
-                var str = evt.exchangeData(#text);
-                dl.$append(<dt>text</dt><dd><pre>{str}</pre></dd>);
-              } break;
-              case #html: {
-                var (url,html) = evt.exchangeData(#html);
-                dl.$append(<dt>html</dt><dd>url:{url}<pre>{html}</pre></dd>);
-              } break;
-              case #url: {
-                var (caption,url) = evt.exchangeData(#url);
-                dl.$append(<dt>url</dt><dd>caption:{caption}<br>url:{url}</dd>);
-              } break;
-              case #file: {
-                var files = evt.exchangeData(#file);
-                dl.$append(<dt>files</dt><dd>{files.join(" ")}</dd>);
-              } break;
-              case #picture: {
-                var img = evt.exchangeData(#picture);
-                self.bindImage("in-memory:exchange",img);
-                dl.$append(<dt>picture</dt><dd><img src="in-memory:exchange"></dd>);
-              } break;
-              case #json: {
-                var json = evt.exchangeData(#json);
-                dl.$append(<dt>json</dt><dd>{JSON.stringify(json)}</dd>);
-              } break;
-            }
-            
-          return true;
-        }
-      }    
-    }    
-    
-    </script>
 	
 	<script type="text/tiscript">
 	
@@ -236,7 +167,7 @@
 		
 		view.ThrowException(function(value, error) {
 			if (error) {
-				$(#exContent).html = error;
+				$(#exContent).html = String.printf("<div>Type: <span>%s</span></div><div>Message: <span>%s</span></div><div>StackTrace: <span>%s</span></div><div>Source: <span>%s</span></div>", error.Type, error.Message, error.StackTrace, error.Source);
 				$(#exContent).attributes["state"] = "visible";
 				$(#exContent).attributes.addClass("has-exception");
 			}

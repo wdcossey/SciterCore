@@ -4,7 +4,7 @@ namespace SciterCore.Interop
 {
     internal static class InteropExtensions
     {
-        internal static LoadDataEventArgs Convert(this SciterXDef.SCN_LOAD_DATA loadData)
+        internal static LoadDataEventArgs ToEventArgs(this SciterXDef.SCN_LOAD_DATA loadData)
         {
             return new LoadDataEventArgs
             {
@@ -20,7 +20,7 @@ namespace SciterCore.Interop
             };
         }
         
-        internal static DataLoadedEventArgs Convert(this SciterXDef.SCN_DATA_LOADED loadData)
+        internal static DataLoadedEventArgs ToEventArgs(this SciterXDef.SCN_DATA_LOADED loadData)
         {
             return new DataLoadedEventArgs
             {
@@ -34,7 +34,7 @@ namespace SciterCore.Interop
             };
         }
         
-        internal static SciterXDef.SCN_DATA_LOADED Convert(this DataLoadedEventArgs loadData)
+        internal static SciterXDef.SCN_DATA_LOADED FromEventArgs(this DataLoadedEventArgs loadData)
         {
             return new SciterXDef.SCN_DATA_LOADED
             {
@@ -48,7 +48,7 @@ namespace SciterCore.Interop
             };
         }
         
-        internal static DrawEventArgs Convert(this SciterBehaviors.DRAW_PARAMS @params)
+        internal static DrawEventArgs ToEventArgs(this SciterBehaviors.DRAW_PARAMS @params)
         {
             return new DrawEventArgs
             {
@@ -59,7 +59,7 @@ namespace SciterCore.Interop
             };
         }
         
-        internal static KeyEventArgs Convert(this SciterBehaviors.KEY_PARAMS @params)
+        internal static KeyEventArgs ToEventArgs(this SciterBehaviors.KEY_PARAMS @params)
         {
             return new KeyEventArgs
             {
@@ -70,7 +70,7 @@ namespace SciterCore.Interop
             };
         }
         
-        internal static MouseEventArgs Convert(this SciterBehaviors.MOUSE_PARAMS @params)
+        internal static MouseEventArgs ToEventArgs(this SciterBehaviors.MOUSE_PARAMS @params)
         {
             return new MouseEventArgs
             {
@@ -87,7 +87,7 @@ namespace SciterCore.Interop
             };
         }
         
-        internal static ExchangeEventArgs Convert(this SciterBehaviors.EXCHANGE_PARAMS @params)
+        internal static ExchangeEventArgs ToEventArgs(this SciterBehaviors.EXCHANGE_PARAMS @params)
         {
             return new ExchangeEventArgs
             {
@@ -98,6 +98,30 @@ namespace SciterCore.Interop
                 SourceElement = @params.source.Equals(IntPtr.Zero) ? null : new SciterElement(@params.target),
                 Mode = (DragAndDropMode)unchecked((int)@params.mode),
                 Value = new SciterCore.SciterValue(@params.data)
+            };
+        }
+        
+        internal static ScrollEventArgs ToEventArgs(this SciterBehaviors.SCROLL_PARAMS @params)
+        {
+            return new ScrollEventArgs
+            {
+                Event = (ScrollEvents)unchecked((int)@params.cmd),
+                TargetElement = @params.target.Equals(IntPtr.Zero) ? null : new SciterElement(@params.target),
+                Position = @params.pos,
+                Source = (ScrollSource)unchecked((int)@params.source),
+                IsVertical = @params.vertical,
+                Reason = unchecked((int)@params.reason)
+            };
+        }
+        
+        internal static FocusEventArgs ToEventArgs(this SciterBehaviors.FOCUS_PARAMS @params)
+        {
+            return new FocusEventArgs
+            {
+                Event = (FocusEvents)unchecked((int)@params.cmd),
+                TargetElement = @params.target.Equals(IntPtr.Zero) ? null : new SciterElement(@params.target),
+                Cancel = @params.cancel,
+                IsMouseClick = @params.by_mouse_click
             };
         }
     }

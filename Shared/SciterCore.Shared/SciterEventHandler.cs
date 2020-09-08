@@ -21,24 +21,29 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Threading;
 using System.Threading.Tasks;
 using SciterCore.Interop;
+// ReSharper disable VirtualMemberNeverOverridden.Global
+// ReSharper disable UnusedParameter.Global
 
 namespace SciterCore
 {
 	public abstract class SciterEventHandler
 	{
+		
 #if DEBUG
-		private volatile bool _is_attached = false;
+		
+		private volatile bool _isAttached = false;
+		
 		~SciterEventHandler()
 		{
-			Debug.Assert(!_attached_handlers.Contains(this)); 
-			Debug.Assert(_is_attached == false);
+			Debug.Assert(!AttachedHandlers.Contains(this)); 
+			Debug.Assert(_isAttached == false);
 		}
+		
 #endif
 		
-		private static List<SciterEventHandler> _attached_handlers = new List<SciterEventHandler>();// we keep a copy of all attached instances to guard from GC removal
+		private static readonly List<SciterEventHandler> AttachedHandlers = new List<SciterEventHandler>();// we keep a copy of all attached instances to guard from GC removal
 
 		public SciterEventHandler()
             : this(name: null)
@@ -59,83 +64,62 @@ namespace SciterCore
 		internal readonly WorkDelegate EventProc;// keep a copy of the delegate so it survives GC
 		
 		// Overridables
-		protected virtual void Subscription(
-			SciterElement element, 
-			out SciterBehaviors.EVENT_GROUPS event_groups)
+		protected virtual void Subscription(SciterElement element, out SciterBehaviors.EVENT_GROUPS event_groups)
 		{
 			event_groups = SciterBehaviors.EVENT_GROUPS.HANDLE_ALL;
 		}
 
-		protected virtual void Attached(
-			SciterElement element)
+		protected virtual void Attached(SciterElement element)
 		{
 			
 		}
 
-		protected virtual void Detached(
-			SciterElement element)
+		protected virtual void Detached(SciterElement element)
 		{
 			
 		}
 
-		protected virtual bool OnMouse(
-			SciterElement element,
-			MouseEventArgs args)
+		protected virtual bool OnMouse(SciterElement element, MouseEventArgs args)
 		{
 			return false;
 		}
 
-		protected virtual bool OnKey(
-			SciterElement element,
-			KeyEventArgs args)
+		protected virtual bool OnKey(SciterElement element, KeyEventArgs args)
 		{
 			return false;
 		}
 
-		protected virtual bool OnFocus(
-			SciterElement element,
-			SciterBehaviors.FOCUS_PARAMS args)
+		protected virtual bool OnFocus(SciterElement element, FocusEventArgs args)
 		{
 			return false;
 		}
 
-		protected virtual bool OnTimer(
-			SciterElement element)
+		protected virtual bool OnTimer(SciterElement element)
 		{
 			return false;
 		}
 
-		protected virtual bool OnTimer(
-			SciterElement element,
-			IntPtr extTimerId)
+		protected virtual bool OnTimer(SciterElement element, IntPtr extTimerId)
 		{
 			return false;
 		}
 
-		protected virtual bool OnSize(
-			SciterElement element)
+		protected virtual bool OnSize(SciterElement element)
 		{
 			return false;
 		}
 
-		protected virtual bool OnDraw(
-			SciterElement element,
-			DrawEventArgs args)
+		protected virtual bool OnDraw(SciterElement element, DrawEventArgs args)
 		{
 			return false;
 		}
 
-		protected virtual bool OnMethodCall(
-			SciterElement element,
-			SciterBehaviors.BEHAVIOR_METHOD_IDENTIFIERS methodID)
+		protected virtual bool OnMethodCall(SciterElement element, SciterBehaviors.BEHAVIOR_METHOD_IDENTIFIERS methodId)
 		{
 			return false;
 		}
-		
-		protected virtual ScriptEventResult OnScriptCall(
-			SciterElement element, 
-			MethodInfo method, 
-			SciterValue[] args)
+
+		protected virtual ScriptEventResult OnScriptCall(SciterElement element, MethodInfo method, SciterValue[] args)
 		{
 			if(method != null)
 			{
@@ -150,7 +134,7 @@ namespace SciterCore
 
 					try
 					{
-						((Task<SciterValue>) method.Invoke(this, new object[] {element, args})).ContinueWith(task =>
+						((Task<SciterValue>) method.Invoke(this, new object[] {element, args}))?.ContinueWith(task =>
 						{
 							if (task.IsFaulted)
 								return;
@@ -158,9 +142,22 @@ namespace SciterCore
 							callbackFunc.Call(task.Result, SciterValue.Null);
 						});
 					}
+					catch (TargetInvocationException e)
+					{
+						//TODO: Clean this up, maybe change the Dictionary<> implementation?
+						Dictionary<string, IConvertible> properties = (e.InnerException ?? e)
+							.GetType()
+							.GetProperties(BindingFlags.Instance | BindingFlags.Public)
+							.Where(w => typeof(IConvertible).IsAssignableFrom(w.PropertyType))
+							.ToDictionary(key => key.Name, value => value.GetValue((e.InnerException ?? e)) as IConvertible);
+							//.ToDictionary(key => key.Name, value => SciterValue.Create(value.GetValue(e.InnerException)));
+						properties.Add(nameof(Type), (e.InnerException ?? e).GetType().FullName);
+						
+						callbackFunc.Call(SciterValue.Null, SciterValue.Create(properties));
+					}
 					catch (Exception e)
 					{
-						callbackFunc.Call(SciterValue.Null, SciterValue.MakeError(e?.ToString()));
+						callbackFunc.Call(SciterValue.Null, SciterValue.Create(new { Type = e.GetType().FullName, e.Message, e.StackTrace, e.Source }));
 					}
 					
 					// Tasks should return Successful, the callback function will be fired when the Task completes. 
@@ -176,6 +173,7 @@ namespace SciterCore
 					if(mparams.Length == 0 && 
 						(method.ReturnType == typeof(void) || method.ReturnType == typeof(SciterValue)))
 					{
+						//TODO: Add error handling!
 						var ret = method.Invoke(this, null);
 
 						SciterValue value = null;
@@ -194,6 +192,8 @@ namespace SciterCore
 						(method.ReturnType == typeof(void) || method.ReturnType == typeof(SciterValue)))
 					{
 						var parameters = new object[] { args };
+						
+						//TODO: Add error handling!
 						var ret = method.Invoke(this, parameters);
 						
 						SciterValue value = null;
@@ -213,10 +213,13 @@ namespace SciterCore
 						&& mparams[1].ParameterType.Name == "SciterValue[]"
 						&& mparams[2].ParameterType.Name == "SciterValue&")
 					{
-						object[] call_parameters = new object[] { element, args, null };
-						bool res = (bool)method.Invoke(this, call_parameters);
-						Debug.Assert(call_parameters[2] == null || call_parameters[2].GetType().IsAssignableFrom(typeof(SciterValue)));
-						return ScriptEventResult.Successful(call_parameters[2] as SciterValue);
+						object[] parameters = new object[] { element, args, null };
+						
+						//TODO: Add error handling!
+						bool res = (bool)(method?.Invoke(this, parameters) ?? false);
+						
+						Debug.Assert(parameters[2] == null || parameters[2].GetType().IsAssignableFrom(typeof(SciterValue)));
+						return ScriptEventResult.Successful(parameters[2] as SciterValue);
 					}
 				}
 			}
@@ -225,40 +228,28 @@ namespace SciterCore
 			return ScriptEventResult.Failed();
 		}
 
-		protected virtual bool OnEvent(
-			SciterElement sourceElement,
-			SciterElement targetElement,
-			SciterBehaviors.BEHAVIOR_EVENTS type,
-			IntPtr reason,
-			SciterValue data)
+		protected virtual bool OnEvent(SciterElement sourceElement, SciterElement targetElement,
+			SciterBehaviors.BEHAVIOR_EVENTS type, IntPtr reason, SciterValue data)
 		{
 			return false;
 		}
 
-		protected virtual bool OnDataArrived(
-			SciterElement element,
-			SciterBehaviors.DATA_ARRIVED_PARAMS prms)
+		protected virtual bool OnDataArrived(SciterElement element, SciterBehaviors.DATA_ARRIVED_PARAMS prms)
 		{
 			return false;
 		}
 		
-		protected virtual bool OnScroll(
-			SciterElement element,
-			SciterBehaviors.SCROLL_PARAMS prms)
+		protected virtual bool OnScroll(SciterElement element, ScrollEventArgs args)
 		{
 			return false;
 		}
 
-		protected virtual bool OnGesture(
-			SciterElement element, 
-			SciterBehaviors.GESTURE_PARAMS prms)
+		protected virtual bool OnGesture(SciterElement element, SciterBehaviors.GESTURE_PARAMS prms)
 		{
 			return false;
 		}
 
-		protected virtual bool OnExchange(
-			SciterElement element,
-			ExchangeEventArgs args)
+		protected virtual bool OnExchange(SciterElement element, ExchangeEventArgs args)
 		{
 			return false;
 		}
@@ -286,19 +277,19 @@ namespace SciterCore
 						if(p.cmd == SciterBehaviors.INITIALIZATION_EVENTS.BEHAVIOR_ATTACH)
 						{
 #if DEBUG
-							Debug.Assert(_is_attached == false);
-							_is_attached = true;
+							Debug.Assert(_isAttached == false);
+							_isAttached = true;
 #endif
-							_attached_handlers.Add(this);
+							AttachedHandlers.Add(this);
 							Attached(se);
 						}
 						else if(p.cmd == SciterBehaviors.INITIALIZATION_EVENTS.BEHAVIOR_DETACH)
 						{
 #if DEBUG
-							Debug.Assert(_is_attached == true);
-							_is_attached = false;
+							Debug.Assert(_isAttached == true);
+							_isAttached = false;
 #endif
-							_attached_handlers.Remove(this);
+							AttachedHandlers.Remove(this);
 							Detached(se);
 						}
 						return true;
@@ -323,26 +314,26 @@ namespace SciterCore
 				
 				case SciterBehaviors.EVENT_GROUPS.HANDLE_MOUSE:
 					{
-						var @params = Marshal.PtrToStructure<SciterBehaviors.MOUSE_PARAMS>(prms);
-						return OnMouse(se, @params.Convert());
+						var args = Marshal.PtrToStructure<SciterBehaviors.MOUSE_PARAMS>(prms).ToEventArgs();
+						return OnMouse(element: se, args: args);
 					}
 
 				case SciterBehaviors.EVENT_GROUPS.HANDLE_KEY:
 					{
-						var @params = Marshal.PtrToStructure<SciterBehaviors.KEY_PARAMS>(prms);
-						return OnKey(se, @params.Convert());
+						var args = Marshal.PtrToStructure<SciterBehaviors.KEY_PARAMS>(prms).ToEventArgs();
+						return OnKey(element: se, args: args);
 					}
 
 				case SciterBehaviors.EVENT_GROUPS.HANDLE_FOCUS:
 					{
-						var @params = Marshal.PtrToStructure<SciterBehaviors.FOCUS_PARAMS>(prms);
-						return OnFocus(se, @params);
+						var args = Marshal.PtrToStructure<SciterBehaviors.FOCUS_PARAMS>(prms).ToEventArgs();
+						return OnFocus(element: se, args: args);
 					}
 
 				case SciterBehaviors.EVENT_GROUPS.HANDLE_DRAW:
 					{
-						var @params = Marshal.PtrToStructure<SciterBehaviors.DRAW_PARAMS>(prms);
-						return OnDraw(se, @params.Convert());
+						var args = Marshal.PtrToStructure<SciterBehaviors.DRAW_PARAMS>(prms).ToEventArgs();
+						return OnDraw(element: se, args: args);
 					}
 
 				case SciterBehaviors.EVENT_GROUPS.HANDLE_TIMER:
@@ -357,7 +348,8 @@ namespace SciterCore
 					{
 						var @params = Marshal.PtrToStructure<SciterBehaviors.BEHAVIOR_EVENT_PARAMS>(prms);
 						SciterElement se2 = @params.he != IntPtr.Zero ? new SciterElement(@params.he) : null;
-						return OnEvent(se, se2, @params.cmd, @params.reason, new SciterValue(@params.data));
+						return OnEvent(se, se2, 
+							@params.cmd, @params.reason, new SciterValue(@params.data));
 					}
 
 				case SciterBehaviors.EVENT_GROUPS.HANDLE_METHOD_CALL:
@@ -374,8 +366,8 @@ namespace SciterCore
 
 				case SciterBehaviors.EVENT_GROUPS.HANDLE_SCROLL:
 					{
-						var @params = Marshal.PtrToStructure<SciterBehaviors.SCROLL_PARAMS>(prms);
-						return OnScroll(se, @params);
+						var args = Marshal.PtrToStructure<SciterBehaviors.SCROLL_PARAMS>(prms).ToEventArgs();
+						return OnScroll(element: se, args: args);
 					}
 
 				case SciterBehaviors.EVENT_GROUPS.HANDLE_SIZE:
@@ -430,7 +422,7 @@ namespace SciterCore
 				case SciterBehaviors.EVENT_GROUPS.HANDLE_EXCHANGE:
 					{
 						var @params = Marshal.PtrToStructure<SciterBehaviors.EXCHANGE_PARAMS>(prms);
-						return OnExchange(se, @params.Convert());
+						return OnExchange(se, @params.ToEventArgs());
 					}
 
 				case SciterBehaviors.EVENT_GROUPS.HANDLE_GESTURE:

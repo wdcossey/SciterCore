@@ -250,6 +250,9 @@ namespace SciterCore
 				case SciterColor @sciterColor:
 					Api.ValueIntDataSet(ref _data, (int)sciterColor.Value, (uint) Interop.SciterValue.VALUE_TYPE.T_COLOR, 0);
 					break;
+				case null:
+					Api.ValueClear(out _data);
+					break;
 				default:
 					throw new Exception($"Can not create a SciterValue from type '{value.GetType()}'");
 			}

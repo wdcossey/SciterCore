@@ -1,4 +1,6 @@
 ﻿using System;
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+// ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
 
 namespace SciterCore
 {

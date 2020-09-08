@@ -188,7 +188,7 @@ namespace SciterCore.Interop
 			public KEYBOARD_STATES alt_state;
 		}
 
-		public enum FOCUS_EVENTS : uint
+		internal enum FOCUS_EVENTS : uint
 		{
 			FOCUS_OUT = 0,      		// container got focus on element inside it, target is an element that got focus
 			FOCUS_IN = 1,       		// container lost focus from any element inside it, target is an element that lost focus
@@ -214,7 +214,7 @@ namespace SciterCore.Interop
 		}
 		
 		[StructLayout(LayoutKind.Sequential)]
-		public struct FOCUS_PARAMS
+		internal struct FOCUS_PARAMS
 		{
 			public FOCUS_EVENTS	cmd;
 			public IntPtr		target;// HELEMENT
@@ -222,7 +222,7 @@ namespace SciterCore.Interop
 			public bool			cancel;
 		}
 	
-		public enum SCROLL_EVENTS : uint
+		internal enum SCROLL_EVENTS : uint
 		{
 			SCROLL_HOME = 0,
 			SCROLL_END,
@@ -237,7 +237,7 @@ namespace SciterCore.Interop
 			SCROLL_SLIDER_PRESSED
 		}
 
-		public enum SCROLL_SOURCE
+		internal enum SCROLL_SOURCE
 		{
 			SCROLL_SOURCE_UNKNOWN,
 			SCROLL_SOURCE_KEYBOARD,  // SCROLL_PARAMS::reason <- keyCode
@@ -246,7 +246,7 @@ namespace SciterCore.Interop
 			SCROLL_SOURCE_WHEEL,
 		}
 
-		public enum SCROLLBAR_PART
+		internal enum SCROLLBAR_PART
 		{
 			SCROLLBAR_BASE,       
 			SCROLLBAR_PLUS,       
@@ -258,7 +258,7 @@ namespace SciterCore.Interop
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct SCROLL_PARAMS
+		internal struct SCROLL_PARAMS
 		{
 			public SCROLL_EVENTS	cmd;
 			public IntPtr			target;// HELEMENT

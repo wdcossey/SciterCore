@@ -68,15 +68,16 @@ namespace SciterTest.NetCore
 			var stackTrace = new StackTrace(true);
 			var stackFrame = stackTrace.GetFrame(0);
 			
-			var value = SciterValue.FromJsonString(System.Text.Json.JsonSerializer.Serialize(new
-			{
-				MethodName = stackFrame?.GetMethod()?.Name,
-				Parameters = stackFrame?.GetMethod()?.GetParameters().Select(s => new { s.Name, s.Position, Type = s.ParameterType.Name}),
-				FileUri = new Uri(stackFrame?.GetFileName())?.AbsoluteUri,
-				FileName = Path.GetFileName(stackFrame?.GetFileName()),
-				LineNumber = stackFrame?.GetFileLineNumber(),
-				ColumnNumber = stackFrame?.GetFileColumnNumber()
-			}));
+			var value = SciterValue.Create(
+				new
+				{
+					MethodName = stackFrame?.GetMethod()?.Name,
+					Parameters = stackFrame?.GetMethod()?.GetParameters().Select(s => new { s.Name, s.Position, Type = s.ParameterType.Name}),
+					FileUri = new Uri(stackFrame?.GetFileName())?.AbsoluteUri,
+					FileName = Path.GetFileName(stackFrame?.GetFileName()),
+					LineNumber = stackFrame?.GetFileLineNumber(),
+					ColumnNumber = stackFrame?.GetFileColumnNumber()
+				});
 			
 			return Task.FromResult(value);
 		}
@@ -86,14 +87,14 @@ namespace SciterTest.NetCore
 			//Simulate a delay
 			//await Task.Delay(3500);
 
-			var value = SciterValue.FromJsonString(System.Text.Json.JsonSerializer.Serialize(new
-			{
-				FrameworkDescription = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription,
-				ProcessArchitecture = System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture.ToString(),
-				OSArchitecture = System.Runtime.InteropServices.RuntimeInformation.OSArchitecture.ToString(),
-				OSDescription = System.Runtime.InteropServices.RuntimeInformation.OSDescription,
-				SystemVersion = System.Runtime.InteropServices.RuntimeEnvironment.GetSystemVersion()
-			}));
+			var value = SciterValue.Create(
+				new {
+					FrameworkDescription = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription,
+					ProcessArchitecture = System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture.ToString(),
+					OSArchitecture = System.Runtime.InteropServices.RuntimeInformation.OSArchitecture.ToString(),
+					OSDescription = System.Runtime.InteropServices.RuntimeInformation.OSDescription,
+					SystemVersion = System.Runtime.InteropServices.RuntimeEnvironment.GetSystemVersion()
+				});
 			
 			return Task.FromResult(value);
 		}
@@ -105,14 +106,20 @@ namespace SciterTest.NetCore
 
 		protected override bool OnMouse(SciterElement element, MouseEventArgs args)
 		{
-			//Console.WriteLine($"{args.ButtonState} | {args.Event} | {args.DragMode}");
-			return base.OnMouse(element, args);
+			//Console.WriteLine($"{args.ButtonState}| {args.Cursor} | {args.Event} | {args.DragMode}");
+			return false;
 		}
 
 		protected override bool OnKey(SciterElement element, KeyEventArgs args)
 		{
 			//Console.WriteLine($"{args.Event} | {args.KeyboardState} | {(char)args.KeyCode}");
-			return base.OnKey(element, args);
+			return false;
+		}
+
+		protected override bool OnFocus(SciterElement element, FocusEventArgs args)
+		{
+			//Console.WriteLine($"{args.Event} | {args.Cancel} | {args.IsMouseClick}");
+			return false;
 		}
 
 		// (Hint: to overload C# methods of SciterEventHandler base class, type 'override', press space, and VS/Xamarin will suggest the methods you can override)

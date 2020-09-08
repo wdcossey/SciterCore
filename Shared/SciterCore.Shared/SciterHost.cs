@@ -373,11 +373,11 @@ namespace SciterCore
 			{
 				case SciterXDef.SCITER_CALLBACK_CODE.SC_LOAD_DATA:
 					var sld = Marshal.PtrToStructure<SciterXDef.SCN_LOAD_DATA>(ptrNotification);
-					return (uint)OnLoadData(sender: this, args: sld.Convert());
+					return (uint)OnLoadData(sender: this, args: sld.ToEventArgs());
 
 				case SciterXDef.SCITER_CALLBACK_CODE.SC_DATA_LOADED:
 					var sdl = Marshal.PtrToStructure<SciterXDef.SCN_DATA_LOADED>(ptrNotification);
-					OnDataLoaded(sender: this, args: sdl.Convert());
+					OnDataLoaded(sender: this, args: sdl.ToEventArgs());
 					return 0;
 
 				case SciterXDef.SCITER_CALLBACK_CODE.SC_ATTACH_BEHAVIOR:

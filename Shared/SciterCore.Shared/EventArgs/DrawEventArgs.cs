@@ -4,7 +4,7 @@ namespace SciterCore
 {
     public class DrawEventArgs
     {
-        public DrawEvent DrawEvent;
+	    public DrawEvent DrawEvent;
         
         /// <summary>
         /// Handle of the <see cref="SciterGraphics"/> object
