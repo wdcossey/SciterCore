@@ -121,10 +121,10 @@ namespace SciterCore.UnitTests
             var actual = SciterValue.Create(input);
             
             Assert.IsTrue(input == null ? actual.IsUndefined : actual.IsString);
-            Assert.AreEqual(input, actual.AsString(default(string)));
+            Assert.AreEqual(input, actual.AsString());
         }
 
-        [TestCase(new byte[5] { 1, 2, 3, 4, 5 })]
+        [TestCase(new byte[] { 1, 2, 3, 4, 5 })]
         [TestCase(new byte[0])]
         [TestCase(null)]
         public void Value_from_ByteArray(byte[] input)
@@ -142,19 +142,36 @@ namespace SciterCore.UnitTests
             Assert.IsNull(actual.AsBytes());
         }
         
-        
         [TestCase(2020, 1, 1, 12, 0, 0, DateTimeKind.Utc)]
         [TestCase(2020, 1, 1, 12, 0, 0, DateTimeKind.Local)]
         public void Value_from_DateTime(int year, int month, int day, int hour, int minute, int second, DateTimeKind kind)
         {
             var input = new DateTime(year, month, day, hour, minute, second, kind);
             
-            var actual = SciterValue.Create(input);
+            var actual = SciterValue.MakeDateTime(input);
             
             Assert.IsTrue(actual.IsDate);
             Assert.AreEqual(input, actual.AsDateTime(kind == DateTimeKind.Utc));
         }
         
+        [TestCase(0.0d)]
+        [TestCase(0.5d)]
+        [TestCase(1000d)]
+        public void Value_from_Duration(double duration)
+        {
+            var actual = SciterValue.MakeDuration(duration);
+            
+            Assert.IsTrue(actual.IsDuration);
+            Assert.AreEqual(duration, actual.AsDuration());
+        }
+        
+        [Test]
+        public void Value_is_not_a_Duration()
+        {
+            var actual = SciterValue.Create("Not a Duration");
+            Assert.Throws<InvalidOperationException>(() => actual.AsDuration());
+        }
+
         [TestCase(255, 0, 255)]
         [TestCase(0, 0, 0)]
         [TestCase(255, 255, 255)]
@@ -202,7 +219,7 @@ namespace SciterCore.UnitTests
                 SciterValue.Create(1u),
                 SciterValue.Create(1d),
                 SciterValue.Create("string"),
-                SciterValue.Create(System.DateTime.Now),
+                SciterValue.Create(DateTime.Now),
                 SciterValue.Create(true)
             };
             
@@ -215,7 +232,7 @@ namespace SciterCore.UnitTests
             Assert.AreEqual(input[2].AsDouble(-1d), actual.GetItem(2).AsDouble());
             Assert.AreEqual(input[3].AsString("exp"), actual.GetItem(3).AsString("actual"));
             Assert.AreEqual(input[4].AsDateTime(), actual.GetItem(4).AsDateTime());
-            Assert.AreEqual(input[5].AsBoolean(false), actual.GetItem(5).AsBoolean(true));
+            Assert.AreEqual(input[5].AsBoolean(), actual.GetItem(5).AsBoolean(true));
         }
         
         [Test]
@@ -232,6 +249,24 @@ namespace SciterCore.UnitTests
         }
 
         [Test]
+        public void Value_from_IEnumerable()
+        {
+            var list = new List<int> { 1, 2, 3 };
+            var actual = SciterValue.FromList(list);
+
+            Assert.IsTrue(actual.IsArray);
+            Assert.AreEqual(list, actual.AsEnumerable().Select(s => s.AsInt32()));
+        }
+
+        [Test]
+        public void Value_is_not_an_IEnumerable()
+        {
+            var actual = SciterValue.Create("Not a IEnumerable<>");
+            // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
+            Assert.Throws<InvalidOperationException>(() =>actual.AsEnumerable().ToList());
+        }
+        
+        [Test]
         public void Value_from_Object_recursion_too_deep()
         {
             var obj = new { a = new { b = new { c = new { d = new { e = new { f = new { g = new { h = new { i = new { j = new { k = new { }}}}}}}}}}}};
@@ -243,9 +278,15 @@ namespace SciterCore.UnitTests
         {
             var dictionary = new Dictionary<string, IConvertible>
             {
+                { "null", null},
+                { "bool", true},
+                { "byte", (byte)1},
                 { "int", 1},
                 { "string", "string"},
-                { "double", 3d},
+                { "double", 0d},
+                { "uint", 0u},
+                { "decimal", 0m},
+                { "dateTime", DateTime.UtcNow.ToFileTime()},
                 { "color", SciterColor.Khaki}
             };
             
@@ -277,6 +318,46 @@ namespace SciterCore.UnitTests
             var actual = SciterValue.Create(dictionary);
 
             Assert.IsTrue(actual.IsMap);
+        }
+
+        [Test]
+        public void Value_from_JsonString()
+        {
+            var actual = SciterValue.FromJsonString("{ \"key\" : \"value\"}");
+            Assert.IsTrue(actual.IsMap);
+            Assert.AreEqual("value", actual["key"].AsString());
+        }
+
+        [TestCase("This is an error")]
+        public void Value_from_MakeError(string input)
+        {
+            var actual = SciterValue.MakeError(input);
+            Assert.IsTrue(actual.IsErrorString);
+            Assert.AreEqual(input, actual.AsString());
+        }
+
+        [TestCase("")]
+        [TestCase(null)]
+        public void Null_or_empty_input_for_MakeError_returns_null(string input)
+        {
+            var actual = SciterValue.MakeError(input);
+            Assert.IsNull(actual);
+        }
+        
+        [TestCase("sym")]
+        public void Value_from_MakeSymbol(string input)
+        {
+            var actual = SciterValue.MakeSymbol(input);
+            Assert.IsTrue(actual.IsSymbol);
+            Assert.AreEqual(input, actual.AsString());
+        }
+        
+        [TestCase("")]
+        [TestCase(null)]
+        public void Null_or_empty_input_for_MakeSymbol_returns_null(string input)
+        {
+            var actual = SciterValue.MakeSymbol(input);
+            Assert.IsNull(actual);
         }
     }
 }

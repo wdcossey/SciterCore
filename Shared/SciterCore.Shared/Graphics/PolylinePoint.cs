@@ -1,4 +1,6 @@
-﻿namespace SciterCore
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace SciterCore
 {
     public readonly struct PolylinePoint
     {
@@ -17,6 +19,12 @@
         public static PolylinePoint Create(float x, float y)
         {
             return new PolylinePoint(x: x, y: y);
+        }
+        
+        [ExcludeFromCodeCoverage]
+        public override string ToString()
+        {
+            return $"{X},{Y}";
         }
     }
 }

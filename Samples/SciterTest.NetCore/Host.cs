@@ -101,7 +101,7 @@ namespace SciterTest.NetCore
 		
 		public Task<SciterValue> ThrowException(SciterElement element, SciterValue[] args)
 		{
-			throw new NotImplementedException("This is a fault!");
+			return Task.FromResult(SciterValue.Create(value: (100 / int.Parse("0"))));
 		}
 
 		protected override bool OnMouse(SciterElement element, MouseEventArgs args)

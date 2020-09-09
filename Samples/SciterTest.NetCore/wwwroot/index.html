@@ -101,6 +101,18 @@
 			width: 1*;
 			opacity: 0;
 			transition: height cubic-in-out 0.4s 0.4s, opacity cubic-in-out 0.4s 0.4s;
+			flow:row(div,div);
+		}
+		
+		card > cardcontent div:nth-child(odd)
+		{
+			width:max-content;
+			margin-right: 4dip;
+		}
+		
+		card > cardcontent div:nth-child(even)
+		{
+			width:1*;
 		}
 
 		card > cardcontent[state="visible"]
@@ -114,7 +126,7 @@
 		{
 			background-color: #1e2835;
 			padding: 8dip;
-			border-radius: 0dip;
+			border-radius: 2dip;
 			box-shadow: inset 1dip 1dip 2dip 1dip rgba(0, 0, 0, 0.25);
 			behavior:htmlarea;
 		}
@@ -140,7 +152,7 @@
 			var args = [];
 			
 			for(var (index, val) in value.Parameters)
-				args.push("<b>" + val.Type + "</b> " + val.Name);
+				args.push("<b>" + val.Type + "</b> <i>" + val.Name + "</i>");
 				
 			$(#stParameters).html += "(" + args.join(", ") + ")";
 			
@@ -167,7 +179,7 @@
 		
 		view.ThrowException(function(value, error) {
 			if (error) {
-				$(#exContent).html = String.printf("<div>Type: <span>%s</span></div><div>Message: <span>%s</span></div><div>StackTrace: <span>%s</span></div><div>Source: <span>%s</span></div>", error.Type, error.Message, error.StackTrace, error.Source);
+				$(#exContent).html = String.printf("<div>Type:</div><div><span>%s</span></div><div>Message:</div><div><span>%s</span></div><div>StackTrace:</div><div><span>%s</span></div><div>Source: </div><div><span>%s</span></div>", error.Type, error.Message, error.StackTrace, error.Source);
 				$(#exContent).attributes["state"] = "visible";
 				$(#exContent).attributes.addClass("has-exception");
 			}
@@ -231,10 +243,14 @@
 					</div>
 
 					<cardcontent #osContent>
-						<div><span>Operating System:</span> <span #osDescription style="font-weight: bold;"></span></div>
-						<div><span>Framework:</span> <span #frameworkDescription style="font-weight: bold;"></span></div>
-						<div><span>OS Architecture:</span> <span #osArchitecture style="font-weight: bold;"></span></div>
-						<div><span>Process Architecture:</span> <span #processArchitecture style="font-weight: bold;"></span></div>
+						<div>Operating System:</div>
+						<div style="font-weight: bold;"><span #osDescription/></div>
+						<div>Framework:</div>
+						<div style="font-weight: bold;"><span #frameworkDescription/></div>
+						<div>OS Architecture:</div>
+						<div style="font-weight: bold;"><span #osArchitecture/></div>
+						<div>Process Architecture:</div>
+						<div style="font-weight: bold;"><span #processArchitecture/></div>
 					</cardcontent>
 
 				</card>
@@ -246,11 +262,16 @@
 					<div style="font-size: 14dip;font-family: Roboto,Helvetica Neue,sans-serif;font-weight: 400;opacity: 0.6;margin-bottom: 16dip">StackFrame corresponding to the calling stack frame.</div>
 
 					<cardcontent #stContent>
-						<div><span>Method:</span>&nbsp;<span #stMethodName style="font-weight: bold;"></span></div>
-						<div><span>Arguments:</span>&nbsp;<span #stParameters></span></div>
-						<div><span>File:</span>&nbsp;<a #stFileUri></a></div>
-						<div><span>Line #:</span>&nbsp;<span #stLineNumber style="font-weight: bold;"></span></div>
-						<div><span>Column #:</span>&nbsp;<span #stColumnNumber style="font-weight: bold;"></span></div>
+						<div>Method:</div>
+						<div style="font-weight: bold;"><span #stMethodName/></div>
+						<div>Arguments:</div>
+						<div><span #stParameters/></div>
+						<div>File:</div>
+						<div><a #stFileUri/></div>
+						<div>Line #:</div>
+						<div style="font-weight: bold;"><span #stLineNumber/></div>
+						<div>Column #:</div>
+						<div style="font-weight: bold;"><span #stColumnNumber/></div>
 					</cardcontent>
 				</card>
 				

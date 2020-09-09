@@ -2,6 +2,9 @@
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
+
+using System.Diagnostics.CodeAnalysis;
+
 namespace SciterCore
 {
     public struct SciterPoint
@@ -18,6 +21,7 @@ namespace SciterCore
 
         public int Y { get; set; }
 
+        [ExcludeFromCodeCoverage]
         public override string ToString()
         {
             return $"{X},{Y}";

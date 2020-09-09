@@ -118,6 +118,7 @@ namespace SciterCore
             return (int) Value;
         }
 
+        [ExcludeFromCodeCoverage]
         public override string ToString()
         {
             return $"{Value:X8}";

@@ -1,4 +1,6 @@
-﻿namespace SciterCore
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace SciterCore
 {
     public readonly struct PolygonPoint
     {
@@ -17,6 +19,12 @@
         public static PolygonPoint Create(float x, float y)
         {
             return new PolygonPoint(x: x, y: y);
+        }
+        
+        [ExcludeFromCodeCoverage]
+        public override string ToString()
+        {
+            return $"{X},{Y}";
         }
     }
 }
