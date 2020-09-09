@@ -81,15 +81,6 @@ namespace SciterCore.UnitTests
 			Assert.AreEqual(4, actual.A);
 		}
 
-		[Test]
-		public void TestColor_Invalid()
-		{			
-			var invalid = SciterColor.Invalid;
-
-			var actual = SciterColor.Create(-1, -255, -1000);
-			Assert.AreEqual(invalid.Value, actual.Value);
-		}
-
 		private class TestableDebugOutputHandler : SciterDebugOutputHandler
 		{
             private readonly SciterWindow _window;

@@ -32,13 +32,13 @@ namespace SciterCore
             _value = value;
         }
         
-        internal SciterColor(int r, int g, int b, int alpha)
+        internal SciterColor(byte r, byte g, byte b, byte alpha)
         {
             _value = GraphicsApi.RGBA((uint)GetMinMaxValue(r), (uint)GetMinMaxValue(g), (uint)GetMinMaxValue(b), (uint)GetMinMaxValue(alpha));
         }
 
-        internal SciterColor(int r, int g, int b, float alpha = 1f)
-            : this(r, g, b, (int)(Math.Min(Math.Max(alpha, 0f), 1f) * byte.MaxValue))
+        internal SciterColor(byte r, byte g, byte b, float alpha = 1f)
+            : this(r, g, b, (byte)(Math.Min(Math.Max(alpha, 0f), 1f) * byte.MaxValue))
         {
             
         }
@@ -48,7 +48,7 @@ namespace SciterCore
             return new SciterColor(value: value);
         }
         
-        public static SciterColor Create(int r, int g, int b)
+        public static SciterColor Create(byte r, byte g, byte b)
         {
             return new SciterColor(r, g, b);
         }
@@ -61,7 +61,7 @@ namespace SciterCore
         /// <param name="b"></param>
         /// <param name="alpha">Range between 0.0f and 1.0f</param>
         /// <returns></returns>
-        public static SciterColor Create(int r, int g, int b, float alpha = 1f)
+        public static SciterColor Create(byte r, byte g, byte b, float alpha = 1f)
         {
             return new SciterColor(r, g, b, alpha);
         }
@@ -74,7 +74,7 @@ namespace SciterCore
         /// <param name="b"></param>
         /// <param name="alpha">Range between 0 and 255</param>
         /// <returns></returns>
-        public static SciterColor Create(int r, int g, int b, int alpha = byte.MaxValue)
+        public static SciterColor Create(byte r, byte g, byte b, byte alpha = byte.MaxValue)
         {
             return new SciterColor(r, g, b, alpha);
         }
@@ -92,10 +92,10 @@ namespace SciterCore
         //}
 #endif
 
-        private static int GetMinMaxValue(int value)
+        private static byte GetMinMaxValue(byte value)
         {
             // ReSharper disable once RedundantCast
-            return (int)Math.Min(Math.Max(value, -1), byte.MaxValue);
+            return (byte)Math.Min(Math.Max(value, (byte)0), byte.MaxValue);
         }
 
         public override bool Equals(object obj)
@@ -115,7 +115,7 @@ namespace SciterCore
         [ExcludeFromCodeCoverage]
         public override int GetHashCode()
         {
-            return (int) Value;
+            return unchecked((int) Value);
         }
 
         [ExcludeFromCodeCoverage]
@@ -124,10 +124,8 @@ namespace SciterCore
             return $"{Value:X8}";
         }
 
-        #region Color List
-
-        public static SciterColor Invalid => new SciterColor(-1, -1, -1); 
-        public static SciterColor Transparent => new SciterColor(0, 0, 0, 0);
+        #region Known Colors
+        public static SciterColor Transparent => new SciterColor(0, 0, 0, 0f);
         public static SciterColor AliceBlue => new SciterColor(240, 248, 255);
         public static SciterColor LightSalmon => new SciterColor(255, 160, 122);
         public static SciterColor AntiqueWhite => new SciterColor(250, 235, 215);
@@ -310,7 +308,7 @@ namespace SciterCore
 
         public int ToInt32(IFormatProvider provider)
         {
-            return (int)Value;
+            return unchecked((int)Value);
         }
 
         public uint ToUInt32(IFormatProvider provider)
@@ -350,7 +348,7 @@ namespace SciterCore
 
         public string ToString(IFormatProvider provider)
         {
-            throw new NotImplementedException();
+            return $"{Value:X8}";
         }
 
         public object ToType(Type conversionType, IFormatProvider provider)

@@ -1,8 +1,7 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using NUnit.Framework;
 
-namespace SciterCore.UnitTests
+namespace SciterCore.UnitTests.Graphics
 {
     public class SciterColorTests
     {
@@ -36,7 +35,7 @@ namespace SciterCore.UnitTests
         [TestCase(255, 0, 0)]
         [TestCase(0, 0, 0)]
         [TestCase(255, 0, 0)]
-        public void Basic(int r, int g, int b)
+        public void Basic(byte r, byte g, byte b)
         {
             var actual = SciterColor.Create(r, g, b);
             Assert.AreEqual(r, actual.R);
@@ -49,7 +48,7 @@ namespace SciterCore.UnitTests
         [TestCase(0, 0, 0, 127)]
         [TestCase(255, 0, 0, 0)]
         [TestCase(127, 127, 127, 255)]
-        public void Alpha_as_int(int r, int g, int b, int a)
+        public void Alpha_as_int(byte r, byte g, byte b, byte a)
         {
             var actual = SciterColor.Create(r, g, b, a);
             Assert.AreEqual(r, actual.R);
@@ -61,7 +60,7 @@ namespace SciterCore.UnitTests
         [Test]
         public void Test_max_value()
         {
-            var actual = SciterColor.Create(int.MaxValue, int.MaxValue, int.MaxValue, int.MaxValue);
+            var actual = SciterColor.Create(byte.MaxValue, byte.MaxValue, byte.MaxValue, float.MaxValue);
             Assert.AreEqual(255, actual.R);
             Assert.AreEqual(255, actual.G);
             Assert.AreEqual(255, actual.B);
@@ -81,7 +80,7 @@ namespace SciterCore.UnitTests
         [TestCase(255, 0, 0, .5f)]
         [TestCase(0, 0, 0, .25f)]
         [TestCase(255, 0, 0, .5f)]
-        public void Alpha_as_float(int r, int g, int b, float a)
+        public void Alpha_as_float(byte r, byte g, byte b, float a)
         {
             var actual = SciterColor.Create(r, g, b, a);
             Assert.AreEqual(r, actual.R);
@@ -102,5 +101,19 @@ namespace SciterCore.UnitTests
             Assert.AreEqual(b, actual.B);
             Assert.AreEqual(a, actual.A);
         }
+
+        #region KnownColors
+
+        [Test]
+        public void SciterColor_Transparent()
+        {
+            var actual = SciterColor.Transparent;
+            Assert.AreEqual(0, actual.R);
+            Assert.AreEqual(0, actual.G);
+            Assert.AreEqual(0, actual.B);
+            Assert.AreEqual(0, actual.A);
+        }
+
+        #endregion
     }
 }

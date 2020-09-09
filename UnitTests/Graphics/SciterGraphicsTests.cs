@@ -98,12 +98,16 @@ namespace SciterCore.UnitTests.Graphics
                     {
                         graphics.SaveState()
                             .Translate(args.Area.Left, args.Area.Top)
-                            .SetLineColor(random.Next(byte.MinValue, byte.MaxValue),
-                                random.Next(byte.MinValue, byte.MaxValue), random.Next(byte.MinValue, byte.MaxValue),
-                                random.Next(byte.MinValue, byte.MaxValue))
-                            .SetFillColor(random.Next(byte.MinValue, byte.MaxValue),
-                                random.Next(byte.MinValue, byte.MaxValue), random.Next(byte.MinValue, byte.MaxValue),
-                                random.Next(byte.MinValue, byte.MaxValue))
+                            .SetLineColor(
+                                (byte)random.Next(byte.MinValue, byte.MaxValue),
+                                (byte)random.Next(byte.MinValue, byte.MaxValue), 
+                                (byte)random.Next(byte.MinValue, byte.MaxValue),
+                                (byte)random.Next(byte.MinValue, byte.MaxValue))
+                            .SetFillColor(
+                                (byte)random.Next(byte.MinValue, byte.MaxValue),
+                                (byte)random.Next(byte.MinValue, byte.MaxValue), 
+                                (byte)random.Next(byte.MinValue, byte.MaxValue),
+                                (byte)random.Next(byte.MinValue, byte.MaxValue))
                             .SetLineWidth(random.Next(2, 10))
                             .SetLineCap(lineCap)
                             .SetLineJoin(lineJoin)
@@ -149,9 +153,11 @@ namespace SciterCore.UnitTests.Graphics
                     {
                         graphics.SaveState()
                             .Translate(prms.Area.Left, prms.Area.Top)
-                            .SetFillColor(random.Next(byte.MinValue, byte.MaxValue),
-                                random.Next(byte.MinValue, byte.MaxValue), random.Next(byte.MinValue, byte.MaxValue),
-                                random.Next(byte.MinValue, byte.MaxValue))
+                            .SetFillColor(
+                                (byte)random.Next(byte.MinValue, byte.MaxValue),
+                                (byte)random.Next(byte.MinValue, byte.MaxValue), 
+                                (byte)random.Next(byte.MinValue, byte.MaxValue),
+                                (byte)random.Next(byte.MinValue, byte.MaxValue))
                             .DrawPolygon(() =>
                             {
                                 var result = new List<PolygonPoint>();
@@ -221,9 +227,11 @@ namespace SciterCore.UnitTests.Graphics
                     {
                         graphics.SaveState()
                             .Translate(prms.Area.Left, prms.Area.Top)
-                            .SetLineColor(random.Next(byte.MinValue, byte.MaxValue),
-                                random.Next(byte.MinValue, byte.MaxValue), random.Next(byte.MinValue, byte.MaxValue),
-                                random.Next(byte.MinValue, byte.MaxValue))
+                            .SetLineColor(
+                                (byte)random.Next(byte.MinValue, byte.MaxValue),
+                                (byte)random.Next(byte.MinValue, byte.MaxValue), 
+                                (byte)random.Next(byte.MinValue, byte.MaxValue),
+                                (byte)random.Next(byte.MinValue, byte.MaxValue))
                             .SetLineCap(lineCap)
                             .SetLineJoin(lineJoin)
                             .SetLineWidth(random.Next(2, 10))
@@ -276,10 +284,11 @@ namespace SciterCore.UnitTests.Graphics
                         {
                             for (int i = 0; i < 20; i++)
                             {
-                                var color = SciterColor.Create(random.Next(byte.MinValue, byte.MaxValue),
-                                    random.Next(byte.MinValue, byte.MaxValue),
-                                    random.Next(byte.MinValue, byte.MaxValue),
-                                    random.Next(byte.MinValue, byte.MaxValue));
+                                var color = SciterColor.Create(
+                                    (byte)random.Next(byte.MinValue, byte.MaxValue),
+                                    (byte)random.Next(byte.MinValue, byte.MaxValue),
+                                    (byte)random.Next(byte.MinValue, byte.MaxValue),
+                                    (byte)random.Next(byte.MinValue, byte.MaxValue));
                                 
                                 graphics.SaveState()
                                     .Translate(prms.Area.Left, prms.Area.Top)
@@ -356,12 +365,16 @@ namespace SciterCore.UnitTests.Graphics
                     {
                         graphics.SaveState()
                             .Translate(prms.Area.Left, prms.Area.Top)
-                            .SetLineColor(random.Next(byte.MinValue, byte.MaxValue),
-                                random.Next(byte.MinValue, byte.MaxValue), random.Next(byte.MinValue, byte.MaxValue),
-                                random.Next(byte.MinValue, byte.MaxValue))
-                            .SetFillColor(random.Next(byte.MinValue, byte.MaxValue),
-                                random.Next(byte.MinValue, byte.MaxValue), random.Next(byte.MinValue, byte.MaxValue),
-                                random.Next(byte.MinValue, byte.MaxValue))
+                            .SetLineColor(
+                                (byte)random.Next(byte.MinValue, byte.MaxValue),
+                                (byte)random.Next(byte.MinValue, byte.MaxValue), 
+                                (byte)random.Next(byte.MinValue, byte.MaxValue),
+                                (byte)random.Next(byte.MinValue, byte.MaxValue))
+                            .SetFillColor(
+                                (byte)random.Next(byte.MinValue, byte.MaxValue),
+                                (byte)random.Next(byte.MinValue, byte.MaxValue), 
+                                (byte)random.Next(byte.MinValue, byte.MaxValue),
+                                (byte)random.Next(byte.MinValue, byte.MaxValue))
                             .SetLineWidth(random.Next(2, 10))
                             .DrawRectangle(random.Next(byte.MinValue, prms.Area.Width), random.Next(byte.MinValue, prms.Area.Height), random.Next(byte.MinValue, prms.Area.Width), random.Next(byte.MinValue, prms.Area.Height))
                             .RestoreState();
@@ -404,12 +417,14 @@ namespace SciterCore.UnitTests.Graphics
                     {
                         graphics.SaveState()
                             .Translate(prms.Area.Left, prms.Area.Top)
-                            .SetLineColor(random.Next(byte.MinValue, byte.MaxValue),
-                                random.Next(byte.MinValue, byte.MaxValue), random.Next(byte.MinValue, byte.MaxValue),
-                                random.Next(byte.MinValue, byte.MaxValue))
-                            .SetFillColor(random.Next(byte.MinValue, byte.MaxValue),
-                                random.Next(byte.MinValue, byte.MaxValue), random.Next(byte.MinValue, byte.MaxValue),
-                                random.Next(byte.MinValue, byte.MaxValue))
+                            .SetLineColor((byte)random.Next(byte.MinValue, byte.MaxValue),
+                                (byte)random.Next(byte.MinValue, byte.MaxValue), 
+                                (byte)random.Next(byte.MinValue, byte.MaxValue),
+                                (byte)random.Next(byte.MinValue, byte.MaxValue))
+                            .SetFillColor((byte)random.Next(byte.MinValue, byte.MaxValue),
+                                (byte)random.Next(byte.MinValue, byte.MaxValue), 
+                                (byte)random.Next(byte.MinValue, byte.MaxValue),
+                                (byte)random.Next(byte.MinValue, byte.MaxValue))
                             .SetLineWidth(random.Next(2, 10))
                             .DrawText(SciterText.CreateForElementAndStyle("The quick brown fox jumps over the lazy dog", element.Handle, $"color: rgba({random.Next(byte.MinValue, byte.MaxValue)}, {random.Next(byte.MinValue, byte.MaxValue)}, {random.Next(byte.MinValue, byte.MaxValue)});font-size: {random.Next(12, 48)}dip;"), random.Next(byte.MinValue, prms.Area.Width), random.Next(byte.MinValue, prms.Area.Height), 5)
                             .RestoreState();
