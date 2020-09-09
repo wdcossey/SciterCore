@@ -3,7 +3,10 @@
 
 namespace SciterCore
 {
-    public class KeyEventArgs : EventArgs
+    /// <summary>
+    /// KEY_PARAMS
+    /// </summary>
+    public class KeyArgs : EventArgs
     {
         /// <summary>
         /// KEY_EVENTS

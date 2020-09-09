@@ -29,7 +29,7 @@ namespace SciterTest.Mac
 		}
 
 		protected override bool OnDraw(
-			SciterElement element, DrawEventArgs args)
+			SciterElement element, DrawArgs args)
 		{
 			if(args.DrawEvent != DrawEvent.Content)
 				return false;

@@ -24,28 +24,30 @@ namespace SciterCore.Interop
 {
 	public static class SciterBehaviors
 	{
-		public enum EVENT_GROUPS : uint
+		internal enum EVENT_GROUPS : uint
 		{
-			HANDLE_INITIALIZATION = 0x0000, /** attached/detached */
-			HANDLE_MOUSE = 0x0001,          /** mouse events */
-			HANDLE_KEY = 0x0002,            /** key events */
-			HANDLE_FOCUS = 0x0004,          /** focus events, if this flag is set it also means that element it attached to is focusable */
-			HANDLE_SCROLL = 0x0008,         /** scroll events */
-			HANDLE_TIMER = 0x0010,          /** timer event */
-			HANDLE_SIZE = 0x0020,           /** size changed event */
-			HANDLE_DRAW = 0x0040,           /** drawing request (event) */
-			HANDLE_DATA_ARRIVED = 0x080,    /** requested data () has been delivered */
-			HANDLE_BEHAVIOR_EVENT        = 0x0100, /** logical, synthetic events:
+			HANDLE_INITIALIZATION = 0x0000, /* attached/detached */
+			HANDLE_MOUSE = 0x0001,          /* mouse events */
+			HANDLE_KEY = 0x0002,            /* key events */
+			HANDLE_FOCUS = 0x0004,          /* focus events, if this flag is set it also means that element it attached to is focusable */
+			HANDLE_SCROLL = 0x0008,         /* scroll events */
+			HANDLE_TIMER = 0x0010,          /* timer event */
+			HANDLE_SIZE = 0x0020,           /* size changed event */
+			HANDLE_DRAW = 0x0040,           /* drawing request (event) */
+			HANDLE_DATA_ARRIVED = 0x080,    /* requested data () has been delivered */
+			HANDLE_BEHAVIOR_EVENT        = 0x0100, /* logical, synthetic events:
 													BUTTON_CLICK, HYPERLINK_CLICK, etc.,
 													a.k.a. notifications from intrinsic behaviors */
-			HANDLE_METHOD_CALL           = 0x0200, /** behavior specific methods */
-			HANDLE_SCRIPTING_METHOD_CALL = 0x0400, /** behavior specific methods */
-			HANDLE_TISCRIPT_METHOD_CALL  = 0x0800, /** behavior specific methods using direct tiscript::value's */
+			HANDLE_METHOD_CALL           = 0x0200, /* behavior specific methods */
+			HANDLE_SCRIPTING_METHOD_CALL = 0x0400, /* behavior specific methods */
+			
+			//HANDLE_TISCRIPT_METHOD_CALL is obsolete as of Sciter v4.4.3.24
+			HANDLE_TISCRIPT_METHOD_CALL  = 0x0800, /* behavior specific methods using direct tiscript::value's */
 
-			HANDLE_EXCHANGE              = 0x1000, /** system drag-n-drop */
-			HANDLE_GESTURE               = 0x2000, /** touch input events */
+			HANDLE_EXCHANGE              = 0x1000, /* system drag-n-drop */
+			HANDLE_GESTURE               = 0x2000, /* touch input events */
 
-			HANDLE_SOM                   = 0x8000, /** som_asset_t request */
+			HANDLE_SOM                   = 0x8000, /* som_asset_t request */
 
 			HANDLE_ALL                   = 0xFFFF, /* all of them */
 
@@ -268,7 +270,7 @@ namespace SciterCore.Interop
 			public uint				reason; // key or SCROLLBAR_PART
 		}
 
-		public enum GESTURE_CMD : uint
+		internal enum GESTURE_CMD : uint
 		{
 			GESTURE_REQUEST = 0, // return true and fill flags if it will handle gestures.
 			GESTURE_ZOOM,        // The zoom gesture.
@@ -300,19 +302,21 @@ namespace SciterCore.Interop
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct GESTURE_PARAMS
+		internal struct GESTURE_PARAMS
 		{
-			public GESTURE_CMD	cmd;
-			public IntPtr		target;
-			public PInvokeUtils.POINT	pos;
-			public PInvokeUtils.POINT	pos_view;
+			public uint	cmd;						// GESTURE_EVENTS
+			public IntPtr		target;				// target element
+			public PInvokeUtils.POINT	pos;		// position of cursor, element relative
+			public PInvokeUtils.POINT	pos_view;	// position of cursor, view relative
 			/// <summary>
 			/// GESTURE_TYPE_FLAGS or GESTURE_STATE combination
-			/// </summary>
-			public uint					flags;
-			public uint					delta_time;
-			public PInvokeUtils.SIZE	delta_xy;
-			public double				delta_v;
+			/// </summary>`
+			public uint					flags;		// for GESTURE_REQUEST combination of GESTURE_FLAGs. 
+													// for others it is a combination of GESTURE_STATe's
+			public uint					delta_time;	// period of time from previous event.
+			public PInvokeUtils.SIZE	delta_xy;	// for GESTURE_PAN it is a direction vector 
+			public double				delta_v;	// for GESTURE_ROTATE - delta angle (radians) 
+													// for GESTURE_ZOOM - zoom value, is less or greater than 1.0  
 		}
 
 		internal enum EXCHANGE_CMD

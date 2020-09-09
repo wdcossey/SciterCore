@@ -1,10 +1,12 @@
-﻿using System;
-// ReSharper disable UnusedAutoPropertyAccessor.Global
+﻿// ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
 
 namespace SciterCore
 {
-    public class MouseEventArgs : EventArgs
+    /// <summary>
+    /// MOUSE_PARAMS
+    /// </summary>
+    public struct MouseArgs 
     {
         /// <summary>
         /// MOUSE_EVENTS

@@ -12,7 +12,7 @@ namespace SciterTest.Graphics.Behaviors
     [SciterBehavior("draw-checkered-background")]
     internal class CheckeredBackgroundBitmapBehavior : SciterEventHandler
     {
-        protected override bool OnDraw(SciterElement se, DrawEventArgs args)
+        protected override bool OnDraw(SciterElement se, DrawArgs args)
         {
             if (args.DrawEvent == DrawEvent.Background)
             {
@@ -53,7 +53,7 @@ namespace SciterTest.Graphics.Behaviors
     [SciterBehavior("draw-alt-attribute")]
     internal class InfoBitmapBehavior : SciterEventHandler
     {
-        protected override bool OnDraw(SciterElement se, DrawEventArgs args)
+        protected override bool OnDraw(SciterElement se, DrawArgs args)
         {
             if (args.DrawEvent == DrawEvent.Foreground)
             {
@@ -109,7 +109,7 @@ namespace SciterTest.Graphics.Behaviors
             _drawEvent = drawEvent;
         }
 
-        protected override bool OnDraw(SciterElement se, DrawEventArgs args)
+        protected override bool OnDraw(SciterElement se, DrawArgs args)
         {
             if (args.DrawEvent == _drawEvent)
             {
@@ -142,7 +142,7 @@ namespace SciterTest.Graphics.Behaviors
     [SciterBehavior("draw-bitmap")]
     internal class DrawBitmapBehavior : InfoBitmapBehavior
     {
-		protected override bool OnDraw(SciterElement se, DrawEventArgs args)
+		protected override bool OnDraw(SciterElement se, DrawArgs args)
 		{
             if (args.DrawEvent == DrawEvent.Background)
             {
@@ -241,7 +241,7 @@ namespace SciterTest.Graphics.Behaviors
             _drawEvent = drawEvent;
         }
 
-        protected override bool OnDraw(SciterElement se, DrawEventArgs args)
+        protected override bool OnDraw(SciterElement se, DrawArgs args)
         {
             if (args.DrawEvent == _drawEvent)
             {
@@ -300,7 +300,7 @@ namespace SciterTest.Graphics.Behaviors
             _drawEvent = drawEvent;
         }
 
-        protected override bool OnDraw(SciterElement se, DrawEventArgs args)
+        protected override bool OnDraw(SciterElement se, DrawArgs args)
         {
             if (args.DrawEvent == _drawEvent)
             {

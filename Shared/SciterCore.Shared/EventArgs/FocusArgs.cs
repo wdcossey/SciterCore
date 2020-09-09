@@ -1,8 +1,11 @@
-﻿using System;
+﻿// ReSharper disable UnusedAutoPropertyAccessor.Global
 
 namespace SciterCore
 {
-    public class FocusEventArgs : EventArgs
+    /// <summary>
+    /// FOCUS_PARAMS
+    /// </summary>
+    public struct FocusArgs
     {
         public FocusEvents Event { get; internal set; }
         

@@ -15,15 +15,15 @@ namespace SciterCore.UnitTests.Graphics
         class DrawContentBehavior : SciterEventHandler
         {
             private readonly SciterWindow _window;
-            private readonly Func<SciterElement, DrawEventArgs, bool> _drawCallback;
+            private readonly Func<SciterElement, DrawArgs, bool> _drawCallback;
 
-            public DrawContentBehavior(SciterWindow window, Func<SciterElement, DrawEventArgs, bool> drawCallback)
+            public DrawContentBehavior(SciterWindow window, Func<SciterElement, DrawArgs, bool> drawCallback)
             {
                 _window = window;
                 _drawCallback = drawCallback;
             }
 
-            protected override bool OnDraw(SciterElement se, DrawEventArgs args)
+            protected override bool OnDraw(SciterElement se, DrawArgs args)
             {
                 return _drawCallback.Invoke(se, args);
             }

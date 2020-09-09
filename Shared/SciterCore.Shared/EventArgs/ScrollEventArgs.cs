@@ -1,10 +1,11 @@
-﻿using System;
-
-// ReSharper disable UnusedAutoPropertyAccessor.Global
+﻿// ReSharper disable UnusedAutoPropertyAccessor.Global
 
 namespace SciterCore
 {
-    public class ScrollEventArgs : EventArgs
+    /// <summary>
+    /// SCROLL_PARAMS
+    /// </summary>
+    public struct ScrollEventArgs
     {
         public ScrollEvents Event { get; internal set; }
         

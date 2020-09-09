@@ -1,10 +1,12 @@
-﻿using System;
+﻿// ReSharper disable UnusedAutoPropertyAccessor.Global
 
 namespace SciterCore
 {
-    public class ExchangeEventArgs : EventArgs
+    /// <summary>
+    /// EXCHANGE_PARAMS
+    /// </summary>
+    public struct ExchangeArgs
     {
-
         /// <summary>
         /// EXCHANGE_EVENTS
         /// </summary>

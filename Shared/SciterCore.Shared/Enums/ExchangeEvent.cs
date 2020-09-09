@@ -38,7 +38,7 @@
         DragCancel = 6,
         
         /// <summary>
-        /// Drop <see cref="ExchangeEventArgs.TargetElement"/> shall consume this event in order to receive <see cref="Drop"/>
+        /// Drop <see cref="ExchangeArgs.TargetElement"/> shall consume this event in order to receive <see cref="Drop"/>
         /// </summary>
         WillAcceptDrop = 7,
     }

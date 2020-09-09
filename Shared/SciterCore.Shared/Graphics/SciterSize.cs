@@ -45,5 +45,10 @@
             get => _height;
             set => _height = value;
         }
+
+        public override string ToString()
+        {
+            return $"{Width},{Height}";
+        }
     }
 }

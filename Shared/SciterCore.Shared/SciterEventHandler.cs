@@ -63,10 +63,16 @@ namespace SciterCore
 		
 		internal readonly WorkDelegate EventProc;// keep a copy of the delegate so it survives GC
 		
-		// Overridables
-		protected virtual void Subscription(SciterElement element, out SciterBehaviors.EVENT_GROUPS event_groups)
+		// Overrideables'
+		
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="element"></param>
+		/// <returns></returns>
+		protected virtual EventGroups SubscriptionsRequest(SciterElement element)
 		{
-			event_groups = SciterBehaviors.EVENT_GROUPS.HANDLE_ALL;
+			return EventGroups.HandleAll;
 		}
 
 		protected virtual void Attached(SciterElement element)
@@ -79,17 +85,17 @@ namespace SciterCore
 			
 		}
 
-		protected virtual bool OnMouse(SciterElement element, MouseEventArgs args)
+		protected virtual bool OnMouse(SciterElement element, MouseArgs args)
 		{
 			return false;
 		}
 
-		protected virtual bool OnKey(SciterElement element, KeyEventArgs args)
+		protected virtual bool OnKey(SciterElement element, KeyArgs args)
 		{
 			return false;
 		}
 
-		protected virtual bool OnFocus(SciterElement element, FocusEventArgs args)
+		protected virtual bool OnFocus(SciterElement element, FocusArgs args)
 		{
 			return false;
 		}
@@ -109,7 +115,7 @@ namespace SciterCore
 			return false;
 		}
 
-		protected virtual bool OnDraw(SciterElement element, DrawEventArgs args)
+		protected virtual bool OnDraw(SciterElement element, DrawArgs args)
 		{
 			return false;
 		}
@@ -244,12 +250,12 @@ namespace SciterCore
 			return false;
 		}
 
-		protected virtual bool OnGesture(SciterElement element, SciterBehaviors.GESTURE_PARAMS prms)
+		protected virtual bool OnGesture(SciterElement element, GestureArgs args)
 		{
 			return false;
 		}
 
-		protected virtual bool OnExchange(SciterElement element, ExchangeEventArgs args)
+		protected virtual bool OnExchange(SciterElement element, ExchangeArgs args)
 		{
 			return false;
 		}
@@ -265,8 +271,7 @@ namespace SciterCore
 			{
 				case SciterBehaviors.EVENT_GROUPS.SUBSCRIPTIONS_REQUEST:
 					{
-						SciterBehaviors.EVENT_GROUPS groups;
-						Subscription(se, out groups);
+						var groups = SubscriptionsRequest(se);
 						Marshal.WriteInt32(prms, (int)groups);
 						return true;
 					}
@@ -407,30 +412,19 @@ namespace SciterCore
 						return scriptResult.IsSuccessful;
 					}
 
-				case SciterBehaviors.EVENT_GROUPS.HANDLE_TISCRIPT_METHOD_CALL:
-					/*
-					COMMENTED BECAUSE THIS EVENT IS NEVER USED, AND JUST ADDS MORE CONFUSION
-					INSTEAD, IT'S BETTER TO HANDLE EVENT_GROUPS.HANDLE_SCRIPTING_METHOD_CALL/OnScriptCall
-						{
-							SciterXBehaviors.TISCRIPT_METHOD_PARAMS p = Marshal.PtrToStructure<SciterXBehaviors.TISCRIPT_METHOD_PARAMS>(prms);
-							bool res = OnScriptCall(se, p);
-							return res;
-						}
-					*/
-					return false;
-
 				case SciterBehaviors.EVENT_GROUPS.HANDLE_EXCHANGE:
 					{
-						var @params = Marshal.PtrToStructure<SciterBehaviors.EXCHANGE_PARAMS>(prms);
-						return OnExchange(se, @params.ToEventArgs());
+						var args = Marshal.PtrToStructure<SciterBehaviors.EXCHANGE_PARAMS>(prms).ToEventArgs();
+						return OnExchange(element: se, args: args);
 					}
 
 				case SciterBehaviors.EVENT_GROUPS.HANDLE_GESTURE:
 					{
-						var @params = Marshal.PtrToStructure<SciterBehaviors.GESTURE_PARAMS>(prms);
-						return OnGesture(se, @params);
+						var args = Marshal.PtrToStructure<SciterBehaviors.GESTURE_PARAMS>(prms).ToEventArgs();
+						return OnGesture(element: se, args: args);
 					}
 
+				case SciterBehaviors.EVENT_GROUPS.HANDLE_TISCRIPT_METHOD_CALL: //OBSOLETE
 				default:
 					Debug.Assert(false);
 					return false;

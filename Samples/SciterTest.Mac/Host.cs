@@ -48,7 +48,7 @@ namespace SciterTest.Mac
                 .Show();
 		}
 
-		protected override LoadResult OnLoadData(object sender, LoadDataEventArgs args)
+		protected override LoadResult OnLoadData(object sender, LoadDataArgs args)
 		{
 			return base.OnLoadData(sender: sender, args: args);
 		}

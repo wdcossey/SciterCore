@@ -9,7 +9,7 @@ namespace SciterTest.Graphics.Behaviors
 	[SciterBehavior("draw-geometry")]
 	class DrawGeometryBehavior : SciterEventHandler
 	{
-		protected override bool OnDraw(SciterElement se, DrawEventArgs args)
+		protected override bool OnDraw(SciterElement se, DrawArgs args)
 		{
 			if (args.DrawEvent == DrawEvent.Content)
 			{

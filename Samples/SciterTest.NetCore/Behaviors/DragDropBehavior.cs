@@ -16,7 +16,7 @@ namespace SciterTest.NetCore.Behaviors
             
         }
         
-        protected override bool OnExchange(SciterElement element, ExchangeEventArgs args)
+        protected override bool OnExchange(SciterElement element, ExchangeArgs args)
         {
             switch (args.Event)
             {

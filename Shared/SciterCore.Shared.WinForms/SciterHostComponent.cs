@@ -117,7 +117,7 @@ namespace SciterCore.WinForms
             return this;
         }
 
-        protected override LoadResult OnLoadData(object sender, LoadDataEventArgs args)
+        protected override LoadResult OnLoadData(object sender, LoadDataArgs args)
         {
             var intArgs = new InternalGetArchiveItemEventArgs(args.Uri);
                 

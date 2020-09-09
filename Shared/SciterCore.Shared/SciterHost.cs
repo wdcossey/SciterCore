@@ -406,7 +406,7 @@ namespace SciterCore
 					
 					var sed = Marshal.PtrToStructure<SciterXDef.SCN_ENGINE_DESTROYED>(ptrNotification);
 
-					OnEngineDestroyed(sender: this, args: new EngineDestroyedEventArgs(sed.hwnd, sed.code));
+					OnEngineDestroyed(sender: this, args: new EngineDestroyedArgs(sed.hwnd, sed.code));
 					return 0;
 
 				case SciterXDef.SCITER_CALLBACK_CODE.SC_POSTED_NOTIFICATION:
@@ -442,7 +442,7 @@ namespace SciterCore
 
 		#region Overridables
 		
-		protected virtual LoadResult OnLoadData(object sender, LoadDataEventArgs args)
+		protected virtual LoadResult OnLoadData(object sender, LoadDataArgs args)
 		{
 			Debug.Assert(WindowHandle != IntPtr.Zero, "Call SciterHost.SetupWindow() first");
 			
@@ -457,7 +457,7 @@ namespace SciterCore
 			return LoadResult.Ok;
 		}
 
-		protected virtual void OnDataLoaded(object sender, DataLoadedEventArgs args) { }
+		protected virtual void OnDataLoaded(object sender, DataLoadedArgs args) { }
 
 		protected virtual bool OnAttachBehavior(SciterElement el, string behaviorName, out SciterEventHandler eventHandler)
 		{
@@ -471,7 +471,7 @@ namespace SciterCore
 			return false;
 		}
 
-		protected virtual void OnEngineDestroyed(object sender, EngineDestroyedEventArgs args) { }
+		protected virtual void OnEngineDestroyed(object sender, EngineDestroyedArgs args) { }
 
 		protected virtual IntPtr OnPostedNotification(IntPtr wparam, IntPtr lparam)
         {

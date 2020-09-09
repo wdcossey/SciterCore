@@ -71,7 +71,7 @@ namespace SciterTest.Core
 			_window.LoadPage(uri: uri);
 		}
 
-		protected override LoadResult OnLoadData(object sender, LoadDataEventArgs args)
+		protected override LoadResult OnLoadData(object sender, LoadDataArgs args)
 		{
 			// load resource from SciterArchive
 			_archive?.GetItem(args.Uri, (data, path) => 

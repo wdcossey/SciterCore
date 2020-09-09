@@ -9,8 +9,12 @@ namespace SciterTest.Gtk.Behaviors
 	[SciterBehavior("draw-geometry")]
 	public class DrawGeometryBehavior : SciterEventHandler
 	{
+		protected override EventGroups SubscriptionsRequest(SciterElement element)
+		{
+			return EventGroups.HandleDraw;
+		}
 
-		protected override bool OnDraw(SciterElement se, DrawEventArgs args)
+		protected override bool OnDraw(SciterElement se, DrawArgs args)
 		{
 			if (args.DrawEvent == DrawEvent.Content)
 			{

@@ -1,12 +1,16 @@
 ﻿using System;
-
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable MemberCanBePrivate.Global
 
 namespace SciterCore
 {
-    public class EngineDestroyedEventArgs : EventArgs
+    /// <summary>
+    /// SCN_ENGINE_DESTROYED
+    /// </summary>
+    public readonly struct EngineDestroyedArgs 
     {
-        internal EngineDestroyedEventArgs(IntPtr windowHandle, uint code)
+        internal EngineDestroyedArgs(IntPtr windowHandle, uint code)
+        : this()
         {
             Window = new SciterWindow(windowHandle);
             Code = (CallbackCode)unchecked((int)code);

@@ -101,25 +101,40 @@ namespace SciterTest.NetCore
 		
 		public Task<SciterValue> ThrowException(SciterElement element, SciterValue[] args)
 		{
+			//This will purposely throw an exception!
 			return Task.FromResult(SciterValue.Create(value: (100 / int.Parse("0"))));
 		}
 
-		protected override bool OnMouse(SciterElement element, MouseEventArgs args)
+		protected override EventGroups SubscriptionsRequest(SciterElement element)
+		{
+			return EventGroups.HandleAll;
+		}
+
+		protected override bool OnMouse(SciterElement element, MouseArgs args)
 		{
 			//Console.WriteLine($"{args.ButtonState}| {args.Cursor} | {args.Event} | {args.DragMode}");
-			return false;
+			return base.OnMouse(element, args);
 		}
 
-		protected override bool OnKey(SciterElement element, KeyEventArgs args)
+		protected override bool OnKey(SciterElement element, KeyArgs args)
 		{
 			//Console.WriteLine($"{args.Event} | {args.KeyboardState} | {(char)args.KeyCode}");
-			return false;
+			return base.OnKey(element, args);
 		}
 
-		protected override bool OnFocus(SciterElement element, FocusEventArgs args)
+		protected override bool OnFocus(SciterElement element, FocusArgs args)
 		{
 			//Console.WriteLine($"{args.Event} | {args.Cancel} | {args.IsMouseClick}");
-			return false;
+			return base.OnFocus(element, args);
+		}
+
+		protected override bool OnGesture(SciterElement element, GestureArgs args)
+		{
+			//Console.WriteLine($"{args}");
+			//if (args.Event == GestureEvent.Request)
+			//	return true;
+			
+			return base.OnGesture(element, args);
 		}
 
 		// (Hint: to overload C# methods of SciterEventHandler base class, type 'override', press space, and VS/Xamarin will suggest the methods you can override)
@@ -172,7 +187,7 @@ namespace SciterTest.NetCore
 			_window.LoadPage(uri: uri);
 		}
 
-		protected override LoadResult OnLoadData(object sender, LoadDataEventArgs args)
+		protected override LoadResult OnLoadData(object sender, LoadDataArgs args)
 		{
 			// load resource from SciterArchive
 			_archive?.GetItem(args.Uri, (data, path) => 
@@ -184,7 +199,12 @@ namespace SciterTest.NetCore
 			return base.OnLoadData(sender: sender, args: args);
 		}
 
-		protected override void OnEngineDestroyed(object sender, EngineDestroyedEventArgs args)
+		protected override void OnDataLoaded(object sender, DataLoadedArgs args)
+		{
+			base.OnDataLoaded(sender, args);
+		}
+
+		protected override void OnEngineDestroyed(object sender, EngineDestroyedArgs args)
 		{
 			base.OnEngineDestroyed(sender, args);
 		}
