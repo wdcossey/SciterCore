@@ -1,14 +1,14 @@
 ﻿using NUnit.Framework;
 
-namespace SciterCore.UnitTests
+namespace SciterCore.UnitTests.Graphics
 {
-    public class PolylinePointTests
+    public class PolygonPointTests
     {
         [TestCase(0f, 0f)]
         [TestCase(1f, 1f)]
-        public void PolylinePoint_create(float x, float y)
+        public void PolygonPoint_create(float x, float y)
         {
-            var point = PolylinePoint.Create(x, y);
+            var point = PolygonPoint.Create(x, y);
             Assert.AreEqual(x, point.X);
             Assert.AreEqual(y, point.Y);
         }

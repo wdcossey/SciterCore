@@ -1,4 +1,6 @@
-﻿namespace SciterCore
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace SciterCore
 {
     public struct SciterSize
     {
@@ -46,6 +48,7 @@
             set => _height = value;
         }
 
+        [ExcludeFromCodeCoverage]
         public override string ToString()
         {
             return $"{Width},{Height}";

@@ -1,14 +1,16 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+// ReSharper disable MemberCanBePrivate.Global
 
 namespace SciterCore
 {
-    public readonly struct PolylinePoint
+    public struct PolylinePoint
     {
-        public float X { get; }
+        public float X { get; internal set; }
         
-        public float Y { get; }
+        public float Y { get; internal set; }
         
-        public float[] Value => new[] {X, Y};
+        public IEnumerable<float> Value => new[] {X, Y};
         
         private PolylinePoint(float x, float y)
         {

@@ -566,17 +566,22 @@ namespace SciterCore.Interop
 												// you will know that if you get an "Access Violation" error
 		}
 
-		// SCRIPTING_METHOD_PARAMS wraper
-		public struct SCRIPTING_METHOD_PARAMS_Wraper
+		// SCRIPTING_METHOD_PARAMS wrapper
+		public struct SCRIPTING_METHOD_PARAMS_WRAPPER
 		{
-			public SCRIPTING_METHOD_PARAMS_Wraper(SCRIPTING_METHOD_PARAMS prms)
+			public SCRIPTING_METHOD_PARAMS_WRAPPER(SCRIPTING_METHOD_PARAMS prms)
 			{
 				name = Marshal.PtrToStringAnsi(prms.name);
 				args = new SciterCore.SciterValue[prms.argc];
 				result = SciterCore.SciterValue.Undefined;
 
-				for(int i = 0; i < prms.argc; i++)
-					args[i] = new SciterCore.SciterValue( (SciterValue.VALUE) Marshal.PtrToStructure(IntPtr.Add(prms.argv, i * Marshal.SizeOf(typeof(SciterValue.VALUE))), typeof(SciterValue.VALUE)) );
+				for (var i = 0; i < prms.argc; i++)
+				{
+					var ptr = IntPtr.Add(prms.argv,
+						i * Marshal.SizeOf(typeof(SciterValue.VALUE)));
+
+					args[i] = new SciterCore.SciterValue(Marshal.PtrToStructure<SciterValue.VALUE>(ptr));
+				}
 			}
 
 			public string name;

@@ -177,6 +177,15 @@
 			}
 		});
 		
+		view.GetRuntimeInfo2(100, 
+			function(val) {
+				$(#p2).value = val;
+			}, 
+			function() {
+				$(#p2).hide();
+			}
+		);
+		
 		view.ThrowException(function(value, error) {
 			if (error) {
 				$(#exContent).html = String.printf("<div>Type:</div><div><span>%s</span></div><div>Message:</div><div><span>%s</span></div><div>StackTrace:</div><div><span>%s</span></div><div>Source: </div><div><span>%s</span></div>", error.Type, error.Message, error.StackTrace, error.Source);
@@ -251,6 +260,21 @@
 						<div style="font-weight: bold;"><span #osArchitecture/></div>
 						<div>Process Architecture:</div>
 						<div style="font-weight: bold;"><span #processArchitecture/></div>
+					</cardcontent>
+
+				</card>
+				
+				<p/>
+				
+				<card style="width: 1*" >
+					<div style="display:inline-block;">
+						<div style="font-size: 20dip; vertical-align: center; font-family: Roboto,Helvetica Neue,sans-serif;font-weight: 500;">RuntimeInformation</div>
+						<div style="font-size: 14dip;font-family: Roboto,Helvetica Neue,sans-serif;font-weight: 400;opacity: 0.6;margin-bottom: 16dip">Provides information about the .NET runtime installation.</div>
+					</div>
+
+					<cardcontent state="visible">
+						<div>Progress:</div>
+						<div><progress #p2 max="100" value="0"/></div>
 					</cardcontent>
 
 				</card>

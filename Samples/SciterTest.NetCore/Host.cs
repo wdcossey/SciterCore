@@ -99,6 +99,20 @@ namespace SciterTest.NetCore
 			return Task.FromResult(value);
 		}
 		
+		public async Task<SciterValue> GetRuntimeInfo2(SciterElement element, SciterValue value, SciterValue onProgress, SciterValue onDone)
+		{
+			for (var i = 0; i < 101; i++)
+			{
+				//Simulates a delay
+				await Task.Delay(110-i);
+				onProgress.Call(SciterValue.Create(i));
+			}
+			
+			onDone.Call();
+			
+			return value;
+		}
+		
 		public Task<SciterValue> ThrowException(SciterElement element, SciterValue[] args)
 		{
 			//This will purposely throw an exception!

@@ -140,13 +140,38 @@ namespace SciterCore
 
 					try
 					{
-						((Task<SciterValue>) method.Invoke(this, new object[] {element, args}))?.ContinueWith(task =>
-						{
-							if (task.IsFaulted)
-								return;
+						var methodParameters = method.GetParameters();
 
-							callbackFunc.Call(task.Result, SciterValue.Null);
-						});
+						if (methodParameters.Length <= 0 &&
+						    !typeof(SciterElement).IsAssignableFrom(methodParameters[0].ParameterType))
+						{
+							return ScriptEventResult.Failed();
+						}
+
+						if (methodParameters.Length == 2 &&
+						    methodParameters[1].ParameterType.IsArray &&
+						    typeof(SciterValue).IsAssignableFrom(methodParameters[1].ParameterType.GetElementType()))
+						{
+							((Task<SciterValue>) method.Invoke(this, new object[] {element, args}))?.ContinueWith(
+								task =>
+								{
+									if (task.IsFaulted)
+										return;
+
+									callbackFunc.Call(task.Result, SciterValue.Null);
+								});
+						}
+						else if (methodParameters.Length > 2)
+						{
+							var parameters = new List<object>
+							{
+								element
+							};
+							
+							parameters.AddRange(args);
+							
+							method.Invoke(this, parameters.ToArray());
+						}
 					}
 					catch (TargetInvocationException e)
 					{
@@ -392,7 +417,7 @@ namespace SciterCore
 							Debug.Assert(RESULT_OFFSET.ToInt32() == 24);
 
 						SciterBehaviors.SCRIPTING_METHOD_PARAMS p = Marshal.PtrToStructure<SciterBehaviors.SCRIPTING_METHOD_PARAMS>(prms);
-						SciterBehaviors.SCRIPTING_METHOD_PARAMS_Wraper pw = new SciterBehaviors.SCRIPTING_METHOD_PARAMS_Wraper(p);
+						SciterBehaviors.SCRIPTING_METHOD_PARAMS_WRAPPER pw = new SciterBehaviors.SCRIPTING_METHOD_PARAMS_WRAPPER(p);
 
 						var methodInfo = GetType().GetMethod(pw.name);
 

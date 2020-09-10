@@ -1,21 +1,26 @@
 ﻿// ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable MemberCanBePrivate.Global
 
+using System.Runtime.CompilerServices;
+
+//TODO: Move this to a different file!
+[assembly: InternalsVisibleTo("SciterCore.UnitTests")]
+
 namespace SciterCore
 {
-    public readonly struct TextMetrics
+    public struct TextMetrics
     {
-        public float MinWidth { get; }
+        public float MinWidth { get; internal set; }
 
-        public float MaxWidth { get; }
+        public float MaxWidth { get; internal set; }
         
-        public float Height { get; }
+        public float Height { get; internal set; }
         
-        public float Ascent { get; }
+        public float Ascent { get; internal set; }
         
-        public float Descent { get; }
+        public float Descent { get; internal set; }
         
-        public int LineCount { get; }
+        public int LineCount { get; internal set; }
 
         internal TextMetrics(float minWidth, float maxWidth, float height, float ascent, float descent, int noLines)
         {
