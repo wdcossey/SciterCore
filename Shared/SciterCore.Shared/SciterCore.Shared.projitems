@@ -100,6 +100,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)EventHandlerRegistry.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Attributes\SciterBehaviorAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\BehaviorAttributeExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ScriptExecutioner.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)LibConsole\console.tis" />

@@ -18,10 +18,8 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 using SciterCore.Interop;
 // ReSharper disable VirtualMemberNeverOverridden.Global
 // ReSharper disable UnusedParameter.Global
@@ -62,9 +60,9 @@ namespace SciterCore
 		public delegate bool WorkDelegate(IntPtr tag, IntPtr he, uint evtg, IntPtr prms);
 		
 		internal readonly WorkDelegate EventProc;// keep a copy of the delegate so it survives GC
-		
-		// Overrideables'
-		
+
+		#region Protected Virtual
+
 		/// <summary>
 		/// 
 		/// </summary>
@@ -127,136 +125,9 @@ namespace SciterCore
 
 		protected virtual ScriptEventResult OnScriptCall(SciterElement element, MethodInfo method, SciterValue[] args)
 		{
-			if(method != null)
-			{
-				//Check if the method returns Task<SciterValue> and has a callback in the args
-				if (method.ReturnType.GetMethod(nameof(Task.GetAwaiter)) != null &&
-				    args.Any(a => a.IsFunction || a.IsObjectFunction) &&
-				    method.ReturnType.IsGenericType &&
-				    method.ReturnType.GenericTypeArguments.Length == 1 && typeof(SciterValue).IsAssignableFrom(method.ReturnType.GenericTypeArguments[0]))
-				{
-					// Safe to call `First` here as the check is done above.
-					var callbackFunc = args.First(f => f.IsObjectFunction || f.IsFunction);
-
-					try
-					{
-						var methodParameters = method.GetParameters();
-
-						if (methodParameters.Length <= 0 &&
-						    !typeof(SciterElement).IsAssignableFrom(methodParameters[0].ParameterType))
-						{
-							return ScriptEventResult.Failed();
-						}
-
-						if (methodParameters.Length == 2 &&
-						    methodParameters[1].ParameterType.IsArray &&
-						    typeof(SciterValue).IsAssignableFrom(methodParameters[1].ParameterType.GetElementType()))
-						{
-							((Task<SciterValue>) method.Invoke(this, new object[] {element, args}))?.ContinueWith(
-								task =>
-								{
-									if (task.IsFaulted)
-										return;
-
-									callbackFunc.Call(task.Result, SciterValue.Null);
-								});
-						}
-						else if (methodParameters.Length > 2)
-						{
-							var parameters = new List<object>
-							{
-								element
-							};
-							
-							parameters.AddRange(args);
-							
-							method.Invoke(this, parameters.ToArray());
-						}
-					}
-					catch (TargetInvocationException e)
-					{
-						//TODO: Clean this up, maybe change the Dictionary<> implementation?
-						Dictionary<string, IConvertible> properties = (e.InnerException ?? e)
-							.GetType()
-							.GetProperties(BindingFlags.Instance | BindingFlags.Public)
-							.Where(w => typeof(IConvertible).IsAssignableFrom(w.PropertyType))
-							.ToDictionary(key => key.Name, value => value.GetValue((e.InnerException ?? e)) as IConvertible);
-							//.ToDictionary(key => key.Name, value => SciterValue.Create(value.GetValue(e.InnerException)));
-						properties.Add(nameof(Type), (e.InnerException ?? e).GetType().FullName);
-						
-						callbackFunc.Call(SciterValue.Null, SciterValue.Create(properties));
-					}
-					catch (Exception e)
-					{
-						callbackFunc.Call(SciterValue.Null, SciterValue.Create(new { Type = e.GetType().FullName, e.Message, e.StackTrace, e.Source }));
-					}
-					
-					// Tasks should return Successful, the callback function will be fired when the Task completes. 
-					return ScriptEventResult.Successful();
-				}
-				
-				// This base class tries to handle it by searching for a method with the same 'name'
-				var mparams = method.GetParameters();
-
-				// match signature:
-				// 'void MethodName()' or 'SciterValue MethodName()'
-				{
-					if(mparams.Length == 0 && 
-						(method.ReturnType == typeof(void) || method.ReturnType == typeof(SciterValue)))
-					{
-						//TODO: Add error handling!
-						var ret = method.Invoke(this, null);
-
-						SciterValue value = null;
-						
-						if(method.ReturnType == typeof(SciterValue))
-							value = (SciterValue)ret;
-						
-						return ScriptEventResult.Successful(value);
-					}
-				}
-
-				// match signature:
-				// 'void MethodName(SciterValue[] args)' or 'SciterValue MethodName(SciterValue[] args)'
-				{
-					if(mparams.Length==1 && mparams[0].ParameterType.Name == "SciterValue[]" &&
-						(method.ReturnType == typeof(void) || method.ReturnType == typeof(SciterValue)))
-					{
-						var parameters = new object[] { args };
-						
-						//TODO: Add error handling!
-						var ret = method.Invoke(this, parameters);
-						
-						SciterValue value = null;
-						
-						if(method.ReturnType == typeof(SciterValue))
-							value = (SciterValue)ret;
-						
-						return ScriptEventResult.Successful(value);
-					}
-				}
-
-				// match signature:
-				// bool MethodName(SciterElement el, SciterValue[] args, out SciterValue result)
-				{
-					if(method.ReturnType == typeof(bool) && mparams.Length == 3
-						&& mparams[0].ParameterType.Name == "SciterElement"
-						&& mparams[1].ParameterType.Name == "SciterValue[]"
-						&& mparams[2].ParameterType.Name == "SciterValue&")
-					{
-						object[] parameters = new object[] { element, args, null };
-						
-						//TODO: Add error handling!
-						bool res = (bool)(method?.Invoke(this, parameters) ?? false);
-						
-						Debug.Assert(parameters[2] == null || parameters[2].GetType().IsAssignableFrom(typeof(SciterValue)));
-						return ScriptEventResult.Successful(parameters[2] as SciterValue);
-					}
-				}
-			}
-
-			// not handled
-			return ScriptEventResult.Failed();
+			return ScriptExecutioner
+				.Create(this, element, method, args)
+				.Execute();
 		}
 
 		protected virtual bool OnEvent(SciterElement sourceElement, SciterElement targetElement,
@@ -285,6 +156,8 @@ namespace SciterCore
 			return false;
 		}
 
+		#endregion
+		
 		// EventProc
 		private bool EventProcMethod(IntPtr tag, IntPtr he, uint evtg, IntPtr prms)
 		{
@@ -449,7 +322,7 @@ namespace SciterCore
 						return OnGesture(element: se, args: args);
 					}
 
-				case SciterBehaviors.EVENT_GROUPS.HANDLE_TISCRIPT_METHOD_CALL: //OBSOLETE
+				//case SciterBehaviors.EVENT_GROUPS.HANDLE_TISCRIPT_METHOD_CALL: //Obsolete
 				default:
 					Debug.Assert(false);
 					return false;

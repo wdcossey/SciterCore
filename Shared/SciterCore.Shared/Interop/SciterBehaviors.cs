@@ -41,7 +41,7 @@ namespace SciterCore.Interop
 			HANDLE_METHOD_CALL           = 0x0200, /* behavior specific methods */
 			HANDLE_SCRIPTING_METHOD_CALL = 0x0400, /* behavior specific methods */
 			
-			//HANDLE_TISCRIPT_METHOD_CALL is obsolete as of Sciter v4.4.3.24
+			[Obsolete("As of Sciter v4.4.3.24", true)]
 			HANDLE_TISCRIPT_METHOD_CALL  = 0x0800, /* behavior specific methods using direct tiscript::value's */
 
 			HANDLE_EXCHANGE              = 0x1000, /* system drag-n-drop */

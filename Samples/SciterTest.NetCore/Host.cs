@@ -99,12 +99,12 @@ namespace SciterTest.NetCore
 			return Task.FromResult(value);
 		}
 		
-		public async Task<SciterValue> GetRuntimeInfo2(SciterElement element, SciterValue value, SciterValue onProgress, SciterValue onDone)
+		public async Task<SciterValue> CallMeBack(SciterElement element, SciterValue value, SciterValue onProgress, SciterValue onDone)
 		{
-			for (var i = 0; i < 101; i++)
+			for (var i = 0; i < 201; i++)
 			{
 				//Simulates a delay
-				await Task.Delay(110-i);
+				await Task.Delay(20);
 				onProgress.Call(SciterValue.Create(i));
 			}
 			
@@ -119,6 +119,27 @@ namespace SciterTest.NetCore
 			return Task.FromResult(SciterValue.Create(value: (100 / int.Parse("0"))));
 		}
 
+		public void SynchronousFunction()
+		{
+			Console.WriteLine($"{nameof(SynchronousFunction)} was executed!");
+		}
+
+		public async Task AsynchronousFunction()
+		{
+			await Task.Delay(TimeSpan.FromSeconds(2));
+			Console.WriteLine($"{nameof(AsynchronousFunction)} was executed!");
+		}
+
+		public bool SynchronousBooleanFunction()
+		{
+			return true;
+		}
+
+		public Task AsynchronousBooleanFunction()
+		{
+			return Task.FromResult(true);
+		}
+		
 		protected override EventGroups SubscriptionsRequest(SciterElement element)
 		{
 			return EventGroups.HandleAll;

@@ -135,6 +135,24 @@
 		{
 			color: crimson;
 		}
+
+		progress.custom-clip
+		{
+			border:none; 
+			border-radius:2dip;
+			background:transparent;
+			/*background-position:8px 8px 8px 8px; left top right bottom offsets*/
+			
+			height: 4dip;
+			width: 1*;
+			padding: 0;
+			vertical-align: top;
+
+			foreground: #53a6fa;
+			/*foreground-position: 5px 5px 5px 5px; left top right bottom offsets*/
+
+			list-style-image: none;
+		}
 		
 	</style>
 	
@@ -142,6 +160,16 @@
 	
 	<script type="text/tiscript">
 	
+		//Synchronous
+		view.SynchronousFunction();
+		
+		//Asynchronous
+		view.AsynchronousFunction();
+		
+		console.log(view.SynchronousBooleanFunction());
+		
+		console.log(view.AsynchronousBooleanFunction());
+		
 		view.StackTrace(function(value) {
 			$(#stMethodName).text = value.MethodName;
 			$(#stFileUri).text = value.FileName;
@@ -177,12 +205,13 @@
 			}
 		});
 		
-		view.GetRuntimeInfo2(100, 
+		view.CallMeBack(100, 
 			function(val) {
-				$(#p2).value = val;
+				$(#callbackProgress).value = val;
 			}, 
 			function() {
-				$(#p2).hide();
+				$(#callbackContent).attributes["state"] = "visible";
+				$(#callbackProgressContainer).hide();
 			}
 		);
 		
@@ -267,14 +296,19 @@
 				<p/>
 				
 				<card style="width: 1*" >
-					<div style="display:inline-block;">
-						<div style="font-size: 20dip; vertical-align: center; font-family: Roboto,Helvetica Neue,sans-serif;font-weight: 500;">RuntimeInformation</div>
-						<div style="font-size: 14dip;font-family: Roboto,Helvetica Neue,sans-serif;font-weight: 400;opacity: 0.6;margin-bottom: 16dip">Provides information about the .NET runtime installation.</div>
+					<div style="display:inline-block; width: 1*;margin-bottom: 16dip">
+						<div style="font-size: 20dip; vertical-align: center; font-family: Roboto,Helvetica Neue,sans-serif;font-weight: 500;">Callback</div>
+						<div style="font-size: 14dip;font-family: Roboto,Helvetica Neue,sans-serif;font-weight: 400;opacity: 0.6">This will execute a Task on the host with multiple callbacks.</div>
+						<div style="margin: 4dip 0" #callbackProgressContainer><progress #callbackProgress .custom-clip max="200" value="0"/></div>
 					</div>
 
-					<cardcontent state="visible">
-						<div>Progress:</div>
-						<div><progress #p2 max="100" value="0"/></div>
+					<cardcontent #callbackContent>
+						<div>Congratulations:</div>
+						<div style="font-weight: bold;">You have sucessfully awaited your task!</div>
+						
+						<div></div>
+						<div></div>
+						
 					</cardcontent>
 
 				</card>
