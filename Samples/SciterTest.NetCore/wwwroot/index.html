@@ -161,14 +161,14 @@
 	<script type="text/tiscript">
 	
 		//Synchronous
-		view.SynchronousFunction();
+		//view.SynchronousFunction();
+		
+		//console.log(view.SynchronousArgumentFunction(1,2,3,4,5));
+	
+		//console.log(view.SynchronousArgumentsFunction(1,2,3,4,5));
 		
 		//Asynchronous
-		view.AsynchronousFunction();
-		
-		console.log(view.SynchronousBooleanFunction());
-		
-		console.log(view.AsynchronousBooleanFunction());
+		//view.AsynchronousFunction();
 		
 		view.StackTrace(function(value) {
 			$(#stMethodName).text = value.MethodName;
@@ -191,19 +191,19 @@
 		   	$(#helloSciter).html = "<pre><code>" + value + "</code><pre>";
 		});
 		
-		view.GetRuntimeInfo(function(value, error) {
-			if (!error) {
+		view.GetRuntimeInfo(
+			function(value) {
 				$(#frameworkDescription).text = value.FrameworkDescription;
 				//$(#systemVersion).text = value.SystemVersion;
 				$(#processArchitecture).text = value.ProcessArchitecture;
 				$(#osArchitecture).text = value.OSArchitecture;
 				$(#osDescription).text = value.OSDescription;
 				$(#osContent).attributes["state"] = "visible";
+			},
+			function() {
+				
 			}
-			else {
-			
-			}
-		});
+		);
 		
 		view.CallMeBack(100, 
 			function(val) {
@@ -215,13 +215,16 @@
 			}
 		);
 		
-		view.ThrowException(function(value, error) {
-			if (error) {
-				$(#exContent).html = String.printf("<div>Type:</div><div><span>%s</span></div><div>Message:</div><div><span>%s</span></div><div>StackTrace:</div><div><span>%s</span></div><div>Source: </div><div><span>%s</span></div>", error.Type, error.Message, error.StackTrace, error.Source);
+		view.ThrowException(
+			function() {
+				// Nothing to see here!
+			},
+			function(ex) {
+				$(#exContent).html = String.printf("<div>Type:</div><div><span>%s</span></div><div>Message:</div><div><span>%s</span></div><div>StackTrace:</div><div><span>%s</span></div><div>Source: </div><div><span>%s</span></div>", ex.Type, ex.Message, ex.StackTrace, ex.Source);
 				$(#exContent).attributes["state"] = "visible";
 				$(#exContent).attributes.addClass("has-exception");
 			}
-		});
+		);
 
 		var version_major = Sciter.VERSION >> 16;
 		var version_minor = Sciter.VERSION & 0xFFFF;

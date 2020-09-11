@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
 using SciterCore;
@@ -45,7 +46,7 @@ namespace SciterTest.NetCore
 		/// Notice that signature of these handlers is always the same
 		/// (Hint: install OmniCode snippets which adds the 'ssh' snippet to C# editor so you can easily declare 'Siter Handler' methods)
 		/// (see: https://github.com/MISoftware/OmniCode-Snippets)
-		public Task<SciterValue> HelloSciterCore(SciterElement element, SciterValue[] args)
+		public Task HelloSciterCore(SciterElement element, SciterValue onCompleted)
 		{
 			var stackTrace = new StackTrace(true);
 			var stackFrame = stackTrace.GetFrame(0);
@@ -60,10 +61,13 @@ namespace SciterTest.NetCore
 			}, options: new JsonSerializerOptions() { WriteIndented = true }));
 			
 			//value = SciterValue.Create($"<h2>Hello Sciter from C# in .Net Core!</h2><code>Method: {stackFrame?.GetMethod()?.Name}<br/>File: <a href=\"{new Uri(stackFrame?.GetFileName())?.AbsoluteUri}\">{Path.GetFileName(stackFrame?.GetFileName())}</a><br/>Line: {stackFrame?.GetFileLineNumber()}<br/>Column: {stackFrame?.GetFileColumnNumber()}</code>");
-			return Task.FromResult(value);
+
+			onCompleted.Call(value);
+			
+			return Task.CompletedTask;
 		}
 		
-		public Task<SciterValue> StackTrace(SciterElement element, SciterValue[] args)
+		public Task StackTrace(SciterElement element, SciterValue onCompleted)
 		{
 			var stackTrace = new StackTrace(true);
 			var stackFrame = stackTrace.GetFrame(0);
@@ -78,68 +82,97 @@ namespace SciterTest.NetCore
 					LineNumber = stackFrame?.GetFileLineNumber(),
 					ColumnNumber = stackFrame?.GetFileColumnNumber()
 				});
+
+			onCompleted.Call(value);
 			
-			return Task.FromResult(value);
+			return Task.CompletedTask;
 		}
 		
-		public Task<SciterValue> GetRuntimeInfo(SciterElement element, SciterValue[] args)
+		public Task GetRuntimeInfo(SciterElement element, SciterValue onCompleted, SciterValue onError)
 		{
 			//Simulate a delay
 			//await Task.Delay(3500);
 
-			var value = SciterValue.Create(
-				new {
-					FrameworkDescription = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription,
-					ProcessArchitecture = System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture.ToString(),
-					OSArchitecture = System.Runtime.InteropServices.RuntimeInformation.OSArchitecture.ToString(),
-					OSDescription = System.Runtime.InteropServices.RuntimeInformation.OSDescription,
-					SystemVersion = System.Runtime.InteropServices.RuntimeEnvironment.GetSystemVersion()
-				});
+			try
+			{
+				var value = SciterValue.Create(
+					new {
+						FrameworkDescription = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription,
+						ProcessArchitecture = System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture.ToString(),
+						OSArchitecture = System.Runtime.InteropServices.RuntimeInformation.OSArchitecture.ToString(),
+						OSDescription = System.Runtime.InteropServices.RuntimeInformation.OSDescription,
+						SystemVersion = System.Runtime.InteropServices.RuntimeEnvironment.GetSystemVersion()
+					});
 			
-			return Task.FromResult(value);
+				onCompleted.Call(value);
+			}
+			catch (Exception e)
+			{
+				onError.Call(SciterValue.MakeError(e.Message));
+			}
+
+			return Task.CompletedTask;
 		}
 		
-		public async Task<SciterValue> CallMeBack(SciterElement element, SciterValue value, SciterValue onProgress, SciterValue onDone)
+		public async Task CallMeBack(SciterElement element, SciterValue value, SciterValue onProgress, SciterValue onCompleted)
 		{
 			for (var i = 0; i < 201; i++)
 			{
 				//Simulates a delay
-				await Task.Delay(20);
+				await Task.Delay(10);
 				onProgress.Call(SciterValue.Create(i));
 			}
 			
-			onDone.Call();
-			
-			return value;
+			onCompleted.Call();
 		}
 		
-		public Task<SciterValue> ThrowException(SciterElement element, SciterValue[] args)
+		public Task ThrowException(SciterElement element, SciterValue onCompleted, SciterValue onError)
 		{
-			//This will purposely throw an exception!
-			return Task.FromResult(SciterValue.Create(value: (100 / int.Parse("0"))));
+			try
+			{ 
+				//This will purposely throw an exception!
+				var value = (100 / int.Parse("0"));
+				
+				onCompleted.Call(SciterValue.Null);
+			}
+			catch (Exception e)
+			{
+				var properties = (e)
+					.GetType()
+					.GetProperties(BindingFlags.Instance | BindingFlags.Public)
+					.Where(w => typeof(IConvertible).IsAssignableFrom(w.PropertyType))
+					.ToDictionary(key => key.Name, value => value.GetValue(e) as IConvertible);
+				//.ToDictionary(key => key.Name, value => SciterValue.Create(value.GetValue(e.InnerException)));
+				properties.Add(nameof(Type), (e).GetType().FullName);
+						
+				onError.Call(SciterValue.Create(properties));
+			}
+			
+			return Task.CompletedTask;
 		}
 
 		public void SynchronousFunction()
 		{
+			//SciterValue.Create(value: (100 / int.Parse("0")));
 			Console.WriteLine($"{nameof(SynchronousFunction)} was executed!");
 		}
 
+		public void SynchronousArgumentFunction(SciterElement element, SciterValue[] args)
+		{
+			Console.WriteLine($"{nameof(SynchronousArgumentFunction)} was executed!\n\t{string.Join(",", args.Select(s => s.AsInt32()))}");
+		}
+
+		public void SynchronousArgumentsFunction(SciterElement element, SciterValue arg1, SciterValue arg2, SciterValue arg3, SciterValue arg4, SciterValue arg5)
+		{
+			Console.WriteLine($"{nameof(SynchronousArgumentsFunction)} was executed!\n\t{arg1.AsInt32()},{arg2.AsInt32()},{arg3.AsInt32()},{arg4.AsInt32()},{arg5.AsInt32()}");
+		}
+		
 		public async Task AsynchronousFunction()
 		{
 			await Task.Delay(TimeSpan.FromSeconds(2));
 			Console.WriteLine($"{nameof(AsynchronousFunction)} was executed!");
 		}
 
-		public bool SynchronousBooleanFunction()
-		{
-			return true;
-		}
-
-		public Task AsynchronousBooleanFunction()
-		{
-			return Task.FromResult(true);
-		}
-		
 		protected override EventGroups SubscriptionsRequest(SciterElement element)
 		{
 			return EventGroups.HandleAll;
