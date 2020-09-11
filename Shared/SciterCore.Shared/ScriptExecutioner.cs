@@ -1,12 +1,44 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using SciterCore.Attributes;
 
 namespace SciterCore
 {
+	
+	/*
+		match signature:
+		void MethodName()
+		void MethodName(SciterElement element)
+		void MethodName(SciterValue[] args)
+		void MethodName(SciterElement element, SciterValue[] args)
+		void MethodName(SciterValue arg1, SciterValue arg2, ...)
+		void MethodName(SciterElement element, SciterValue arg1, SciterValue arg2, ...)
+		
+		SciterValue MethodName()',
+		SciterValue MethodName(SciterElement element)
+		SciterValue MethodName(SciterValue[] args)
+		SciterValue MethodName(SciterElement element, SciterValue[] args)
+		SciterValue MethodName(SciterValue arg1, SciterValue arg2, ...)
+		SciterValue MethodName(SciterElement element, SciterValue arg1, SciterValue arg2, ...)
+		
+		Task MethodName()
+		Task MethodName(SciterElement element)
+		Task MethodName(SciterValue[] args)
+		Task MethodName(SciterElement element, SciterValue[] args)
+		Task MethodName(SciterValue arg1, SciterValue arg2, ...)
+		Task MethodName(SciterElement element, SciterValue arg1, SciterValue arg2, ...)
+		
+		Task<SciterValue> MethodName()
+		Task<SciterValue> MethodName(SciterElement element)
+		Task<SciterValue> MethodName(SciterValue[] args)
+		Task<SciterValue> MethodName(SciterElement element, SciterValue[] args)
+		Task<SciterValue> MethodName(SciterValue arg1, SciterValue arg2, ...)
+		Task<SciterValue> MethodName(SciterElement element, SciterValue arg1, SciterValue arg2, ...)
+	*/
+	
 	internal class ScriptExecutioner
     {
 	    
@@ -25,6 +57,8 @@ namespace SciterCore
 	    private readonly ReturnType _returnType;
 	    private readonly bool _isAwaitable;
 	    private readonly IList<ParameterInfo> _methodParameters;
+	    private readonly bool _isWrappedCallback;
+	    private readonly SciterValue _callbackValue;
 
 	    private ScriptExecutioner(object owner, SciterElement element, MethodInfo methodInfo, SciterValue[] arguments)
 	    {
@@ -36,6 +70,9 @@ namespace SciterCore
 		    _methodParameters = _methodInfo.GetParameters();
 		    
 		    _isAwaitable = _methodInfo.ReturnType.GetMethod(nameof(Task.GetAwaiter)) != null;
+		    
+		    _isWrappedCallback = _methodInfo.GetCustomAttribute<SciterCallbackWrapperAttribute>() != null;
+		    _callbackValue = _isWrappedCallback ? _arguments.Last() : null;
 
 		    _returnType = GetReturnType();
 	    }
@@ -51,15 +88,7 @@ namespace SciterCore
 		    {
 			    return ReturnType.Void;
 		    }
-
-		    //if (typeof(bool).IsAssignableFrom(_methodInfo.ReturnType) || 
-		    //    (_methodInfo.ReturnType.IsGenericType &&
-		    //     _methodInfo.ReturnType.GenericTypeArguments.Length == 1 && 
-		    //     typeof(bool).IsAssignableFrom(_methodInfo.ReturnType.GenericTypeArguments[0])))
-		    //{
-			//    return ReturnType.Boolean;
-		    //}
-
+		    
 		    if (typeof(SciterValue).IsAssignableFrom(_methodInfo.ReturnType) || 
 		        (_methodInfo.ReturnType.IsGenericType &&
 		         _methodInfo.ReturnType.GenericTypeArguments.Length == 1 && 
@@ -106,7 +135,7 @@ namespace SciterCore
 
 		    return result.ToArray();
 	    }
-	    
+
 	    public static ScriptExecutioner Create(object owner, SciterElement sciterElement, MethodInfo methodInfo, SciterValue[] arguments)
 	    {
 		    return new ScriptExecutioner(owner, sciterElement, methodInfo, arguments);
@@ -114,107 +143,35 @@ namespace SciterCore
 	    
         public ScriptEventResult Execute()
 		{
+			if (_returnType == ReturnType.Unknown)
+			{
+				//Can't use anything that's not void: SciterValue, Task<void> or Task<SciterValue>
+				return ScriptEventResult.Failed();
+			}
+			
 			if (_methodInfo != null)
 			{
-				//Does the method have an Awaiter (a Task)?
-				//var hasAwaiter = _methodInfo.ReturnType.GetMethod(nameof(Task.GetAwaiter)) != null;
-				
-				//Does the method return `SciterValue` ([a]synchronously)
-				//var returnsSciterValue = typeof(SciterValue).IsAssignableFrom(_methodInfo.ReturnType) || _methodInfo.ReturnType.IsGenericType &&
-				//	_methodInfo.ReturnType.GenericTypeArguments.Length == 1 && typeof(SciterValue).IsAssignableFrom(_methodInfo.ReturnType.GenericTypeArguments[0]);
-
 				var parameters = BuildParameters();
-				
-				//if (_isAwaitable && 
-				//    _returnType == ReturnType.SciterValue &&
-				//    _arguments.Any(a => a.IsFunction || a.IsObjectFunction))
-				//{
-				//	// Safe to call `First` here as the check is done above.
-				//	var callbackFunc = _arguments.First(f => f.IsObjectFunction || f.IsFunction);
-//
-				//	try
-				//	{
-				//		if (_methodParameters.Count <= 0 &&
-				//		    !typeof(SciterElement).IsAssignableFrom(_methodParameters[0].ParameterType))
-				//		{
-				//			return ScriptEventResult.Failed();
-				//		}
-//
-				//		if (_methodParameters.Count == 2 &&
-				//		    _methodParameters[1].ParameterType.IsArray &&
-				//		    typeof(SciterValue).IsAssignableFrom(_methodParameters[1].ParameterType.GetElementType()))
-				//		{
-				//			((Task<SciterValue>) _methodInfo.Invoke(_owner, parameters))?.ContinueWith(
-				//				task =>
-				//				{
-				//					if (task.IsFaulted)
-				//						return;
-//
-				//					callbackFunc.Call(task.Result, SciterValue.Null);
-				//				});
-				//		}
-				//		else if (_methodParameters.Count > 2)
-				//		{
-				//			_methodInfo.Invoke(_owner, parameters.ToArray());
-				//		}
-				//	}
-				//	catch (TargetInvocationException e)
-				//	{
-				//		//TODO: Clean this up, maybe change the Dictionary<> implementation?
-				//		var properties = (e.InnerException ?? e)
-				//			.GetType()
-				//			.GetProperties(BindingFlags.Instance | BindingFlags.Public)
-				//			.Where(w => typeof(IConvertible).IsAssignableFrom(w.PropertyType))
-				//			.ToDictionary(key => key.Name, value => value.GetValue((e.InnerException ?? e)) as IConvertible);
-				//			//.ToDictionary(key => key.Name, value => SciterValue.Create(value.GetValue(e.InnerException)));
-				//		properties.Add(nameof(Type), (e.InnerException ?? e).GetType().FullName);
-				//		
-				//		callbackFunc.Call(SciterValue.Null, SciterValue.Create(properties));
-				//	}
-				//	catch (Exception e)
-				//	{
-				//		callbackFunc.Call(SciterValue.Null, SciterValue.Create(new { Type = e.GetType().FullName, e.Message, e.StackTrace, e.Source }));
-				//	}
-				//	
-				//	// Tasks should return Successful, the callback function will be fired when the Task completes. 
-				//	return ScriptEventResult.Successful();
-				//}
-				
-				// match signature:
-				// void MethodName()
-				// void MethodName(SciterElement element)
-				// void MethodName(SciterValue[] args)
-				// void MethodName(SciterElement element, SciterValue[] args)
-				// void MethodName(SciterValue arg1, SciterValue arg2, ...)
-				// void MethodName(SciterElement element, SciterValue arg1, SciterValue arg2, ...)
-				
-				// SciterValue MethodName()',
-				// SciterValue MethodName(SciterElement element)
-				// SciterValue MethodName(SciterValue[] args)
-				// SciterValue MethodName(SciterElement element, SciterValue[] args)
-				// SciterValue MethodName(SciterValue arg1, SciterValue arg2, ...)
-				// SciterValue MethodName(SciterElement element, SciterValue arg1, SciterValue arg2, ...)
-				
-				// Task MethodName()
-				// Task MethodName(SciterElement element)
-				// Task MethodName(SciterValue[] args)
-				// Task MethodName(SciterElement element, SciterValue[] args)
-				// Task MethodName(SciterValue arg1, SciterValue arg2, ...)
-				// Task MethodName(SciterElement element, SciterValue arg1, SciterValue arg2, ...)
-				
-				// Task<SciterValue> MethodName()'
-				// Task<SciterValue> MethodName(SciterElement element)
-				// Task<SciterValue> MethodName(SciterValue[] args)
-				// Task<SciterValue> MethodName(SciterElement element, SciterValue[] args)
-				// Task<SciterValue> MethodName(SciterValue arg1, SciterValue arg2, ...)
-				// Task<SciterValue> MethodName(SciterElement element, SciterValue arg1, SciterValue arg2, ...)
-				
 				{
 					try
-					{ 
-						//var parameters = BuildParameters();
+					{
+						if (_isWrappedCallback && _isAwaitable)
+						{
+							((Task) _methodInfo.Invoke(_owner, parameters))?.ContinueWith(
+								task =>
+								{
+									if (task.IsFaulted)
+										return;
 
-						//TODO: Add error handling!
+									if (!task.GetType().IsGenericType) 
+										return;
+
+									_callbackValue?.Call((task as Task<SciterValue>)?.Result ?? SciterValue.Null, SciterValue.Null);
+								});
+							
+							return ScriptEventResult.Successful();
+						}
+
 						var ret = _methodInfo.Invoke(_owner, parameters);
 
 						// Awaitable Tasks should return Successful immediately, don't block the main Thread waiting for completion! 
@@ -227,6 +184,9 @@ namespace SciterCore
 					}
 					catch (TargetInvocationException e)
 					{
+						if (!_isWrappedCallback || !_isAwaitable)
+							return ScriptEventResult.Successful(SciterValue.MakeError(e.InnerException?.Message ?? e.ToString()));
+						
 						//TODO: Clean this up, maybe change the Dictionary<> implementation?
 						var properties = (e.InnerException ?? e)
 							.GetType()
@@ -235,10 +195,10 @@ namespace SciterCore
 							.ToDictionary(key => key.Name, value => value.GetValue((e.InnerException ?? e)) as IConvertible);
 						//.ToDictionary(key => key.Name, value => SciterValue.Create(value.GetValue(e.InnerException)));
 						properties.Add(nameof(Type), (e.InnerException ?? e).GetType().FullName);
+                                                    
+						_callbackValue?.Call(SciterValue.Null, SciterValue.Create(properties));
 						
-						return ScriptEventResult.Successful(SciterValue.MakeError(e.InnerException?.Message ?? e.ToString()));
-						
-						//callbackFunc.Call(SciterValue.Null, SciterValue.Create(properties));
+						return ScriptEventResult.Successful();
 					}
 					catch (Exception e)
 					{
@@ -246,7 +206,6 @@ namespace SciterCore
 						//callbackFunc.Call(SciterValue.Null, SciterValue.Create(new { Type = e.GetType().FullName, e.Message, e.StackTrace, e.Source }));
 					}
 				}
-
 			}
 
 			// not handled

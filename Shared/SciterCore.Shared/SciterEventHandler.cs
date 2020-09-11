@@ -159,8 +159,10 @@ namespace SciterCore
 		#endregion
 		
 		// EventProc
+
 		private bool EventProcMethod(IntPtr tag, IntPtr he, uint evtg, IntPtr prms)
 		{
+
 			SciterElement se = null;
 			if(he != IntPtr.Zero)
 				se = new SciterElement(he);
@@ -296,14 +298,14 @@ namespace SciterCore
 
 						if (methodInfo == null)
 							return false;
-
+						
 						var scriptResult = OnScriptCall(se, methodInfo, pw.args);
 						
-						if (scriptResult.IsSuccessful && scriptResult.Value != null)
+						if (scriptResult.IsSuccessful)
 						{
 							//pw.result = scriptResult.Value;
-							Interop.SciterValue.VALUE vres = scriptResult.Value.ToVALUE();
-							IntPtr vptr = IntPtr.Add(prms, RESULT_OFFSET.ToInt32());
+							var vres = (scriptResult.Value ?? SciterValue.Null).ToVALUE();
+							var vptr = IntPtr.Add(prms, RESULT_OFFSET.ToInt32());
 							Marshal.StructureToPtr(vres, vptr, false);
 						}
 

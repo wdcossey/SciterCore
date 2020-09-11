@@ -136,7 +136,7 @@
 			color: crimson;
 		}
 
-		progress.custom-clip
+		progress.custom-progress
 		{
 			border:none; 
 			border-radius:2dip;
@@ -161,14 +161,14 @@
 	<script type="text/tiscript">
 	
 		//Synchronous
-		//view.SynchronousFunction();
+		view.SynchronousFunction();
 		
-		//console.log(view.SynchronousArgumentFunction(1,2,3,4,5));
+		console.log(view.SynchronousArgumentFunction(1,2,3,4,5));
 	
-		//console.log(view.SynchronousArgumentsFunction(1,2,3,4,5));
+		console.log(view.SynchronousArgumentsFunction(1,2,3,4,5));
 		
 		//Asynchronous
-		//view.AsynchronousFunction();
+		view.AsynchronousFunction();
 		
 		view.StackTrace(function(value) {
 			$(#stMethodName).text = value.MethodName;
@@ -205,24 +205,32 @@
 			}
 		);
 		
-		view.CallMeBack(100, 
-			function(val) {
+		view.CallMeBack(100,
+			function(val, progress) {
+				$(#callbackState).text = "Busy";
 				$(#callbackProgress).value = val;
-			}, 
-			function() {
-				$(#callbackContent).attributes["state"] = "visible";
+				$(#callbackMessage).text = String.printf("%d%%", progress);
+			},
+			function(val) {
+				//$(#callbackContent).attributes["state"] = "visible";
+				$(#callbackState).text = "Completed";
+				$(#callbackMessage).text = val;
 				$(#callbackProgressContainer).hide();
 			}
 		);
 		
-		view.ThrowException(
-			function() {
-				// Nothing to see here!
-			},
-			function(ex) {
-				$(#exContent).html = String.printf("<div>Type:</div><div><span>%s</span></div><div>Message:</div><div><span>%s</span></div><div>StackTrace:</div><div><span>%s</span></div><div>Source: </div><div><span>%s</span></div>", ex.Type, ex.Message, ex.StackTrace, ex.Source);
-				$(#exContent).attributes["state"] = "visible";
-				$(#exContent).attributes.addClass("has-exception");
+		view.ThrowException(100, 0,
+			function(value, ex) {
+				if (ex)
+				{
+					$(#exContent).html = String.printf("<div>Type:</div><div><span>%s</span></div><div>Message:</div><div><span>%s</span></div><div>StackTrace:</div><div><span>%s</span></div><div>Source: </div><div><span>%s</span></div>", ex.Type, ex.Message, ex.StackTrace, ex.Source);
+					$(#exContent).attributes["state"] = "visible";
+					$(#exContent).attributes.addClass("has-exception");
+				}
+				else {
+					$(#exContent).html = String.printf("<div>Value:</div><div><span>%s</span></div>", value);
+					$(#exContent).attributes["state"] = "visible";
+				}
 			}
 		);
 
@@ -230,7 +238,7 @@
 		var version_minor = Sciter.VERSION & 0xFFFF;
 		var revision_major = Sciter.REVISION >> 16;
 		var revision_minor = Sciter.REVISION & 0xFFFF;
-		$(span.version).text = String.printf("%d.%d.%d.%d (%d)", version_major, version_minor, revision_major, revision_minor, Sciter.BUILD);
+		$(#sciterversion).text = String.printf("%d.%d.%d.%d (%d)", version_major, version_minor, revision_major, revision_minor, Sciter.BUILD);
 		
 		//$$(a).on("click", function(evt) {
 		//	Sciter.launch(this.@#href);
@@ -300,17 +308,19 @@
 				
 				<card style="width: 1*" >
 					<div style="display:inline-block; width: 1*;margin-bottom: 16dip">
-						<div style="font-size: 20dip; vertical-align: center; font-family: Roboto,Helvetica Neue,sans-serif;font-weight: 500;">Callback</div>
+						<div style="font-size: 20dip; vertical-align: center; font-family: Roboto,Helvetica Neue,sans-serif;font-weight: 500;">Multiple Callbacks</div>
 						<div style="font-size: 14dip;font-family: Roboto,Helvetica Neue,sans-serif;font-weight: 400;opacity: 0.6">This will execute a Task on the host with multiple callbacks.</div>
-						<div style="margin: 4dip 0" #callbackProgressContainer><progress #callbackProgress .custom-clip max="200" value="0"/></div>
+						<div style="margin: 4dip 0" #callbackProgressContainer><progress #callbackProgress .custom-progress max="200" value="0"/></div>
 					</div>
 
-					<cardcontent #callbackContent>
-						<div>Congratulations:</div>
-						<div style="font-weight: bold;">You have sucessfully awaited your task!</div>
+					<cardcontent #callbackContent state="visible">
+						<div>State:</div>
+						<div #callbackState></div>
 						
-						<div></div>
-						<div></div>
+						<div>Message:</div>
+						<div #callbackMessage style="font-weight: bold;"></div>
+						
+						
 						
 					</cardcontent>
 
@@ -362,7 +372,7 @@
 				
 				<div style="margin-top:*; margin-bottom:*; margin-right: 8dip;">
 					<a href="https://sciter.com/">Sciter</a>
-					<span.version style="margin:0 auto;">Version</span.version>
+					<span #sciterversion style="margin:0 auto;">Version</span>
 				</div>
 
 			</div>

@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
 using SciterCore;
+using SciterCore.Attributes;
 using SciterCore.Interop;
 using SciterTest.NetCore.Behaviors;
 using SciterValue = SciterCore.SciterValue;
@@ -120,35 +121,19 @@ namespace SciterTest.NetCore
 			{
 				//Simulates a delay
 				await Task.Delay(10);
-				onProgress.Call(SciterValue.Create(i));
+				onProgress.Call(SciterValue.Create(i), SciterValue.Create(i / 200d * 100));
 			}
 			
-			onCompleted.Call();
+			onCompleted.Call(SciterValue.Create("You have successfully completed your task!"));
 		}
 		
-		public Task ThrowException(SciterElement element, SciterValue onCompleted, SciterValue onError)
+		[SciterCallbackWrapper]
+		public Task ThrowException(SciterValue numerator, SciterValue denominator)
 		{
-			try
-			{ 
-				//This will purposely throw an exception!
-				var value = (100 / int.Parse("0"));
+			//This will purposely throw an exception!
+			var value = numerator.AsInt32() / denominator.AsInt32();
 				
-				onCompleted.Call(SciterValue.Null);
-			}
-			catch (Exception e)
-			{
-				var properties = (e)
-					.GetType()
-					.GetProperties(BindingFlags.Instance | BindingFlags.Public)
-					.Where(w => typeof(IConvertible).IsAssignableFrom(w.PropertyType))
-					.ToDictionary(key => key.Name, value => value.GetValue(e) as IConvertible);
-				//.ToDictionary(key => key.Name, value => SciterValue.Create(value.GetValue(e.InnerException)));
-				properties.Add(nameof(Type), (e).GetType().FullName);
-						
-				onError.Call(SciterValue.Create(properties));
-			}
-			
-			return Task.CompletedTask;
+			return Task.FromResult(SciterValue.Create(value));
 		}
 
 		public void SynchronousFunction()

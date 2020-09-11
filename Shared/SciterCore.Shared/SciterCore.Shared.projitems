@@ -9,6 +9,7 @@
     <Import_RootNamespace>SciterCore</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Attributes\SciterCallbackWrapperAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\CallbackCode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\CursorType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\DragAndDropMode.cs" />
