@@ -63,7 +63,7 @@ namespace SciterTest.NetCore
 			
 			//value = SciterValue.Create($"<h2>Hello Sciter from C# in .Net Core!</h2><code>Method: {stackFrame?.GetMethod()?.Name}<br/>File: <a href=\"{new Uri(stackFrame?.GetFileName())?.AbsoluteUri}\">{Path.GetFileName(stackFrame?.GetFileName())}</a><br/>Line: {stackFrame?.GetFileLineNumber()}<br/>Column: {stackFrame?.GetFileColumnNumber()}</code>");
 
-			onCompleted.Call(value);
+			onCompleted.Invoke(value);
 			
 			return Task.CompletedTask;
 		}
@@ -84,7 +84,7 @@ namespace SciterTest.NetCore
 					ColumnNumber = stackFrame?.GetFileColumnNumber()
 				});
 
-			onCompleted.Call(value);
+			onCompleted.Invoke(value);
 			
 			return Task.CompletedTask;
 		}
@@ -105,11 +105,11 @@ namespace SciterTest.NetCore
 						SystemVersion = System.Runtime.InteropServices.RuntimeEnvironment.GetSystemVersion()
 					});
 			
-				onCompleted.Call(value);
+				onCompleted.Invoke(value);
 			}
 			catch (Exception e)
 			{
-				onError.Call(SciterValue.MakeError(e.Message));
+				onError.Invoke(SciterValue.MakeError(e.Message));
 			}
 
 			return Task.CompletedTask;
@@ -121,10 +121,10 @@ namespace SciterTest.NetCore
 			{
 				//Simulates a delay
 				await Task.Delay(10);
-				onProgress.Call(SciterValue.Create(i), SciterValue.Create(i / 200d * 100));
+				onProgress.Invoke(SciterValue.Create(i), SciterValue.Create(i / 200d * 100));
 			}
 			
-			onCompleted.Call(SciterValue.Create("You have successfully completed your task!"));
+			onCompleted.Invoke(SciterValue.Create("You have successfully completed your task!"));
 		}
 		
 		[SciterCallbackWrapper]

@@ -166,7 +166,7 @@ namespace SciterCore
 									if (!task.GetType().IsGenericType) 
 										return;
 
-									_callbackValue?.Call((task as Task<SciterValue>)?.Result ?? SciterValue.Null, SciterValue.Null);
+									_callbackValue?.Invoke((task as Task<SciterValue>)?.Result ?? SciterValue.Null, SciterValue.Null);
 								});
 							
 							return ScriptEventResult.Successful();
@@ -196,7 +196,7 @@ namespace SciterCore
 						//.ToDictionary(key => key.Name, value => SciterValue.Create(value.GetValue(e.InnerException)));
 						properties.Add(nameof(Type), (e.InnerException ?? e).GetType().FullName);
                                                     
-						_callbackValue?.Call(SciterValue.Null, SciterValue.Create(properties));
+						_callbackValue?.Invoke(SciterValue.Null, SciterValue.Create(properties));
 						
 						return ScriptEventResult.Successful();
 					}
