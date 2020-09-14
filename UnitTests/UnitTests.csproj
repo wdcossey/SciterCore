@@ -68,6 +68,7 @@
     <Compile Include="Graphics\SciterGraphicsTests.cs" />
     <Compile Include="Graphics\SciterImageTests.cs" />
     <Compile Include="Graphics\TextMetricsTests.cs" />
+    <Compile Include="SciterElementTests.cs" />
     <Compile Include="SciterValueTests.cs" />
     <Compile Include="UnitTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

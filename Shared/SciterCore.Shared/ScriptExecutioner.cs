@@ -44,7 +44,7 @@ namespace SciterCore
 	    
 	    private enum ReturnType
 	    {
-		    Unknown,
+		    Unsupported,
 			Void,
 			SciterValue,
 	    }
@@ -97,7 +97,7 @@ namespace SciterCore
 			    return ReturnType.SciterValue;
 		    }
 
-		    return ReturnType.Unknown;
+		    return ReturnType.Unsupported;
 	    }
 
 	    private object[] BuildParameters()
@@ -143,7 +143,7 @@ namespace SciterCore
 	    
         public ScriptEventResult Execute()
 		{
-			if (_returnType == ReturnType.Unknown)
+			if (_returnType == ReturnType.Unsupported)
 			{
 				//Can't use anything that's not void: SciterValue, Task<void> or Task<SciterValue>
 				return ScriptEventResult.Failed();
@@ -184,26 +184,11 @@ namespace SciterCore
 					}
 					catch (TargetInvocationException e)
 					{
-						if (!_isWrappedCallback || !_isAwaitable)
-							return ScriptEventResult.Successful(SciterValue.MakeError(e.InnerException?.Message ?? e.ToString()));
-						
-						//TODO: Clean this up, maybe change the Dictionary<> implementation?
-						var properties = (e.InnerException ?? e)
-							.GetType()
-							.GetProperties(BindingFlags.Instance | BindingFlags.Public)
-							.Where(w => typeof(IConvertible).IsAssignableFrom(w.PropertyType))
-							.ToDictionary(key => key.Name, value => value.GetValue((e.InnerException ?? e)) as IConvertible);
-						//.ToDictionary(key => key.Name, value => SciterValue.Create(value.GetValue(e.InnerException)));
-						properties.Add(nameof(Type), (e.InnerException ?? e).GetType().FullName);
-                                                    
-						_callbackValue?.Call(SciterValue.Null, SciterValue.Create(properties));
-						
-						return ScriptEventResult.Successful();
+						return ExceptionCallbackResult(e.InnerException ?? e);
 					}
 					catch (Exception e)
 					{
-						return ScriptEventResult.Successful(SciterValue.MakeError(e.Message));
-						//callbackFunc.Call(SciterValue.Null, SciterValue.Create(new { Type = e.GetType().FullName, e.Message, e.StackTrace, e.Source }));
+						return ExceptionCallbackResult(e);
 					}
 				}
 			}
@@ -211,5 +196,24 @@ namespace SciterCore
 			// not handled
 			return ScriptEventResult.Failed();
 		}
+
+        private ScriptEventResult ExceptionCallbackResult(Exception e)
+        {
+	        if (!_isWrappedCallback || !_isAwaitable)
+		        return ScriptEventResult.Successful(SciterValue.MakeError(e?.Message));
+						
+	        //TODO: Clean this up, maybe change the Dictionary<> implementation?
+	        var properties = (e)
+		        .GetType()
+		        .GetProperties(BindingFlags.Instance | BindingFlags.Public)
+		        .Where(w => typeof(IConvertible).IsAssignableFrom(w.PropertyType))
+		        .ToDictionary(key => key.Name, value => value.GetValue(e) as IConvertible);
+	        //.ToDictionary(key => key.Name, value => SciterValue.Create(value.GetValue(e.InnerException)));
+	        properties.Add(nameof(Type), e?.GetType().FullName);
+                                                    
+	        _callbackValue?.Call(SciterValue.Null, SciterValue.Create(properties));
+	        
+	        return ScriptEventResult.Successful();
+        }
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace SciterCore
 {
-    public struct ScriptEventResult
+    public readonly struct ScriptEventResult
     {
         public bool IsSuccessful { get; }
 			

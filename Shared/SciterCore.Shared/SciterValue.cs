@@ -921,7 +921,7 @@ namespace SciterCore
 					ThrowTypeException(nameof(Interop.SciterValue.VALUE_TYPE.T_OBJECT));
 
 				if(IsObject)
-					throw new ArgumentException($"Please call {nameof(Isolate)} for this {nameof(SciterValue)}");
+					throw new InvalidOperationException($"Please call {nameof(Isolate)} for this {nameof(SciterValue)}");
 
 				var result = new List<SciterValue>();
 				

@@ -359,5 +359,24 @@ namespace SciterCore.UnitTests
             var actual = SciterValue.MakeSymbol(input);
             Assert.IsNull(actual);
         }
+        
+        [Test]
+        public void Value_get_Keys()
+        {
+            var dictionary = new Dictionary<string, IConvertible>
+            {
+                { "key1", null},
+                { "key2", true},
+                { "key3", (byte)1},
+                { "key4", 1}
+            };
+            
+            var actual = SciterValue.Create(dictionary);
+
+            Assert.IsTrue(actual.IsMap);
+            
+            Assert.AreEqual(dictionary.Keys, actual.Keys.Select(s => s.AsString()));
+        }
+        
     }
 }
