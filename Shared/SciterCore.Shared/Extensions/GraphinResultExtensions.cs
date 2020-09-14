@@ -1,9 +1,11 @@
-﻿using System.Linq;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedMember.Global
 
 namespace SciterCore
 {
+    [ExcludeFromCodeCoverage]
     internal static class GraphinResultExtensions
     {
         internal static bool IsOk(this Interop.SciterGraphics.GRAPHIN_RESULT result)

@@ -58,8 +58,7 @@
         }
 
         #endregion CreateCommentNode
-        
-        
+
         #region ChildCount
 
         public static int GetChildCount(this SciterNode sciterNode)

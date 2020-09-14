@@ -25,7 +25,7 @@ using System.Text.RegularExpressions;
 using System.Runtime.InteropServices;
 using SciterCore.Interop;
 using System.Reflection;
-
+// ReSharper disable UnusedMethodReturnValue.Global
 // ReSharper disable RedundantTypeSpecificationInDefaultExpression
 // ReSharper disable ArgumentsStyleNamedExpression
 // ReSharper disable MemberCanBePrivate.Global
@@ -79,16 +79,16 @@ namespace SciterCore
 				what = nameof(IsUndefined);
 
 			if (IsBool) 
-				what += $"{nameof(IsBool)} ({AsBoolean()})";
+				what += $"{nameof(IsBool)} ({AsBooleanInternal()})";
 
 			if (IsInt) 
-				what += $"{nameof(IsInt)} ({AsInt32()})";
+				what += $"{nameof(IsInt)} ({AsInt32Internal()})";
 
 			if (IsFloat) 
-				what += $"{nameof(IsFloat)} ({AsDouble()})";
+				what += $"{nameof(IsFloat)} ({AsDoubleInternal()})";
 			
 			if (IsString)
-				what = $"{nameof(IsString)} ({AsString(string.Empty)})";
+				what = $"{nameof(IsString)} ({AsStringInternal(string.Empty)})";
 
 			if (IsSymbol) 
 				what = nameof(IsSymbol);
@@ -97,10 +97,10 @@ namespace SciterCore
 				what = nameof(IsErrorString);
 			
 			if (IsDate) 
-				what = $"{nameof(IsDate)} ({AsInt64()})";
+				what = $"{nameof(IsDate)} ({AsInt64Internal()})";
 			
 			if (IsCurrency) 
-				what = $"{nameof(IsCurrency)} ({AsCurrency()})";
+				what = $"{nameof(IsCurrency)} ({AsCurrencyInternal()})";
 			
 			if (IsMap) 
 				what = nameof(IsMap);
@@ -124,13 +124,13 @@ namespace SciterCore
 				what = nameof(IsNativeFunction);
 			
 			if (IsColor) 
-				what = $"{nameof(IsColor)} ({AsColor()})";
+				what = $"{nameof(IsColor)} ({AsColorInternal()})";
 			
 			if (IsDuration) 
-				what = $"{nameof(IsDuration)} ({AsDuration()})";
+				what = $"{nameof(IsDuration)} ({AsDurationInternal()})";
 			
 			if (IsAngle) 
-				what =  $"{nameof(IsAngle)} ({AsAngle()})";
+				what =  $"{nameof(IsAngle)} ({AsAngleInternal()})";
 			
 			if (IsNull) 
 				what = nameof(IsNull);
@@ -187,8 +187,6 @@ namespace SciterCore
 		
 		public static SciterValue Create(bool value)
 		{
-			//Api.ValueInit(out _data); 
-			//Api.ValueIntDataSet(ref _data, value ? 1 : 0, (uint) Interop.SciterValue.VALUE_TYPE.T_BOOL, 0);
 			var result = new SciterValue();
 			Api.ValueIntDataSet(ref result._data, value ? 1 : 0, (uint) Interop.SciterValue.VALUE_TYPE.T_BOOL, 0);
 			return result;
@@ -196,8 +194,6 @@ namespace SciterCore
 
 		public static SciterValue Create(int value)
 		{
-			//Api.ValueInit(out _data);
-			//Api.ValueIntDataSet(ref _data, value, (uint) Interop.SciterValue.VALUE_TYPE.T_INT, 0);
 			var result = new SciterValue();
 			Api.ValueIntDataSet(ref result._data, value, (uint) Interop.SciterValue.VALUE_TYPE.T_INT, 0);
 			return result;
@@ -206,8 +202,6 @@ namespace SciterCore
 
 		public static SciterValue Create(uint value)
 		{
-			//Api.ValueInit(out _data);
-			//Api.ValueIntDataSet(ref _data, (int) value, (uint) Interop.SciterValue.VALUE_TYPE.T_INT, 0);
 			var result = new SciterValue();
 			Api.ValueIntDataSet(ref result._data, (int)(value), (uint) Interop.SciterValue.VALUE_TYPE.T_INT, 0);
 			return result;
@@ -215,8 +209,6 @@ namespace SciterCore
 
 		public static SciterValue Create(double value)
 		{
-			//Api.ValueInit(out _data); 
-			//Api.ValueFloatDataSet(ref _data, value, (uint) Interop.SciterValue.VALUE_TYPE.T_FLOAT, 0);
 			var result = new SciterValue();
 			Api.ValueFloatDataSet(ref result._data, value, (uint) Interop.SciterValue.VALUE_TYPE.T_FLOAT, 0);
 			return result;
@@ -224,8 +216,6 @@ namespace SciterCore
 
 		public static SciterValue Create(string value)
 		{
-			//Api.ValueInit(out _data); 
-			//Api.ValueStringDataSet(ref _data, value, (uint) value.Length, (uint) Interop.SciterValue.VALUE_UNIT_TYPE_STRING.UT_STRING_STRING);
 			var result = new SciterValue();
 			Api.ValueStringDataSet(ref result._data, value, (uint) (value?.Length ?? 0), (uint) Interop.SciterValue.VALUE_UNIT_TYPE_STRING.UT_STRING_STRING);
 			return result;
@@ -233,8 +223,6 @@ namespace SciterCore
 
 		public static SciterValue Create(byte[] value)
 		{
-			//Api.ValueInit(out _data); 
-			//Api.ValueBinaryDataSet(ref _data, value, (uint) value.Length, (uint) Interop.SciterValue.VALUE_TYPE.T_BYTES, 0);
 			var result = new SciterValue();
 			Api.ValueBinaryDataSet(ref result._data, value, (uint) (value?.Length ?? 0), (uint) Interop.SciterValue.VALUE_TYPE.T_BYTES, 0);
 			return result;
@@ -242,8 +230,6 @@ namespace SciterCore
 
 		public static SciterValue Create(long value)
 		{
-			//Api.ValueInit(out _data); 
-			//Api.ValueInt64DataSet(ref _data, value.ToFileTime(), (uint)Interop.SciterValue.VALUE_TYPE.T_DATE, 0);
 			var result = new SciterValue();
 			Api.ValueInt64DataSet(ref result._data, value, (uint)Interop.SciterValue.VALUE_TYPE.T_DATE, 0);
 			return result;
@@ -318,13 +304,13 @@ namespace SciterCore
 				case string @string:
 					Api.ValueStringDataSet(ref _data, @string, (uint) @string.Length, (uint) Interop.SciterValue.VALUE_UNIT_TYPE_STRING.UT_STRING_STRING);
 					break;
-				case long @int64:
-					Api.ValueInt64DataSet(ref _data, @int64, (uint)Interop.SciterValue.VALUE_TYPE.T_DATE, 0);
+				case long int64:
+					Api.ValueInt64DataSet(ref _data, int64, (uint)Interop.SciterValue.VALUE_TYPE.T_DATE, 0);
 					break;
-				case DateTime @dateTime:
-					Api.ValueInt64DataSet(ref _data, @dateTime.ToFileTime(), (uint)Interop.SciterValue.VALUE_TYPE.T_DATE, 0);
+				case DateTime dateTime:
+					Api.ValueInt64DataSet(ref _data, dateTime.ToFileTime(), (uint)Interop.SciterValue.VALUE_TYPE.T_DATE, 0);
 					break;
-				case SciterColor @sciterColor:
+				case SciterColor sciterColor:
 					Api.ValueIntDataSet(ref _data, (int)sciterColor.Value, (uint) Interop.SciterValue.VALUE_TYPE.T_COLOR, 0);
 					break;
 				case null:
@@ -348,19 +334,19 @@ namespace SciterCore
 				case Interop.SciterValue.VALUE_TYPE.T_NULL:
 					return null;
 				case Interop.SciterValue.VALUE_TYPE.T_BOOL:
-					return value.AsBoolean();
+					return value.AsBooleanInternal();
 				case Interop.SciterValue.VALUE_TYPE.T_INT:
-					return value.AsInt32();
+					return value.AsInt32Internal();
 				case Interop.SciterValue.VALUE_TYPE.T_COLOR:
-					return value.AsColor();
+					return value.AsColorInternal();
 				//case Interop.SciterValue.VALUE_TYPE.T_UNDEFINED:
 				//	break;
 				case Interop.SciterValue.VALUE_TYPE.T_FLOAT:
-					return value.AsDouble();
+					return value.AsDoubleInternal();
 				case Interop.SciterValue.VALUE_TYPE.T_STRING:
-					return value.AsString();
+					return value.AsStringInternal();
 				case Interop.SciterValue.VALUE_TYPE.T_DATE:
-					return value.AsInt64();
+					return value.AsInt64Internal();
 				//case Interop.SciterValue.VALUE_TYPE.T_CURRENCY:
 				//	break;
 				//case Interop.SciterValue.VALUE_TYPE.T_LENGTH:
@@ -480,8 +466,6 @@ namespace SciterCore
 			}
 			return sv;
 		}
-
-		
 		
 		private static SciterValue FromObjectRecurse(object value, ref List<object> antiRecurse, int depth)
 		{
@@ -638,7 +622,7 @@ namespace SciterCore
 			Api.ValueFloatDataSet(ref sv._data, value, (uint)Interop.SciterValue.VALUE_TYPE.T_ANGLE, 0);
 			return sv;
 		}
-		
+
 		/// <summary>
 		/// Creates a <see cref="SciterValue"/> (<see cref="SciterCore.Interop.SciterValue.VALUE_TYPE.T_CURRENCY"/>) from a <see cref="Int64"/>
 		/// </summary>
@@ -730,10 +714,24 @@ namespace SciterCore
 		/// </summary>
 		/// <param name="default">Default value to return on error</param>
 		/// <returns></returns>
-		public bool AsBoolean(bool @default = default(bool))
+		internal bool AsBooleanInternal(bool @default = default(bool))
 		{
-			return Api.ValueIntData(ref _data, out var pData)
-				.IsOk() ? pData != 0 : @default;
+			TryAsBooleanInternal(value: out var result, @default: @default);
+			return result;
+		}
+
+		/// <summary>
+		/// Reads the <see cref="SciterValue"/> as a <see cref="Boolean"/>
+		/// </summary>
+		/// <param name="value">The output value</param>
+		/// <param name="default">Default value to return on error</param>
+		/// <returns></returns>
+		internal bool TryAsBooleanInternal(out bool value, bool @default = default(bool))
+		{
+			var result = Api.ValueIntData(ref _data, out var pData)
+				.IsOk();
+			value = result ? pData != 0 : @default;
+			return result;
 		}
 
 		/// <summary>
@@ -741,21 +739,49 @@ namespace SciterCore
 		/// </summary>
 		/// <param name="default">Default value to return on error</param>
 		/// <returns></returns>
-		public int AsInt32(int @default = default(int))
+		internal int AsInt32Internal(int @default = default(int))
         {
-            return Api.ValueIntData(ref _data, out var pData)
-	            .IsOk() ? pData : @default;
+	        TryAsInt32Internal(value: out var result, @default: @default);
+	        return result;
         }
+
+		/// <summary>
+		/// Reads the <see cref="SciterValue"/> as a <see cref="Int32"/>
+		/// </summary>
+		/// <param name="value">The output value</param>
+		/// <param name="default">Default value to return on error</param>
+		/// <returns></returns>
+		internal bool TryAsInt32Internal(out int value, int @default = default(int))
+		{
+			var result = Api.ValueIntData(ref _data, out var pData)
+				.IsOk();
+			value = result ? pData : @default;
+			return result;
+		}
 
 		/// <summary>
 		/// Reads the <see cref="SciterValue"/> as a <see cref="UInt32"/>
 		/// </summary>
 		/// <param name="default">Default value to return on error</param>
 		/// <returns></returns>
-		public uint AsUInt32(uint @default = default(uint))
+		internal uint AsUInt32Internal(uint @default = default(uint))
         {
-            return Api.ValueIntData(ref _data, out var pData)
-	            .IsOk() ? unchecked((uint)pData) : @default;
+	        TryAsUInt32Internal(value: out var result, @default: @default);
+	        return result;
+        }
+
+		/// <summary>
+		/// Reads the <see cref="SciterValue"/> as a <see cref="UInt32"/>
+		/// </summary>
+		/// <param name="value">The output value</param>
+		/// <param name="default">Default value to return on error</param>
+		/// <returns></returns>
+		internal bool TryAsUInt32Internal(out uint value, uint @default = default(uint))
+        {
+	        var result = Api.ValueIntData(ref _data, out var pData)
+	            .IsOk();
+	        value = result ? unchecked((uint)pData) : @default;
+            return result;
         }
 		
 		/// <summary>
@@ -763,86 +789,192 @@ namespace SciterCore
 		/// </summary>
 		/// <param name="default">Default value to return on error</param>
 		/// <returns></returns>
-		public long AsInt64(long @default = default(long))
+		internal long AsInt64Internal(long @default = default(long))
 		{
-			return Api.ValueInt64Data(ref _data, out var pData)
-				.IsOk() ? pData : @default;
-		}
-		
-		public double AsDouble(double @default = default(double))
-        {
-            return Api.ValueFloatData(ref _data, out var pData)
-	            .IsOk() ? pData : @default;
-        }
-
-		public string AsString(string @default = default(string))
-		{
-			TryAsString(out var result, @default: @default);
+			TryAsInt64Internal(value: out var result, @default: @default);
 			return result;
 		}
 
-		public bool TryAsString(out string value, string @default = default(string))
+		/// <summary>
+		/// Reads the <see cref="SciterValue"/> as a <see cref="Int64"/>
+		/// </summary>
+		/// <param name="value">The output value</param>
+		/// <param name="default">Default value to return on error</param>
+		/// <returns></returns>
+		internal bool TryAsInt64Internal(out long value, long @default = default(long))
+		{
+			var result = Api.ValueInt64Data(ref _data, out var pData)
+				.IsOk();
+			value = result ? pData : @default;
+			return result;
+		}
+		
+		/// <summary>
+		/// Reads the <see cref="SciterValue"/> as a <see cref="Double"/>
+		/// </summary>
+		/// <param name="default">Default value to return on error</param>
+		/// <returns></returns>
+		internal double AsDoubleInternal(double @default = default(double))
+        {
+	        TryAsDoubleInternal(value: out var result, @default: @default);
+	        return result;
+        }
+		
+		/// <summary>
+		/// Reads the <see cref="SciterValue"/> as a <see cref="Double"/>
+		/// </summary>
+		/// <param name="value">The output value</param>
+		/// <param name="default">Default value to return on error</param>
+		/// <returns></returns>
+		internal bool TryAsDoubleInternal(out double value, double @default = default(double))
+        {
+	        var result = Api.ValueFloatData(ref _data, out var pData)
+	            .IsOk();
+	        value = result ? pData : @default;
+	        return result;
+        }
+
+		/// <summary>
+		/// Reads the <see cref="SciterValue"/> as a <see cref="String"/>
+		/// </summary>
+		/// <param name="default">Default value to return on error</param>
+		/// <returns></returns>
+		internal string AsStringInternal(string @default = default(string))
+		{
+			TryAsStringInternal(out var result, @default: @default);
+			return result;
+		}
+
+		/// <summary>
+		/// Reads the <see cref="SciterValue"/> as a <see cref="String"/>
+		/// </summary>
+		/// <param name="value">The output value</param>
+		/// <param name="default">Default value to return on error</param>
+		/// <returns></returns>
+		internal bool TryAsStringInternal(out string value, string @default = default(string))
         {
             var result = Api.ValueStringData(ref _data, out var retPtr, out var retLength)
 	            .IsOk();
             value = result ? Marshal.PtrToStringUni(retPtr, (int) retLength) : @default;
             return result;
-            
         }
 
-		public byte[] AsBytes()
+		/// <summary>
+		/// Reads the <see cref="SciterValue"/> as a <see cref="byte"/> <see cref="Array"/>
+		/// </summary>
+		/// <returns></returns>
+		internal byte[] AsBytesInternal()
 		{
-			if (!Api.ValueBinaryData(ref _data, out var retPtr, out var retLength).IsOk())
-				return null;
-
-			var ret = new byte[retLength];
-			if (retLength > 0)
-				Marshal.Copy(retPtr, ret, 0, (int) retLength);
-			return ret;
+			TryAsBytesInternal(out var result);
+			return result;
 		}
 
-		public SciterColor AsColor()
+		/// <summary>
+		/// Reads the <see cref="SciterValue"/> as a <see cref="byte"/> <see cref="Array"/>
+		/// </summary>
+		/// <param name="value">The output value</param>
+		/// <returns></returns>
+		internal bool TryAsBytesInternal(out byte[] value)
+		{
+			var result = Api.ValueBinaryData(ref _data, out var retPtr, out var retLength)
+				.IsOk();
+			value = result ? new byte[retLength] : null;
+			if (result && retLength > 0)
+				Marshal.Copy(retPtr, value, 0, unchecked((int)retLength));
+			return result;
+		}
+
+		/// <summary>
+		/// Reads the <see cref="SciterValue"/> as a <see cref="SciterColor"/>
+		/// </summary>
+		/// <returns></returns>
+		internal SciterColor AsColorInternal()
+		{
+			TryAsColorInternal(out var result);
+			return result;
+		}
+
+		/// <summary>
+		/// Reads the <see cref="SciterValue"/> as a <see cref="SciterColor"/>
+		/// </summary>
+		/// <param name="value">The output value</param>
+		/// <returns></returns>
+		internal bool TryAsColorInternal(out SciterColor value)
 		{
 			if(!IsColor)
 				ThrowTypeException(nameof(Interop.SciterValue.VALUE_TYPE.T_COLOR));
 
-			return new SciterColor(AsUInt32());
+			var result = TryAsUInt32Internal(out var intValue);
+			
+			value = result ? new SciterColor(intValue) : SciterColor.Transparent;
+			return result;
 		}
 
-		public double AsAngle()
+		internal double AsAngleInternal()
+		{
+			TryAsAngleInternal(out var result);
+			return result;
+		}
+
+		internal bool TryAsAngleInternal(out double value)
 		{
 			if(!IsAngle)
 				ThrowTypeException(nameof(Interop.SciterValue.VALUE_TYPE.T_ANGLE));
 
-			return AsDouble();
+			return TryAsDoubleInternal(out value);
 		}
 
-		public double AsDuration()
+		internal double AsDurationInternal()
+		{
+			TryAsDurationInternal(out var result);
+			return result;
+		}
+
+		internal bool TryAsDurationInternal(out double value)
 		{
 			if(!IsDuration)
 				ThrowTypeException(nameof(Interop.SciterValue.VALUE_TYPE.T_DURATION));
 
-			return AsDouble();
+			return TryAsDoubleInternal(out value);
 		}
 
-		public long AsCurrency()
+		internal long AsCurrencyInternal()
+		{
+			TryAsCurrencyInternal(out var result);
+			return result;
+		}
+
+		internal bool TryAsCurrencyInternal(out long value)
 		{
 			if(!IsCurrency)
 				ThrowTypeException(nameof(Interop.SciterValue.VALUE_TYPE.T_CURRENCY));
 
-			return AsInt64();
+			return TryAsInt64Internal(out value);
 		}
 
 //#if WINDOWS || OSX || NETCORE
-		public DateTime AsDateTime(bool universalTime = true)
+
+		internal DateTime AsDateTimeInternal(bool universalTime = true)
 		{
-			Api.ValueInt64Data(ref _data, out var v);
-			var result = DateTime.FromFileTime(v);
-			return universalTime ? result.ToUniversalTime() : result;
+			TryAsDateTimeInternal(out var result, universalTime: universalTime);
+			return result;
 		}
+
+		internal bool TryAsDateTimeInternal(out DateTime value, bool universalTime = true)
+		{
+			var result = TryAsInt64Internal(out var intValue);
+			
+			value = result ? DateTime.FromFileTime(intValue) : DateTime.MinValue;
+
+			if (universalTime)
+				value = value.ToUniversalTime();
+
+			return result;
+		}
+		
 //#endif
 		
-		public IEnumerable<SciterValue> AsEnumerable()
+		internal IEnumerable<SciterValue> AsEnumerableInternal()
 		{
 			if(!IsArray && !IsObject && !IsMap)
 				ThrowTypeException(nameof(Interop.SciterValue.VALUE_TYPE.T_ARRAY), nameof(Interop.SciterValue.VALUE_TYPE.T_OBJECT));
@@ -851,7 +983,7 @@ namespace SciterCore
 				yield return this[i];
 		}
 
-		public IDictionary<SciterValue, SciterValue> AsValueDictionary()
+		internal IDictionary<SciterValue, SciterValue> AsValueDictionaryInternal()
 		{
 			if(!IsObject && !IsMap)
 				ThrowTypeException($"{nameof(IDictionary)}<{nameof(SciterValue)}, {nameof(SciterValue)}>");
@@ -865,7 +997,7 @@ namespace SciterCore
 			return result;
 		}
 		
-		public IDictionary<string, IConvertible> AsDictionary()
+		internal IDictionary<string, IConvertible> AsDictionaryInternal()
 		{
 			if (!IsObject && !IsMap) 
 				ThrowTypeException($"{nameof(IDictionary)}<{nameof(String)}, {nameof(IConvertible)}>");
@@ -873,10 +1005,18 @@ namespace SciterCore
 			var result = new Dictionary<string, IConvertible>();
 			for(var i = 0; i < Length; i++)
 			{
-				result.Add(GetKeyInternal(i).AsString(), FromSciterValue(GetItemInternal(i)));
+				result.Add(GetKeyInternal(i).AsStringInternal(), FromSciterValue(GetItemInternal(i)));
 			}
 
 			return result;
+		}
+		
+		internal SciterElement AsElementInternal()
+		{
+			if(!IsResource && !IsDomElement)
+				ThrowTypeException(nameof(Interop.SciterValue.VALUE_TYPE.T_RESOURCE), nameof(Interop.SciterValue.VALUE_TYPE.T_DOM_OBJECT));
+			
+			return new SciterElement(this.GetObjectData());
 		}
 		
 		#endregion
@@ -901,13 +1041,13 @@ namespace SciterCore
 			value = null;
 			
 			if (conversionType == StringConversionType.Simple && IsString)
-				return TryAsString(out value);
+				return TryAsStringInternal(out value);
 
 			var sciterValue = new SciterValue(this);
 			var result = Api.ValueToString(ref sciterValue._data, (Interop.SciterValue.VALUE_STRING_CVT_TYPE)(uint)conversionType)
 				.IsOk();
 
-			value = result ? sciterValue.AsString() : null;
+			value = result ? sciterValue.AsStringInternal() : null;
 			
 			return result;
 		}

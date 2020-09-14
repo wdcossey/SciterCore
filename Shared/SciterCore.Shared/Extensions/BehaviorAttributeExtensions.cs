@@ -9,7 +9,7 @@ namespace SciterCore.Extensions
         public static string GetBehaviourName(this Type eventHandlerType, string behaviorName = null)
         {
             if (!typeof(SciterEventHandler).IsAssignableFrom(eventHandlerType) || typeof(SciterEventHandler) == eventHandlerType)
-                throw new ArgumentOutOfRangeException(nameof(eventHandlerType), $"'{nameof(eventHandlerType)}' must extend SciterEventHandler");
+                throw new ArgumentOutOfRangeException(nameof(eventHandlerType), $@"'{nameof(eventHandlerType)}' must extend SciterEventHandler");
 
             if (!string.IsNullOrWhiteSpace(behaviorName))
             {

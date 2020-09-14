@@ -1,9 +1,11 @@
-﻿using System.Linq;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedMember.Global
 
 namespace SciterCore
 {
+    [ExcludeFromCodeCoverage]
     internal static class ValueResultExtensions
     {
         internal static bool IsOk(this SciterCore.Interop.SciterValue.VALUE_RESULT result)
