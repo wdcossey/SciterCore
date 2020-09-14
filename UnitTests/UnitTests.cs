@@ -26,9 +26,10 @@ namespace SciterCore.UnitTests
 			res.Append(SciterValue.Create(1));
 			res.Append(SciterValue.Create(1));
 			res.Append(SciterValue.Create(1));
+			res.Append(SciterValue.MakeSymbol("symbol").Append(SciterValue.Create(1)));
 			string r = res.ToString();
 			string r2 = res.ToString();
-			string r3 = res.ToJsonString(SciterCore.Interop.SciterValue.VALUE_STRING_CVT_TYPE.CVT_JSON_LITERAL);
+			string r3 = res.AsJsonString(StringConversionType.JsonLiteral);
 
 			{
 				// http://sciter.com/forums/topic/erasing-sequence-elements-with-scitervalue/

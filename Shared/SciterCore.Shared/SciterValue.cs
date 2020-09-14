@@ -25,8 +25,9 @@ using System.Text.RegularExpressions;
 using System.Runtime.InteropServices;
 using SciterCore.Interop;
 using System.Reflection;
-// ReSharper disable RedundantTypeSpecificationInDefaultExpression
 
+// ReSharper disable RedundantTypeSpecificationInDefaultExpression
+// ReSharper disable ArgumentsStyleNamedExpression
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedMember.Global
 
@@ -154,7 +155,7 @@ namespace SciterCore
 			
 			if (IsMap)
 			{
-				what = $"{nameof(IsMap)} {Regex.Replace(ToJsonString(),@"\t|\n|\r","")}";
+				what = $"{nameof(IsMap)} {Regex.Replace(this.AsJsonString(),@"\t|\n|\r","")}";
 			}
 
 			return what;// + " - SciterValue JSON: " + Regex.Replace(ToJSONString(), @"\t|\n|\r", "");
@@ -182,6 +183,8 @@ namespace SciterCore
 			Api.ValueCopy(out _data, ref value);
 		}
 
+		#region Create
+		
 		public static SciterValue Create(bool value)
 		{
 			//Api.ValueInit(out _data); 
@@ -262,6 +265,30 @@ namespace SciterCore
 			}
 			return result;
 		}
+		
+		///<summary>
+		/// Creates a <see cref="SciterValue"/> from an arbitrary object, looping recursively through its public properties
+		///</summary>
+		public static SciterValue Create(object obj)
+		{
+			var antiRecurse = new List<object>();
+			return FromObjectRecurse(obj, ref antiRecurse, 0);
+		}
+
+		/// <summary>
+		/// Constructs a TIScript key-value object from a dictionary with string as keys and SciterValue as values
+		/// </summary>
+		public static SciterValue Create(IDictionary<string, SciterValue> value)
+		{
+			Debug.Assert(value != null);
+
+			var result = new SciterValue();
+			foreach(var item in value)
+				result.SetItem(new SciterValue(item.Key), new SciterValue(item.Value));
+			return result;
+		}
+		
+		#endregion
 		
 		private SciterValue(IConvertible value)
 		{
@@ -414,7 +441,7 @@ namespace SciterCore
 				// Get the list of SciterXValue.VALUE from the ptr
 				SciterValue[] args = new SciterValue[argc];
 				for(var i = 0; i < argc; i++)
-					args[i] = new SciterValue((Interop.SciterValue.VALUE)Marshal.PtrToStructure(IntPtr.Add(argv, i * Marshal.SizeOf(typeof(Interop.SciterValue.VALUE))), typeof(Interop.SciterValue.VALUE)));
+					args[i] = new SciterValue(Marshal.PtrToStructure<Interop.SciterValue.VALUE>(IntPtr.Add(argv, i * Marshal.SizeOf(typeof(Interop.SciterValue.VALUE)))));
 
 				func(args);
 				retval = new Interop.SciterValue.VALUE();
@@ -454,15 +481,8 @@ namespace SciterCore
 			return sv;
 		}
 
-		///<summary>
-		/// Creates a <see cref="SciterValue"/> from an arbitrary object, looping recursively through its public properties
-		///</summary>
-		public static SciterValue Create(object obj)
-		{
-			var antiRecurse = new List<object>();
-			return FromObjectRecurse(obj, ref antiRecurse, 0);
-		}
-
+		
+		
 		private static SciterValue FromObjectRecurse(object value, ref List<object> antiRecurse, int depth)
 		{
 			if(depth++ >= 10)
@@ -562,19 +582,8 @@ namespace SciterCore
 			return result;
 		}
 
-		/// <summary>
-		/// Constructs a TIScript key-value object from a dictionary with string as keys and SciterValue as values
-		/// </summary>
-		public static SciterValue Create(IDictionary<string, SciterValue> value)
-		{
-			Debug.Assert(value != null);
-
-			var result = new SciterValue();
-			foreach(var item in value)
-				result.SetItem(new SciterValue(item.Key), new SciterValue(item.Value));
-			return result;
-		}
-
+		#region Make <Type>Value
+		
 		///<summary>
 		/// Returns SciterValue representing error.
 		/// If such value is used as a return value from native function the script runtime will throw an error in script rather than returning that value.
@@ -607,7 +616,7 @@ namespace SciterCore
 		//}
 
 		/// <summary>
-		/// Creates a <see cref="SciterValue"/> (<see cref="Interop.SciterValue.VALUE_TYPE.T_DURATION"/>) from a <see cref="Double"/>
+		/// Creates a <see cref="SciterValue"/> (<see cref="SciterCore.Interop.SciterValue.VALUE_TYPE.T_DURATION"/>) from a <see cref="Double"/>
 		/// </summary>
 		/// <param name="value">Duration in seconds</param>
 		/// <returns></returns>
@@ -619,7 +628,7 @@ namespace SciterCore
 		}
 		
 		/// <summary>
-		/// Creates a <see cref="SciterValue"/> (<see cref="Interop.SciterValue.VALUE_TYPE.T_ANGLE"/>) from a <see cref="Double"/>
+		/// Creates a <see cref="SciterValue"/> (<see cref="SciterCore.Interop.SciterValue.VALUE_TYPE.T_ANGLE"/>) from a <see cref="Double"/>
 		/// </summary>
 		/// <param name="value">Angle in degrees (i.e. 0, 25.5, -90, etc)</param>
 		/// <returns></returns>
@@ -631,7 +640,7 @@ namespace SciterCore
 		}
 		
 		/// <summary>
-		/// Creates a <see cref="SciterValue"/> (<see cref="Interop.SciterValue.VALUE_TYPE.T_CURRENCY"/>) from a <see cref="Int64"/>
+		/// Creates a <see cref="SciterValue"/> (<see cref="SciterCore.Interop.SciterValue.VALUE_TYPE.T_CURRENCY"/>) from a <see cref="Int64"/>
 		/// </summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
@@ -643,7 +652,7 @@ namespace SciterCore
 		}
 		
 		/// <summary>
-		/// Creates a <see cref="SciterValue"/> (<see cref="Interop.SciterValue.VALUE_TYPE.T_DATE"/>) from a <see cref="DateTime"/>
+		/// Creates a <see cref="SciterValue"/> (<see cref="SciterCore.Interop.SciterValue.VALUE_TYPE.T_DATE"/>) from a <see cref="DateTime"/>
 		/// </summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
@@ -652,6 +661,10 @@ namespace SciterCore
 			return Create(value.ToFileTime());
 		}
 
+		#endregion
+
+		#region Is (Sciter) Type
+		
 		public bool IsUndefined => _data.t == (uint)Interop.SciterValue.VALUE_TYPE.T_UNDEFINED;
 		
 		public bool IsBool => _data.t == (uint) Interop.SciterValue.VALUE_TYPE.T_BOOL;
@@ -708,6 +721,10 @@ namespace SciterCore
 		
 		public bool IsObjectError => _data.t == (uint) Interop.SciterValue.VALUE_TYPE.T_OBJECT && _data.u == (uint) Interop.SciterValue.VALUE_UNIT_TYPE_OBJECT.UT_OBJECT_ERROR;
 
+		#endregion
+		
+		#region As<Type>
+		
 		/// <summary>
 		/// Reads the <see cref="SciterValue"/> as a <see cref="Boolean"/>
 		/// </summary>
@@ -759,9 +776,18 @@ namespace SciterCore
         }
 
 		public string AsString(string @default = default(string))
+		{
+			TryAsString(out var result, @default: @default);
+			return result;
+		}
+
+		public bool TryAsString(out string value, string @default = default(string))
         {
-            return Api.ValueStringData(ref _data, out var retPtr, out var retLength)
-	            .IsOk() ? Marshal.PtrToStringUni(retPtr, (int) retLength) : @default;
+            var result = Api.ValueStringData(ref _data, out var retPtr, out var retLength)
+	            .IsOk();
+            value = result ? Marshal.PtrToStringUni(retPtr, (int) retLength) : @default;
+            return result;
+            
         }
 
 		public byte[] AsBytes()
@@ -816,158 +842,6 @@ namespace SciterCore
 		}
 //#endif
 		
-		public static SciterValue FromJsonString(string json, Interop.SciterValue.VALUE_STRING_CVT_TYPE ct = Interop.SciterValue.VALUE_STRING_CVT_TYPE.CVT_JSON_LITERAL)
-		{
-			var result = new SciterValue();
-			Api.ValueFromString(ref result._data, json, (uint) json.Length, (uint) ct);
-			return result;
-		}
-
-		public string ToJsonString(Interop.SciterValue.VALUE_STRING_CVT_TYPE how = Interop.SciterValue.VALUE_STRING_CVT_TYPE.CVT_JSON_LITERAL)
-		{
-			if (how == Interop.SciterValue.VALUE_STRING_CVT_TYPE.CVT_SIMPLE && IsString)
-			{
-				return AsString();
-			}
-
-			var result = new SciterValue(this);
-			Api.ValueToString(ref result._data, how);
-			return result.AsString();
-		}
-
-		public void Clear()
-		{
-			Api.ValueClear(out _data);
-		}
-
-		public int Length
-		{
-			get
-			{
-				Api.ValueElementsCount(ref _data, out var count);
-				return count;
-			}
-		}
-		
-		public SciterValue this[int key]
-		{
-			get => GetItem(key);
-			set => SetItem(key, value);
-		}
-
-		public SciterValue this[string key]
-		{
-			get => GetItem(key);
-			set => SetItem(key, value);
-		}
-		
-		public void SetItem(int i, SciterValue value)
-		{
-			var vr = Api.ValueNthElementValueSet(ref _data, i, ref value._data)
-				.IsOk();
-			Debug.Assert(vr);
-		}
-
-		public void SetItem(SciterValue key, SciterValue value)
-		{
-			var vr = Api.ValueSetValueToKey(ref _data, ref key._data, ref value._data)
-				.IsOk();
-			Debug.Assert(vr);
-		}
-
-		public void SetItem(string key, SciterValue value)
-		{
-			var symbol = SciterValue.MakeSymbol(key);
-			var vr = Api.ValueSetValueToKey(ref _data, ref symbol._data, ref value._data)
-				.IsOk();
-			Debug.Assert(vr);
-		}
-
-		public void Append(SciterValue value)
-		{
-			Api.ValueNthElementValueSet(ref _data, Length, ref value._data);
-		}
-
-		public SciterValue GetItem(int n)
-		{
-			Api.ValueNthElementValue(ref _data, n, out var value);
-			return new SciterValue(value);
-		}
-
-		public SciterValue GetItem(SciterValue key)
-		{
-			Api.ValueGetValueOfKey(ref _data, ref key._data, out var value);
-			return new SciterValue(value);
-		}
-
-		public SciterValue GetItem(string key)
-		{
-			var symbol = SciterValue.MakeSymbol(key);
-			Api.ValueGetValueOfKey(ref _data, ref symbol._data, out var value);
-			return new SciterValue(value);
-		}
-
-		public SciterValue GetKey(int index)
-		{
-			Api.ValueNthElementKey(ref _data, index, out var value);
-			return new SciterValue(value);
-		}
-
-		public IReadOnlyList<SciterValue> Keys
-		{
-			get
-			{
-				if(!IsObject && !IsMap)
-					ThrowTypeException(nameof(Interop.SciterValue.VALUE_TYPE.T_OBJECT));
-
-				if(IsObject)
-					throw new InvalidOperationException($"Please call {nameof(Isolate)} for this {nameof(SciterValue)}");
-
-				var result = new List<SciterValue>();
-				
-				for(var i = 0; i < Length; i++)
-					result.Add(GetKey(i));
-				
-				return result;
-			}
-		}
-		
-		/*public void SetObjectData(IntPtr p)
-		{
-			Debug.Assert(data.u == (uint) SciterXValue.VALUE_UNIT_TYPE_OBJECT.UT_OBJECT_NATIVE);
-			_api.ValueBinaryDataSet(ref data, );
-		}*/
-		
-		public IntPtr GetObjectData()
-		{
-			Api.ValueBinaryData(ref _data, out var p, out var dummy);
-			return p;
-		}
-
-		public SciterValue Call(IList<SciterValue> args, SciterValue self = null, string url_or_script_name = null)
-		{
-			if(!IsFunction && !IsObjectFunction)
-				throw new Exception("Can't Call() this SciterValue because it is not a function");
-
-			var rv = new SciterValue();
-			Interop.SciterValue.VALUE[] arr_VALUE = args?.Select(sv => sv._data).ToArray();
-			if(self == null)
-				self = SciterValue.Undefined;
-
-			var x = Api.ValueInvoke(ref _data, ref self._data, (uint) (args?.Count() ?? 0), args?.Count > 0 ? arr_VALUE : null, out rv._data, null);
-			return rv;
-		}
-
-		public SciterValue Call(params SciterValue[] args)
-		{
-			return Call((IList<SciterValue>) args);
-		}
-
-		public void Isolate()
-		{
-			Api.ValueIsolate(ref _data);
-		}
-		
 		public IEnumerable<SciterValue> AsEnumerable()
 		{
 			if(!IsArray && !IsObject && !IsMap)
@@ -985,7 +859,7 @@ namespace SciterCore
 			var result = new Dictionary<SciterValue, SciterValue>();
 			for(var i = 0; i < Length; i++)
 			{
-				result[GetKey(i)] = GetItem(i);
+				result[GetKeyInternal(i)] = GetItemInternal(i);
 			}
 
 			return result;
@@ -999,12 +873,279 @@ namespace SciterCore
 			var result = new Dictionary<string, IConvertible>();
 			for(var i = 0; i < Length; i++)
 			{
-				result.Add(GetKey(i).AsString(), FromSciterValue(GetItem(i)));
+				result.Add(GetKeyInternal(i).AsString(), FromSciterValue(GetItemInternal(i)));
 			}
 
 			return result;
 		}
 		
+		#endregion
+		
+		#region Json
+		
+		public static SciterValue FromJsonString(string json, StringConversionType conversionType = StringConversionType.JsonLiteral)
+		{
+			var result = new SciterValue();
+			Api.ValueFromString(ref result._data, json, (uint) json.Length, (uint)(SciterCore.Interop.SciterValue.VALUE_STRING_CVT_TYPE)conversionType);
+			return result;
+		}
+
+		internal string AsJsonStringInternal(StringConversionType conversionType = StringConversionType.JsonLiteral)
+		{
+			TryAsJsonStringInternal(value: out var result, conversionType: conversionType);
+			return result;
+		}
+
+		internal bool TryAsJsonStringInternal(out string value, StringConversionType conversionType = StringConversionType.JsonLiteral)
+		{
+			value = null;
+			
+			if (conversionType == StringConversionType.Simple && IsString)
+				return TryAsString(out value);
+
+			var sciterValue = new SciterValue(this);
+			var result = Api.ValueToString(ref sciterValue._data, (Interop.SciterValue.VALUE_STRING_CVT_TYPE)(uint)conversionType)
+				.IsOk();
+
+			value = result ? sciterValue.AsString() : null;
+			
+			return result;
+		}
+
+		#endregion
+		
+		#region Clear
+		
+		internal void ClearInternal()
+		{
+			TryClearInternal();
+		}
+		
+		internal bool TryClearInternal()
+		{
+			return Api.ValueClear(out _data).IsOk();
+		}
+		
+		#endregion
+
+		public int Length
+		{
+			get
+			{
+				Api.ValueElementsCount(ref _data, out var count);
+				return count;
+			}
+		}
+		
+		public SciterValue this[int key]
+		{
+			get => GetItemInternal(key);
+			set => SetItemInternal(key, value);
+		}
+
+		public SciterValue this[string key]
+		{
+			get => GetItemInternal(key);
+			set => SetItemInternal(key, value);
+		}
+
+		#region Item Operations
+		
+		internal void SetItemInternal(int index, SciterValue value)
+		{
+			TrySetItemInternal(index: index, value: value);
+		}
+		
+		internal bool TrySetItemInternal(int index, SciterValue value)
+		{
+			return Api.ValueNthElementValueSet(ref _data, index, ref value._data)
+				.IsOk();
+		}
+
+		internal void SetItemInternal(SciterValue key, SciterValue value)
+		{
+			TrySetItemInternal(key: key, value: value);
+		}
+
+		internal bool TrySetItemInternal(SciterValue key, SciterValue value)
+		{
+			return Api.ValueSetValueToKey(ref _data, ref key._data, ref value._data)
+				.IsOk();
+		}
+
+		internal void SetItemInternal(string key, SciterValue value)
+		{
+			TrySetItemInternal(key: key, value: value);
+		}
+
+		internal bool TrySetItemInternal(string key, SciterValue value)
+		{
+			var symbol = MakeSymbol(key);
+			return Api.ValueSetValueToKey(ref _data, ref symbol._data, ref value._data)
+				.IsOk();
+		}
+
+		internal void AppendInternal(SciterValue value)
+		{
+			TryAppendInternal(value);
+		}
+
+		internal bool TryAppendInternal(SciterValue value)
+		{
+			return Api.ValueNthElementValueSet(ref _data, Length, ref value._data)
+				.IsOk();
+		}
+
+		internal SciterValue GetItemInternal(int index)
+		{
+			TryGetItemInternal(value: out var result, index: index);
+			return result;
+		}
+
+		internal bool TryGetItemInternal(out SciterValue value, int index)
+		{
+			var result = Api.ValueNthElementValue(ref _data, index, out var intValue)
+				.IsOk();
+			value = result ? new SciterValue(intValue) : Null;
+			return result;
+		}
+
+		internal SciterValue GetItemInternal(SciterValue key)
+		{
+			TryGetItemInternal(out var result, key);
+			return result;
+		}
+
+		internal bool TryGetItemInternal(out SciterValue value, SciterValue key)
+		{
+			var result = Api.ValueGetValueOfKey(ref _data, ref key._data, out var intValue)
+				.IsOk();
+			value = result ? new SciterValue(intValue) : Null;
+			return result;
+		}
+
+		internal SciterValue GetItemInternal(string key)
+		{
+			TryGetItemInternal(out var result, key);
+			return result;
+		}
+
+		internal bool TryGetItemInternal(out SciterValue value, string key)
+		{
+			var symbol = MakeSymbol(key);
+			value = Null;
+			return TryGetItemInternal(out value, symbol);;
+		}
+
+		#endregion
+		
+		#region Keys
+		
+		internal SciterValue GetKeyInternal(int index)
+		{
+			TryGetKeyInternal(value: out var result, index: index);
+			return result;
+		}
+		
+		internal bool TryGetKeyInternal(out SciterValue value, int index)
+		{
+			var result = Api.ValueNthElementKey(ref _data, index, out var intValue)
+				.IsOk();
+
+			value = result ? new SciterValue(intValue) : Null;
+			
+			return result;
+		}
+
+		public IReadOnlyList<SciterValue> Keys => GetKeysInternal();
+
+		internal IReadOnlyList<SciterValue> GetKeysInternal()
+		{
+			if(!IsObject && !IsMap)
+				ThrowTypeException(nameof(Interop.SciterValue.VALUE_TYPE.T_OBJECT));
+
+			if(IsObject)
+				throw new InvalidOperationException($"Please call {nameof(SciterCore.SciterValueExtensions.Isolate)} for this {nameof(SciterValue)}");
+
+			var result = new List<SciterValue>();
+				
+			for(var i = 0; i < Length; i++)
+				result.Add(GetKeyInternal(i));
+				
+			return result;
+		}
+		
+		
+		#endregion
+		
+		/*public void SetObjectData(IntPtr p)
+		{
+			Debug.Assert(data.u == (uint) SciterXValue.VALUE_UNIT_TYPE_OBJECT.UT_OBJECT_NATIVE);
+			_api.ValueBinaryDataSet(ref data, );
+		}*/
+		
+		#region GetObjectData
+		
+		internal IntPtr GetObjectDataInternal()
+		{
+			TryGetObjectDataInternal(out var result);
+			return result;
+		}
+		
+		internal bool TryGetObjectDataInternal(out IntPtr value)
+		{
+			return Api.ValueBinaryData(ref _data, out value, out var dummy)
+				.IsOk();
+		}
+		
+		#endregion
+
+		#region Invoke
+		
+		internal SciterValue InvokeInternal(IList<SciterValue> args, SciterValue self = null, string urlOrScriptName = null)
+		{
+			TryInvokeInternal(value: out var value, args: args, self: self, urlOrScriptName: urlOrScriptName);
+			return value;
+		}
+
+		internal bool TryInvokeInternal(out SciterValue value, IList<SciterValue> args, SciterValue self = null, string urlOrScriptName = null)
+		{
+			if(!IsFunction && !IsObjectFunction)
+				throw new Exception("Can't Call() this SciterValue because it is not a function");
+
+			value = new SciterValue();
+			
+			var valueArray = args?.Select(sv => sv._data).ToArray();
+			
+			self ??= Undefined;
+
+			var result = Api.ValueInvoke(ref _data, ref self._data, (uint) (args?.Count() ?? 0), args?.Count > 0 ? valueArray : null, out value._data, null)
+				.IsOk();
+
+			return result;
+		}
+
+		internal SciterValue InvokeInternal(params SciterValue[] args)
+		{
+			return InvokeInternal(args: (IList<SciterValue>) args);
+		}
+
+		internal bool TryInvokeInternal(out SciterValue value, params SciterValue[] args)
+		{
+			return TryInvokeInternal(value: out value, args: (IList<SciterValue>) args);
+		}
+		
+		#endregion
+
+		#region Isolate
+
+		internal bool TryIsolateInternal()
+		{
+			return Api.ValueIsolate(ref _data).IsOk();
+		}
+		
+		#endregion
+
 		private static void ThrowTypeException(params string[] typeNames)
 		{
 			throw new InvalidOperationException($"{nameof(SciterValue)} is not of {nameof(Type)} `{string.Join(" | ", typeNames)}`");

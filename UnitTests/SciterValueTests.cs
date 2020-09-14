@@ -16,9 +16,10 @@ namespace SciterCore.UnitTests
         [Test]
         public void Value_Clear()
         {
-            var actual = SciterValue.Create("some value to discard");
-            actual.Clear();
-            
+            var actual = SciterValue
+                .Create("some value to discard")
+                .Clear();
+
             Assert.IsTrue(actual.IsUndefined);
         }
 
