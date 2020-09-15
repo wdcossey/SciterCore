@@ -1,6 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\packages\SciterCore.PackFolder.0.0.94-alpha\build\Xamarin.Mac20\SciterCore.PackFolder.props" Condition="Exists('..\..\packages\SciterCore.PackFolder.0.0.94-alpha\build\Xamarin.Mac20\SciterCore.PackFolder.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
@@ -8,10 +7,11 @@
     <ProjectTypeGuids>{A3F8F2AB-B479-4A4A-A458-A89E7DC349F1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Exe</OutputType>
     <RootNamespace>SciterTest.Gtk</RootNamespace>
-    <AssemblyName>SciterTest.Gtk.Mac</AssemblyName>
+    <AssemblyName>SciterCore.Sample.Gtk.MacOS</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <TargetFrameworkIdentifier>Xamarin.Mac</TargetFrameworkIdentifier>
     <MonoMacResourcePrefix>Resources</MonoMacResourcePrefix>
+    <SciterCorePackDirectory>..\common\wwwroot</SciterCorePackDirectory>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
     <DebugSymbols>true</DebugSymbols>
@@ -68,43 +68,40 @@
     <ImageAsset Include="Assets.xcassets\Contents.json" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Resources\" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Info.plist" />
     <None Include="Entitlements.plist" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Src\Host.cs" />
-    <Compile Include="Src\Mono.cs" />
-    <Compile Include="Src\ProgramOSX.cs" />
-    <Compile Include="Src\Window.cs" />
-    <Compile Include="Behaviors\DrawGeometryBehavior.cs" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="MainMenu.xib" />
   </ItemGroup>
   <ItemGroup>
-    <NativeReference Include="..\..\sciter-sdk\bin.osx\sciter-osx-64.dylib">
-      <Kind>Dynamic</Kind>
-      <SmartLink>False</SmartLink>
-    </NativeReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
     <None Include="wwwroot\**" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Platform\SciterCore.Mac\SciterCore.Mac.csproj">
-      <Project>{42bb6ec1-e806-4b5b-a242-1662aae7bf25}</Project>
-      <Name>SciterCore.Mac</Name>
-    </ProjectReference>
+    <ItemGroup>
+    <PackageReference Include="SciterCore.PackFolder" Version="0.0.117-alpha" />
   </ItemGroup>
+    <ItemGroup>
+      <Compile Include="..\common\Behaviors\DrawGeometryBehavior.cs">
+        <Link>Behaviors\DrawGeometryBehavior.cs</Link>
+      </Compile>
+      <Compile Include="..\common\Src\Host.cs">
+        <Link>Src\Host.cs</Link>
+      </Compile>
+      <Compile Include="..\common\Src\Mono.cs">
+        <Link>Src\Mono.cs</Link>
+      </Compile>
+      <Compile Include="..\common\Src\ProgramOSX.cs">
+        <Link>Src\ProgramOSX.cs</Link>
+      </Compile>
+      <Compile Include="..\common\Src\Window.cs">
+        <Link>Src\Window.cs</Link>
+      </Compile>
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\Platform\SciterCore.Mac\SciterCore.Mac.csproj">
+        <Project>{42bb6ec1-e806-4b5b-a242-1662aae7bf25}</Project>
+        <Name>SciterCore.Mac</Name>
+      </ProjectReference>
+    </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105.The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\..\packages\SciterCore.PackFolder.0.0.94-alpha\build\Xamarin.Mac20\SciterCore.PackFolder.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\SciterCore.PackFolder.0.0.94-alpha\build\Xamarin.Mac20\SciterCore.PackFolder.props'))" />
-  </Target>
 </Project>
