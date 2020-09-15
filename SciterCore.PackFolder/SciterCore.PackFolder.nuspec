@@ -7,7 +7,8 @@
     <authors>William D Cossey</authors>
     <owners>wdcossey</owners>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
-    <license type="expression">GPL-3.0-or-later</license>
+    <licenseUrl>https://www.gnu.org/licenses/gpl-3.0html</licenseUrl>
+    <!--<license type="expression">GPL-3.0-or-later</license>-->
     <projectUrl>https://github.com/wdcossey/SciterCore</projectUrl>
     <description>SciterCore PackFolder tasks for embedding Sciter resource files.</description>
     <copyright>© Sciter.</copyright>
