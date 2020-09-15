@@ -453,9 +453,9 @@ namespace SciterCore
 				// Get the list of SciterXValue.VALUE from the ptr
 				var args = new SciterValue[argc];
 				for(var i = 0; i < argc; i++)
-					args[i] = new SciterValue((Interop.SciterValue.VALUE)Marshal.PtrToStructure(IntPtr.Add(argv, i * Marshal.SizeOf(typeof(Interop.SciterValue.VALUE))), typeof(Interop.SciterValue.VALUE)));
+					args[i] = new SciterValue(Marshal.PtrToStructure<Interop.SciterValue.VALUE>(IntPtr.Add(argv, i * Marshal.SizeOf(typeof(Interop.SciterValue.VALUE)))));
 
-				retval = func(args).ToVALUE();
+				retval = func.Invoke(args).ToVALUE();
 				return true;
 			};
 
