@@ -66,10 +66,12 @@ namespace SciterCore
 
 		public Interop.SciterValue.VALUE ToVALUE()
 		{
-			Api.ValueInit(out var vcopy);
-			Api.ValueCopy(out vcopy, ref _data);
-			return vcopy;
+			Api.ValueInit(out var copy);
+			Api.ValueCopy(out copy, ref _data);
+			return copy;
 		}
+
+		#region Override(s)
 
 		[ExcludeFromCodeCoverage]
 		public override string ToString()
@@ -90,8 +92,12 @@ namespace SciterCore
 			if (IsString)
 				what = $"{nameof(IsString)} ({AsStringInternal(string.Empty)})";
 
-			if (IsSymbol) 
+			if (IsSymbol)
+			{
 				what = nameof(IsSymbol);
+				if (IsString)
+					what += $" ({AsStringInternal(string.Empty)})";
+			}
 			
 			if (IsErrorString) 
 				what = nameof(IsErrorString);
@@ -161,14 +167,13 @@ namespace SciterCore
 			return what;// + " - SciterValue JSON: " + Regex.Replace(ToJSONString(), @"\t|\n|\r", "");
 		}
 
+		#endregion
+		
+		#region Constructor(s)
+		
 		public SciterValue()
 		{
 			Api.ValueInit(out _data);
-		}
-
-		~SciterValue()
-		{
-			Api.ValueClear(out _data);
 		}
 		
 		public SciterValue(SciterValue value)
@@ -181,6 +186,13 @@ namespace SciterCore
 		{
 			Api.ValueInit(out _data);
 			Api.ValueCopy(out _data, ref value);
+		}
+		
+		#endregion
+
+		~SciterValue()
+		{
+			Api.ValueClear(out _data);
 		}
 
 		#region Create
@@ -269,12 +281,15 @@ namespace SciterCore
 			Debug.Assert(value != null);
 
 			var result = new SciterValue();
+			// ReSharper disable once UseDeconstruction
 			foreach(var item in value)
 				result.SetItem(new SciterValue(item.Key), new SciterValue(item.Value));
 			return result;
 		}
 		
 		#endregion
+		
+		#region Private Methods
 		
 		private SciterValue(IConvertible value)
 		{
@@ -324,8 +339,9 @@ namespace SciterCore
 		
 		private IConvertible FromSciterValue(SciterValue value)
 		{
-			var valueTypeResult = Api.ValueType(ref value._data, out var valueType, out var units).IsOk();
-
+			var valueTypeResult = Api.ValueType(ref value._data, out var valueType, out var _)
+				.IsOk();
+			
 			if (!valueTypeResult)
 				return null;
 			
@@ -375,6 +391,53 @@ namespace SciterCore
 					throw new Exception($"Can not create a SciterValue from type '{value.GetType()}'");
 			}
 		}
+		
+		private static SciterValue FromObjectRecurse(object value, ref List<object> antiRecurse, int depth)
+		{
+			if(depth++ >= 10)
+				throw new InvalidOperationException("Recursion too deep");
+
+			if(value is IConvertible convertible)
+				return new SciterValue(convertible);
+
+			if(antiRecurse.Contains(value))
+				throw new InvalidOperationException("Found recursive property");
+			
+			antiRecurse.Add(antiRecurse);
+
+			var t = value.GetType();
+			if(typeof(IEnumerable).IsAssignableFrom(t))
+			{
+				var valueArray = new SciterValue();
+				var castMethod = typeof(Enumerable).GetMethod(nameof(Enumerable.Cast))
+					?.MakeGenericMethod(typeof(object));
+				var castedObject = (IEnumerable<object>) castMethod?.Invoke(null, new[] { value });
+
+				// ReSharper disable once InvertIf
+				if (castedObject != null)
+					foreach(var item in castedObject)
+					{
+						valueArray.Append(FromObjectRecurse(item, ref antiRecurse, depth));
+					}
+				
+				return valueArray;
+			}
+
+			var result = new SciterValue();
+
+			foreach(var prop in t.GetProperties())
+			{
+				if (!prop.CanRead) 
+					continue;
+				
+				var val = prop.GetValue(value);
+				result[prop.Name] = FromObjectRecurse(val, ref antiRecurse, depth);
+			}
+
+			return result;
+		}
+
+		#endregion
 		
 		//TODO: Clean this up
 		public SciterValue(Func<SciterValue[], SciterValue> func)
@@ -467,48 +530,7 @@ namespace SciterCore
 			return sv;
 		}
 		
-		private static SciterValue FromObjectRecurse(object value, ref List<object> antiRecurse, int depth)
-		{
-			if(depth++ >= 10)
-				throw new InvalidOperationException("Recursion too deep");
-
-			if(value is IConvertible convertible)
-				return new SciterValue(convertible);
-
-			if(antiRecurse.Contains(value))
-				throw new InvalidOperationException("Found recursive property");
-			
-			antiRecurse.Add(antiRecurse);
-
-			var t = value.GetType();
-			if(typeof(IEnumerable).IsAssignableFrom(t))
-			{
-				var valueArray = new SciterValue();
-				var castMethod = typeof(Enumerable).GetMethod(nameof(Enumerable.Cast))
-					.MakeGenericMethod(new Type[] { typeof(object) });
-				var castedObject = (IEnumerable<object>) castMethod.Invoke(null, new object[] { value });
-
-				foreach(var item in castedObject)
-				{
-					valueArray.Append(FromObjectRecurse(item, ref antiRecurse, depth));
-				}
-				return valueArray;
-			}
-
-			var result = new SciterValue();
-
-			foreach(var prop in t.GetProperties())
-			{
-				if (!prop.CanRead) 
-					continue;
-				
-				var val = prop.GetValue(value);
-				result[prop.Name] = FromObjectRecurse(val, ref antiRecurse, depth);
-			}
-
-			return result;
-		}
-
+		
 		///// <summary>
 		///// Constructs a TIScript array T[] where T is a basic type like int or string
 		///// </summary>
@@ -566,7 +588,7 @@ namespace SciterCore
 			return result;
 		}
 
-		#region Make <Type>Value
+		#region Make
 		
 		///<summary>
 		/// Returns SciterValue representing error.
@@ -647,7 +669,7 @@ namespace SciterCore
 
 		#endregion
 
-		#region Is (Sciter) Type
+		#region Is Type
 		
 		public bool IsUndefined => _data.t == (uint)Interop.SciterValue.VALUE_TYPE.T_UNDEFINED;
 		
@@ -707,7 +729,7 @@ namespace SciterCore
 
 		#endregion
 		
-		#region As<Type>
+		#region As
 		
 		/// <summary>
 		/// Reads the <see cref="SciterValue"/> as a <see cref="Boolean"/>
@@ -1018,10 +1040,6 @@ namespace SciterCore
 			
 			return new SciterElement(this.GetObjectData());
 		}
-		
-		#endregion
-		
-		#region Json
 		
 		public static SciterValue FromJsonString(string json, StringConversionType conversionType = StringConversionType.JsonLiteral)
 		{

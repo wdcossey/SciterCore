@@ -38,7 +38,7 @@ namespace SciterCore.Interop
 			public ulong    d;// data
 		}
 
-		public enum VALUE_TYPE : uint
+		internal enum VALUE_TYPE : uint
 		{
 			T_UNDEFINED = 0,
 			T_NULL = 1,

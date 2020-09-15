@@ -10,46 +10,50 @@ namespace SciterCore
 {
     public static class SciterValueExtensions
     {
-	    #region As<Type>
-		
-		/// <summary>
-		/// Reads the <see cref="SciterValue"/> as a <see cref="Boolean"/>
-		/// </summary>
-		/// <param name="default">Default value to return on error</param>
-		/// <returns></returns>
-		public static bool AsBoolean(this SciterValue sciterValue, bool @default = default(bool))
+	    #region As
+
+	    /// <summary>
+	    /// Reads the <see cref="SciterValue"/> as a <see cref="Boolean"/>
+	    /// </summary>
+	    /// <param name="sciterValue"></param>
+	    /// <param name="default">Default value to return on error</param>
+	    /// <returns></returns>
+	    public static bool AsBoolean(this SciterValue sciterValue, bool @default = default(bool))
 		{
 			return sciterValue.AsBooleanInternal(@default: @default);
 		}
 
-		/// <summary>
-		/// Reads the <see cref="SciterValue"/> as a <see cref="Boolean"/>
-		/// </summary>
-		/// <param name="value">The output value</param>
-		/// <param name="default">Default value to return on error</param>
-		/// <returns></returns>
-		public static bool TryAsBoolean(this SciterValue sciterValue, out bool value, bool @default = default(bool))
+	    /// <summary>
+	    /// Reads the <see cref="SciterValue"/> as a <see cref="Boolean"/>
+	    /// </summary>
+	    /// <param name="sciterValue"></param>
+	    /// <param name="value">The output value</param>
+	    /// <param name="default">Default value to return on error</param>
+	    /// <returns></returns>
+	    public static bool TryAsBoolean(this SciterValue sciterValue, out bool value, bool @default = default(bool))
 		{
 			return sciterValue.TryAsBooleanInternal(out value, @default: @default);
 		}
 
-		/// <summary>
-		/// Reads the <see cref="SciterValue"/> as a <see cref="Int32"/>
-		/// </summary>
-		/// <param name="default">Default value to return on error</param>
-		/// <returns></returns>
-		public static int AsInt32(this SciterValue sciterValue, int @default = default(int))
+	    /// <summary>
+	    /// Reads the <see cref="SciterValue"/> as a <see cref="Int32"/>
+	    /// </summary>
+	    /// <param name="sciterValue"></param>
+	    /// <param name="default">Default value to return on error</param>
+	    /// <returns></returns>
+	    public static int AsInt32(this SciterValue sciterValue, int @default = default(int))
         {
 	        return sciterValue.AsInt32Internal(@default: @default);
         }
 
-		/// <summary>
-		/// Reads the <see cref="SciterValue"/> as a <see cref="Int32"/>
-		/// </summary>
-		/// <param name="value">The output value</param>
-		/// <param name="default">Default value to return on error</param>
-		/// <returns></returns>
-		public static bool TryAsInt32(this SciterValue sciterValue, out int value, int @default = default(int))
+	    /// <summary>
+	    /// Reads the <see cref="SciterValue"/> as a <see cref="Int32"/>
+	    /// </summary>
+	    /// <param name="sciterValue"></param>
+	    /// <param name="value">The output value</param>
+	    /// <param name="default">Default value to return on error</param>
+	    /// <returns></returns>
+	    public static bool TryAsInt32(this SciterValue sciterValue, out int value, int @default = default(int))
 		{
 			return sciterValue.TryAsInt32Internal(out value, @default: @default);
 		}
@@ -57,6 +61,7 @@ namespace SciterCore
 		/// <summary>
 		/// Reads the <see cref="SciterValue"/> as a <see cref="UInt32"/>
 		/// </summary>
+		/// <param name="sciterValue"></param>
 		/// <param name="default">Default value to return on error</param>
 		/// <returns></returns>
 		public static uint AsUInt32(this SciterValue sciterValue, uint @default = default(uint))
@@ -67,6 +72,7 @@ namespace SciterCore
 		/// <summary>
 		/// Reads the <see cref="SciterValue"/> as a <see cref="UInt32"/>
 		/// </summary>
+		/// <param name="sciterValue"></param>
 		/// <param name="value">The output value</param>
 		/// <param name="default">Default value to return on error</param>
 		/// <returns></returns>
@@ -78,6 +84,7 @@ namespace SciterCore
 		/// <summary>
 		/// Reads the <see cref="SciterValue"/> as a <see cref="Int64"/>
 		/// </summary>
+		/// <param name="sciterValue"></param>
 		/// <param name="default">Default value to return on error</param>
 		/// <returns></returns>
 		public static long AsInt64(this SciterValue sciterValue, long @default = default(long))
@@ -88,6 +95,7 @@ namespace SciterCore
 		/// <summary>
 		/// Reads the <see cref="SciterValue"/> as a <see cref="Int64"/>
 		/// </summary>
+		/// <param name="sciterValue"></param>
 		/// <param name="value">The output value</param>
 		/// <param name="default">Default value to return on error</param>
 		/// <returns></returns>
@@ -99,6 +107,7 @@ namespace SciterCore
 		/// <summary>
 		/// Reads the <see cref="SciterValue"/> as a <see cref="Double"/>
 		/// </summary>
+		/// <param name="sciterValue"></param>
 		/// <param name="default">Default value to return on error</param>
 		/// <returns></returns>
 		public static double AsDouble(this SciterValue sciterValue, double @default = default(double))
@@ -109,6 +118,7 @@ namespace SciterCore
 		/// <summary>
 		/// Reads the <see cref="SciterValue"/> as a <see cref="Double"/>
 		/// </summary>
+		/// <param name="sciterValue"></param>
 		/// <param name="value">The output value</param>
 		/// <param name="default">Default value to return on error</param>
 		/// <returns></returns>
@@ -120,6 +130,7 @@ namespace SciterCore
 		/// <summary>
 		/// Reads the <see cref="SciterValue"/> as a <see cref="String"/>
 		/// </summary>
+		/// <param name="sciterValue"></param>
 		/// <param name="default">Default value to return on error</param>
 		/// <returns></returns>
 		public static string AsString(this SciterValue sciterValue, string @default = default(string))
@@ -130,6 +141,7 @@ namespace SciterCore
 		/// <summary>
 		/// Reads the <see cref="SciterValue"/> as a <see cref="String"/>
 		/// </summary>
+		/// <param name="sciterValue"></param>
 		/// <param name="value">The output value</param>
 		/// <param name="default">Default value to return on error</param>
 		/// <returns></returns>
@@ -141,6 +153,7 @@ namespace SciterCore
 		/// <summary>
 		/// Reads the <see cref="SciterValue"/> as a <see cref="byte"/> <see cref="Array"/>
 		/// </summary>
+		/// <param name="sciterValue"></param>
 		/// <returns></returns>
 		public static byte[] AsBytes(this SciterValue sciterValue)
 		{
@@ -150,6 +163,7 @@ namespace SciterCore
 		/// <summary>
 		/// Reads the <see cref="SciterValue"/> as a <see cref="byte"/> <see cref="Array"/>
 		/// </summary>
+		/// <param name="sciterValue"></param>
 		/// <param name="value">The output value</param>
 		/// <returns></returns>
 		public static bool TryAsBytes(this SciterValue sciterValue, out byte[] value)
@@ -160,6 +174,7 @@ namespace SciterCore
 		/// <summary>
 		/// Reads the <see cref="SciterValue"/> as a <see cref="SciterColor"/>
 		/// </summary>
+		/// <param name="sciterValue"></param>
 		/// <returns></returns>
 		public static SciterColor AsColor(this SciterValue sciterValue)
 		{
@@ -169,6 +184,7 @@ namespace SciterCore
 		/// <summary>
 		/// Reads the <see cref="SciterValue"/> as a <see cref="SciterColor"/>
 		/// </summary>
+		/// <param name="sciterValue"></param>
 		/// <param name="value">The output value</param>
 		/// <returns></returns>
 		public static bool TryAsColor(this SciterValue sciterValue, out SciterColor value)
@@ -179,6 +195,7 @@ namespace SciterCore
 		/// <summary>
 		/// Reads the <see cref="SciterValue"/> as a Angle (<see cref="Double"/>)
 		/// </summary>
+		/// <param name="sciterValue"></param>
 		/// <returns></returns>
 		public static double AsAngle(this SciterValue sciterValue)
 		{
@@ -188,6 +205,7 @@ namespace SciterCore
 		/// <summary>
 		/// Reads the <see cref="SciterValue"/> as a Angle (<see cref="Double"/>)
 		/// </summary>
+		/// <param name="sciterValue"></param>
 		/// <param name="value">The output value</param>
 		/// <returns></returns>
 		public static bool TryAsAngle(this SciterValue sciterValue, out double value)
@@ -198,6 +216,7 @@ namespace SciterCore
 		/// <summary>
 		/// Reads the <see cref="SciterValue"/> as a Duration (<see cref="SciterColor"/>)
 		/// </summary>
+		/// <param name="sciterValue"></param>
 		/// <returns></returns>
 		public static double AsDuration(this SciterValue sciterValue)
 		{
@@ -207,6 +226,7 @@ namespace SciterCore
 		/// <summary>
 		/// Reads the <see cref="SciterValue"/> as a Duration (<see cref="SciterColor"/>)
 		/// </summary>
+		/// <param name="sciterValue"></param>
 		/// <param name="value">The output value</param>
 		/// <returns></returns>
 		public static bool TryAsDuration(this SciterValue sciterValue, out double value)
@@ -217,6 +237,7 @@ namespace SciterCore
 		/// <summary>
 		/// Reads the <see cref="SciterValue"/> as a Currency (<see cref="SciterColor"/>)
 		/// </summary>
+		/// <param name="sciterValue"></param>
 		/// <returns></returns>
 		public static long AsCurrency(this SciterValue sciterValue)
 		{
@@ -226,6 +247,7 @@ namespace SciterCore
 		/// <summary>
 		/// Reads the <see cref="SciterValue"/> as a Currency (<see cref="SciterColor"/>)
 		/// </summary>
+		/// <param name="sciterValue"></param>
 		/// <param name="value">The output value</param>
 		/// <returns></returns>
 		public static bool TryAsCurrency(this SciterValue sciterValue, out long value)
@@ -235,11 +257,13 @@ namespace SciterCore
 
 //#if WINDOWS || OSX || NETCORE
 
-	    /// <summary>
-	    /// Reads the <see cref="SciterValue"/> as a <see cref="DateTime"/>
-	    /// </summary>
-	    /// <returns></returns>
-	    public static DateTime AsDateTime(this SciterValue sciterValue, bool universalTime = true)
+		/// <summary>
+		/// Reads the <see cref="SciterValue"/> as a <see cref="DateTime"/>
+		/// </summary>
+		/// <param name="sciterValue"></param>
+		/// <param name="universalTime"></param>
+		/// <returns></returns>
+		public static DateTime AsDateTime(this SciterValue sciterValue, bool universalTime = true)
 		{
 			return sciterValue.AsDateTimeInternal(universalTime: universalTime);
 		}
@@ -247,7 +271,9 @@ namespace SciterCore
 	    /// <summary>
 	    /// Reads the <see cref="SciterValue"/> as a <see cref="DateTime"/>
 	    /// </summary>
+	    /// <param name="sciterValue"></param>
 	    /// <param name="value">The output value</param>
+	    /// <param name="universalTime"></param>
 	    /// <returns></returns>
 	    public static bool TryAsDateTime(this SciterValue sciterValue, out DateTime value, bool universalTime = true)
 		{
@@ -276,12 +302,7 @@ namespace SciterCore
 		{
 			return sciterValue.AsElementInternal();
 		}
-
-	    #endregion
-		
-	    #region Json
 	    
-
 	    public static string AsJsonString(this SciterValue sciterValue, StringConversionType conversionType = StringConversionType.JsonLiteral)
 	    {
 		    return sciterValue?.AsJsonStringInternal(conversionType: conversionType);
@@ -404,7 +425,7 @@ namespace SciterCore
             return sciterValue?.TryGetKeyInternal(out value, index) == true;
         }
         
-        public static IReadOnlyList<SciterValue> GetKeysInternal(this SciterValue sciterValue)
+        public static IReadOnlyList<SciterValue> GetKeys(this SciterValue sciterValue)
         {
             return sciterValue?.GetKeysInternal();
         }
