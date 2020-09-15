@@ -53,11 +53,9 @@ namespace SciterTest.Core
 		public void SetupPage(string page)
 		{
 #if DEBUG
-			string location = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-
-			location += "\\..\\..";
-
-			string path = Path.Combine(location, "res", page);
+			string location = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty;
+			
+			string path = Path.Combine(location, "wwwroot", page);
 
 			Uri uri = new Uri(path, UriKind.Absolute);
 

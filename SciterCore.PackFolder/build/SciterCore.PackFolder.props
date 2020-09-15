@@ -7,6 +7,7 @@
   <PropertyGroup>
     <SciterCorePackDirectory Condition=" '$(SciterCorePackDirectory)' == '' ">wwwroot</SciterCorePackDirectory>
     <SciterCorePackType Condition=" '$(SciterCorePackType)' == '' ">binary</SciterCorePackType>
+    <SciterCorePackCopyToOutput Condition=" '$(SciterCorePackCopyToOutput)' == '' ">false</SciterCorePackCopyToOutput>
   </PropertyGroup>
   
   <PropertyGroup>
@@ -16,18 +17,31 @@
     <SciterCorePackFolderTaskAssembly Condition="$([MSBuild]::IsOsPlatform(Linux))">packOSX.sh</SciterCorePackFolderTaskAssembly>
   </PropertyGroup>
   
-  <Target Name="SciterCorePackFolderPreBuild" BeforeTargets="PreBuildEvent" >
+  <!-- Keeping the 'SciterCorePackType' condition here rather than making it a parameter for the 'Exec' command, makes things easier to manage! -->
+  <Target Name="SciterCorePackFolderPreBuild" BeforeTargets="PreBuildEvent" Condition=" '$(SciterCorePackType)' == 'binary' ">
     <MakeDir Directories="$(ProjectDir).sciter" />
     <Exec Command="$(SciterCorePackFolderTaskFolder)$(SciterCorePackFolderTaskAssembly) &quot;$(ProjectDir)$(SciterCorePackDirectory)&quot; &quot;$(ProjectDir).sciter\$(ProjectName).bin&quot; -binary" />
   </Target>
 
-  <Target Name="SciterCorePackFolderEmbedLocal" BeforeTargets="PrepareForBuild">
+  <!-- Add the binary created above to the Embedded Resources of the project -->
+  <Target Name="SciterCorePackFolderEmbedLocal" BeforeTargets="PrepareForBuild" Condition=" '$(SciterCorePackType)' == 'binary' ">
     <ItemGroup>
       <EmbeddedResource Include="$(ProjectDir).sciter\$(ProjectName).bin">
         <LogicalName>SciterResource</LogicalName>
       </EmbeddedResource>
     </ItemGroup>
+  </Target>
 
+  <!-- Copies files from `SciterCorePackDirectory` to the Project `TargetDir` if `SciterCorePackCopyToOutput` == true -->
+  <Target Name="SciterCorePackFolderPreBuildCopyOutput" BeforeTargets="AfterBuild" Condition=" '$(SciterCorePackCopyToOutput)' " >
+    <ItemGroup>
+      <SiteResources Include="$(ProjectDir)$(SciterCorePackDirectory)\**\*.*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(SiteResources)" DestinationFolder="$(TargetDir)\$(SciterCorePackDirectory)\%(RecursiveDir)" SkipUnchangedFiles="true" />
+  </Target>
+
+  <!-- Always exclude the source directory -->
+  <Target Name="SciterCorePackFolderExcludePackDirectory" >
     <ItemGroup>
       <None Include="$(SciterCorePackDirectory)\**" />
     </ItemGroup>
