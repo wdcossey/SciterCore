@@ -4,7 +4,7 @@ namespace SciterCore
 {
     public struct SciterSize
     {
-        public static readonly SciterSize Empty = new SciterSize();
+        public static readonly SciterSize Empty = new SciterSize(0, 0);
 
         private int _width;
         private int _height;

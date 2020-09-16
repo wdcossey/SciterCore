@@ -9,7 +9,7 @@ namespace SciterCore
 {
     public struct SciterPoint
     {
-        public static readonly SciterSize Empty = new SciterSize();
+        public static readonly SciterPoint Empty = new SciterPoint(0, 0);
 
         public SciterPoint(int x, int y)
         {
