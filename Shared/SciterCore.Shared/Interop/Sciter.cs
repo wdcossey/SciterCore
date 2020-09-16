@@ -354,6 +354,8 @@ namespace SciterCore.Interop
 
 			// tiscript VM API
 			public readonly TI_SCRIPT_API TIScriptAPI;
+			
+			[Obsolete("Deprecated in v4.4.3.24", true)]
 			public readonly SCITER_GET_VM SciterGetVM;
 
 			public readonly SCITER_v2V Sciter_v2V;
@@ -738,6 +740,7 @@ namespace SciterCore.Interop
 			// tiscript VM API
 			// tiscript_native_interface* function() TIScriptAPI;
 			public delegate IntPtr TI_SCRIPT_API();
+			
 			// HVM function(HWINDOW hwnd) SciterGetVM;
 			public delegate IntPtr SCITER_GET_VM(IntPtr hwnd);
 

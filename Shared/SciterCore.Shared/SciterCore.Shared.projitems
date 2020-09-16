@@ -60,6 +60,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\SciterPathExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\SciterTextExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\SciterValueExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\SciterWindowExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ValueResultExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\PolygonPoint.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\PolylinePoint.cs" />

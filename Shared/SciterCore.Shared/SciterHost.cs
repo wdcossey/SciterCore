@@ -113,7 +113,7 @@ namespace SciterCore
 			return this;
 		}
 
-		public SciterHost InjectGlobalTIScript(string script)
+		/*public SciterHost InjectGlobalTIScript(string script)
 		{
 			var ret = new TIScript.tiscript_value();
 			var res = EvalGlobalTIScript(script, out ret);
@@ -139,7 +139,7 @@ namespace SciterCore
 			var vm = Sciter.Api.SciterGetVM(WindowHandle);
 
 			return Sciter.ScriptApi.get_value_by_path(vm, out ret, path);
-		}
+		}*/
 
 		/// <summary>
 		/// Attaches a window level event-handler: it receives every event for all elements of the page.

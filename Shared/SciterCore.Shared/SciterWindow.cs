@@ -483,10 +483,10 @@ namespace SciterCore
 			}
 		}
 
-		public IntPtr VM
+		/*public IntPtr VM
 		{
 			get { return Api.SciterGetVM(Handle); }
-		}
+		}*/
 
 #if WINDOWS && !WPF
         public SciterWindow SetIcon(Icon icon)
@@ -500,78 +500,82 @@ namespace SciterCore
         }
 #endif
 
-		public SciterWindow SetTitle(string title)
+		#region Title
+		
+		internal void SetTitleInternal(string title)
         {
-			Title = title;
-			return this;
+	        Debug.Assert(Handle != IntPtr.Zero);
+			
+#if WINDOWS || NETCORE
+	        IntPtr strPtr = Marshal.StringToHGlobalUni(title);
+			PInvokeWindows.SendMessageW(Handle, PInvokeWindows.Win32Msg.WM_SETTEXT, IntPtr.Zero, strPtr);
+			Marshal.FreeHGlobal(strPtr);
+#elif GTKMONO
+			PInvokeGTK.gtk_window_set_title(_gtkwindow, title);
+#elif OSX && XAMARIN
+			_nsview.Window.Title = title;
+#endif
+        }
+
+		internal string GetTitleInternal()
+        {
+	        Debug.Assert(Handle != IntPtr.Zero);
+#if WINDOWS || NETCORE
+	        var unmanagedPointer = Marshal.AllocHGlobal(2048);
+	        var lengthPtr = PInvokeWindows.SendMessageW(Handle, PInvokeWindows.Win32Msg.WM_GETTEXT, new IntPtr(2048), unmanagedPointer);
+	        var title = Marshal.PtrToStringUni(unmanagedPointer, lengthPtr.ToInt32());
+	        Marshal.FreeHGlobal(unmanagedPointer);
+	        return title;
+#elif GTKMONO
+			var titlePtr = PInvokeGTK.gtk_window_get_title(_gtkwindow);
+			return Marshal.PtrToStringAnsi(titlePtr);
+#elif OSX && XAMARIN
+			return _nsview.Window.Title;
+#endif
         }
 
         public string Title
+        {
+	        get => GetTitleInternal();
+	        private set => SetTitleInternal(value);
+        }
+        
+        #endregion
+
+        #region Elements
+        
+		public SciterElement RootElement => GetRootElementInternal();
+
+		internal SciterElement GetRootElementInternal()
 		{
-			private set
-			{
-				Debug.Assert(Handle != IntPtr.Zero);
-#if WINDOWS || NETCORE
-				IntPtr strPtr = Marshal.StringToHGlobalUni(value);
-				PInvokeWindows.SendMessageW(Handle, PInvokeWindows.Win32Msg.WM_SETTEXT, IntPtr.Zero, strPtr);
-				Marshal.FreeHGlobal(strPtr);
-#elif GTKMONO
-				PInvokeGTK.gtk_window_set_title(_gtkwindow, value);
-#elif OSX && XAMARIN
-				_nsview.Window.Title = value;
-#endif
-			}
-
-			get
-			{
-				Debug.Assert(Handle != IntPtr.Zero);
-#if WINDOWS || NETCORE
-				IntPtr unmanagedPointer = Marshal.AllocHGlobal(2048);
-				IntPtr chars_copied = PInvokeWindows.SendMessageW(Handle, PInvokeWindows.Win32Msg.WM_GETTEXT, new IntPtr(2048), unmanagedPointer);
-				string title = Marshal.PtrToStringUni(unmanagedPointer, chars_copied.ToInt32());
-				Marshal.FreeHGlobal(unmanagedPointer);
-				return title;
-#elif GTKMONO
-				IntPtr str_ptr = PInvokeGTK.gtk_window_get_title(_gtkwindow);
-				return Marshal.PtrToStringAnsi(str_ptr);
-#elif OSX && XAMARIN
-				return _nsview.Window.Title;
-#endif
-			}
-		}
-
-		public SciterElement RootElement => GetRootElement();
-
-		public SciterElement GetRootElement()
-		{
-			TryGetRootElement(out var result);
+			TryGetRootElementInternal(out var result);
 			return result;
 		}
 
-		public bool TryGetRootElement(out SciterElement value)
+		internal bool TryGetRootElementInternal(out SciterElement element)
 		{
 			Debug.Assert(Handle != IntPtr.Zero);
 			
 			var result = Api.SciterGetRootElement(Handle, out var elementHandle)
 				.IsOk();
 
-			value = result ? new SciterElement(elementHandle) : null; // no page loaded yet?
+			element = result ? new SciterElement(elementHandle) : null; // no page loaded yet?
 			return result;
 		}
 
 		/// <summary>
 		/// Find element at point x/y of the window, client area relative
 		/// </summary>
-		public SciterElement GetElementAtPoint(int x, int y)
+		internal SciterElement GetElementAtPointInternal(int x, int y)
 		{
-			TryGetElementAtPoint(out var result, x, y);
+			TryGetElementAtPointInternal(out var result, x, y);
 			return result;
 		}
 
 		/// <summary>
 		/// Find element at point x/y of the window, client area relative
 		/// </summary>
-		public bool TryGetElementAtPoint(out SciterElement value, int x, int y)
+		internal bool TryGetElementAtPointInternal(out SciterElement value, int x, int y)
 		{
 			var point = new PInvokeUtils.POINT
 			{ 
@@ -590,26 +594,26 @@ namespace SciterCore
 		/// <summary>
 		/// Find element at point x/y of the window, client area relative
 		/// </summary>
-		public bool TryGetElementAtPoint(out SciterElement value, SciterPoint point)
+		internal bool TryGetElementAtPointInternal(out SciterElement value, SciterPoint point)
 		{
-			return TryGetElementAtPoint(out value, point.X, point.Y);
+			return TryGetElementAtPointInternal(out value, point.X, point.Y);
 		}
 
 		/// <summary>
 		/// Find element at point x/y of the window, client area relative
 		/// </summary>
-		public SciterElement GetElementAtPoint(SciterPoint point)
+		internal SciterElement GetElementAtPointInternal(SciterPoint point)
 		{
-			return GetElementAtPoint(point.X, point.Y);
+			return GetElementAtPointInternal(point.X, point.Y);
 		}
 
 		/// <summary>
 		/// Searches this window DOM tree for element with the given UID
 		/// </summary>
 		/// <returns>The element, or null if it doesn't exists</returns>
-		public SciterElement GetElementByUid(uint uid)
+		internal SciterElement GetElementByUidInternal(uint uid)
 		{
-			TryGetElementByUid(out var result, uid);
+			TryGetElementByUidInternal(out var result, uid);
 			return result;
 		}
 
@@ -617,7 +621,7 @@ namespace SciterCore
 		/// Searches this window DOM tree for element with the given UID
 		/// </summary>
 		/// <returns>The element, or null if it doesn't exists</returns>
-		public bool TryGetElementByUid(out SciterElement value, uint uid)
+		internal bool TryGetElementByUidInternal(out SciterElement value, uint uid)
 		{
 			var result = Api.SciterGetElementByUID(Handle, uid, out var elementHandle)
 				.IsOk();
@@ -626,21 +630,35 @@ namespace SciterCore
 
 			return result;
 		}
+		
+		#endregion
 
-		public uint GetMinWidth()
+		#region Dimentions
+
+		internal int GetMinWidthInternal()
 		{
-			return Api.SciterGetMinWidth(Handle);
+			return unchecked((int)Api.SciterGetMinWidth(Handle));
 		}
 
-		public uint GetMinHeight(uint forWidth)
+		internal int GetMinHeightInternal(int width)
 		{
-			return Api.SciterGetMinHeight(Handle, forWidth);
+			return unchecked((int)Api.SciterGetMinHeight(Handle, unchecked((uint)width)));
+		}
+
+		#endregion
+
+		/// <summary>
+		/// Update pending changes in Sciter window and forces painting if necessary
+		/// </summary>
+		internal void UpdateWindowInternal()
+		{
+			TryUpdateWindowInternal();
 		}
 
 		/// <summary>
 		/// Update pending changes in Sciter window and forces painting if necessary
 		/// </summary>
-		public bool UpdateWindow()
+		internal bool TryUpdateWindowInternal()
 		{
 			return Api.SciterUpdateWindow(Handle);
 		}
