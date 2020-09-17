@@ -42,7 +42,6 @@ namespace SciterCore
 		public static bool InjectLibConsole = true;
 		private static List<IntPtr> _lib_console_vms = new List<IntPtr>();
 		private static SciterArchive _consoleArchive;
-		private SciterEventHandler _window_evh;
 
 		private class DefaultEventHandler : SciterEventHandler { }
 
@@ -107,7 +106,7 @@ namespace SciterCore
 			WindowHandle = hwnd;
 
 			// Register a global event handler for this Sciter window
-			_hostCallback = HandleNotification;
+			_hostCallback = NotificationHandler;
 			Api.SciterSetCallback(hwnd, Marshal.GetFunctionPointerForDelegate(_hostCallback), IntPtr.Zero);
 
 			return this;
@@ -159,6 +158,30 @@ namespace SciterCore
 		}
 
 		/// <summary>
+		/// Attaches a window level event-handler: it receives every event for all elements of the page.
+		/// You normally attaches it before loading the page HTML with <see cref="SciterWindow.LoadPage(Uri)"/>
+		/// You can only attach a single event-handler.
+		/// </summary>
+		public SciterHost AttachEventHandler<THandler>()
+			where THandler: SciterEventHandler
+		{
+			AttachEventHandler(eventHandler: Activator.CreateInstance(typeof(THandler)) as SciterEventHandler);
+			return this;
+		}
+
+		/// <summary>
+		/// Attaches a window level event-handler: it receives every event for all elements of the page.
+		/// You normally attaches it before loading the page HTML with <see cref="SciterWindow.LoadPage(Uri)"/>
+		/// You can only attach a single event-handler.
+		/// </summary>
+		public SciterHost AttachEventHandler<THandler>(Func<THandler> func)
+			where THandler: SciterEventHandler
+		{
+			AttachEventHandler(eventHandler: func.Invoke());
+			return this;
+		}
+
+		/// <summary>
 		/// Detaches the event-handler previously attached with AttachEvh()
 		/// </summary>
 		public SciterHost DetachEventHandler()
@@ -202,7 +225,7 @@ namespace SciterCore
 			Debug.Assert(WindowHandle != IntPtr.Zero, "Call SciterHost.SetupWindow() first");
 			Debug.Assert(what != null);
 
-			GCHandle handle = GCHandle.Alloc(what);
+			var handle = GCHandle.Alloc(what);
 			PostNotification(new IntPtr(INVOKE_NOTIFICATION), GCHandle.ToIntPtr(handle));
 		}
 
@@ -353,23 +376,17 @@ namespace SciterCore
 			get
 			{
 				Debug.Assert(WindowHandle != IntPtr.Zero, "Call SciterHost.SetupWindow() first");
-				Api.SciterGetRootElement(WindowHandle, out var heFocus);
+				Api.SciterGetFocusElement(WindowHandle, out var heFocus);
 				return new SciterElement(heFocus);
 			}
 		}
 
-        public SciterEventHandler WindowEventHandler
-        {
-            get => _window_evh;
-            protected set => _window_evh = value;
-        }
-
-        // Notification handler
-        private uint HandleNotification(IntPtr ptrNotification, IntPtr callbackParam)
+		// Notification handler
+        private uint NotificationHandler(IntPtr ptrNotification, IntPtr callbackParam)
 		{
-			var scn = Marshal.PtrToStructure<SciterXDef.SCITER_CALLBACK_NOTIFICATION>(ptrNotification);
+			var callbackNotification = Marshal.PtrToStructure<SciterXDef.SCITER_CALLBACK_NOTIFICATION>(ptrNotification);
 
-			switch(scn.code)
+			switch(callbackNotification.code)
 			{
 				case SciterXDef.SCITER_CALLBACK_CODE.SC_LOAD_DATA:
 					var sld = Marshal.PtrToStructure<SciterXDef.SCN_LOAD_DATA>(ptrNotification);
@@ -381,9 +398,9 @@ namespace SciterCore
 					return 0;
 
 				case SciterXDef.SCITER_CALLBACK_CODE.SC_ATTACH_BEHAVIOR:
-					var sab = Marshal.PtrToStructure<SciterXDef.SCN_ATTACH_BEHAVIOR>(ptrNotification);
-					var behaviorName = Marshal.PtrToStringAnsi(sab.behaviorName);
-					var attachResult = OnAttachBehavior(new SciterElement(sab.elem), behaviorName, out var eventHandler);
+					var attachBehavior = Marshal.PtrToStructure<SciterXDef.SCN_ATTACH_BEHAVIOR>(ptrNotification);
+					var behaviorName = Marshal.PtrToStringAnsi(attachBehavior.behaviorName);
+					var attachResult = OnAttachBehavior(new SciterElement(attachBehavior.elem), behaviorName, out var eventHandler);
 					
 					if (!attachResult) 
 						return 0;
@@ -391,10 +408,10 @@ namespace SciterCore
 					var proc = eventHandler.EventProc;
 					var ptrProc = Marshal.GetFunctionPointerForDelegate(proc);
 
-					var EVENTPROC_OFFSET = Marshal.OffsetOf<SciterXDef.SCN_ATTACH_BEHAVIOR>("elementProc");
-					var EVENTPROC_OFFSET2 = Marshal.OffsetOf<SciterXDef.SCN_ATTACH_BEHAVIOR>("elementTag");
-					Marshal.WriteIntPtr(ptrNotification, EVENTPROC_OFFSET.ToInt32(), ptrProc);
-					Marshal.WriteInt32(ptrNotification, EVENTPROC_OFFSET2.ToInt32(), 0);
+					var elementProcOffset = Marshal.OffsetOf<SciterXDef.SCN_ATTACH_BEHAVIOR>(nameof(SciterXDef.SCN_ATTACH_BEHAVIOR.elementProc));
+					var elementTagOffset = Marshal.OffsetOf<SciterXDef.SCN_ATTACH_BEHAVIOR>(nameof(SciterXDef.SCN_ATTACH_BEHAVIOR.elementTag));
+					Marshal.WriteIntPtr(ptrNotification, elementProcOffset.ToInt32(), ptrProc);
+					Marshal.WriteInt32(ptrNotification, elementTagOffset.ToInt32(), 0);
 					return 1;
 
 				case SciterXDef.SCITER_CALLBACK_CODE.SC_ENGINE_DESTROYED:
@@ -411,7 +428,7 @@ namespace SciterCore
 
 				case SciterXDef.SCITER_CALLBACK_CODE.SC_POSTED_NOTIFICATION:
 					var spn = Marshal.PtrToStructure<SciterXDef.SCN_POSTED_NOTIFICATION>(ptrNotification);
-					var lreturn = IntPtr.Zero;
+					var lReturnPtr = IntPtr.Zero;
 					if(spn.wparam.ToInt32() == INVOKE_NOTIFICATION)
 					{
 						var handle = GCHandle.FromIntPtr(spn.lparam);
@@ -421,11 +438,11 @@ namespace SciterCore
 					}
 					else
 					{
-						lreturn = OnPostedNotification(spn.wparam, spn.lparam);
+						lReturnPtr = OnPostedNotification(spn.wparam, spn.lparam);
 					}
 
-					var OFFSET_LRESULT = Marshal.OffsetOf<SciterXDef.SCN_POSTED_NOTIFICATION>(nameof(SciterXDef.SCN_POSTED_NOTIFICATION.lreturn));
-					Marshal.WriteIntPtr(ptrNotification, OFFSET_LRESULT.ToInt32(), lreturn);
+					var lReturnOffset = Marshal.OffsetOf<SciterXDef.SCN_POSTED_NOTIFICATION>(nameof(SciterXDef.SCN_POSTED_NOTIFICATION.lreturn));
+					Marshal.WriteIntPtr(ptrNotification, lReturnOffset.ToInt32(), lReturnPtr);
 					return 0;
 
 				case SciterXDef.SCITER_CALLBACK_CODE.SC_GRAPHICS_CRITICAL_FAILURE:

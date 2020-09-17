@@ -23,7 +23,7 @@ namespace SciterTest.NetCore
 			AppWindow = wnd;
 			var host = this;
 			host.Setup(wnd);
-			host.AttachEventHandler(new HostEvh());
+			host.AttachEventHandler<HostEvh>(() => new HostEvh());
 			host.RegisterBehaviorHandler<DragDropBehavior>();
 			host.SetupPage("index.html");
 			
@@ -43,6 +43,11 @@ namespace SciterTest.NetCore
 
 	public class HostEvh : SciterEventHandler
 	{
+		public HostEvh()
+		{
+
+		}
+		
 		/// A dynamic script call handler. Any call in TIScript to function 'view.Host_HelloSciter()' with invoke this method
 		/// Notice that signature of these handlers is always the same
 		/// (Hint: install OmniCode snippets which adds the 'ssh' snippet to C# editor so you can easily declare 'Siter Handler' methods)
@@ -179,6 +184,11 @@ namespace SciterTest.NetCore
 		{
 			//Console.WriteLine($"{args.Event} | {args.Cancel} | {args.IsMouseClick}");
 			return base.OnFocus(element, args);
+		}
+
+		protected override void Attached(SciterElement element)
+		{
+			base.Attached(element);
 		}
 
 		protected override bool OnGesture(SciterElement element, GestureArgs args)

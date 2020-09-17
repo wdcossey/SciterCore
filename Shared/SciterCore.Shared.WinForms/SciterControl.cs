@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using SciterCore.Interop;
 
@@ -98,11 +99,28 @@ namespace SciterCore.WinForms
 				//LoadHtml?.Invoke(this, loadHtmlEventArgs);
 				//
 				//SciterWnd.LoadHtml(loadHtmlEventArgs?.Html ?? this.Html ?? DEFAULT_HTML);
-
-				SciterWnd.Show();
+				
+				Task.Run(async () =>
+				{
+					await Task.Delay(50);
+					SciterWnd?.Show(this.Visible);
+					//await Task.Delay(550);
+					//SendKeys.SendWait("^(+(I))");
+				});
+				
 			}
 
 			base.OnHandleCreated(e);
+		}
+
+		protected override void OnSizeChanged(EventArgs e)
+		{
+			base.OnSizeChanged(e);
+		}
+
+		protected override void OnResize(EventArgs e)
+		{
+			base.OnResize(e);
 		}
 
 		protected override void OnClientSizeChanged(EventArgs e)
@@ -110,7 +128,7 @@ namespace SciterCore.WinForms
 			if(SciterWnd != null && SciterWnd?.Handle != IntPtr.Zero)
             {
                 var sz = this.Size;
-                PInvokeWindows.MoveWindow(hWnd: SciterWnd.Handle, X: 0, Y: 0, nWidth: sz.Width, nHeight: sz.Height, bRepaint: true);
+                PInvokeWindows.MoveWindow(hWnd: SciterWnd.Handle, X: this.Left, Y: this.Top, nWidth: sz.Width, nHeight: sz.Height, bRepaint: true);
             }
 			base.OnClientSizeChanged(e);
 		}

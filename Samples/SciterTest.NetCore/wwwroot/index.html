@@ -83,16 +83,16 @@
 		card {
 			display: block;
 			padding: 16dip;
-			border-radius: 4dip;
+			border-radius: 2dip;
 			color: white;
 			background-color: rgba(36, 49, 64, 1);
-			box-shadow: 0 1px 4px 0 rgba(0,0,0,.14);
+			box-shadow: rgba(0, 0, 0, 0.133) 0px 1.6px 3.6px 0px, rgba(0, 0, 0, 0.11) 0px 0.3px 0.9px 0px;
 			/*behavior: card-drop-behavior;*/
 		}
 
-		/*card.active-target {
-			background:gold;
-		}*/
+		card:hover {
+			box-shadow: rgba(0, 0, 0, 0.133) 0px 3.2px 7.2px 0px, rgba(0, 0, 0, 0.11) 0px 0.6px 1.8px 0px;
+		}
 		
 		card > cardcontent
 		{
@@ -140,7 +140,8 @@
 		{
 			border:none; 
 			border-radius:2dip;
-			background:transparent;
+			background: rgba(0,0,0,.25);
+
 			/*background-position:8px 8px 8px 8px; left top right bottom offsets*/
 			
 			height: 4dip;
@@ -169,6 +170,11 @@
 		
 		//Asynchronous
 		view.AsynchronousFunction();
+		
+		function callmeFromCSharp(uri)
+		{
+			Sciter.launch(uri);
+		}
 		
 		view.StackTrace(function(value) {
 			$(#stMethodName).text = value.MethodName;
@@ -251,7 +257,7 @@
 				return true;
 			});
 		}
-  
+			
 		function self.ready() {
 		}   
     
@@ -319,8 +325,6 @@
 						
 						<div>Message:</div>
 						<div #callbackMessage style="font-weight: bold;"></div>
-						
-						
 						
 					</cardcontent>
 
