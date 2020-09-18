@@ -247,26 +247,31 @@ namespace SciterCore
 		}
 
 		//TODO: @wdcossey - Clean this up!
-		internal void ConnectToInspectorInternal()
+		internal async Task ConnectToInspectorInternalAsync()
 		{
-			//string inspector_proc = "inspector";
-			//var ps = Process.GetProcessesByName(inspector_proc);
-			//if(ps.Length==0)
-			//{
-			//	throw new Exception("Inspector process is not running. You should run it before calling DebugInspect()");
-			//}
-
-			Task.Run(() =>
+			string inspector_proc = "inspector";
+			var ps = Process.GetProcessesByName(inspector_proc);
+			if(ps.Length==0)
 			{
-				Thread.Sleep(1000);
-				EvalScript("view.connectToInspector()");
+				var value = EvalScript(@"view.msgbox { type:#warning, " +
+				                             			"title:\"Inspector\", " +
+				                             			"content:\"Inspector process is not running. You should run it before calling ConnectToInspector()\", " +
+				                                        "buttons:#ok" +
+				                                        "};");
+				
+				return;
+				//throw new Exception("Inspector process is not running. You should run it before calling DebugInspect()");
+			}
 
+
+			await Task.Delay(100);
+			
+			EvalScript("view.connectToInspector()");
 #if OSX
-				var app_inspector = AppKit.NSRunningApplication.GetRunningApplications("terrainformatica.inspector");
-				if(app_inspector.Length==1)
-					app_inspector[0].Activate(AppKit.NSApplicationActivationOptions.ActivateAllWindows);
+			var app_inspector = AppKit.NSRunningApplication.GetRunningApplications("terrainformatica.inspector");
+			if(app_inspector.Length==1)
+				app_inspector[0].Activate(AppKit.NSApplicationActivationOptions.ActivateAllWindows);
 #endif
-			});
 		}
 
 		/*

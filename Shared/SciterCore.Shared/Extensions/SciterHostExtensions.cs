@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading.Tasks;
+
 // ReSharper disable RedundantTypeArgumentsOfMethod
 // ReSharper disable ArgumentsStyleNamedExpression
 // ReSharper disable UnusedMember.Global
@@ -10,10 +12,15 @@ namespace SciterCore
     {
         #region Inspector
 
+        public static Task<SciterHost> ConnectToInspectorAsync(this SciterHost host)
+        {
+            host?.ConnectToInspectorInternalAsync();
+            return Task.FromResult(host);
+        }
+        
         public static SciterHost ConnectToInspector(this SciterHost host)
         {
-            host?.ConnectToInspectorInternal();
-            return host;
+            return host?.ConnectToInspectorAsync().ConfigureAwait(false).GetAwaiter().GetResult();
         }
 
         #endregion
