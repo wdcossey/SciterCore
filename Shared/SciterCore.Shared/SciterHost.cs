@@ -249,12 +249,12 @@ namespace SciterCore
 		//TODO: @wdcossey - Clean this up!
 		internal void ConnectToInspectorInternal()
 		{
-			string inspector_proc = "inspector";
-			var ps = Process.GetProcessesByName(inspector_proc);
-			if(ps.Length==0)
-			{
-				throw new Exception("Inspector process is not running. You should run it before calling DebugInspect()");
-			}
+			//string inspector_proc = "inspector";
+			//var ps = Process.GetProcessesByName(inspector_proc);
+			//if(ps.Length==0)
+			//{
+			//	throw new Exception("Inspector process is not running. You should run it before calling DebugInspect()");
+			//}
 
 			Task.Run(() =>
 			{

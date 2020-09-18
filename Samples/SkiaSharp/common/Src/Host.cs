@@ -76,7 +76,22 @@ namespace SciterTest.Graphics
 
 		public void SetupPage(string page)
 		{
-			var uri = new Uri(baseUri: _archive.Uri, page);
+			
+#if DEBUG
+			string location = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+			
+			string path = Path.Combine(location ?? string.Empty, "wwwroot", page);
+
+			Uri uri = new Uri(path, UriKind.Absolute);
+
+			Debug.Assert(uri.IsFile);
+
+			Debug.Assert(File.Exists(uri.AbsolutePath));
+
+#else
+			Uri uri = new Uri(baseUri: _archive.Uri, page);
+#endif
+			
 			_window.LoadPage(uri: uri);
 		}
 

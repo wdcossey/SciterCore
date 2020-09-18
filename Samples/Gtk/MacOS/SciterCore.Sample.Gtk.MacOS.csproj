@@ -12,6 +12,8 @@
     <TargetFrameworkIdentifier>Xamarin.Mac</TargetFrameworkIdentifier>
     <MonoMacResourcePrefix>Resources</MonoMacResourcePrefix>
     <SciterCorePackDirectory>..\common\wwwroot</SciterCorePackDirectory>
+    <!--<SciterCorePackType>binary</SciterCorePackType>-->
+    <SciterCorePackCopyToOutput Condition=" '$(Configuration)' == 'Debug' ">true</SciterCorePackCopyToOutput>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
     <DebugSymbols>true</DebugSymbols>
@@ -78,7 +80,7 @@
     <None Include="wwwroot\**" />
   </ItemGroup>
     <ItemGroup>
-    <PackageReference Include="SciterCore.PackFolder" Version="0.0.117-alpha" />
+    <PackageReference Include="SciterCore.PackFolder" Version="0.0.122-alpha" />
   </ItemGroup>
     <ItemGroup>
       <Compile Include="..\common\Behaviors\DrawGeometryBehavior.cs">

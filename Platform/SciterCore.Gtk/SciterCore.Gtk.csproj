@@ -51,7 +51,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="SciterCore.Binaries" Version="0.0.55-alpha" />
-    <PackageReference Include="SciterCore.PackFolder" Version="0.0.117-alpha" />
+    <PackageReference Include="SciterCore.PackFolder" Version="0.0.122-alpha" />
   </ItemGroup>
   <Import Project="$(SolutionDir)Shared\SciterCore.Shared\SciterCore.Shared.projitems" Label="Shared" Condition="Exists('$(SolutionDir)Shared\SciterCore.Shared\SciterCore.Shared.projitems')" />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
