@@ -9,14 +9,14 @@
     <SciterCorePackType Condition=" '$(SciterCorePackType)' == '' ">binary</SciterCorePackType>
     <SciterCorePackCopyToOutput Condition=" '$(SciterCorePackCopyToOutput)' == '' ">false</SciterCorePackCopyToOutput>
   </PropertyGroup>
-  
+
   <PropertyGroup>
     <SciterCorePackFolderTaskFolder>$(MSBuildThisFileDirectory)..\..\scripts\</SciterCorePackFolderTaskFolder>
     <SciterCorePackFolderTaskAssembly Condition="$([MSBuild]::IsOsPlatform(Windows))">packfolder.exe</SciterCorePackFolderTaskAssembly>
     <SciterCorePackFolderTaskAssembly Condition="$([MSBuild]::IsOsPlatform(OSX))">packOSX.sh</SciterCorePackFolderTaskAssembly>
     <SciterCorePackFolderTaskAssembly Condition="$([MSBuild]::IsOsPlatform(Linux))">packOSX.sh</SciterCorePackFolderTaskAssembly>
   </PropertyGroup>
-  
+
   <!-- Keeping the 'SciterCorePackType' condition here rather than making it a parameter for the 'Exec' command, makes things easier to manage! -->
   <Target Name="SciterCorePackFolderPreBuild" BeforeTargets="PreBuildEvent" Condition=" '$(SciterCorePackType)' == 'binary' ">
     <MakeDir Directories="$(ProjectDir).sciter" />
@@ -34,10 +34,11 @@
 
   <!-- Copies files from `SciterCorePackDirectory` to the Project `TargetDir` if `SciterCorePackCopyToOutput` == true -->
   <Target Name="SciterCorePackFolderPreBuildCopyOutput" BeforeTargets="AfterBuild" Condition=" '$(SciterCorePackCopyToOutput)' " >
+    <Message ContinueOnError="false" Text="Copying Sciter site files to output..."/>
     <ItemGroup>
       <SiteResources Include="$(ProjectDir)$(SciterCorePackDirectory)\**\*.*" />
     </ItemGroup>
-    <Copy SourceFiles="@(SiteResources)" DestinationFolder="$(TargetDir)\$(SciterCorePackDirectory)\%(RecursiveDir)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(SiteResources)" DestinationFolder="$([System.IO.Path]::Combine($(TargetDir), $([System.IO.Path]::GetFileName($([System.IO.Path]::Combine($(TargetDir), $(SciterCorePackDirectory))))), %(RecursiveDir)))" SkipUnchangedFiles="true" />
   </Target>
 
   <!-- Always exclude the source directory -->
@@ -46,5 +47,5 @@
       <None Include="$(SciterCorePackDirectory)\**" />
     </ItemGroup>
   </Target>
-  
+
 </Project>

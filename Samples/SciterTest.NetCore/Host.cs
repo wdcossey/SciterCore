@@ -16,18 +16,28 @@ namespace SciterTest.NetCore
 	public class Host<TWindow> : BaseHost
 		where TWindow : SciterWindow 
 	{
-		public static TWindow AppWindow { get; private set; }// must keep a reference to survive GC
-		
+		// must keep a reference to survive GC
+		public static TWindow AppWindow { get; private set; }
+
 		public Host(TWindow wnd)
+			: base(wnd)
 		{
 			AppWindow = wnd;
 			var host = this;
-			host.Setup(wnd);
-			host.AttachEventHandler<HostEvh>(() => new HostEvh());
-			host.RegisterBehaviorHandler<DragDropBehavior>();
-			host.SetupPage("index.html");
+			host
+				.AttachEventHandler<HostEvh>(() => new HostEvh(host))
+				.RegisterBehaviorHandler<DragDropBehavior>();
 			
-			wnd.Show();
+			host.LoadPage("index.html", 
+				(sciterHost, window) =>
+				{
+					window.Show();
+				},
+				(sciterHost, window) => throw new InvalidOperationException("Unable to load the requested page."));
+
+#if DEBUG
+			host.ConnectToInspector();
+#endif
 		}
 		
 		public Host(Func<TWindow> wndFunc)
@@ -43,9 +53,11 @@ namespace SciterTest.NetCore
 
 	public class HostEvh : SciterEventHandler
 	{
-		public HostEvh()
-		{
+		private readonly SciterHost _host;
 
+		public HostEvh(SciterHost host)
+		{
+			_host = host;
 		}
 		
 		/// A dynamic script call handler. Any call in TIScript to function 'view.Host_HelloSciter()' with invoke this method
@@ -160,6 +172,13 @@ namespace SciterTest.NetCore
 		public async Task AsynchronousFunction()
 		{
 			await Task.Delay(TimeSpan.FromSeconds(2));
+
+			//var value = _host.EvalScript(@"view.msgbox { type:#question, " +
+            //                             			"content:\"Is anybody out there?\", " +
+            //                                        "buttons:[" +
+            //                             			"{id:#yes,text:\"Yes\",role:\"default-button\"}," +
+            //                             			"{id:#no,text:\"No\",role:\"cancel-button\"}]" +
+            //                                        "};");
 			Console.WriteLine($"{nameof(AsynchronousFunction)} was executed!");
 		}
 
@@ -214,40 +233,32 @@ namespace SciterTest.NetCore
 		protected SciterArchive _archive = new SciterArchive();
 		protected SciterWindow _window;
 
-		public BaseHost()
+		public BaseHost(SciterWindow window)
+			: base(window)
 		{
+			_window = window;
 			_archive.Open();
 		}
 
-		public void Setup(SciterWindow window)
+		public SciterHost LoadPage(string page, Action<SciterHost, SciterWindow> onCompleted = null, Action<SciterHost, SciterWindow> onFailed = null)
 		{
-			_window = window;
-			SetupWindow(window);
-		}
+#if DEBUG
+			var location = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+			var path = Path.Combine(location ?? string.Empty, "wwwroot", page);
+			var uri = new Uri(path, UriKind.Absolute);
 
-		public void SetupPage(string page)
-		{
-//#if DEBUG
-//			string location = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-//
-//#if OSX
-//			location += "\\..\\..\\..\\..\\..\\..";
-//#else
-//			location += "\\..\\..\\..";
-//#endif
-//
-//			string path = Path.Combine(location, "res", page);
-//
-//			Uri uri = new Uri(path, UriKind.Absolute);
-//
-//			Debug.Assert(uri.IsFile);
-//
-//			Debug.Assert(File.Exists(uri.AbsolutePath));
-//#else
+			Debug.Assert(uri.IsFile);
+			Debug.Assert(File.Exists(uri.AbsolutePath));
+#else
 			Uri uri = new Uri(baseUri: _archive.Uri, page);
-//#endif
+#endif
 
-			_window.LoadPage(uri: uri);
+			if (_window.TryLoadPage(uri: uri))
+				onCompleted?.Invoke(this, _window);
+			else
+				onFailed?.Invoke(this, _window);
+
+			return this;
 		}
 
 		protected override LoadResult OnLoadData(object sender, LoadDataArgs args)

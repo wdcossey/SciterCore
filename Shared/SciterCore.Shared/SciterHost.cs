@@ -23,6 +23,8 @@ using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 using System.Threading;
 using SciterCore.Interop;
+// ReSharper disable UnusedParameter.Global
+// ReSharper disable UnusedMember.Global
 
 namespace SciterCore
 {
@@ -56,11 +58,11 @@ namespace SciterCore
 			_consoleArchive = new SciterArchive("scitersharp:")
                 .Open("LibConsole");
 
-			if(InjectLibConsole)
+			if (InjectLibConsole)
 			{
-				byte[] byteArray = Encoding.UTF8.GetBytes("include \"scitersharp:console.tis\";");
-				GCHandle pinnedArray = GCHandle.Alloc(byteArray, GCHandleType.Pinned);
-				IntPtr pointer = pinnedArray.AddrOfPinnedObject();
+				var byteArray = Encoding.UTF8.GetBytes("include \"scitersharp:console.tis\";");
+				var pinnedArray = GCHandle.Alloc(byteArray, GCHandleType.Pinned);
+				var pointer = pinnedArray.AddrOfPinnedObject();
 				Sciter.Api.SciterSetOption(IntPtr.Zero, SciterXDef.SCITER_RT_OPTIONS.SCITER_SET_INIT_SCRIPT, pointer);
 				pinnedArray.Free();
 			}
@@ -77,6 +79,7 @@ namespace SciterCore
             //
 		}
 
+		// ReSharper disable once SuggestBaseTypeForParameter
 		public SciterHost(SciterWindow window)
 			: this()
 		{
@@ -226,7 +229,7 @@ namespace SciterCore
 			Debug.Assert(what != null);
 
 			var handle = GCHandle.Alloc(what);
-			PostNotification(new IntPtr(INVOKE_NOTIFICATION), GCHandle.ToIntPtr(handle));
+			PostNotificationInternal(new IntPtr(INVOKE_NOTIFICATION), GCHandle.ToIntPtr(handle));
 		}
 
 		/// <summary>
@@ -240,10 +243,11 @@ namespace SciterCore
 			Debug.Assert(timeout > 0);
 
 			GCHandle handle = GCHandle.Alloc(what);
-			PostNotification(new IntPtr(INVOKE_NOTIFICATION), GCHandle.ToIntPtr(handle), timeout);
+			PostNotificationInternal(new IntPtr(INVOKE_NOTIFICATION), GCHandle.ToIntPtr(handle), timeout);
 		}
 
-		public void DebugInspect()
+		//TODO: @wdcossey - Clean this up!
+		internal void ConnectToInspectorInternal()
 		{
 			string inspector_proc = "inspector";
 			var ps = Process.GetProcessesByName(inspector_proc);
@@ -271,7 +275,7 @@ namespace SciterCore
 		/// (Before everything it kills any previous instance of the inspector process)
 		/// </summary>
 		/// <param name="inspector_exe">Path to the inspector executable, can be an absolute or relative path.</param>
-		public void DebugInspect(string inspector_exe)
+		internal void ConnectToInspectorInternal(string inspector_exe)
 		{
 			var ps = Process.GetProcessesByName(inspector_exe);
 			foreach(var p in ps)
@@ -316,49 +320,47 @@ namespace SciterCore
 			});
 		}*/
 
-		/// <summary>
-		/// Sciter cross-platform alternative for posting a message in the message queue.
-		/// It will be received as a SC_POSTED_NOTIFICATION notification by this SciterHost instance.
-		/// Override OnPostedNotification() to handle it.
-		/// </summary>
-		/// <param name="timeout">
-		/// If timeout is > 0 this methods SENDs the message instead of POSTing and this is the timeout for waiting the processing of the message. Leave it as 0 for actually POSTing the message.
-		/// </param>
-		public IntPtr PostNotification(IntPtr wparam, IntPtr lparam, uint timeout = 0)
+		#region Notification
+		
+		internal IntPtr PostNotificationInternal(IntPtr wparam, IntPtr lparam, uint timeout = 0)
 		{
 			Debug.Assert(WindowHandle != IntPtr.Zero, "Call SciterHost.SetupWindow() first");
 			return Api.SciterPostCallback(WindowHandle, wparam, lparam, timeout);
 		}
+		
+		#endregion
 
-		// Behavior factory
-		public SciterHost RegisterBehaviorHandler(Type eventHandlerType, string behaviorName = null)
+		#region Behavior Factory
+		
+		internal void RegisterBehaviorHandlerInternal(Type eventHandlerType, string behaviorName = null)
 		{
 			var entry = new EventHandlerRegistry(type: eventHandlerType, name: behaviorName);
 			_behaviorMap[entry.Name] = entry;
-			return this;
 		}
 
-		public SciterHost RegisterBehaviorHandler<TType>(string behaviorName = null)
+		internal void RegisterBehaviorHandlerInternal<TType>(string behaviorName = null)
 			where TType : SciterEventHandler
 		{
 			var entry = new EventHandlerRegistry(type: typeof(TType), name: behaviorName);
 			_behaviorMap[entry.Name] = entry;
-			return this;
 		}
 
-		public SciterHost RegisterBehaviorHandler<THandler>(THandler eventHandler, string behaviorName = null)
+		internal void RegisterBehaviorHandlerInternal<THandler>(THandler eventHandler, string behaviorName = null)
 			where THandler : SciterEventHandler
 		{
 			var entry = new EventHandlerRegistry(eventHandler: eventHandler, name: behaviorName ?? eventHandler.Name);
 			_behaviorMap[entry.Name] = entry;
-			return this;
 		}
 
-		public SciterHost RegisterBehaviorHandler<THandler>(Func<THandler> eventHandler, string behaviorName = null)
+		public void RegisterBehaviorHandlerInternal<THandler>(Func<THandler> eventHandlerFunc, string behaviorName = null)
 			where THandler : SciterEventHandler
 		{
-			return RegisterBehaviorHandler(eventHandler?.Invoke(), behaviorName);
+			var eventHandler = eventHandlerFunc?.Invoke();
+			RegisterBehaviorHandlerInternal(eventHandler, behaviorName ?? eventHandler?.Name);
 		}
+
+		#endregion
+		
 
 		// Properties
 		public SciterElement RootElement
@@ -381,8 +383,9 @@ namespace SciterCore
 			}
 		}
 
-		// Notification handler
-        private uint NotificationHandler(IntPtr ptrNotification, IntPtr callbackParam)
+		#region Notification handler
+
+		private uint NotificationHandler(IntPtr ptrNotification, IntPtr callbackParam)
 		{
 			var callbackNotification = Marshal.PtrToStructure<SciterXDef.SCITER_CALLBACK_NOTIFICATION>(ptrNotification);
 
@@ -457,6 +460,8 @@ namespace SciterCore
 			return 0;
 		}
 
+		#endregion
+		
 		#region Overridables
 		
 		protected virtual LoadResult OnLoadData(object sender, LoadDataArgs args)
@@ -476,7 +481,7 @@ namespace SciterCore
 
 		protected virtual void OnDataLoaded(object sender, DataLoadedArgs args) { }
 
-		protected virtual bool OnAttachBehavior(SciterElement el, string behaviorName, out SciterEventHandler eventHandler)
+		protected virtual bool OnAttachBehavior(SciterElement element, string behaviorName, out SciterEventHandler eventHandler)
 		{
 			// returns a new SciterEventHandler if the behaviorName was registered by a previous RegisterBehaviorHandler() call
 			if (_behaviorMap.ContainsKey(behaviorName))

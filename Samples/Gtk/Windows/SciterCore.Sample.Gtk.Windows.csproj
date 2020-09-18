@@ -14,8 +14,8 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <SciterCorePackDirectory>..\common\wwwroot</SciterCorePackDirectory>
-    <!--<SciterCorePackType>binary</SciterCorePackType>
-    <SciterCorePackCopyToOutput Condition=" '$(Configuration)' == 'Debug' ">false</SciterCorePackCopyToOutput>-->
+    <!--<SciterCorePackType>binary</SciterCorePackType>-->
+    <SciterCorePackCopyToOutput Condition=" '$(Configuration)' == 'Debug' ">true</SciterCorePackCopyToOutput>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>

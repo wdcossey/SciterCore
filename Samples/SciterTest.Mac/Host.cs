@@ -23,7 +23,7 @@ namespace SciterTest.Mac
 		public Host(SciterWindow window)
 			: base(window: window)
 		{
-			RegisterBehaviorHandler(typeof(ImgDrawBehavior))
+			this.RegisterBehaviorHandler(typeof(ImgDrawBehavior))
                 .AttachEventHandler(new HostEventHandler());
 			
 #if DEBUG
@@ -43,8 +43,8 @@ namespace SciterTest.Mac
 			Uri uri = new Uri("file:///Users/midiway/Documents/SciterSharp/Tests/SciterTest.Mac/res/index.html", UriKind.Absolute);
 #endif
 
-			window.LoadPage(uri: uri)
-                .CenterTopLevelWindow()
+			window.LoadPage(uri: uri);
+			window.CenterTopLevelWindow()
                 .Show();
 		}
 

@@ -379,9 +379,9 @@ namespace SciterCore
 		/// Loads the page resource from the given URL or file path
 		/// </summary>
 		/// <param name="uri">URL or file path of the page</param>
-		public SciterWindow LoadPage(Uri uri)
+		public void LoadPage(Uri uri)
 		{
-			return LoadPage(uri: uri, out _);
+			TryLoadPage(uri);
 		}
 
         /// <summary>
@@ -389,19 +389,27 @@ namespace SciterCore
         /// </summary>
         /// <param name="uri">URL or file path of the page</param>
         /// <param name="loadResult">Result of <see cref="Sciter.SciterApi.SciterLoadFile"/></param>
-        public SciterWindow LoadPage(Uri uri, out bool loadResult)
-		{
-			//TODO: Check why SciterLoadFile() behaves differently in Windows with AbsoluteUri (file:///)
-#if WINDOWS || NETCORE
-			loadResult = Api.SciterLoadFile(hwnd: Handle, filename: uri.AbsoluteUri.Replace(":///", "://"));
-#else
-			loadResult = Api.SciterLoadFile(hwnd: Handle, filename: uri.AbsoluteUri);
-#endif
-			Debug.Assert(loadResult);
-			return this;
-		}
+        public void LoadPage(Uri uri, out bool loadResult)
+        {
+	        loadResult = TryLoadPage(uri);
+        }
 
-		/// <summary>
+        /// <summary>
+        /// Loads the page resource from the given URL or file path
+        /// </summary>
+        /// <param name="uri">URL or file path of the page</param>
+        public bool TryLoadPage(Uri uri)
+        {
+	        var absoluteUri = uri.AbsoluteUri;
+
+#if WINDOWS || NETCORE
+	        //TODO: Check why SciterLoadFile() behaves differently in Windows with AbsoluteUri (file:///)
+	        absoluteUri = absoluteUri.Replace(":///", "://");
+#endif
+	        return Api.SciterLoadFile(hwnd: Handle, filename: absoluteUri);
+        }
+
+        /// <summary>
 		/// Loads HTML input from a string
 		/// </summary>
 		/// <param name="html">HTML of the page to be loaded</param>

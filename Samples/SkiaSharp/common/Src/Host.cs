@@ -16,23 +16,23 @@ namespace SciterTest.Graphics
 		public Host(SciterWindow window)
 			: base(window)
 		{
-			RegisterBehaviorHandler<CheckeredBackgroundBitmapBehavior>();
+			this.RegisterBehaviorHandler<CheckeredBackgroundBitmapBehavior>()
 			
-			RegisterBehaviorHandler<InfoBitmapBehavior>();
+			.RegisterBehaviorHandler<InfoBitmapBehavior>()
 
-			RegisterBehaviorHandler<SolidBitmapBehavior>();
-			RegisterBehaviorHandler<SolidForegroundBitmapBehavior>();
+			.RegisterBehaviorHandler<SolidBitmapBehavior>()
+			.RegisterBehaviorHandler<SolidForegroundBitmapBehavior>()
 
-			RegisterBehaviorHandler<LinearBitmapBehavior>();
-			RegisterBehaviorHandler<LinearForegroundBitmapBehavior>();
+			.RegisterBehaviorHandler<LinearBitmapBehavior>()
+			.RegisterBehaviorHandler<LinearForegroundBitmapBehavior>()
 
-			RegisterBehaviorHandler<RadialBitmapBehavior>();
-			RegisterBehaviorHandler<RadialForegroundBitmapBehavior>();
+			.RegisterBehaviorHandler<RadialBitmapBehavior>()
+			.RegisterBehaviorHandler<RadialForegroundBitmapBehavior>()
 
-			RegisterBehaviorHandler<DrawTextBehavior>();
-			RegisterBehaviorHandler<DrawGeometryBehavior>();
+			.RegisterBehaviorHandler<DrawTextBehavior>()
+			.RegisterBehaviorHandler<DrawGeometryBehavior>()
 
-	        AttachEventHandler(new HostEventHandler());
+			.AttachEventHandler(new HostEventHandler());
 
 			SetupPage("index.html");
 

@@ -55,6 +55,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\InteropExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\SciterElementExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\SciterGraphicsExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\SciterHostExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\SciterImageExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\SciterNodeExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\SciterPathExtensions.cs" />
