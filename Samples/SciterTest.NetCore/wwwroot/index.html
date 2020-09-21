@@ -1,4 +1,4 @@
-<html window-blurbehind="none" theme="light">
+<html window-blurbehind="none" theme="dark">
 <head>
 	<style>
 		html {
@@ -83,6 +83,8 @@
 		card {
 			display: block;
 			padding: 16dip;
+			width: 1*; 
+			margin-bottom: 16dip;
 			border-radius: 2dip;
 			color: white;
 			background-color: rgba(36, 49, 64, 1);
@@ -134,6 +136,28 @@
 		card > cardcontent.has-exception span
 		{
 			color: crimson;
+		}
+		
+		cardheader {
+			display:inline-block; 
+			width: 1*;
+			margin-bottom: 16dip;
+		}
+		
+		cardheader > div {
+			vertical-align: center; 
+			font-family: Roboto,Helvetica Neue,sans-serif;
+		}
+		
+		cardheader > div:nth-child(1) {
+			font-size: 20dip;
+			font-weight: 500;
+		}
+		
+		cardheader > div:nth-child(2) {
+			font-size: 14dip;
+			font-weight: 400;
+			opacity: 0.6
 		}
 
 		progress.custom-progress
@@ -287,15 +311,12 @@
 		<section>
 			<div style="margin: 20dip">
 				<div #helloSciter />
-				
-				<p/>
 
-
-				<card style="width: 1*">
-					<div style="display:inline-block;">
-						<div style="font-size: 20dip; vertical-align: center; font-family: Roboto,Helvetica Neue,sans-serif;font-weight: 500;">RuntimeInformation</div>
-						<div style="font-size: 14dip;font-family: Roboto,Helvetica Neue,sans-serif;font-weight: 400;opacity: 0.6;margin-bottom: 16dip">Provides information about the .NET runtime installation.</div>
-					</div>
+				<card>
+					<cardheader>
+						<div>RuntimeInformation</div>
+						<div>Provides information about the .NET runtime installation.</div>
+					</cardheader>
 
 					<cardcontent #osContent>
 						<div>Operating System:</div>
@@ -307,17 +328,15 @@
 						<div>Process Architecture:</div>
 						<div style="font-weight: bold;"><span #processArchitecture/></div>
 					</cardcontent>
-
+					
 				</card>
 				
-				<p/>
-				
-				<card style="width: 1*" >
-					<div style="display:inline-block; width: 1*;margin-bottom: 16dip">
-						<div style="font-size: 20dip; vertical-align: center; font-family: Roboto,Helvetica Neue,sans-serif;font-weight: 500;">Multiple Callbacks</div>
-						<div style="font-size: 14dip;font-family: Roboto,Helvetica Neue,sans-serif;font-weight: 400;opacity: 0.6">This will execute a Task on the host with multiple callbacks.</div>
+				<card>
+					<cardheader>
+						<div>Multiple Callbacks</div>
+						<div>This will execute a Task on the host with multiple callbacks.</div>
 						<div style="margin: 4dip 0" #callbackProgressContainer><progress #callbackProgress .custom-progress max="200" value="0"/></div>
-					</div>
+					</cardheader>
 
 					<cardcontent #callbackContent state="visible">
 						<div>State:</div>
@@ -329,13 +348,13 @@
 					</cardcontent>
 
 				</card>
-				
-				<p/>
 
-				<card style="width: 1*; margin-bottom: 16dip">
-					<div style="font-size: 20dip; vertical-align: center; font-family: Roboto,Helvetica Neue,sans-serif;font-weight: 500;">StackFrame</div>
-					<div style="font-size: 14dip;font-family: Roboto,Helvetica Neue,sans-serif;font-weight: 400;opacity: 0.6;margin-bottom: 16dip">StackFrame corresponding to the calling stack frame.</div>
-
+				<card>
+					<cardheader>
+						<div>StackFrame</div>
+						<div>StackFrame corresponding to the calling stack frame.</div>
+					</cardheader>
+					
 					<cardcontent #stContent>
 						<div>Method:</div>
 						<div style="font-weight: bold;"><span #stMethodName/></div>
@@ -350,12 +369,12 @@
 					</cardcontent>
 				</card>
 				
-				<p/>
-
-				<card style="width: 1*; margin-bottom: 16dip">
-					<div style="font-size: 20dip; vertical-align: center; font-family: Roboto,Helvetica Neue,sans-serif;font-weight: 500;">Exception Handling</div>
-					<div style="font-size: 14dip;font-family: Roboto,Helvetica Neue,sans-serif;font-weight: 400;opacity: 0.6;margin-bottom: 16dip">Represents errors that occured during execution.</div>
-
+				<card>
+					<cardheader>
+						<div>Exception Handling</div>
+						<div>Represents errors that occured during execution.</div>
+					</cardheader>
+					
 					<cardcontent #exContent>
 						<div><span>Hello:</span>&nbsp;<span style="font-weight: bold;">Sciter</span></div>
 					</cardcontent>
@@ -376,7 +395,7 @@
 				
 				<div style="margin: * 8dip;display: inline-block; white-space: nowrap; overflow-x: fragments">
 					<a href="https://sciter.com/" style="display: inline-block; white-space: nowrap;">Sciter</a>
-					<span #sciterversion style="margin:0 auto; display: inline-block; white-space: nowrap;">Version</span>
+					<span #sciterversion style="margin:0 auto; display: inline-block; white-space: nowrap;">Version</span> | <a href="https://icons8.com/" >Icons8</a>
 				</div>
 
 			</div>

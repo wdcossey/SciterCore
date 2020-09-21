@@ -379,26 +379,16 @@ namespace SciterCore
 		/// Loads the page resource from the given URL or file path
 		/// </summary>
 		/// <param name="uri">URL or file path of the page</param>
-		public void LoadPage(Uri uri)
+		internal void LoadPageInternal(Uri uri)
 		{
-			TryLoadPage(uri);
+			TryLoadPageInternal(uri);
 		}
 
-        /// <summary>
+		/// <summary>
         /// Loads the page resource from the given URL or file path
         /// </summary>
         /// <param name="uri">URL or file path of the page</param>
-        /// <param name="loadResult">Result of <see cref="Sciter.SciterApi.SciterLoadFile"/></param>
-        public void LoadPage(Uri uri, out bool loadResult)
-        {
-	        loadResult = TryLoadPage(uri);
-        }
-
-        /// <summary>
-        /// Loads the page resource from the given URL or file path
-        /// </summary>
-        /// <param name="uri">URL or file path of the page</param>
-        public bool TryLoadPage(Uri uri)
+        internal bool TryLoadPageInternal(Uri uri)
         {
 	        var absoluteUri = uri.AbsoluteUri;
 
@@ -409,29 +399,26 @@ namespace SciterCore
 	        return Api.SciterLoadFile(hwnd: Handle, filename: absoluteUri);
         }
 
-        /// <summary>
+		/// <summary>
 		/// Loads HTML input from a string
 		/// </summary>
 		/// <param name="html">HTML of the page to be loaded</param>
 		/// <param name="baseUrl">Base Url given to the loaded page</param>
-		public SciterWindow LoadHtml(string html, string baseUrl = null)
+        internal void LoadHtmlInternal(string html, string baseUrl = null)
 		{
-            return LoadHtml(html: html, loadResult: out _, baseUrl: baseUrl);
+            TryLoadHtmlInternal(html: html, baseUrl: baseUrl);
 		}
-
+        
         /// <summary>
         /// Loads HTML input from a string
         /// </summary>
         /// <param name="html">HTML of the page to be loaded</param>
-        /// <param name="loadResult">Result of <see cref="Sciter.SciterApi.SciterLoadHtml"/></param>
         /// <param name="baseUrl">Base Url given to the loaded page</param>
-        public SciterWindow LoadHtml(string html, out bool loadResult, string baseUrl = null)
+        internal bool TryLoadHtmlInternal(string html, string baseUrl = null)
 		{
 			var bytes = Encoding.UTF8.GetBytes(s: html);
-            loadResult = Api.SciterLoadHtml(hwnd: Handle, html: bytes, htmlSize: (uint)bytes.Length, baseUrl: baseUrl);
-            Debug.Assert(loadResult);
-            return this;
-        }
+			return Api.SciterLoadHtml(hwnd: Handle, html: bytes, htmlSize: (uint)bytes.Length, baseUrl: baseUrl);
+		}
 
 		public SciterWindow Show(bool show = true)
 		{

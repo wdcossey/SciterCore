@@ -18,10 +18,10 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
-using System.Threading;
 using SciterCore.Interop;
 // ReSharper disable UnusedParameter.Global
 // ReSharper disable UnusedMember.Global
@@ -204,9 +204,8 @@ namespace SciterCore
 			Debug.Assert(WindowHandle != IntPtr.Zero, "Call SciterHost.SetupWindow() first");
 			Debug.Assert(name != null);
 
-			Interop.SciterValue.VALUE vret = new Interop.SciterValue.VALUE();
-			Api.SciterCall(WindowHandle, name, (uint)args.Length, SciterValue.ToVALUEArray(args), out vret);
-			return new SciterValue(vret);
+			Api.SciterCall(WindowHandle, name, (uint)args.Length, SciterValue.ToVALUEArray(args), out var value);
+			return new SciterValue(value);
 		}
 
 		public SciterValue EvalScript(string script)
@@ -214,13 +213,12 @@ namespace SciterCore
 			Debug.Assert(WindowHandle != IntPtr.Zero, "Call SciterHost.SetupWindow() first");
 			Debug.Assert(script != null);
 
-			Interop.SciterValue.VALUE vret = new Interop.SciterValue.VALUE();
-			Api.SciterEval(WindowHandle, script, (uint)script.Length, out vret);
-			return new SciterValue(vret);
+			Api.SciterEval(WindowHandle, script, (uint)script.Length, out var value);
+			return new SciterValue(value);
 		}
 
 		/// <summary>
-		/// Posts a message to the UI thread to invoke the given Action. This methods returns immediatly, does not wait for the message processing.
+		/// Posts a message to the UI thread to invoke the given Action. This methods returns immediately, does not wait for the message processing.
 		/// </summary>
 		/// <param name="what">The delegate which will be invoked</param>
 		public void InvokePost(Action what)
@@ -236,22 +234,23 @@ namespace SciterCore
 		/// Sends a message to the UI thread to invoke the given Action. This methods waits for the message processing until timeout is exceeded.
 		/// </summary>
 		/// <param name="what">The delegate which will be invoked</param>
+		/// <param name="timeout"></param>
 		public void InvokeSend(Action what, uint timeout = 3000)
 		{
 			Debug.Assert(WindowHandle != IntPtr.Zero, "Call SciterHost.SetupWindow() first");
 			Debug.Assert(what != null);
 			Debug.Assert(timeout > 0);
 
-			GCHandle handle = GCHandle.Alloc(what);
+			var handle = GCHandle.Alloc(what);
 			PostNotificationInternal(new IntPtr(INVOKE_NOTIFICATION), GCHandle.ToIntPtr(handle), timeout);
 		}
 
 		//TODO: @wdcossey - Clean this up!
 		internal async Task ConnectToInspectorInternalAsync()
 		{
-			string inspector_proc = "inspector";
-			var ps = Process.GetProcessesByName(inspector_proc);
-			if(ps.Length==0)
+			var inspectorProc = "inspector";
+			var processes = Process.GetProcessesByName(inspectorProc);
+			if(!processes.Any())
 			{
 				var value = EvalScript(@"view.msgbox { type:#warning, " +
 				                             			"title:\"Inspector\", " +

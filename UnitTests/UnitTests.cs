@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using NUnit.Framework;
 using SciterCore.Interop;
 
@@ -82,27 +84,6 @@ namespace SciterCore.UnitTests
 			Assert.AreEqual(4, actual.A);
 		}
 
-		private class TestableDebugOutputHandler : SciterDebugOutputHandler
-		{
-            private readonly SciterWindow _window;
-
-            public TestableDebugOutputHandler(SciterWindow window)
-			    :base()
-            {
-                _window = window;
-            }
-
-			public List<Tuple<SciterXDef.OUTPUT_SUBSYTEM, SciterXDef.OUTPUT_SEVERITY, string>> msgs = new List<Tuple<SciterXDef.OUTPUT_SUBSYTEM, SciterXDef.OUTPUT_SEVERITY, string>>();
-
-            protected override void OnOutput(SciterXDef.OUTPUT_SUBSYTEM subsystem, SciterXDef.OUTPUT_SEVERITY severity, string text)
-			{
-				msgs.Add(Tuple.Create(subsystem, severity, text));
-
-				Thread.Sleep(1000);
-				_window.Close();
-			}
-		}
-
 		[Test]
 		public void TestThings()
 		{
@@ -117,43 +98,74 @@ namespace SciterCore.UnitTests
 			Assert.IsTrue(!sv.IsUndefined);
 		}
 
-		[Test]
-		[Ignore("")]
-		public void TestDebugOutputHandler()
-        {
-            SciterWindow window = new SciterWindow()
-	            .CreateMainWindow(640, 480)
-	            .SetTitle("Wtf");
-
-            TestableDebugOutputHandler odh = new TestableDebugOutputHandler(window: window);
-
-            window
-                
-                .LoadHtml(@"
-<html>
-<style>
-	body { wtf: 123; }
-</style>
-<script type='text/tiscript'>
-</script>
-</html>",
-                out var loadResult);
-
-			Assert.IsTrue(condition: loadResult);
-
-			PInvokeWindows.MSG msg;
-            while(PInvokeWindows.GetMessage(lpMsg: out msg, hWnd: IntPtr.Zero, wMsgFilterMin: 0, wMsgFilterMax: 0) != 0)
+		private class TestableDebugOutputHandler : SciterDebugOutputHandler
+		{
+			// ReSharper disable once SuggestBaseTypeForParameter
+			public TestableDebugOutputHandler(SciterWindow window)
+				:base(window.Handle)
 			{
-                if (!window.IsVisible)
-                {
-                    window.Show();
-                }
-
-                PInvokeWindows.TranslateMessage(ref msg);
-				PInvokeWindows.DispatchMessage(ref msg);
+				
 			}
 
-			Assert.AreEqual(1, odh.msgs.Count);
+			public readonly List<(SciterXDef.OUTPUT_SUBSYTEM subsystem, SciterXDef.OUTPUT_SEVERITY severity, string text)> Messages = new List<(SciterXDef.OUTPUT_SUBSYTEM subsystem, SciterXDef.OUTPUT_SEVERITY severity, string text)>();
+
+			public event EventHandler<System.EventArgs> OnMessage;
+			
+			protected override void OnOutput(SciterXDef.OUTPUT_SUBSYTEM subsystem, SciterXDef.OUTPUT_SEVERITY severity, string text)
+			{
+				Messages.Add((subsystem, severity, text));
+				OnMessage?.Invoke(this, System.EventArgs.Empty);
+			}
 		}
+		
+		[Test]
+		public void TestDebugOutputHandler()
+        {
+	        var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+
+	        Assert.DoesNotThrowAsync(() =>
+		        Task.Run(() =>
+		        {
+			        SciterWindow window = new SciterWindow()
+				        .CreateMainWindow(640, 480)
+				        .SetTitle(nameof(TestDebugOutputHandler));
+
+			        var odh = new TestableDebugOutputHandler(window: window);
+
+			        odh.OnMessage += (sender, tuple) =>
+			        {
+				        window.Close();
+			        };
+		            
+			        var loadResult = window
+				        .TryLoadHtml(
+					        @"<html>
+	<script type='text/tiscript'>
+		function self.ready() {
+			throw 'throw an exception!';
+		}   
+	</script>
+	</html>");
+
+			        Assert.IsTrue(condition: loadResult);
+
+			        while(PInvokeWindows.GetMessage(lpMsg: out var msg, hWnd: IntPtr.Zero, wMsgFilterMin: 0, wMsgFilterMax: 0) != 0)
+			        {
+				        //if (!window.IsVisible)
+					    //    window.Show();
+
+				        PInvokeWindows.TranslateMessage(ref msg);
+				        PInvokeWindows.DispatchMessage(ref msg);
+			        }
+
+			        Assert.NotNull(odh.Messages);
+			        Assert.GreaterOrEqual(odh.Messages.Count, 1);
+				
+			        Assert.IsTrue(odh.Messages.Any(tuple => 
+				        tuple.severity == SciterXDef.OUTPUT_SEVERITY.OS_ERROR && 
+				        tuple.subsystem == SciterXDef.OUTPUT_SUBSYTEM.OT_TIS && 
+				        tuple.text.Equals("throw an exception!\n")));
+		        }, cts.Token));
+        }
 	}
 }
