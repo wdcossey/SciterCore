@@ -94,7 +94,7 @@ namespace SciterCore.UnitTests.Graphics
                 
                 using(var graphics = SciterGraphics.Create(args.Handle))
                 {
-                    for (int i = 0; i < 10; i++)
+                    for (var i = 0; i < 10; i++)
                     {
                         graphics.SaveState()
                             .Translate(args.Area.Left, args.Area.Top)
@@ -413,7 +413,7 @@ namespace SciterCore.UnitTests.Graphics
                 
                 using(var graphics = SciterGraphics.Create(prms.Handle))
                 {
-                    for (int i = 0; i < 20; i++)
+                    for (var i = 0; i < 20; i++)
                     {
                         graphics.SaveState()
                             .Translate(prms.Area.Left, prms.Area.Top)

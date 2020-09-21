@@ -67,7 +67,7 @@ namespace SciterCore
 			return OpenAsync(resourceName: resourceName).GetAwaiter().GetResult();
 		}
 
-		public SciterArchive Open(Assembly assembly, string resourceName)
+		public SciterArchive Open(Assembly assembly, string resourceName = "SciterResource")
 		{
 			return OpenAsync(assembly: assembly, resourceName: resourceName).GetAwaiter().GetResult();
 		}
@@ -83,7 +83,7 @@ namespace SciterCore
 			return OpenAsync(assembly: assembly, resourceName: resourceName);
 		}
 
-		public async Task<SciterArchive> OpenAsync(Assembly assembly, string resourceName)
+		public async Task<SciterArchive> OpenAsync(Assembly assembly, string resourceName = "SciterResource")
 		{
 			ArchiveAlreadyOpened();
 
@@ -94,7 +94,7 @@ namespace SciterCore
 					throw new InvalidOperationException($"Could not load manifest resource stream ({resourceName}).");
 				}
 
-				byte[] buffer = new byte[stream.Length];
+				var buffer = new byte[stream.Length];
 
 				await stream.ReadAsync(buffer, 0, buffer.Length);
 
@@ -132,26 +132,30 @@ namespace SciterCore
 
         public SciterArchive GetItem(Uri uri, Action<byte[], string> onFound)
 		{
-			var data = this?.GetItem(uri);
+			var actualUri = uri.IsAbsoluteUri ? uri : new Uri(this.Uri, uri);
+			
+			var data = this?.GetItem(actualUri);
 
 			if(data != null)
-				onFound?.Invoke(data, uri.GetComponents(UriComponents.Path, UriFormat.SafeUnescaped));
+				onFound?.Invoke(data, actualUri.GetComponents(UriComponents.Path, UriFormat.SafeUnescaped));
 			
 			return this;
 		}
 
 		public SciterArchive GetItem(string uriString, Action<byte[], string> onFound)
 		{
-			var uri = new Uri(uriString);
+			var uri = new Uri(uriString, UriKind.RelativeOrAbsolute);
 			return GetItem(uri, onFound: onFound);
 		}
 		
 		public byte[] GetItem(Uri uri)
 		{
-			if (!IsOpen || !uri.GetLeftPart(UriPartial.Scheme).Equals(this.Uri.GetLeftPart(UriPartial.Scheme)))
+			var actualUri = uri.IsAbsoluteUri ? uri : new Uri(this.Uri, uri);
+
+			if (!IsOpen || !actualUri.GetLeftPart(UriPartial.Scheme).Equals(this.Uri.GetLeftPart(UriPartial.Scheme)))
 				return null;
 			
-			var path = uri.GetComponents(UriComponents.Path, UriFormat.SafeUnescaped);
+			var path = actualUri.GetComponents(UriComponents.Path, UriFormat.SafeUnescaped);
 
 			var found = Api.SciterGetArchiveItem(_handle, path, out var dataPtr, out var dataLength);
 
@@ -165,15 +169,15 @@ namespace SciterCore
 
 		public byte[] GetItem(string uriString)
 		{
-			var uri = new Uri(uriString);
-			return GetItem(uri);
+			var uri = new Uri(uriString, UriKind.RelativeOrAbsolute);
+			var actualUri = uri.IsAbsoluteUri ? uri : new Uri(this.Uri, uri);
+			return GetItem(actualUri);
 		}
 
 		[Obsolete("Use the GetItem(Uri) method")]
 		public byte[] Get(string path)
 		{
 			var uri = new Uri(path);
-
 			return GetItem(uri: uri);
 		}
 
