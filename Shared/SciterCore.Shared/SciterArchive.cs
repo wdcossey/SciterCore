@@ -174,14 +174,7 @@ namespace SciterCore
 			return GetItem(actualUri);
 		}
 
-		[Obsolete("Use the GetItem(Uri) method")]
-		public byte[] Get(string path)
-		{
-			var uri = new Uri(path);
-			return GetItem(uri: uri);
-		}
-
-        #endregion
+		#endregion
 
         #region Private Methods
 

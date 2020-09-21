@@ -10,10 +10,17 @@ namespace SciterCore.UnitTests
         private Assembly _assembly;
 
         [SetUp]
-        public void Setup()
+        public void SetUp()
         {
             _assembly = GetType().Assembly;
             _archive = new SciterArchive();
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            if (_archive.IsOpen)
+                _archive?.Dispose();
         }
 
         [Test]
