@@ -124,9 +124,10 @@ namespace SciterCore.WinForms
             InternalGetItem?.Invoke(this, intArgs);
             
             // load resource from SciterArchive
-            _archive?.GetItem(uri: args.Uri, onFound: (data, path) =>
+            _archive?.GetItem(uri: args.Uri, onGetResult: (result) =>
             {
-               _api.SciterDataReady(WindowHandle, path, data, (uint)data.Length);
+                if (result.IsSuccessful)
+                    _api.SciterDataReady(WindowHandle, result.Path, result.Data, (uint)result.Size);
             });
 
             return base.OnLoadData(sender: sender, args: args);

@@ -17,9 +17,8 @@ namespace SciterTest.Gtk
 			MessageBox.Show (IntPtr.Zero, "ola", "mnundo");
 
 #if WINDOWS
-			// Sciter needs this for drag'n'drop support; STAThread is required for OleInitialize succeess
-			int oleres = PInvokeWindows.OleInitialize(IntPtr.Zero);
-			Debug.Assert(oleres == 0);
+			// Sciter needs this for drag'n'drop support
+			SciterPlatform.EnableDragAndDrop();
 #endif
 #if GTKMONO
 			PInvokeGTK.gtk_init(IntPtr.Zero, IntPtr.Zero);

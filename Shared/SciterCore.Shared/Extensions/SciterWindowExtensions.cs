@@ -1,6 +1,9 @@
 ﻿// ReSharper disable UnusedMember.Global
 // ReSharper disable ArgumentsStyleNamedExpression
 // ReSharper disable RedundantTypeSpecificationInDefaultExpression
+
+using System;
+
 namespace SciterCore
 {
     public static class SciterWindowExtensions
@@ -102,7 +105,7 @@ namespace SciterCore
 
         #endregion
 
-        #region 
+        #region  Update
 
         public static SciterWindow UpdateWindow(this SciterWindow window)
         {
@@ -115,6 +118,54 @@ namespace SciterCore
 	        return window?.TryUpdateWindowInternal() == true;
         }
 
+        #endregion
+
+        #region Load Page/Html
+        
+        /// <summary>
+        /// Loads the page resource from the given URL or file path
+        /// </summary>
+        /// <param name="window"></param>
+        /// <param name="uri">URL or file path of the page</param>
+        public static SciterWindow LoadPage(this SciterWindow window, Uri uri)
+        {
+	        window?.LoadPageInternal(uri: uri);
+	        return window;
+        }
+
+        /// <summary>
+        /// Loads the page resource from the given URL or file path
+        /// </summary>
+        /// <param name="window"></param>
+        /// <param name="uri">URL or file path of the page</param>
+        public static bool TryLoadPage(this SciterWindow window, Uri uri)
+        {
+	        return window?.TryLoadPageInternal(uri: uri) == true;
+        }
+
+        /// <summary>
+        /// Loads HTML input from a string
+        /// </summary>
+        /// <param name="window"></param>
+        /// <param name="html">HTML of the page to be loaded</param>
+        /// <param name="baseUrl">Base Url given to the loaded page</param>
+        public static SciterWindow LoadHtml(this SciterWindow window, string html, string baseUrl = null)
+        {
+	        window?.LoadHtmlInternal(html: html, baseUrl: baseUrl);
+	        return window;
+        }
+
+        /// <summary>
+        /// Loads HTML input from a string
+        /// </summary>
+        /// <param name="window"></param>
+        /// <param name="html">HTML of the page to be loaded</param>
+        /// <param name="baseUrl">Base Url given to the loaded page</param>
+        public static bool TryLoadHtml(this SciterWindow window, string html, string baseUrl = null)
+        {
+	        return window?.TryLoadHtmlInternal(html: html, baseUrl: baseUrl) == true;
+        }
+        
         #endregion
     }
 }

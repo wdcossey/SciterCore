@@ -45,6 +45,32 @@ namespace SciterCore.UnitTests
             Assert.AreEqual(SciterArchive.DEFAULT_ARCHIVE_URI, _archive.Uri.AbsoluteUri);
         }
 
+        [TestCase(new byte[] { 
+            83 , 65 , 114, 0  , 11 , 0  , 0  , 0  , 105, 0  , 255, 255, 1  , 0  , 255, 255, 110, 0  , 255, 255, 
+            2  , 0  , 255, 255, 100, 0  , 255, 255, 3  , 0  , 255, 255, 101, 0  , 255, 255, 4  , 0  , 255, 255, 
+            120, 0  , 255, 255, 5  , 0  , 255, 255, 46 , 0  , 255, 255, 6  , 0  , 255, 255, 104, 0  , 255, 255, 
+            7  , 0  , 255, 255, 116, 0  , 255, 255, 8  , 0  , 255, 255, 109, 0  , 255, 255, 9  , 0  , 255, 255, 
+            108, 0  , 255, 255, 10 , 0  , 255, 255, 0  , 0  , 255, 255, 1  , 0  , 255, 255, 1  , 0  , 0  , 0  , 
+            112, 0  , 0  , 0  , 121, 0  , 0  , 0  , 153, 0  , 0  , 0  , 31 , 239, 187, 191, 60 , 104, 116, 109, 
+            108, 32 , 108, 97 , 110, 103, 61 , 34 , 101, 110, 34 , 62 , 13 , 10 , 60 , 115, 99 , 114, 105, 112, 
+            116, 32 , 116, 121, 112, 9  , 101, 61 , 39 , 116, 101, 120, 116, 47 , 116, 105, 128, 19 , 3  , 39 , 
+            62 , 60 , 47 , 128, 9  , 64 , 39 , 3  , 104, 101, 97 , 100, 32 , 7  , 0  , 32 , 32 , 0  , 7  , 60 , 
+            116, 105, 116, 108, 101, 62 , 84 , 64 , 5  , 0  , 60 , 32 , 46 , 32 , 6  , 192, 25 , 2  , 115, 116, 
+            121, 32 , 12 , 32 , 55 , 96 , 7  , 32 , 54 , 0  , 47 , 160, 55 , 32 , 10 , 3  , 98 , 111, 100, 121, 
+            128, 9  , 0  , 47 , 160, 10 , 32 , 29 , 3  , 116, 109, 108, 62 })]
+        public void Open_archive_from_byte_array(byte[] buffer)
+        {
+            Assert.DoesNotThrow(() => _archive.Open(buffer));
+            Assert.IsTrue(_archive.IsOpen);
+            Assert.AreEqual(SciterArchive.DEFAULT_ARCHIVE_URI, _archive.Uri.AbsoluteUri);
+        }
+
+        [Test]
+        public void Open_archive_with_invalid_resourceName_throws_InvalidOperationException()
+        {
+            Assert.ThrowsAsync<InvalidOperationException>(() => _archive.OpenAsync(assembly: _assembly, resourceName: "<not found>"));
+        }
+
         [Test]
         public void Open_archive_twice_throws_InvalidOperationException()
         {
@@ -58,9 +84,9 @@ namespace SciterCore.UnitTests
             byte[] buffer = null;
             
             _archive.OpenAsync(_assembly);
-            _archive.GetItem(new Uri(_archive.Uri, "index.html"), (bytes, s) =>
+            _archive.GetItem(new Uri(_archive.Uri, "index.html"), (res) =>
             {
-                buffer = bytes;
+                buffer = res.Data;
             });
             
             Assert.NotNull(buffer);
@@ -80,9 +106,9 @@ namespace SciterCore.UnitTests
             byte[] buffer = null;
             
             _archive.OpenAsync(_assembly);
-            _archive.GetItem("index.html", (bytes, s) =>
+            _archive.GetItem("index.html", (res) =>
             {
-                buffer = bytes;
+                buffer = res.Data;
             });
             
             Assert.NotNull(buffer);

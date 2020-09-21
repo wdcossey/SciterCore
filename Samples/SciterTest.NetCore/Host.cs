@@ -229,9 +229,9 @@ namespace SciterTest.NetCore
 	// - in RELEASE mode: resources loaded from by a SciterArchive (packed binary data contained as C# code in ArchiveResource.cs)
 	public class BaseHost : SciterHost
 	{
-		protected static Sciter.SciterApi _api = Sciter.Api;
-		protected SciterArchive _archive = new SciterArchive();
-		protected SciterWindow _window;
+		private readonly Sciter.SciterApi _api = Sciter.Api;
+		private readonly SciterArchive _archive = new SciterArchive();
+		private readonly SciterWindow _window;
 
 		public BaseHost(SciterWindow window)
 			: base(window)
@@ -251,7 +251,7 @@ namespace SciterTest.NetCore
 			Debug.Assert(File.Exists(uri.AbsolutePath));
 #else
 			Uri uri = new Uri(baseUri: _archive.Uri, page);
-#endif
+#endif 
 
 			if (_window.TryLoadPage(uri: uri))
 				onCompleted?.Invoke(this, _window);
@@ -264,9 +264,10 @@ namespace SciterTest.NetCore
 		protected override LoadResult OnLoadData(object sender, LoadDataArgs args)
 		{
 			// load resource from SciterArchive
-			_archive?.GetItem(args.Uri, (data, path) => 
+			_archive?.GetItem(args.Uri, (res) => 
 			{
-				_api.SciterDataReady(_window.Handle, path, data, (uint) data.Length);
+				if (res.IsSuccessful)
+					_api.SciterDataReady(_window.Handle, res.Path, res.Data, (uint) res.Size);
 			});
 
 			// call base to ensure LibConsole is loaded

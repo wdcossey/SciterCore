@@ -145,7 +145,7 @@ namespace SciterCore
 
 		/// <summary>
 		/// Attaches a window level event-handler: it receives every event for all elements of the page.
-		/// You normally attaches it before loading the page HTML with <see cref="SciterWindow.LoadPage(Uri)"/>
+		/// You normally attaches it before loading the page HTML with <see cref="SciterWindowExtensions.LoadPage"/>
 		/// You can only attach a single event-handler.
 		/// </summary>
 		public SciterHost AttachEventHandler(SciterEventHandler eventHandler)
@@ -162,7 +162,7 @@ namespace SciterCore
 
 		/// <summary>
 		/// Attaches a window level event-handler: it receives every event for all elements of the page.
-		/// You normally attaches it before loading the page HTML with <see cref="SciterWindow.LoadPage(Uri)"/>
+		/// You normally attaches it before loading the page HTML with <see cref="SciterWindowExtensions.LoadPage"/>
 		/// You can only attach a single event-handler.
 		/// </summary>
 		public SciterHost AttachEventHandler<THandler>()
@@ -174,7 +174,7 @@ namespace SciterCore
 
 		/// <summary>
 		/// Attaches a window level event-handler: it receives every event for all elements of the page.
-		/// You normally attaches it before loading the page HTML with <see cref="SciterWindow.LoadPage(Uri)"/>
+		/// You normally attaches it before loading the page HTML with <see cref="SciterWindowExtensions.LoadPage"/>
 		/// You can only attach a single event-handler.
 		/// </summary>
 		public SciterHost AttachEventHandler<THandler>(Func<THandler> func)
@@ -474,9 +474,10 @@ namespace SciterCore
 			
 			if(InjectLibConsole)
 			{
-				_consoleArchive?.GetItem(args.Uri, (data, path) => 
-				{ 
-					Api.SciterDataReady(WindowHandle, path, data, (uint) data.Length);
+				_consoleArchive?.GetItem(args.Uri, (result) => 
+				{
+					if (result.IsSuccessful)
+						Api.SciterDataReady(WindowHandle, result.Path, result.Data, (uint) result.Size);
 				});
 			}
 

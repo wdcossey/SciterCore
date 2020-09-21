@@ -73,9 +73,10 @@ namespace SciterTest.Idioms
 		protected override LoadResult OnLoadData(object sender, LoadDataArgs args)
 		{
 			// load resource from SciterArchive
-			_archive?.GetItem(args.Uri, (data, path) =>
+			_archive?.GetItem(args.Uri, (result) =>
 			{
-				_api.SciterDataReady(_window.Handle, path, data, (uint)data.Length);
+				if (result.IsSuccessful)
+					_api.SciterDataReady(_window.Handle, result.Path, result.Data, (uint) result.Size);
 			});
 
 			//if(_archive?.IsOpen == true && sld.uri.StartsWith(_archive.Uri.GetLeftPart(UriPartial.Path)))

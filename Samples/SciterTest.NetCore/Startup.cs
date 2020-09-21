@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
+using SciterCore;
 using SciterCore.Interop;
 
 namespace SciterTest.NetCore
@@ -14,9 +15,8 @@ namespace SciterTest.NetCore
             //MessageBox.Show (IntPtr.Zero, "ola", "mnundo");
 
 #if WINDOWS || NETCOREAPP
-			// Sciter needs this for drag'n'drop support; STAThread is required for OleInitialize success
-			//int oleres = PInvokeWindows.OleInitialize(IntPtr.Zero);
-			//Debug.Assert(oleres == 0);
+			// Sciter needs this for drag'n'drop support
+            SciterPlatform.EnableDragAndDrop();
 #endif
 #if GTKMONO
 			PInvokeGTK.gtk_init(IntPtr.Zero, IntPtr.Zero);

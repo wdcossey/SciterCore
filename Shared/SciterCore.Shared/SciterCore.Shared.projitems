@@ -39,6 +39,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Enums\ScrollEvents.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\ScrollSource.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\StringConversionType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EventArgs\ArchiveGetItemEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EventArgs\DataLoadedArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EventArgs\DrawArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EventArgs\EngineDestroyedArgs.cs" />
@@ -53,6 +54,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\DrawingExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\GraphinResultExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\InteropExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\SciterArchiveExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\SciterElementExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\SciterGraphicsExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\SciterHostExtensions.cs" />
@@ -97,6 +99,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)SciterEventHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SciterHost.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SciterNode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SciterPlatform.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SciterRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SciterScriptResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SciterValue.cs" />

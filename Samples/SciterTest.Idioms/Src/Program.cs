@@ -10,9 +10,8 @@ namespace SciterTest.Idioms
 		[STAThread]
 		static void Main(string[] args)
 		{
-			// Sciter needs this for drag'n'drop support; STAThread is required for OleInitialize succeess
-			int oleres = PInvokeWindows.OleInitialize(IntPtr.Zero);
-			Debug.Assert(oleres == 0);
+			// Sciter needs this for drag'n'drop support
+			SciterPlatform.EnableDragAndDrop();
 			
 			// Create the window
 			var window = new SciterWindow()

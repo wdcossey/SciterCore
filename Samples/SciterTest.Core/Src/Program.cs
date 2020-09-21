@@ -38,9 +38,8 @@ namespace SciterTest.Core
 			Console.WriteLine("Sciter: " + Sciter.Version());
 			Console.WriteLine("Bitness: " + IntPtr.Size);
 
-			// Sciter needs this for drag'n'drop support; STAThread is required for OleInitialize succeess
-			int oleres = PInvokeWindows.OleInitialize(IntPtr.Zero);
-			Debug.Assert(oleres == 0);
+			// Sciter needs this for drag'n'drop support
+			SciterPlatform.EnableDragAndDrop();
 			
 			var rc = new PInvokeUtils.RECT(800, 600);
 

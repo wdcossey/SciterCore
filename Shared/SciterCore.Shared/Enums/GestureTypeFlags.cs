@@ -29,7 +29,7 @@ namespace SciterCore
         PanHorizontal     = 0x0008,
         
         /// <summary>
-        /// press & tap
+        /// press &amp; tap
         /// </summary>
         Tap1              = 0x0010,
         

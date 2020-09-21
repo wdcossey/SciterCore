@@ -16,7 +16,6 @@
 // along with SciterSharp.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 using SciterCore.Interop;
@@ -55,24 +54,24 @@ namespace SciterCore
 
         public void Dispose()
 		{
-			Close();
+			CloseInternal();
 		}
 
         #endregion
 
         #region Open Archive
 
-        public SciterArchive Open(string resourceName = "SciterResource")
+        internal void OpenInternal(string resourceName)
         {
-			return OpenAsync(resourceName: resourceName).GetAwaiter().GetResult();
+	        OpenInternalAsync(resourceName: resourceName).GetAwaiter().GetResult();
 		}
 
-		public SciterArchive Open(Assembly assembly, string resourceName = "SciterResource")
+        internal void OpenInternal(Assembly assembly, string resourceName)
 		{
-			return OpenAsync(assembly: assembly, resourceName: resourceName).GetAwaiter().GetResult();
+			OpenInternalAsync(assembly: assembly, resourceName: resourceName).GetAwaiter().GetResult();
 		}
 
-		public Task<SciterArchive> OpenAsync(string resourceName = "SciterResource", StringComparison comparisonType = StringComparison.OrdinalIgnoreCase)
+		internal Task OpenInternalAsync(string resourceName, StringComparison comparisonType = StringComparison.OrdinalIgnoreCase)
 		{
 			var assembly = Assembly.GetEntryAssembly();
 			if (assembly?.GetManifestResourceNames().Any(a => a.Equals(resourceName, comparisonType: comparisonType)) != true)
@@ -80,44 +79,44 @@ namespace SciterCore
 				assembly = Assembly.GetExecutingAssembly();
 			}
 
-			return OpenAsync(assembly: assembly, resourceName: resourceName);
+			return OpenInternalAsync(assembly: assembly, resourceName: resourceName);
 		}
 
-		public async Task<SciterArchive> OpenAsync(Assembly assembly, string resourceName = "SciterResource")
+		internal async Task OpenInternalAsync(Assembly assembly, string resourceName)
 		{
 			ArchiveAlreadyOpened();
-
+			
 			using (var stream = assembly.GetManifestResourceStream(resourceName))
 			{
 				if (stream == null)
-				{
 					throw new InvalidOperationException($"Could not load manifest resource stream ({resourceName}).");
-				}
 
 				var buffer = new byte[stream.Length];
 
 				await stream.ReadAsync(buffer, 0, buffer.Length);
 
-				return Open(buffer: buffer);
+				OpenInternal(buffer: buffer);
 			}
 		}
 		
-		public SciterArchive Open(byte[] buffer)
+		internal void OpenInternal(byte[] buffer)
+		{
+			TryOpenInternal(buffer: buffer);
+		}
+		
+		internal bool TryOpenInternal(byte[] buffer)
 		{
 			ArchiveAlreadyOpened();
-
 			_pinnedArray = GCHandle.Alloc(buffer, GCHandleType.Pinned);
 			_handle = Api.SciterOpenArchive(_pinnedArray.AddrOfPinnedObject(), Convert.ToUInt32(buffer.Length));
-			Debug.Assert(_handle != IntPtr.Zero);
-
-			return this;
+			return !_handle.Equals(IntPtr.Zero);
 		}
 
         #endregion
 
         #region Close Archive
 
-        public void Close()
+        internal void CloseInternal()
 		{
 			ArchiveNotOpened();
 			
@@ -130,49 +129,58 @@ namespace SciterCore
 
         #region Get Archive Item
 
-        public SciterArchive GetItem(Uri uri, Action<byte[], string> onFound)
+        internal void GetItemInternal(Uri uri, Action<ArchiveGetItemResult> onGetResult)
 		{
 			var actualUri = uri.IsAbsoluteUri ? uri : new Uri(this.Uri, uri);
 			
-			var data = this?.GetItem(actualUri);
+			var data = GetItemInternal(actualUri);
 
-			if(data != null)
-				onFound?.Invoke(data, actualUri.GetComponents(UriComponents.Path, UriFormat.SafeUnescaped));
-			
-			return this;
+			onGetResult?.Invoke(new ArchiveGetItemResult(data, actualUri.GetComponents(UriComponents.Path, UriFormat.SafeUnescaped), data != null));
 		}
 
-		public SciterArchive GetItem(string uriString, Action<byte[], string> onFound)
+        internal void GetItemInternal(string uriString, Action<ArchiveGetItemResult> onGetResult)
 		{
 			var uri = new Uri(uriString, UriKind.RelativeOrAbsolute);
-			return GetItem(uri, onFound: onFound);
+			GetItemInternal(uri, onGetResult: onGetResult);
 		}
 		
-		public byte[] GetItem(Uri uri)
-		{
+        internal byte[] GetItemInternal(string uriString)
+        {
+	        var uri = new Uri(uriString, UriKind.RelativeOrAbsolute);
+	        var actualUri = uri.IsAbsoluteUri ? uri : new Uri(this.Uri, uri);
+	        return GetItemInternal(actualUri);
+        }
+        
+        internal byte[] GetItemInternal(Uri uri)
+        {
+	        TryGetItemInternal(uri: uri, out var result);
+			return result;
+		}
+        
+        internal bool TryGetItemInternal(Uri uri, out byte[] data)
+        {
+	        data = null;
+	        
 			var actualUri = uri.IsAbsoluteUri ? uri : new Uri(this.Uri, uri);
 
 			if (!IsOpen || !actualUri.GetLeftPart(UriPartial.Scheme).Equals(this.Uri.GetLeftPart(UriPartial.Scheme)))
-				return null;
+				return false;
 			
 			var path = actualUri.GetComponents(UriComponents.Path, UriFormat.SafeUnescaped);
 
 			var found = Api.SciterGetArchiveItem(_handle, path, out var dataPtr, out var dataLength);
 
 			if (!found) 
-				return null;
+				return false;
 				
-			var result = new byte[dataLength];
-			Marshal.Copy(dataPtr, result, 0, Convert.ToInt32(dataLength));
-			return result;
+			var buffer = new byte[dataLength];
+			Marshal.Copy(dataPtr, buffer, 0, Convert.ToInt32(dataLength));
+			data = buffer;
+			
+			return true;
 		}
 
-		public byte[] GetItem(string uriString)
-		{
-			var uri = new Uri(uriString, UriKind.RelativeOrAbsolute);
-			var actualUri = uri.IsAbsoluteUri ? uri : new Uri(this.Uri, uri);
-			return GetItem(actualUri);
-		}
+        
 
 		#endregion
 
