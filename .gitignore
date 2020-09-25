@@ -352,3 +352,4 @@ MigrationBackup/
 
 # Ignore SciterCore.PackFolder output
 **/.sciter/*.bin
+**/sciter.build/*.bin

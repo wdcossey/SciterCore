@@ -37,7 +37,7 @@ namespace SciterCore
 		private readonly IntPtr _elementHandle;
 
 		public IntPtr Handle => _elementHandle;
-		
+
 		public SciterElement(IntPtr elementHandle)
 		{
 			if(elementHandle == IntPtr.Zero)
@@ -749,10 +749,23 @@ namespace SciterCore
 
 		#region Events
 		
+		internal void OnCustomEventInternal(Action<string, SciterElement, SciterElement, SciterValue> callback)
+		{
+			if (callback == null)
+				return;
+
+			var eventHandler = new EventHandlers.CustomEventHandler(this, callback);
+			
+			var result = Api.SciterAttachEventHandler(this.Handle, eventHandler.EventProc, IntPtr.Zero)
+				.IsOk();
+		}
+		
 		internal bool TryAttachEventHandlerInternal(SciterEventHandler eventHandler)
 		{
-			return Api.SciterAttachEventHandler(this.Handle, eventHandler.EventProc, IntPtr.Zero)
+			var result = Api.SciterAttachEventHandler(this.Handle, eventHandler.EventProc, IntPtr.Zero)
 				.IsOk();
+			
+			return result;
 		}
 		
 		internal void DetachEventHandlerInternal(SciterEventHandler eventHandler)
@@ -762,8 +775,10 @@ namespace SciterCore
 		
 		internal bool TryDetachEventHandlerInternal(SciterEventHandler eventHandler)
 		{
-			return Api.SciterDetachEventHandler(this.Handle, eventHandler.EventProc, IntPtr.Zero)
+			var result = Api.SciterDetachEventHandler(this.Handle, eventHandler.EventProc, IntPtr.Zero)
 				.IsOk();
+			
+			return result;
 		}
 
 		internal void SendEventInternal(int eventCode, int reason = 0, SciterElement source = null)

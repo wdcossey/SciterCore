@@ -8,7 +8,7 @@ namespace SciterTest.NetCore
 {
     public class Startup : IHostedService
     {
-        public static Host<Window> AppHost { get; private set; }
+        public static ApplicationHost<Window> ApplicationHost { get; private set; }
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
@@ -30,9 +30,8 @@ namespace SciterTest.NetCore
             */
 
             // Prepares SciterHost and then load the page
-            AppHost = new Host<Window>(() => new Window());
-
-
+            ApplicationHost = new ApplicationHost<Window>(() => new Window());
+            
             // Run message loop
             PInvokeUtils.RunMsgLoop();
         }

@@ -50,6 +50,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)EventArgs\LoadDataArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EventArgs\MouseArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EventArgs\ScrollEventArgs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EventHandlers\CustomEventHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\DomResultExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\DrawingExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\GraphinResultExtensions.cs" />

@@ -614,6 +614,12 @@ namespace SciterCore
             return element;
         }
 		
+        public static SciterElement OnCustomEvent(this SciterElement element, Action<string, SciterElement, SciterElement, SciterValue> callback)
+        {
+            element?.OnCustomEventInternal(callback);
+            return element;
+        }
+		
         public static bool TryAttachEventHandler(this SciterElement element, SciterEventHandler eventHandler)
         {
             if (eventHandler == null)

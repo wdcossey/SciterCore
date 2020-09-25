@@ -26,7 +26,6 @@ namespace SciterTest.Core
 
 		public static SciterWindow AppWindow;
 		public static Host AppHost;
-		private static SciterMessages sm = new SciterMessages();
 
 		[STAThread]
 		static void Main(string[] args)
@@ -41,10 +40,6 @@ namespace SciterTest.Core
 			// Sciter needs this for drag'n'drop support
 			SciterPlatform.EnableDragAndDrop();
 			
-			var rc = new PInvokeUtils.RECT(800, 600);
-
-			//wnd.CreateWindow(rc, SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_POPUP | SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_MAIN | SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_RESIZEABLE);
-
 			// Create the window
 			AppWindow = new SciterWindow()
 				.CreateMainWindow(800, 600)

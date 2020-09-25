@@ -31,12 +31,18 @@ namespace SciterCore
         {
             Host = host;
 
-            return Run(() => { PInvokeUtils.RunMsgLoop();  });
+            return Run(PInvokeUtils.RunMsgLoop);
 
             //return Run(() => { host.Show(); });
             //window.Show();
             //NativeMethods.Main();
             //return 0;
+        }
+
+        public int Run<THost>()
+            where THost: SciterHost
+        {
+            return Run(Activator.CreateInstance<THost>());
         }
 
         public int Run<THost>(Func<THost> hostFunc)

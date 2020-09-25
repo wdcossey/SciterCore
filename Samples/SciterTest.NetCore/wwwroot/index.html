@@ -80,6 +80,35 @@
 			backdrop-filter: blur(10dip);
 		}
 
+		/*overlay
+		{
+			color: white;
+			behavior: card-drop-behavior;
+			display:block; 
+			flow:vertical;
+			visibility:none; // invisible by default
+			position:fixed;
+			top:0; left:0; right:0; bottom:0; // covers whole window area
+			background:rgba(0, 0, 0,0.25); // semi-transparent
+			backdrop-filter: blur(10dip);
+			z-index: 100; // above all
+		}
+
+		overlay > text {
+			width:50%;
+			height:max-content;
+			border-radius: 2dip;
+			margin:*; // to put it in the middle
+			padding:1em;
+			background: rgba(36, 49, 64, 1);
+			box-shadow: rgba(0, 0, 0, 0.133) 0 4dip 8dip 0, rgba(0, 0, 0, 0.11) 0 0.5dip 1.8dip 0;
+			z-index: 101; // above all
+		}
+
+		html[waiting] overlay {
+			visibility:visible; // visible if root element has attribute "waiting"
+		}*/
+		
 		card {
 			display: block;
 			padding: 16dip;
@@ -91,7 +120,7 @@
 			box-shadow: rgba(0, 0, 0, 0.133) 0px 1.6px 3.6px 0px, rgba(0, 0, 0, 0.11) 0px 0.3px 0.9px 0px;
 			/*behavior: card-drop-behavior;*/
 		}
-
+		
 		card:hover {
 			box-shadow: rgba(0, 0, 0, 0.133) 0px 3.2px 7.2px 0px, rgba(0, 0, 0, 0.11) 0px 0.6px 1.8px 0px;
 		}
@@ -160,8 +189,13 @@
 			opacity: 0.6
 		}
 
-		progress.custom-progress
-		{
+		cardfooter {
+			display:inline-block;
+			width: 1*;
+			margin-top: 16dip;
+		}
+		
+		progress.custom-progress {
 			border:none; 
 			border-radius:2dip;
 			background: rgba(0,0,0,.25);
@@ -177,6 +211,29 @@
 			/*foreground-position: 5px 5px 5px 5px; left top right bottom offsets*/
 
 			list-style-image: none;
+		}
+		
+		button.action-button {
+			cursor: pointer;
+			font-size: 14dip;
+			font-weight: 400;
+			border-radius:3dip;
+			border: solid 1dip #fff1;
+			background: transparent;
+			color: white;
+			padding: 2dip 12dip;
+		}
+		
+		button.action-button:disabled {
+			opacity: 0.4;
+		}
+		
+		button.action-button:hover {
+			background: #fff1;
+		}
+		
+		button.action-button:active {
+			background: #fff2;
 		}
 		
 	</style>
@@ -235,20 +292,6 @@
 			}
 		);
 		
-		view.CallMeBack(100,
-			function(val, progress) {
-				$(#callbackState).text = "Busy";
-				$(#callbackProgress).value = val;
-				$(#callbackMessage).text = String.printf("%d%%", progress);
-			},
-			function(val) {
-				//$(#callbackContent).attributes["state"] = "visible";
-				$(#callbackState).text = "Completed";
-				$(#callbackMessage).text = val;
-				$(#callbackProgressContainer).hide();
-			}
-		);
-		
 		view.ThrowException(100, 0,
 			function(value, ex) {
 				if (ex)
@@ -285,6 +328,45 @@
 		function self.ready() {
 		}   
     
+    	event click $(#start) {
+          self.postEvent("waiting","Waiting for something..."); // start waiting with the message
+          self.timer(10s, function() {
+             self.postEvent("waiting",false); // done waiting
+          });
+        }  
+    
+    	event click $(#start) {
+
+    		$(#cancel).enabled = true;
+    		$(#start).enabled = false;
+    		
+    		$(#callbackState).style["color"] = undefined;
+    		$(#callbackProgressContainer).show();
+    		$(#callbackProgress).value = 0;
+    		
+			view.CallMeBack(100,
+				function(val, progress) {
+					$(#callbackState).text = "Busy";
+					$(#callbackProgress).value = val;
+					$(#callbackMessage).text = String.printf("%d%%", progress);
+				},
+				function(msg, result) {
+					//$(#callbackContent).attributes["state"] = "visible";
+					$(#callbackState).text = result ? "Completed" : "Cancelled";
+					$(#callbackState).style["color"] = result ? "lime" : "red";
+					$(#callbackMessage).text = msg;
+					$(#callbackProgressContainer).hide();
+					$(#start).enabled = true;
+					$(#cancel).enabled = false;
+				}
+			);
+        }
+    
+    	event click $(#cancel) {
+			view.CancelCallMeBack();
+        }
+        
+        
 		//$(#icons8).on("click", function(evt) {
 		//	Sciter.launch("https://icons8.com/");
 		//	return true;
@@ -309,6 +391,7 @@
 			</div>
 		</toolbar>
 		<section>
+
 			<div style="margin: 20dip">
 				<div #helloSciter />
 
@@ -335,7 +418,7 @@
 					<cardheader>
 						<div>Multiple Callbacks</div>
 						<div>This will execute a Task on the host with multiple callbacks.</div>
-						<div style="margin: 4dip 0" #callbackProgressContainer><progress #callbackProgress .custom-progress max="200" value="0"/></div>
+						<div style="margin: 4dip 0" #callbackProgressContainer hidden><progress #callbackProgress .custom-progress max="200" value="0"/></div>
 					</cardheader>
 
 					<cardcontent #callbackContent state="visible">
@@ -346,6 +429,12 @@
 						<div #callbackMessage style="font-weight: bold;"></div>
 						
 					</cardcontent>
+					
+					<cardfooter>
+						<hr style="width: 1*; margin: -8dip -16dip 8dip -16dip; border-color: #0004"/>
+						<button#start .action-button>Execute</button>
+						<button#cancel .action-button disabled>Cancel</button>
+					</cardfooter>
 
 				</card>
 
@@ -401,9 +490,5 @@
 			</div>
 		</footer>
 	</main>
-
-
-
-	
 </body>
 </html>

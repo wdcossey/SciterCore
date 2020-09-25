@@ -2,7 +2,9 @@
 
 SciterCore.PackFolder [![NuGet](https://img.shields.io/nuget/v/.svg?style=flat)]() ![Build status](https://dev.azure.com/wdcossey/GitHub/_apis/build/status/SciterCore.PackFolder)
 
-SciterCore.Binaries.Windows [![NuGet](https://img.shields.io/nuget/v/.svg?style=flat)]() ![Build status](https://dev.azure.com/wdcossey/GitHub/_apis/build/status/SciterCore.Binaries.Windows)
+SciterCore.Binaries [![NuGet](https://img.shields.io/nuget/v/.svg?style=flat)]() ![Build status](https://dev.azure.com/wdcossey/GitHub/_apis/build/status/SciterCore.Binaries.Windows)
+
+SciterCore.NetStd [![NuGet](https://img.shields.io/nuget/v/.svg?style=flat)]() ![Build status](https://dev.azure.com/wdcossey/GitHub/_apis/build/status/SciterCore.NetStd)
 
 SciterCore.WinForms [![NuGet](https://img.shields.io/nuget/v/.svg?style=flat)]() ![Build status](https://dev.azure.com/wdcossey/GitHub/_apis/build/status/SciterCore.WinForms)
 
@@ -22,7 +24,7 @@ SciterCore is based off the work done by [Ramon F. Mendes](https://github.com/ra
 
 2. **Can I build .Net Core applications in the current state of the project?**
 
-    Whilst it's possible to build .Net Core applications for Windows using some PInvoke, it's not recommended in its current state.
+    Whilst it's possible to build .Net Core applications for Windows and MacOS, it's not recommended in its current state.
     
 3. **When can I build .Net Core applications using this project?**
 
@@ -71,8 +73,11 @@ Binaries are automatically resolved for the target configuration (i.e `x86`, `x6
 | MacOS           | `x64`          | `sciter-osx-64.dylib` | 
 | Linux           | `x64`          | `libsciter-gtk.so`    | 
 
+#### SciterCore.NetStd
+Windows/MacOS/Linux (via .Net Standard 2.0)
+
 #### SciterCore.WinForms
-Windows/WinForms
+Windows, WinForms and WPF (via .Net Framework 4.6.1)
 
 #### SciterCore.Gtk
 Linux/Gtk (via MonoDevelop)

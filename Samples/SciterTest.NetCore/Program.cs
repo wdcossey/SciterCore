@@ -1,25 +1,19 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Threading;
-using System.Threading.Tasks;
 using SciterCore;
-using SciterCore.Interop;
+
 
 namespace SciterTest.NetCore
 {
     class Program
     {
         [STAThread]
-        static async Task Main(string[] args)
+        static void Main(string[] args)
         {
             // Sciter needs this for drag'n'drop support
             SciterPlatform.EnableDragAndDrop();
 
             var app = new SciterApplication();
-            app.Run(() =>
-            {
-                return new Host<Window>(() => new Window());
-            });
+            app.Run<ApplicationHost<Window>>();
             
             //var host = new HostBuilder()
             //    .ConfigureHostConfiguration(configHost =>

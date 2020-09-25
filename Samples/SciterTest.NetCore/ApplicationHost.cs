@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using SciterCore;
 using SciterCore.Attributes;
@@ -13,19 +14,21 @@ using SciterValue = SciterCore.SciterValue;
 
 namespace SciterTest.NetCore
 {
-	public class Host<TWindow> : BaseHost
+	public class ApplicationHost<TWindow> : BaseHost
 		where TWindow : SciterWindow 
 	{
-		// must keep a reference to survive GC
-		public static TWindow AppWindow { get; private set; }
-
-		public Host(TWindow wnd)
+		public ApplicationHost() 
+			: this(Activator.CreateInstance<TWindow>())
+		{
+			 
+		}
+		
+		public ApplicationHost(TWindow wnd)
 			: base(wnd)
 		{
-			AppWindow = wnd;
 			var host = this;
 			host
-				.AttachEventHandler<HostEvh>(() => new HostEvh(host))
+				.AttachEventHandler(() => new HostEventHandler(host))
 				.RegisterBehaviorHandler<DragDropBehavior>();
 			
 			host.LoadPage("index.html", 
@@ -40,7 +43,7 @@ namespace SciterTest.NetCore
 #endif
 		}
 		
-		public Host(Func<TWindow> wndFunc)
+		public ApplicationHost(Func<TWindow> wndFunc)
 		: this(wndFunc.Invoke())
 		{
 			
@@ -51,11 +54,11 @@ namespace SciterTest.NetCore
 		// -override OnPostedNotification() to handle notifications generated with SciterHost.PostNotification()
 	}
 
-	public class HostEvh : SciterEventHandler
+	public class HostEventHandler : SciterEventHandler
 	{
 		private readonly SciterHost _host;
 
-		public HostEvh(SciterHost host)
+		public HostEventHandler(SciterHost host)
 		{
 			_host = host;
 		}
@@ -131,17 +134,30 @@ namespace SciterTest.NetCore
 
 			return Task.CompletedTask;
 		}
+
+		private ManualResetEventSlim _callMeBackResetEvent;
 		
 		public async Task CallMeBack(SciterElement element, SciterValue value, SciterValue onProgress, SciterValue onCompleted)
 		{
+			_callMeBackResetEvent = new ManualResetEventSlim(false);
+			
 			for (var i = 0; i < 201; i++)
 			{
+				if (_callMeBackResetEvent.IsSet)
+					break;
+				
 				//Simulates a delay
 				await Task.Delay(10);
 				onProgress.Invoke(SciterValue.Create(i), SciterValue.Create(i / 200d * 100));
 			}
 			
-			onCompleted.Invoke(SciterValue.Create("You have successfully completed your task!"));
+			onCompleted.Invoke(SciterValue.Create($"You have {(!_callMeBackResetEvent.IsSet ? "successfully completed" : "cancelled")} your task!"), SciterValue.Create(!_callMeBackResetEvent.IsSet));
+		}
+		
+		public Task CancelCallMeBack()
+		{
+			_callMeBackResetEvent?.Set();
+			return Task.CompletedTask;
 		}
 		
 		[SciterCallbackWrapper]
@@ -219,6 +235,22 @@ namespace SciterTest.NetCore
 			return base.OnGesture(element, args);
 		}
 
+		protected override bool OnMethodCall(SciterElement element, SciterBehaviors.BEHAVIOR_METHOD_IDENTIFIERS methodId)
+		{
+			return base.OnMethodCall(element, methodId);
+		}
+
+		protected override ScriptEventResult OnScriptCall(SciterElement element, MethodInfo method, SciterValue[] args)
+		{
+			return base.OnScriptCall(element, method, args);
+		}
+
+		protected override bool OnEvent(SciterElement sourceElement, SciterElement targetElement,
+			SciterBehaviors.BEHAVIOR_EVENTS type, IntPtr reason, SciterValue data, string eventName)
+		{
+			return base.OnEvent(sourceElement, targetElement, type, reason, data, eventName);
+		}
+
 		// (Hint: to overload C# methods of SciterEventHandler base class, type 'override', press space, and VS/Xamarin will suggest the methods you can override)
 	}
 
@@ -231,14 +263,16 @@ namespace SciterTest.NetCore
 	{
 		private readonly Sciter.SciterApi _api = Sciter.Api;
 		private readonly SciterArchive _archive = new SciterArchive();
-		private readonly SciterWindow _window;
+
 
 		public BaseHost(SciterWindow window)
 			: base(window)
 		{
-			_window = window;
+			Window = window;
 			_archive.Open();
 		}
+
+		protected SciterWindow Window { get; }
 
 		public SciterHost LoadPage(string page, Action<SciterHost, SciterWindow> onCompleted = null, Action<SciterHost, SciterWindow> onFailed = null)
 		{
@@ -253,10 +287,10 @@ namespace SciterTest.NetCore
 			Uri uri = new Uri(baseUri: _archive.Uri, page);
 #endif 
 
-			if (_window.TryLoadPage(uri: uri))
-				onCompleted?.Invoke(this, _window);
+			if (Window.TryLoadPage(uri: uri))
+				onCompleted?.Invoke(this, Window);
 			else
-				onFailed?.Invoke(this, _window);
+				onFailed?.Invoke(this, Window);
 
 			return this;
 		}
@@ -267,11 +301,16 @@ namespace SciterTest.NetCore
 			_archive?.GetItem(args.Uri, (res) => 
 			{
 				if (res.IsSuccessful)
-					_api.SciterDataReady(_window.Handle, res.Path, res.Data, (uint) res.Size);
+					_api.SciterDataReady(Window.Handle, res.Path, res.Data, (uint) res.Size);
 			});
 
 			// call base to ensure LibConsole is loaded
 			return base.OnLoadData(sender: sender, args: args);
+		}
+
+		protected override bool OnAttachBehavior(SciterElement element, string behaviorName, out SciterEventHandler eventHandler)
+		{
+			return base.OnAttachBehavior(element, behaviorName, out eventHandler);
 		}
 
 		protected override void OnDataLoaded(object sender, DataLoadedArgs args)

@@ -168,7 +168,7 @@ namespace SciterCore
 		public SciterHost AttachEventHandler<THandler>()
 			where THandler: SciterEventHandler
 		{
-			AttachEventHandler(eventHandler: Activator.CreateInstance(typeof(THandler)) as SciterEventHandler);
+			AttachEventHandler(eventHandler: Activator.CreateInstance<THandler>());
 			return this;
 		}
 

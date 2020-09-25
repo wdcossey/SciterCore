@@ -38,7 +38,6 @@ namespace SciterCore
 			Debug.Assert(!AttachedHandlers.Contains(this)); 
 			Debug.Assert(_isAttached == false);
 		}
-		
 #endif
 		
 		private static readonly List<SciterEventHandler> AttachedHandlers = new List<SciterEventHandler>();// we keep a copy of all attached instances to guard from GC removal
@@ -130,8 +129,18 @@ namespace SciterCore
 				.Execute();
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="sourceElement"><para>Source element e.g. in SELECTION_CHANGED it is new selected &lt;option&gt;, in MENU_ITEM_CLICK it is menu item (LI) element</para></param>
+		/// <param name="targetElement"><para>Target element, in MENU_ITEM_CLICK this is owner element that caused this menu - e.g. context menu owner<br/>In scripting this field named as Event.owner</para></param>
+		/// <param name="type"></param>
+		/// <param name="reason"><para>CLICK_REASON or EDIT_CHANGED_REASON - UI action causing change.<br/>In case of custom event notifications this may be any application specific value.</para></param>
+		/// <param name="data"><para>Auxiliary data accompanied with the event. E.g. FORM_SUBMIT event is using this field to pass collection of values.</para></param>
+		/// <param name="eventName"><para>name of custom event (when <see cref="type"/> == <see cref="SciterBehaviors.BEHAVIOR_EVENTS.CUSTOM"/>)</para></param>
+		/// <returns></returns>
 		protected virtual bool OnEvent(SciterElement sourceElement, SciterElement targetElement,
-			SciterBehaviors.BEHAVIOR_EVENTS type, IntPtr reason, SciterValue data)
+			SciterBehaviors.BEHAVIOR_EVENTS type, IntPtr reason, SciterValue data, string eventName)
 		{
 			return false;
 		}
@@ -254,7 +263,7 @@ namespace SciterCore
 						var @params = Marshal.PtrToStructure<SciterBehaviors.BEHAVIOR_EVENT_PARAMS>(prms);
 						SciterElement se2 = @params.he != IntPtr.Zero ? new SciterElement(@params.he) : null;
 						return OnEvent(se, se2, 
-							@params.cmd, @params.reason, new SciterValue(@params.data));
+							@params.cmd, @params.reason, new SciterValue(@params.data), @params.name);
 					}
 
 				case SciterBehaviors.EVENT_GROUPS.HANDLE_METHOD_CALL:
