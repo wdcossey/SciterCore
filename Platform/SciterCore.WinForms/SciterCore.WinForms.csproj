@@ -68,25 +68,24 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   
-  
   <!-- LibConsole packaging -->
   <PropertyGroup>
     <TaskFolder>$(MSBuildThisFileDirectory)..\..\scripts\</TaskFolder>
     <PackSourceFolder>$(MSBuildThisFileDirectory)..\..\Shared\SciterCore.Shared\LibConsole</PackSourceFolder>
-    <PackOutputFile>$(ProjectDir).sciter\LibConsole.bin</PackOutputFile>
+    <PackOutputFile>$(ProjectDir)sciter.build\LibConsole.bin</PackOutputFile>
     <TaskAssembly Condition="$([MSBuild]::IsOsPlatform(Windows))">packfolder.exe</TaskAssembly>
     <TaskAssembly Condition="$([MSBuild]::IsOsPlatform(OSX))">packOSX.sh</TaskAssembly>
     <TaskAssembly Condition="$([MSBuild]::IsOsPlatform(Linux))">packOSX.sh</TaskAssembly>
   </PropertyGroup>
 
   <Target Name="SciterPreBuild" BeforeTargets="PreBuildEvent">
-    <MakeDir Directories="$(ProjectDir).sciter" />
+    <MakeDir Directories="$(ProjectDir)sciter.build" />
     <Exec Command="$(TaskFolder)$(TaskAssembly) &quot;$(PackSourceFolder)&quot; &quot;$(PackOutputFile)&quot; -binary" />
   </Target>
 
   <Target Name="SciterEmbedLocal" BeforeTargets="PrepareForBuild">
     <ItemGroup>
-      <EmbeddedResource Include="$(ProjectDir).sciter\LibConsole.bin">
+      <EmbeddedResource Include="$(ProjectDir)sciter.build\LibConsole.bin">
         <LogicalName>LibConsole</LogicalName>
       </EmbeddedResource>
     </ItemGroup>

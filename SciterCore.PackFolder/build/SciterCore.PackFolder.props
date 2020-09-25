@@ -2,7 +2,7 @@
   This file is automatically imported by NuGet into a user's project
   when it targets a single framework, or in classic (pre 2017) csproj projects.
 -->
-<Project TreatAsLocalProperty="SciterCorePackFolderTaskFolder;SciterCorePackFolderTaskAssembly">
+<Project TreatAsLocalProperty="SciterCorePackFolderTaskFolder;SciterCorePackFolderTaskAssembly;SciterCorePackFolderDirectory">
 
   <PropertyGroup>
     <SciterCorePackDirectory Condition=" '$(SciterCorePackDirectory)' == '' ">wwwroot</SciterCorePackDirectory>
@@ -13,20 +13,18 @@
   <PropertyGroup>
     <SciterCorePackFolderTaskFolder>$(MSBuildThisFileDirectory)..\..\scripts\</SciterCorePackFolderTaskFolder>
     <SciterCorePackFolderTaskAssembly Condition="$([MSBuild]::IsOsPlatform(Windows))">packfolder.exe</SciterCorePackFolderTaskAssembly>
-    <SciterCorePackFolderTaskAssembly Condition="$([MSBuild]::IsOsPlatform(OSX))">packOSX.sh</SciterCorePackFolderTaskAssembly>
-    <SciterCorePackFolderTaskAssembly Condition="$([MSBuild]::IsOsPlatform(Linux))">packOSX.sh</SciterCorePackFolderTaskAssembly>
+    <SciterCorePackFolderTaskAssembly Condition="$([MSBuild]::IsOsPlatform(OSX))">packfolder</SciterCorePackFolderTaskAssembly>
+    <SciterCorePackFolderTaskAssembly Condition="$([MSBuild]::IsOsPlatform(Linux))">packfolder</SciterCorePackFolderTaskAssembly>
+    <SciterCorePackFolderDirectory>sciter.build</SciterCorePackFolderDirectory>
   </PropertyGroup>
 
   <!-- Keeping the 'SciterCorePackType' condition here rather than making it a parameter for the 'Exec' command, makes things easier to manage! -->
   <Target Name="SciterCorePackFolderPreBuild" BeforeTargets="PreBuildEvent" Condition=" '$(SciterCorePackType)' == 'binary' ">
-    <MakeDir Directories="$(ProjectDir).sciter" />
-    <Exec Command="$(SciterCorePackFolderTaskFolder)$(SciterCorePackFolderTaskAssembly) &quot;$(ProjectDir)$(SciterCorePackDirectory)&quot; &quot;$(ProjectDir).sciter\$(ProjectName).bin&quot; -binary" />
-  </Target>
-
-  <!-- Add the binary created above to the Embedded Resources of the project -->
-  <Target Name="SciterCorePackFolderEmbedLocal" BeforeTargets="PrepareForBuild" Condition=" '$(SciterCorePackType)' == 'binary' ">
+    <Message Text="Building Sciter archive (binary)..."/>
+    <MakeDir Directories="$(ProjectDir)$(SciterCorePackFolderDirectory)" />
+    <Exec ContinueOnError="false" Command="$(SciterCorePackFolderTaskFolder)$(SciterCorePackFolderTaskAssembly) &quot;$(ProjectDir)$(SciterCorePackDirectory)&quot; &quot;$(ProjectDir)$(SciterCorePackFolderDirectory)\$(ProjectName).bin&quot; -binary" />
     <ItemGroup>
-      <EmbeddedResource Include="$(ProjectDir).sciter\$(ProjectName).bin">
+      <EmbeddedResource Include="$(ProjectDir)$(SciterCorePackFolderDirectory)\$(ProjectName).bin">
         <LogicalName>SciterResource</LogicalName>
       </EmbeddedResource>
     </ItemGroup>
@@ -34,7 +32,7 @@
 
   <!-- Copies files from `SciterCorePackDirectory` to the Project `TargetDir` if `SciterCorePackCopyToOutput` == true -->
   <Target Name="SciterCorePackFolderPreBuildCopyOutput" BeforeTargets="AfterBuild" Condition=" '$(SciterCorePackCopyToOutput)' " >
-    <Message ContinueOnError="false" Text="Copying Sciter site files to output..."/>
+    <Message Text="Copying Sciter site files to output..."/>
     <ItemGroup>
       <SiteResources Include="$(ProjectDir)$(SciterCorePackDirectory)\**\*.*" />
     </ItemGroup>
