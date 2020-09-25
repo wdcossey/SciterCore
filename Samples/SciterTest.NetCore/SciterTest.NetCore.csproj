@@ -41,6 +41,9 @@
 
   <ItemGroup>
     <None Include="wwwroot\**" />
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>  
 
 </Project>

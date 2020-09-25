@@ -14,16 +14,9 @@ using SciterValue = SciterCore.SciterValue;
 
 namespace SciterTest.NetCore
 {
-	public class ApplicationHost<TWindow> : BaseHost
-		where TWindow : SciterWindow 
+	public class ApplicationHost : BaseHost
 	{
-		public ApplicationHost() 
-			: this(Activator.CreateInstance<TWindow>())
-		{
-			 
-		}
-		
-		public ApplicationHost(TWindow wnd)
+		public ApplicationHost(SciterWindow wnd)
 			: base(wnd)
 		{
 			var host = this;
@@ -31,19 +24,18 @@ namespace SciterTest.NetCore
 				.AttachEventHandler(() => new HostEventHandler(host))
 				.RegisterBehaviorHandler<DragDropBehavior>();
 			
-			host.LoadPage("index.html", 
-				(sciterHost, window) =>
-				{
-					window.Show();
-				},
-				(sciterHost, window) => throw new InvalidOperationException("Unable to load the requested page."));
+			host.LoadPage("index.html",
+				onFailed: (sciterHost, window) => throw new InvalidOperationException("Unable to load the requested page."));
 
 #if DEBUG
-			host.ConnectToInspector();
+			host.Window.OnWindowShow += (sender, args) =>
+			{
+				host.ConnectToInspector();
+			};
 #endif
 		}
 		
-		public ApplicationHost(Func<TWindow> wndFunc)
+		public ApplicationHost(Func<SciterWindow> wndFunc)
 		: this(wndFunc.Invoke())
 		{
 			
@@ -268,11 +260,8 @@ namespace SciterTest.NetCore
 		public BaseHost(SciterWindow window)
 			: base(window)
 		{
-			Window = window;
 			_archive.Open();
 		}
-
-		protected SciterWindow Window { get; }
 
 		public SciterHost LoadPage(string page, Action<SciterHost, SciterWindow> onCompleted = null, Action<SciterHost, SciterWindow> onFailed = null)
 		{

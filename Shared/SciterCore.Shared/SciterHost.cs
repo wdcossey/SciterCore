@@ -83,7 +83,7 @@ namespace SciterCore
 		public SciterHost(SciterWindow window)
 			: this()
 		{
-			SetupWindow(window.Handle);
+			SetupWindow(window);
 		}
 
 		//
@@ -98,8 +98,12 @@ namespace SciterCore
 				throw new ArgumentNullException(nameof(window));
 			}
 
+			Window = window;
+
 			return SetupWindow(window.Handle);
 		}
+
+		public SciterWindow Window { get; internal set; }
 
 		private SciterHost SetupWindow(IntPtr hwnd)
 		{

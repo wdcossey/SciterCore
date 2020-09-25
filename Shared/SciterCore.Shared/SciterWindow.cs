@@ -16,6 +16,7 @@
 // along with SciterSharp.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.ComponentModel;
 using System.Text;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -440,8 +441,13 @@ namespace SciterCore
 				_nsview.Window.OrderOut(_nsview.Window);// PerformMiniaturize?
 			}
 #endif
+			
+			OnWindowShow?.Invoke(this, EventArgs.Empty);
+			
 			return this;
 		}
+
+		public EventHandler OnWindowShow;
 
 		public void ShowModal()
 		{
@@ -455,6 +461,13 @@ namespace SciterCore
 		/// </summary>
 		public void Close()
 		{
+			var args = new CancelEventArgs(false);
+			
+			OnWindowClosing?.Invoke(this, args);
+			
+			if (args.Cancel)
+				return;
+			
 #if WINDOWS || NETCORE
 			PInvokeWindows.PostMessage(Handle, PInvokeWindows.Win32Msg.WM_CLOSE, IntPtr.Zero, IntPtr.Zero);
 #elif GTKMONO
@@ -462,7 +475,13 @@ namespace SciterCore
 #elif OSX && XAMARIN
 			_nsview.Window.Close();
 #endif
+			
+			OnWindowClosed?.Invoke(this, EventArgs.Empty);
 		}
+		
+		public EventHandler<CancelEventArgs> OnWindowClosing;
+		
+		public EventHandler OnWindowClosed;
 
 		public bool IsVisible
 		{
@@ -477,11 +496,6 @@ namespace SciterCore
 #endif
 			}
 		}
-
-		/*public IntPtr VM
-		{
-			get { return Api.SciterGetVM(Handle); }
-		}*/
 
 #if WINDOWS && !WPF
         public SciterWindow SetIcon(Icon icon)

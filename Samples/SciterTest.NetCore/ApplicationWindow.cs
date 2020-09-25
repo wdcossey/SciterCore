@@ -2,9 +2,9 @@ using SciterCore;
 
 namespace SciterTest.NetCore
 {
-	public class Window : SciterWindow
+	public class ApplicationWindow : SciterWindow
 	{
-		public Window()
+		public ApplicationWindow()
 		{
 			CreateMainWindow(800, 600)
 				.CenterTopLevelWindow()

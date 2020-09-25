@@ -9,11 +9,16 @@ namespace SciterCore
 
         private SciterWindow Window { get; set; }
 
-        private SciterHost Host { get; set; }
-
+        public SciterHost Host { get; internal set; }
+        
         public SciterApplication()
         {
 
+        }
+
+        public SciterApplication(SciterHost host)
+        {
+            Host = host;
         }
 
         //public int Run<TWindow>(TWindow window)
@@ -39,6 +44,12 @@ namespace SciterCore
             //return 0;
         }
 
+        public int Run()
+        {
+            return Run(PInvokeUtils.RunMsgLoop);
+        }
+        
+
         public int Run<THost>()
             where THost: SciterHost
         {
@@ -55,6 +66,7 @@ namespace SciterCore
         {
             try
             {
+                Host.Window?.Show();
                 QueueMain(action);
                 //NativeMethods.Main();
             }
