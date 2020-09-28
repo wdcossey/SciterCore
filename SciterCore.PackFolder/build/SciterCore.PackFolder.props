@@ -23,6 +23,10 @@
     <Message Text="Building Sciter archive (binary)..."/>
     <MakeDir Directories="$(ProjectDir)$(SciterCorePackFolderDirectory)" />
     <Exec ContinueOnError="false" Command="$(SciterCorePackFolderTaskFolder)$(SciterCorePackFolderTaskAssembly) &quot;$(ProjectDir)$(SciterCorePackDirectory)&quot; &quot;$(ProjectDir)$(SciterCorePackFolderDirectory)\$(ProjectName).bin&quot; -binary" />
+  </Target>
+
+  <!-- Add the binary created above to the Embedded Resources of the project -->
+  <Target Name="SciterCorePackFolderEmbedLocal" AfterTargets="PrepareForBuild" Condition=" '$(SciterCorePackType)' == 'binary' ">
     <ItemGroup>
       <EmbeddedResource Include="$(ProjectDir)$(SciterCorePackFolderDirectory)\$(ProjectName).bin">
         <LogicalName>SciterResource</LogicalName>
