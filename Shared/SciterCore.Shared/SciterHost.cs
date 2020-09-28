@@ -83,34 +83,39 @@ namespace SciterCore
 		public SciterHost(SciterWindow window)
 			: this()
 		{
-			SetupWindow(window.Handle);
+			SetupWindow(window);
 		}
 
 		//
 		public SciterHost SetupWindow(SciterWindow window)
-		{ 
-			Debug.Assert(window != null);
-			Debug.Assert(window.Handle != IntPtr.Zero);
-			Debug.Assert(WindowHandle == IntPtr.Zero, "You already called SetupWindow()");
-
+		{
+			// ReSharper disable once JoinNullCheckWithUsage
 			if (window == null)
-			{
 				throw new ArgumentNullException(nameof(window));
-			}
+
+			if (!WindowHandle.Equals(IntPtr.Zero))
+				throw new InvalidOperationException($"You already called {nameof(SetupWindow)}.");
+
+			Window = window;
 
 			return SetupWindow(window.Handle);
 		}
 
-		private SciterHost SetupWindow(IntPtr hwnd)
-		{
-			Debug.Assert(hwnd != IntPtr.Zero);
-			Debug.Assert(WindowHandle == IntPtr.Zero, "You already called SetupWindow()");
+		public SciterWindow Window { get; internal set; }
 
-			WindowHandle = hwnd;
+		private SciterHost SetupWindow(IntPtr handle)
+		{
+			if (handle.Equals(IntPtr.Zero))
+				throw new ArgumentOutOfRangeException(nameof(handle), $"Cannot be {nameof(IntPtr.Zero)}.");
+			
+			if (!WindowHandle.Equals(IntPtr.Zero))
+				throw new InvalidOperationException($"You already called {nameof(SetupWindow)}.");
+			
+			WindowHandle = handle;
 
 			// Register a global event handler for this Sciter window
 			_hostCallback = NotificationHandler;
-			Api.SciterSetCallback(hwnd, Marshal.GetFunctionPointerForDelegate(_hostCallback), IntPtr.Zero);
+			Api.SciterSetCallback(handle, Marshal.GetFunctionPointerForDelegate(_hostCallback), IntPtr.Zero);
 
 			return this;
 		}
@@ -148,55 +153,47 @@ namespace SciterCore
 		/// You normally attaches it before loading the page HTML with <see cref="SciterWindowExtensions.LoadPage"/>
 		/// You can only attach a single event-handler.
 		/// </summary>
-		public SciterHost AttachEventHandler(SciterEventHandler eventHandler)
+		internal void AttachEventHandlerInternal(SciterEventHandler eventHandler)
 		{
-			Debug.Assert(WindowHandle != IntPtr.Zero, "Call SciterHost.SetupWindow() first");
+			TryAttachEventHandlerInternal(eventHandler);
+		}
+
+		/// <summary>
+		/// Attaches a window level event-handler: it receives every event for all elements of the page.
+		/// You normally attaches it before loading the page HTML with <see cref="SciterWindowExtensions.LoadPage"/>
+		/// You can only attach a single event-handler.
+		/// </summary>
+		internal bool TryAttachEventHandlerInternal(SciterEventHandler eventHandler)
+		{
+			Debug.Assert(WindowHandle != IntPtr.Zero, $"Call {GetType().Name}.{nameof(SetupWindow)}() first");
 			Debug.Assert(eventHandler != null);
 			Debug.Assert(_windowEventHandler == null, "You can attach only a single SciterEventHandler per SciterHost/Window");
 			
 			_windowEventHandler = eventHandler;
-			Api.SciterWindowAttachEventHandler(WindowHandle, eventHandler.EventProc, IntPtr.Zero, (uint)SciterBehaviors.EVENT_GROUPS.HANDLE_ALL);
-
-			return this;
-		}
-
-		/// <summary>
-		/// Attaches a window level event-handler: it receives every event for all elements of the page.
-		/// You normally attaches it before loading the page HTML with <see cref="SciterWindowExtensions.LoadPage"/>
-		/// You can only attach a single event-handler.
-		/// </summary>
-		public SciterHost AttachEventHandler<THandler>()
-			where THandler: SciterEventHandler
-		{
-			AttachEventHandler(eventHandler: Activator.CreateInstance<THandler>());
-			return this;
-		}
-
-		/// <summary>
-		/// Attaches a window level event-handler: it receives every event for all elements of the page.
-		/// You normally attaches it before loading the page HTML with <see cref="SciterWindowExtensions.LoadPage"/>
-		/// You can only attach a single event-handler.
-		/// </summary>
-		public SciterHost AttachEventHandler<THandler>(Func<THandler> func)
-			where THandler: SciterEventHandler
-		{
-			AttachEventHandler(eventHandler: func.Invoke());
-			return this;
+			return Api.SciterWindowAttachEventHandler(WindowHandle, eventHandler.EventProc, IntPtr.Zero, (uint)SciterBehaviors.EVENT_GROUPS.HANDLE_ALL).IsOk();
 		}
 
 		/// <summary>
 		/// Detaches the event-handler previously attached with AttachEvh()
 		/// </summary>
-		public SciterHost DetachEventHandler()
+		internal void DetachEventHandlerInternal()
+		{
+			TryDetachEventHandlerInternal();
+		}
+
+		/// <summary>
+		/// Detaches the event-handler previously attached with AttachEvh()
+		/// </summary>
+		internal bool TryDetachEventHandlerInternal()
 		{
 			Debug.Assert(_windowEventHandler != null);
-			if(_windowEventHandler != null)
-			{
-				Api.SciterWindowDetachEventHandler(WindowHandle, _windowEventHandler.EventProc, IntPtr.Zero);
-				_windowEventHandler = null;
-			}
 
-			return this;
+			var result = _windowEventHandler == null || Api.SciterWindowDetachEventHandler(WindowHandle, _windowEventHandler.EventProc, IntPtr.Zero).IsOk();
+			
+			if(result && _windowEventHandler != null)
+				_windowEventHandler = null;
+
+			return result;
 		}
 
 		public SciterValue CallFunction(string name, params SciterValue[] args)
