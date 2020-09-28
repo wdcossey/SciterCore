@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SciterCore;
+using SciterTest.NetCore.Behaviors;
 
 
 namespace SciterTest.NetCore
@@ -24,11 +25,13 @@ namespace SciterTest.NetCore
                 .AddLogging(builder =>
                 {
                     builder
-                        .AddConfiguration(configuration)
+                        .ClearProviders()
+                        .AddConfiguration(configuration.GetSection("Logging"))
                         .AddConsole();
                 })
                 .AddSingleton<IConfiguration>(provider => configuration)
-                .AddSingleton<SciterWindow, ApplicationWindow>()
+                .AddSingleton<ApplicationWindow>()
+                .AddSingleton<HostEventHandler>()
                 .AddSingleton<SciterHost, ApplicationHost>()
                 .AddSingleton<SciterApplication>();
 
@@ -36,8 +39,6 @@ namespace SciterTest.NetCore
             
             var app = serviceProvider.GetRequiredService<SciterApplication>();
 
-            
-            
             app.Run();
             
             //var host = new HostBuilder()

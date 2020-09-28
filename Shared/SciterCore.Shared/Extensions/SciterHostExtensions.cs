@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
+// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable ArgumentsStyleOther
 
 // ReSharper disable RedundantTypeArgumentsOfMethod
 // ReSharper disable ArgumentsStyleNamedExpression
@@ -24,8 +26,70 @@ namespace SciterCore
         }
 
         #endregion
-       
 
+        #region Event Handlers
+
+        /// <summary>
+        /// Attaches a window level event-handler: it receives every event for all elements of the page.
+        /// You normally attaches it before loading the page HTML with <see cref="SciterWindowExtensions.LoadPage"/>
+        /// You can only attach a single event-handler.
+        /// </summary>
+        public static SciterHost AttachEventHandler(this SciterHost host, SciterEventHandler eventHandler)
+        {
+            host?.AttachEventHandlerInternal(eventHandler: eventHandler);
+            return host;
+        }
+        
+        /// <summary>
+        /// Attaches a window level event-handler: it receives every event for all elements of the page.
+        /// You normally attaches it before loading the page HTML with <see cref="SciterWindowExtensions.LoadPage"/>
+        /// You can only attach a single event-handler.
+        /// </summary>
+        public static SciterHost AttachEventHandler<THandler>(this SciterHost host)
+            where THandler: SciterEventHandler
+        {
+            return host?.AttachEventHandler(eventHandler: Activator.CreateInstance<THandler>());
+        }
+
+        /// <summary>
+        /// Attaches a window level event-handler: it receives every event for all elements of the page.
+        /// You normally attaches it before loading the page HTML with <see cref="SciterWindowExtensions.LoadPage"/>
+        /// You can only attach a single event-handler.
+        /// </summary>
+        public static SciterHost AttachEventHandler<THandler>(this SciterHost host, Func<THandler> eventHandlerFunc)
+            where THandler: SciterEventHandler
+        {
+            return host?.AttachEventHandler(eventHandler: eventHandlerFunc.Invoke());
+        }
+        
+        /// <summary>
+        /// Attaches a window level event-handler: it receives every event for all elements of the page.
+        /// You normally attaches it before loading the page HTML with <see cref="SciterWindowExtensions.LoadPage"/>
+        /// You can only attach a single event-handler.
+        /// </summary>
+        public static bool TryAttachEventHandler(this SciterHost host, SciterEventHandler eventHandler)
+        {
+            return host?.TryAttachEventHandlerInternal(eventHandler: eventHandler) == true;
+        }
+        
+        /// <summary>
+        /// Detaches the event-handler previously attached with AttachEvh()
+        /// </summary>
+        public static SciterHost DetachEventHandler(this SciterHost host)
+        {
+            host?.DetachEventHandlerInternal();
+            return host;
+        }
+        
+        /// <summary>
+        /// Detaches the event-handler previously attached with AttachEvh()
+        /// </summary>
+        public static bool TryDetachEventHandler(this SciterHost host)
+        {
+            return host?.TryDetachEventHandlerInternal() == true;
+        }
+        
+        #endregion
         #region Notification
 
         /// <summary>

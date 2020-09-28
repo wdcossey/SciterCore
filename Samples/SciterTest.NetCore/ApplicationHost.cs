@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using SciterCore;
 using SciterCore.Attributes;
 using SciterCore.Interop;
@@ -16,12 +17,12 @@ namespace SciterTest.NetCore
 {
 	public class ApplicationHost : BaseHost
 	{
-		public ApplicationHost(SciterWindow wnd)
-			: base(wnd)
+		public ApplicationHost(ILogger<ApplicationHost> logger, ApplicationWindow wnd, HostEventHandler hostEventHandler)
+			: base(logger, wnd)
 		{
 			var host = this;
 			host
-				.AttachEventHandler(() => new HostEventHandler(host))
+				.AttachEventHandler(hostEventHandler)
 				.RegisterBehaviorHandler<DragDropBehavior>();
 			
 			host.LoadPage("index.html",
@@ -34,12 +35,6 @@ namespace SciterTest.NetCore
 			};
 #endif
 		}
-		
-		public ApplicationHost(Func<SciterWindow> wndFunc)
-		: this(wndFunc.Invoke())
-		{
-			
-		}
 
 		// Things to do here:
 		// -override OnLoadData() to customize or track resource loading
@@ -48,13 +43,12 @@ namespace SciterTest.NetCore
 
 	public class HostEventHandler : SciterEventHandler
 	{
-		private readonly SciterHost _host;
+		private readonly ILogger<HostEventHandler> _logger;
 
-		public HostEventHandler(SciterHost host)
+		public HostEventHandler(ILogger<HostEventHandler> logger)
 		{
-			_host = host;
+			_logger = logger;
 		}
-		
 		/// A dynamic script call handler. Any call in TIScript to function 'view.Host_HelloSciter()' with invoke this method
 		/// Notice that signature of these handlers is always the same
 		/// (Hint: install OmniCode snippets which adds the 'ssh' snippet to C# editor so you can easily declare 'Siter Handler' methods)
@@ -103,9 +97,6 @@ namespace SciterTest.NetCore
 		
 		public Task GetRuntimeInfo(SciterElement element, SciterValue onCompleted, SciterValue onError)
 		{
-			//Simulate a delay
-			//await Task.Delay(3500);
-
 			try
 			{
 				var value = SciterValue.Create(
@@ -155,26 +146,33 @@ namespace SciterTest.NetCore
 		[SciterCallbackWrapper]
 		public Task ThrowException(SciterValue numerator, SciterValue denominator)
 		{
-			//This will purposely throw an exception!
-			var value = numerator.AsInt32() / denominator.AsInt32();
+			try
+			{ 
+				//This will purposely throw an exception!
+				var value = numerator.AsInt32() / denominator.AsInt32();
 				
-			return Task.FromResult(SciterValue.Create(value));
+				return Task.FromResult(SciterValue.Create(value));
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(exception: ex, message: ex.Message);
+				throw;
+			}
 		}
 
 		public void SynchronousFunction()
 		{
-			//SciterValue.Create(value: (100 / int.Parse("0")));
-			Console.WriteLine($"{nameof(SynchronousFunction)} was executed!");
+			_logger.LogInformation($"{nameof(SynchronousFunction)} was executed!");
 		}
 
 		public void SynchronousArgumentFunction(SciterElement element, SciterValue[] args)
 		{
-			Console.WriteLine($"{nameof(SynchronousArgumentFunction)} was executed!\n\t{string.Join(",", args.Select(s => s.AsInt32()))}");
+			_logger.LogInformation($"{nameof(SynchronousArgumentFunction)} was executed!\n\t{string.Join(",", args.Select(s => s.AsInt32()))}");
 		}
 
 		public void SynchronousArgumentsFunction(SciterElement element, SciterValue arg1, SciterValue arg2, SciterValue arg3, SciterValue arg4, SciterValue arg5)
 		{
-			Console.WriteLine($"{nameof(SynchronousArgumentsFunction)} was executed!\n\t{arg1.AsInt32()},{arg2.AsInt32()},{arg3.AsInt32()},{arg4.AsInt32()},{arg5.AsInt32()}");
+			_logger.LogInformation($"{nameof(SynchronousArgumentsFunction)} was executed!\n\t{arg1.AsInt32()},{arg2.AsInt32()},{arg3.AsInt32()},{arg4.AsInt32()},{arg5.AsInt32()}");
 		}
 		
 		public async Task AsynchronousFunction()
@@ -187,7 +185,7 @@ namespace SciterTest.NetCore
             //                             			"{id:#yes,text:\"Yes\",role:\"default-button\"}," +
             //                             			"{id:#no,text:\"No\",role:\"cancel-button\"}]" +
             //                                        "};");
-			Console.WriteLine($"{nameof(AsynchronousFunction)} was executed!");
+            _logger.LogInformation($"{nameof(AsynchronousFunction)} was executed!");
 		}
 
 		protected override EventGroups SubscriptionsRequest(SciterElement element)
@@ -253,13 +251,15 @@ namespace SciterTest.NetCore
 	// - in RELEASE mode: resources loaded from by a SciterArchive (packed binary data contained as C# code in ArchiveResource.cs)
 	public class BaseHost : SciterHost
 	{
+		private readonly ILogger _logger;
 		private readonly Sciter.SciterApi _api = Sciter.Api;
 		private readonly SciterArchive _archive = new SciterArchive();
 
 
-		public BaseHost(SciterWindow window)
+		public BaseHost(ILogger logger, SciterWindow window)
 			: base(window)
 		{
+			_logger = logger;
 			_archive.Open();
 		}
 
@@ -286,6 +286,8 @@ namespace SciterTest.NetCore
 
 		protected override LoadResult OnLoadData(object sender, LoadDataArgs args)
 		{
+			_logger?.LogDebug(args.Uri.ToString());
+			
 			// load resource from SciterArchive
 			_archive?.GetItem(args.Uri, (res) => 
 			{
@@ -299,6 +301,7 @@ namespace SciterTest.NetCore
 
 		protected override bool OnAttachBehavior(SciterElement element, string behaviorName, out SciterEventHandler eventHandler)
 		{
+			_logger?.LogDebug($"{nameof(OnAttachBehavior)}: {nameof(element)}: {element.Tag} ({element.UniqueId}); {nameof(behaviorName)}: {behaviorName}");
 			return base.OnAttachBehavior(element, behaviorName, out eventHandler);
 		}
 
@@ -309,6 +312,7 @@ namespace SciterTest.NetCore
 
 		protected override void OnEngineDestroyed(object sender, EngineDestroyedArgs args)
 		{
+			_logger?.LogDebug(args.Code.ToString());
 			base.OnEngineDestroyed(sender, args);
 		}
 
