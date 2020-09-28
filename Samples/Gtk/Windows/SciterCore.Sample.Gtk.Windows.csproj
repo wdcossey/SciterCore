@@ -117,7 +117,7 @@
     <EmbeddedResource Include="Properties\Resources.resx" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="SciterCore.PackFolder" Version="0.0.122-alpha" />
+    <PackageReference Include="SciterCore.PackFolder" Version="0.0.131-alpha" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

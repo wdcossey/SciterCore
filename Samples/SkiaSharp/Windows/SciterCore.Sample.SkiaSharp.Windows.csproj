@@ -119,7 +119,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="SciterCore.PackFolder" Version="0.0.122-alpha" />
+    <PackageReference Include="SciterCore.PackFolder" Version="0.0.131-alpha" />
     <PackageReference Include="SkiaSharp" Version="1.68.1.1" />
     <PackageReference Include="System.Buffers" Version="4.4.0" />
     <PackageReference Include="System.Memory" Version="4.5.3" />
