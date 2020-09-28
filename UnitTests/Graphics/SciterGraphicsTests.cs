@@ -34,7 +34,7 @@ namespace SciterCore.UnitTests.Graphics
         {
             _sciterWindow = 
                 new SciterWindow()
-                    .CreateMainWindow(640, 480)
+                    .CreateMainWindow(320, 240)
                     //.CenterTopLevelWindow()
                     .SetTitle(nameof(SciterGraphicsTests));
             
