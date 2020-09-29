@@ -146,6 +146,12 @@ namespace SciterCore
             clonedElement = default;
             return element?.TryCloneInternal(out clonedElement) == true;
         }
+        
+        public static SciterElement GetChildAtIndex(this SciterElement element, int index, Action<SciterElement> elementAction)
+        {
+            element.GetChildAtIndexInternal(index: index, elementAction);
+            return element;
+        }
 
         public static SciterElement GetChildAtIndex(this SciterElement element, int index)
         {
@@ -156,6 +162,16 @@ namespace SciterCore
         {
             childElement = default;
             return element?.TryGetChildAtIndexInternal(index: index, out childElement) == true;
+        }
+        
+        public static SciterElement FirstChild(this SciterElement element)
+        {
+            return element?.GetChildAtIndexInternal(0);
+        }
+        
+        public static SciterElement LastChild(this SciterElement element)
+        {
+            return element?.GetChildAtIndexInternal(element.ChildCount - 1);
         }
 
         public static SciterNode CastToNode(this SciterElement element)
@@ -175,22 +191,22 @@ namespace SciterCore
 
         public static SciterElement NextSibling(this SciterElement element)
         {
-            return element?.NextSiblingInternal;
+            return element?.NextSiblingInternal();
         }
         
         public static SciterElement PreviousSibling(this SciterElement element)
         {
-            return element?.PreviousSiblingInternal;
+            return element?.PreviousSiblingInternal();
         }
         
         public static SciterElement FirstSibling(this SciterElement element)
         {
-            return element?.FirstSiblingInternal;
+            return element?.FirstSiblingInternal();
         }
         
         public static SciterElement LastSibling(this SciterElement element)
         {
-            return element?.LastSiblingInternal;
+            return element?.LastSiblingInternal();
         }
         
         #endregion

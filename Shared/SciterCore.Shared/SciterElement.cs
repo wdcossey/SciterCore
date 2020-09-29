@@ -586,6 +586,11 @@ namespace SciterCore
 
 		#region DOM navigation
 		
+		internal void GetChildAtIndexInternal(int index, Action<SciterElement> elementAction)
+		{
+			elementAction?.Invoke(GetChildAtIndexInternal(index));
+		}
+		
 		internal SciterElement GetChildAtIndexInternal(int index)
 		{
 			return GetChildAtIndexInternal(Convert.ToUInt32(index));
@@ -610,14 +615,14 @@ namespace SciterCore
 			return (result && childHandle != IntPtr.Zero);
 		}
 
-		public IEnumerable<SciterElement> Children
+		public ReadOnlyCollection<SciterElement> Children
 		{
 			get
 			{
 				var list = new List<SciterElement>();
 				for(var i = 0; i < this.ChildCount; i++)
 					list.Add(this[i]);
-				return list;
+				return new ReadOnlyCollection<SciterElement>(list);
 			}
 		}
 
@@ -630,13 +635,33 @@ namespace SciterCore
 			}
 		}
 
-		internal SciterElement NextSiblingInternal => this.Parent?.GetChildAtIndexInternal(this.Index + 1);
+		internal SciterElement NextSiblingInternal()
+		{
+			return this.Parent?.GetChildAtIndexInternal(this.Index + 1);
+		}
 
-		internal SciterElement PreviousSiblingInternal => this.Parent?.GetChildAtIndexInternal(this.Index - 1);
+		internal SciterElement PreviousSiblingInternal()
+		{
+			return this.Index <= 0 ? null : this.Parent?.GetChildAtIndexInternal(this.Index - 1);
+		}
 
-		internal SciterElement FirstSiblingInternal => this.Parent?.GetChildAtIndexInternal(0);
+		internal SciterElement FirstSiblingInternal()
+		{
+			return this.Parent?.ChildCount > 0 ? this.Parent?.GetChildAtIndexInternal(0) : null;
+		}
 
-		internal SciterElement LastSiblingInternal => this.Parent?.GetChildAtIndexInternal(this.Parent.ChildCount - 1);
+		internal SciterElement LastSiblingInternal()
+		{
+			return this.Parent?.ChildCount > 0 ? this.Parent?.GetChildAtIndexInternal(this.Parent.ChildCount - 1) : null;
+		}
+
+		public SciterElement LastSibling => LastSiblingInternal();
+
+		public SciterElement FirstSibling => FirstSiblingInternal();
+		
+		public SciterElement PreviousSibling => PreviousSiblingInternal();
+		
+		public SciterElement NextSibling => NextSiblingInternal();
 
 		#endregion
 

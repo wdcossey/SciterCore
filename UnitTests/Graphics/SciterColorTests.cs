@@ -1,4 +1,6 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
+using System.Globalization;
 using NUnit.Framework;
 
 namespace SciterCore.UnitTests.Graphics
@@ -102,6 +104,102 @@ namespace SciterCore.UnitTests.Graphics
             Assert.AreEqual(a, actual.A);
         }
 
+        [Test]
+        public void SciterColor_GetTypeCode()
+        {
+            var actual = SciterColor.Transparent;
+            Assert.AreEqual(TypeCode.UInt32, actual.GetTypeCode());
+        }
+
+        [TestCase(0, 0, 0, 0, 0)]
+        [TestCase(255, 255, 255, 255, -1)]
+        [TestCase(255, 0, 0, 127, 2130706687)]
+        public void SciterColor_ToInt32(byte r, byte g, byte b, byte a, int expected)
+        {
+            var actual = SciterColor.Create(r, g, b, a);
+            Assert.AreEqual(expected, actual.ToInt32());
+        }
+
+        [TestCase(0, 0, 0, 0, uint.MinValue)]
+        [TestCase(255, 255, 255, 255, uint.MaxValue)]
+        [TestCase(255, 0, 0, 127, 2130706687U)]
+        public void SciterColor_ToUInt32(byte r, byte g, byte b, byte a, uint expected)
+        {
+            var actual = SciterColor.Create(r, g, b, a);
+            Assert.AreEqual(expected, actual.ToUInt32());
+        }
+
+        [TestCase(0, 0, 0, 0, (long)uint.MinValue)]
+        [TestCase(255, 255, 255, 255, (long)uint.MaxValue)]
+        [TestCase(255, 0, 0, 127, 2130706687L)]
+        public void SciterColor_ToInt64(byte r, byte g, byte b, byte a, long expected)
+        {
+            var actual = SciterColor.Create(r, g, b, a);
+            Assert.AreEqual(expected, actual.ToInt64());
+        }
+
+        [TestCase(0, 0, 0, 0, (ulong)uint.MinValue)]
+        [TestCase(255, 255, 255, 255, (ulong)uint.MaxValue)]
+        [TestCase(255, 0, 0, 127, 2130706687UL)]
+        public void SciterColor_ToInt64(byte r, byte g, byte b, byte a, ulong expected)
+        {
+            var actual = SciterColor.Create(r, g, b, a);
+            Assert.AreEqual(expected, actual.ToUInt64());
+        }
+
+        [TestCase(0, 0, 0, 0, (float)uint.MinValue)]
+        [TestCase(255, 255, 255, 255, (float)uint.MaxValue)]
+        [TestCase(255, 0, 0, 127, 2130706687f)]
+        public void SciterColor_ToSingle(byte r, byte g, byte b, byte a, float expected)
+        {
+            var actual = SciterColor.Create(r, g, b, a);
+            Assert.AreEqual(expected, actual.ToSingle());
+        }
+
+        [TestCase(0, 0, 0, 0, (double)uint.MinValue)]
+        [TestCase(255, 255, 255, 255, (double)uint.MaxValue)]
+        [TestCase( 255, 0, 0, 127, 2130706687d)]
+        public void SciterColor_ToDouble(byte r, byte g, byte b, byte a, double expected)
+        {
+            var actual = SciterColor.Create(r, g, b, a);
+            Assert.AreEqual(expected, actual.ToDouble());
+        }
+
+        [TestCase(0, 0, 0, 0, (double)uint.MinValue)]
+        [TestCase(255, 255, 255, 255, (double)uint.MaxValue)]
+        [TestCase( 255, 0, 0, 127, 2130706687d)]
+        public void SciterColor_ToDecimal(byte r, byte g, byte b, byte a, decimal expected)
+        {
+            var actual = SciterColor.Create(r, g, b, a);
+            Assert.AreEqual(expected, actual.ToDecimal());
+        }
+
+        [TestCase(0, 0, 0, 0, "00000000")]
+        [TestCase(255, 255, 255, 255, "FFFFFFFF")]
+        [TestCase( 127, 127, 127, 127, "7F7F7F7F")]
+        [TestCase( 255, 0, 0, 127, "7F0000FF")]
+        public void SciterColor_ToString(byte r, byte g, byte b, byte a, string expected)
+        {
+            var actual = SciterColor.Create(r, g, b, a);
+            Assert.AreEqual(actual.ToString(), actual.ToString(null));
+            Assert.AreEqual(expected, actual.ToString(null));
+        }
+        
+        [Test]
+        public void SciterColor_are_equal()
+        {
+            var one = SciterColor.Transparent;
+            var two = SciterColor.Create(0,0,0,0);
+            Assert.IsTrue(one.Equals(two));
+        }
+        
+        [Test]
+        public void SciterColor_are_not_equal()
+        {
+            var one = SciterColor.Transparent;
+            Assert.IsFalse(one.Equals(null));
+        }
+        
         #region KnownColors
 
         [Test]
