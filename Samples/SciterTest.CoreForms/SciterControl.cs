@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Windows.Forms;
 using SciterCore;
 using SciterCore.Interop;
@@ -49,7 +48,7 @@ namespace SciterTest.CoreForms
 
         protected override void OnClientSizeChanged(EventArgs e)
         {
-            if(SciterWnd.Handle.ToInt32()!=0)
+            if(SciterWnd != null && SciterWnd?.Handle != IntPtr.Zero)
             {
                 var sz = this.Size;
                 PInvokeWindows.MoveWindow(hWnd: SciterWnd.Handle, X: 0, Y: 0, nWidth: sz.Width, nHeight: sz.Height, bRepaint: true);

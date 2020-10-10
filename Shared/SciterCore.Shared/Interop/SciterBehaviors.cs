@@ -18,38 +18,36 @@
 #pragma warning disable 0169
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 
 namespace SciterCore.Interop
 {
 	public static class SciterBehaviors
 	{
-		public enum EVENT_GROUPS : uint
+		internal enum EVENT_GROUPS : uint
 		{
-			HANDLE_INITIALIZATION = 0x0000, /** attached/detached */
-			HANDLE_MOUSE = 0x0001,          /** mouse events */
-			HANDLE_KEY = 0x0002,            /** key events */
-			HANDLE_FOCUS = 0x0004,          /** focus events, if this flag is set it also means that element it attached to is focusable */
-			HANDLE_SCROLL = 0x0008,         /** scroll events */
-			HANDLE_TIMER = 0x0010,          /** timer event */
-			HANDLE_SIZE = 0x0020,           /** size changed event */
-			HANDLE_DRAW = 0x0040,           /** drawing request (event) */
-			HANDLE_DATA_ARRIVED = 0x080,    /** requested data () has been delivered */
-			HANDLE_BEHAVIOR_EVENT        = 0x0100, /** logical, synthetic events:
+			HANDLE_INITIALIZATION = 0x0000, /* attached/detached */
+			HANDLE_MOUSE = 0x0001,          /* mouse events */
+			HANDLE_KEY = 0x0002,            /* key events */
+			HANDLE_FOCUS = 0x0004,          /* focus events, if this flag is set it also means that element it attached to is focusable */
+			HANDLE_SCROLL = 0x0008,         /* scroll events */
+			HANDLE_TIMER = 0x0010,          /* timer event */
+			HANDLE_SIZE = 0x0020,           /* size changed event */
+			HANDLE_DRAW = 0x0040,           /* drawing request (event) */
+			HANDLE_DATA_ARRIVED = 0x080,    /* requested data () has been delivered */
+			HANDLE_BEHAVIOR_EVENT        = 0x0100, /* logical, synthetic events:
 													BUTTON_CLICK, HYPERLINK_CLICK, etc.,
 													a.k.a. notifications from intrinsic behaviors */
-			HANDLE_METHOD_CALL           = 0x0200, /** behavior specific methods */
-			HANDLE_SCRIPTING_METHOD_CALL = 0x0400, /** behavior specific methods */
-			HANDLE_TISCRIPT_METHOD_CALL  = 0x0800, /** behavior specific methods using direct tiscript::value's */
+			HANDLE_METHOD_CALL           = 0x0200, /* behavior specific methods */
+			HANDLE_SCRIPTING_METHOD_CALL = 0x0400, /* behavior specific methods */
+			
+			[Obsolete("As of Sciter v4.4.3.24", true)]
+			HANDLE_TISCRIPT_METHOD_CALL  = 0x0800, /* behavior specific methods using direct tiscript::value's */
 
-			HANDLE_EXCHANGE              = 0x1000, /** system drag-n-drop */
-			HANDLE_GESTURE               = 0x2000, /** touch input events */
+			HANDLE_EXCHANGE              = 0x1000, /* system drag-n-drop */
+			HANDLE_GESTURE               = 0x2000, /* touch input events */
 
-			HANDLE_SOM                   = 0x8000, /** som_asset_t request */
+			HANDLE_SOM                   = 0x8000, /* som_asset_t request */
 
 			HANDLE_ALL                   = 0xFFFF, /* all of them */
 
@@ -71,7 +69,7 @@ namespace SciterCore.Interop
 		}
 
 		[Flags]
-		public enum MOUSE_BUTTONS : uint
+		internal enum MOUSE_BUTTONS : uint
 		{
 			MAIN_MOUSE_BUTTON = 0x1,
 			PROP_MOUSE_BUTTON = 0x2,
@@ -79,7 +77,7 @@ namespace SciterCore.Interop
 		}
 
 		[Flags]
-		public enum KEYBOARD_STATES : uint
+		internal enum KEYBOARD_STATES : uint
 		{
 			CONTROL_KEY_PRESSED = 0x1,
 			SHIFT_KEY_PRESSED = 0x2,
@@ -115,14 +113,14 @@ namespace SciterCore.Interop
 			} data;*/
 		};
 		
-		public enum DRAGGING_TYPE : uint
+		internal enum DRAGGING_TYPE : uint
 		{
 			NO_DRAGGING,
 			DRAGGING_MOVE,
 			DRAGGING_COPY,
 		}
 		
-		public enum MOUSE_EVENTS : uint
+		internal enum MOUSE_EVENTS : uint
 		{
 			MOUSE_ENTER = 0,
 			MOUSE_LEAVE,
@@ -142,21 +140,21 @@ namespace SciterCore.Interop
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct MOUSE_PARAMS
+		internal struct MOUSE_PARAMS
 		{
 			public MOUSE_EVENTS			cmd;// MOUSE_EVENTS
-			public IntPtr				target;// HELEMENT
-			public PInvokeUtils.POINT	pos;// POINT
-			public PInvokeUtils.POINT	pos_view;// POINT
-			public uint				button_state;// UINT ->> actually SciterXBehaviorsMOUSE_BUTTONS, but for MOUSE_EVENTS.MOUSE_WHEEL event it is the delta
-			public KEYBOARD_STATES	alt_state;// UINT
-			public uint				cursor_type;// UINT
-			public bool				is_on_icon;// BOOL
-			public IntPtr			dragging;// HELEMENT
-			public uint				dragging_mode;// UINT
+			public IntPtr				target;// HELEMENT target element
+			public PInvokeUtils.POINT	pos;// POINT position of cursor, element relative
+			public PInvokeUtils.POINT	pos_view;// POINT position of cursor, view relative
+			public uint				button_state;// UINT ->> actually SciterXBehaviors MOUSE_BUTTONS, but for MOUSE_EVENTS.MOUSE_WHEEL event it is the delta
+			public KEYBOARD_STATES	alt_state;// UINT KEYBOARD_STATES
+			public uint				cursor_type;// UINT CURSOR_TYPE to set, see CURSOR_TYPE
+			public bool				is_on_icon;// BOOL mouse is over icon (foreground-image, foreground-repeat:no-repeat)
+			public IntPtr			dragging;// HELEMENT element that is being dragged over, this field is not NULL if (cmd & DRAGGING) != 0
+			public uint				dragging_mode;// UINT see DRAGGING_TYPE. 
 		}
 
-		public enum CURSOR_TYPE : uint
+		internal enum CURSOR_TYPE : uint
 		{
 			CURSOR_ARROW,
 			CURSOR_IBEAM,
@@ -176,7 +174,7 @@ namespace SciterCore.Interop
 			CURSOR_DRAG_COPY,
 		}
 		
-		public enum KEY_EVENTS : uint
+		internal enum KEY_EVENTS : uint
 		{
 			KEY_DOWN = 0,
 			KEY_UP,
@@ -184,7 +182,7 @@ namespace SciterCore.Interop
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct KEY_PARAMS
+		internal struct KEY_PARAMS
 		{
 			public KEY_EVENTS	cmd;
 			public IntPtr		target;// HELEMENT
@@ -192,7 +190,7 @@ namespace SciterCore.Interop
 			public KEYBOARD_STATES alt_state;
 		}
 
-		public enum FOCUS_EVENTS : uint
+		internal enum FOCUS_EVENTS : uint
 		{
 			FOCUS_OUT = 0,      		// container got focus on element inside it, target is an element that got focus
 			FOCUS_IN = 1,       		// container lost focus from any element inside it, target is an element that lost focus
@@ -218,7 +216,7 @@ namespace SciterCore.Interop
 		}
 		
 		[StructLayout(LayoutKind.Sequential)]
-		public struct FOCUS_PARAMS
+		internal struct FOCUS_PARAMS
 		{
 			public FOCUS_EVENTS	cmd;
 			public IntPtr		target;// HELEMENT
@@ -226,7 +224,7 @@ namespace SciterCore.Interop
 			public bool			cancel;
 		}
 	
-		public enum SCROLL_EVENTS : uint
+		internal enum SCROLL_EVENTS : uint
 		{
 			SCROLL_HOME = 0,
 			SCROLL_END,
@@ -241,7 +239,7 @@ namespace SciterCore.Interop
 			SCROLL_SLIDER_PRESSED
 		}
 
-		public enum SCROLL_SOURCE
+		internal enum SCROLL_SOURCE
 		{
 			SCROLL_SOURCE_UNKNOWN,
 			SCROLL_SOURCE_KEYBOARD,  // SCROLL_PARAMS::reason <- keyCode
@@ -250,7 +248,7 @@ namespace SciterCore.Interop
 			SCROLL_SOURCE_WHEEL,
 		}
 
-		public enum SCROLLBAR_PART
+		internal enum SCROLLBAR_PART
 		{
 			SCROLLBAR_BASE,       
 			SCROLLBAR_PLUS,       
@@ -262,7 +260,7 @@ namespace SciterCore.Interop
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct SCROLL_PARAMS
+		internal struct SCROLL_PARAMS
 		{
 			public SCROLL_EVENTS	cmd;
 			public IntPtr			target;// HELEMENT
@@ -272,7 +270,7 @@ namespace SciterCore.Interop
 			public uint				reason; // key or SCROLLBAR_PART
 		}
 
-		public enum GESTURE_CMD : uint
+		internal enum GESTURE_CMD : uint
 		{
 			GESTURE_REQUEST = 0, // return true and fill flags if it will handle gestures.
 			GESTURE_ZOOM,        // The zoom gesture.
@@ -304,22 +302,24 @@ namespace SciterCore.Interop
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct GESTURE_PARAMS
+		internal struct GESTURE_PARAMS
 		{
-			public GESTURE_CMD	cmd;
-			public IntPtr		target;
-			public PInvokeUtils.POINT	pos;
-			public PInvokeUtils.POINT	pos_view;
+			public uint	cmd;						// GESTURE_EVENTS
+			public IntPtr		target;				// target element
+			public PInvokeUtils.POINT	pos;		// position of cursor, element relative
+			public PInvokeUtils.POINT	pos_view;	// position of cursor, view relative
 			/// <summary>
 			/// GESTURE_TYPE_FLAGS or GESTURE_STATE combination
-			/// </summary>
-			public uint					flags;
-			public uint					delta_time;
-			public PInvokeUtils.SIZE	delta_xy;
-			public double				delta_v;
+			/// </summary>`
+			public uint					flags;		// for GESTURE_REQUEST combination of GESTURE_FLAGs. 
+													// for others it is a combination of GESTURE_STATe's
+			public uint					delta_time;	// period of time from previous event.
+			public PInvokeUtils.SIZE	delta_xy;	// for GESTURE_PAN it is a direction vector 
+			public double				delta_v;	// for GESTURE_ROTATE - delta angle (radians) 
+													// for GESTURE_ZOOM - zoom value, is less or greater than 1.0  
 		}
 
-		public enum EXCHANGE_CMD
+		internal enum EXCHANGE_CMD
 		{
 			X_DRAG_ENTER = 0,       // drag enters the element
 			X_DRAG_LEAVE = 1,       // drag leaves the element  
@@ -331,7 +331,7 @@ namespace SciterCore.Interop
 			X_WILL_ACCEPT_DROP = 7, // drop target element shall consume this event in order to receive X_DROP 
 		}
 
-		public enum DD_MODES
+		internal enum DD_MODES
 		{
 			DD_MODE_NONE = 0, 			// DROPEFFECT_NONE	( 0 )
 			DD_MODE_COPY = 1, 			// DROPEFFECT_COPY	( 1 )
@@ -341,18 +341,18 @@ namespace SciterCore.Interop
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct EXCHANGE_PARAMS
+		internal struct EXCHANGE_PARAMS
 		{
 			public uint cmd;					// EXCHANGE_EVENTS
-			public int target;					// target element
-			public int source;					// source element (can be null if D&D from external window)
+			public IntPtr target;					// target element
+			public IntPtr source;					// source element (can be null if D&D from external window)
 			public PInvokeUtils.POINT pos;		// position of cursor, element relative
 			public PInvokeUtils.POINT pos_view;	// position of cursor, view relative
 			public uint mode;					// DD_MODE 
 			public SciterValue.VALUE data;		// packaged drag data
 		}
 
-		public enum DRAW_EVENTS : uint
+		internal enum DRAW_EVENTS : uint
 		{
 			DRAW_BACKGROUND = 0,
 			DRAW_CONTENT = 1,
@@ -363,7 +363,7 @@ namespace SciterCore.Interop
 		//struct SCITER_GRAPHICS;
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct DRAW_PARAMS
+		internal struct DRAW_PARAMS
 		{
 			public DRAW_EVENTS			cmd;
 			public IntPtr				gfx;	// HGFX - hdc to paint on
@@ -522,11 +522,38 @@ namespace SciterCore.Interop
 		[StructLayout(LayoutKind.Sequential)]
 		public struct BEHAVIOR_EVENT_PARAMS
 		{
+			/// <summary>
+			/// BEHAVIOR_EVENTS
+			/// </summary>
 			public BEHAVIOR_EVENTS cmd;
-			public IntPtr	heTarget;// HELEMENT
-			public IntPtr	he;// HELEMENT
+			
+			/// <summary>
+			/// target element handler, in MENU_ITEM_CLICK this is owner element that caused this menu - e.g. context menu owner
+			/// In scripting this field named as Event.owner
+			/// </summary>
+			public IntPtr	heTarget;
+			
+			/// <summary>
+			/// source element e.g. in SELECTION_CHANGED it is new selected <option>, in MENU_ITEM_CLICK it is menu item (LI) element
+			/// </summary>
+			public IntPtr	he;
+			
+			/// <summary>
+			/// CLICK_REASON or EDIT_CHANGED_REASON - UI action causing change.
+			/// In case of custom event notifications this may be any application specific value.
+			/// </summary>
 			public IntPtr	reason;// UINT_PTR
+			
+			/// <summary>
+			/// auxiliary data accompanied with the event. E.g. FORM_SUBMIT event is using this field to pass collection of values.
+			/// </summary>
 			public SciterValue.VALUE data;// SCITER_VALUE
+
+			/// <summary>
+			/// name of custom event (when cmd == CUSTOM)
+			/// </summary>
+			[MarshalAs(UnmanagedType.LPWStr)]
+			public string name;
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
@@ -566,17 +593,22 @@ namespace SciterCore.Interop
 												// you will know that if you get an "Access Violation" error
 		}
 
-		// SCRIPTING_METHOD_PARAMS wraper
-		public struct SCRIPTING_METHOD_PARAMS_Wraper
+		// SCRIPTING_METHOD_PARAMS wrapper
+		public struct SCRIPTING_METHOD_PARAMS_WRAPPER
 		{
-			public SCRIPTING_METHOD_PARAMS_Wraper(SCRIPTING_METHOD_PARAMS prms)
+			public SCRIPTING_METHOD_PARAMS_WRAPPER(SCRIPTING_METHOD_PARAMS prms)
 			{
 				name = Marshal.PtrToStringAnsi(prms.name);
 				args = new SciterCore.SciterValue[prms.argc];
 				result = SciterCore.SciterValue.Undefined;
 
-				for(int i = 0; i < prms.argc; i++)
-					args[i] = new SciterCore.SciterValue( (SciterValue.VALUE) Marshal.PtrToStructure(IntPtr.Add(prms.argv, i * Marshal.SizeOf(typeof(SciterValue.VALUE))), typeof(SciterValue.VALUE)) );
+				for (var i = 0; i < prms.argc; i++)
+				{
+					var ptr = IntPtr.Add(prms.argv,
+						i * Marshal.SizeOf(typeof(SciterValue.VALUE)));
+
+					args[i] = new SciterCore.SciterValue(Marshal.PtrToStructure<SciterValue.VALUE>(ptr));
+				}
 			}
 
 			public string name;

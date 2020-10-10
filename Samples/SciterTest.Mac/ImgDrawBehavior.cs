@@ -1,7 +1,4 @@
-﻿using System;
-using SciterCore;
-using AppKit;
-using Foundation;
+﻿using SciterCore;
 using CoreGraphics;
 
 namespace SciterTest.Mac
@@ -26,32 +23,29 @@ namespace SciterTest.Mac
 			//ctx.AddPath(_svg._cgpath);
 			//ctx.DrawPath(CGPathDrawingMode.FillStroke);
 
-			_simg = new SciterImage(ctx.ToImage());
+			_simg = SciterImage.Create(ctx.ToImage());
 			//element.SetStyle("width", img.Width + "px");
 			//element.SetStyle("height", img.Height + "px");
 		}
 
 		protected override bool OnDraw(
-			SciterElement element, 
-			SciterCore.Interop.SciterBehaviors.DRAW_PARAMS prms)
+			SciterElement element, DrawArgs args)
 		{
-			if(prms.cmd != SciterCore.Interop.SciterBehaviors.DRAW_EVENTS.DRAW_CONTENT)
+			if(args.DrawEvent != DrawEvent.Content)
 				return false;
 			
-			using(SciterGraphics gfx = new SciterGraphics(prms.gfx))
+			using(SciterGraphics graphics = SciterGraphics.Create(args.Handle))
 			{
-				gfx.StateSave();
-				gfx.Translate(prms.area.Left, prms.area.Top);
-
-				gfx.FillColor = new RGBAColor(255, 0, 0);
-				gfx.LineColor = RGBAColor.Black;
-				gfx.LineWidth = 1;
-				//gfx.DrawPath(_svg._spath, SciterSharp.Interop.SciterXGraphics.DRAW_PATH_MODE.DRAW_FILL_AND_STROKE);
-
-				gfx.Translate(prms.area.Left+10, prms.area.Top+10);
-				gfx.BlendImage(_simg, 0, 0);
-
-				gfx.StateRestore();
+				graphics
+					.SaveState()
+					.Translate(args.Area.Left, args.Area.Top)
+					.SetFillColor(255, 0, 0)
+					.SetLineColor(SciterColor.Black)
+					.SetLineWidth(1)
+					//.DrawPath(_svg._spath, SciterSharp.Interop.SciterXGraphics.DRAW_PATH_MODE.DRAW_FILL_AND_STROKE);
+					.Translate(args.Area.Left+10, args.Area.Top+10)
+					.BlendImage(_simg, 0, 0)
+					.RestoreState();
 			}
 			return true;
 		}

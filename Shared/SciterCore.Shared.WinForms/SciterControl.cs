@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
+using System.Drawing.Drawing2D;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using SciterCore.Interop;
@@ -18,10 +14,9 @@ namespace SciterCore.WinForms
 	[DisplayName("SciterControl")]
     [DesignerCategory("Sciter")]
     [Category("Sciter")]
-	public class SciterControl : Control
+	public class SciterControl : UserControl
 	{
-
-        private static string DEFAULT_HTML = 
+		private static string DEFAULT_HTML = 
             "<body><code>Use the <b>LoadHtml</b> event of {0} to load some html.</code>" + 
             "<br/><br/>" +
             "<pre><code>    {0}.LoadHtml += (sender, args) => <br/>" + 
@@ -29,45 +24,112 @@ namespace SciterCore.WinForms
             "        args.Html = \"&lt;body&gt;Hello &lt;b&gt;World&lt;/b&gt;&lt;/body&gt;\";<br/>" + 
             "    }</code></pre>";
 
-		public SciterWindow SciterWnd { get; private set; }
+        //private TextureBrush _brush;
+
+        public SciterWindow SciterWnd { get; private set; }
 
 		public SciterControl()
 		{
-			SciterWnd = new SciterWindow();
+			
 		}
 
-		public SciterHostComponent Host { get; set; }
+		[Category("Sciter")]
+		public string Html { get; set; }
+		
 
-        public string Html { get; set; }
-
+        [Category("Sciter")]
 		public event EventHandler<LoadHtmlEventArgs> LoadHtml;
+		
+		internal event EventHandler<WindowCreatedEventArgs> WindowCreated;
 
 		#region Overrided Methods
+		
+		protected override void WndProc(ref Message m)
+		{
+			base.WndProc(ref m);
+		}
+		
+		protected override void OnPaintBackground(PaintEventArgs e)
+		{
+			if (!this.DesignMode)
+			{
+				base.OnPaintBackground(e);
+				return;
+			}
+
+			e.Graphics.Clear(SystemColors.Control);
+			
+			const int size = 8;
+			using (var bmp = new Bitmap(size * 2, size * 2))
+			{
+				using (var brush = new SolidBrush(SystemColors.ControlDark))
+				using (var graphics = Graphics.FromImage(bmp))
+				{
+					graphics.FillRectangle(brush, 0, 0, size, size);
+					graphics.FillRectangle(brush, size, size, size, size);
+				}
+				
+				using (var textureBrush = new TextureBrush(bmp, WrapMode.Tile))
+				{
+					e.Graphics.FillRectangle(textureBrush, e.ClipRectangle);
+				}
+			}
+		}
+
 		protected override void OnHandleCreated(EventArgs e)
 		{
-			SciterWnd.CreateChildWindow(Handle);
+			if (this.DesignMode)
+			{
+				this.DoubleBuffered = true;
+				return;
+			}
 
-            var loadHtmlEventArgs = new LoadHtmlEventArgs()
-            {
-                Html = this.Html
-            };
+			SciterWnd = new SciterWindow()
+				.CreateChildWindow(Handle);
+			
+			this.WindowCreated?.Invoke(this, new WindowCreatedEventArgs(SciterWnd));
+			
+			if (SciterWnd != null && SciterWnd?.Handle != IntPtr.Zero)
+			{
+				//var loadHtmlEventArgs = new LoadHtmlEventArgs()
+				//{
+				//	Html = this.Html
+				//};
 
-            LoadHtml?.Invoke(this, loadHtmlEventArgs);
-
-            SciterWnd.LoadHtml(loadHtmlEventArgs?.Html ?? this.Html ?? DEFAULT_HTML);
-
-			SciterWnd.Show();
+				//LoadHtml?.Invoke(this, loadHtmlEventArgs);
+				//
+				//SciterWnd.LoadHtml(loadHtmlEventArgs?.Html ?? this.Html ?? DEFAULT_HTML);
+				
+				Task.Run(async () =>
+				{
+					await Task.Delay(50);
+					SciterWnd?.Show(this.Visible);
+					//await Task.Delay(550);
+					//SendKeys.SendWait("^(+(I))");
+				});
+				
+			}
 
 			base.OnHandleCreated(e);
 		}
 
+		protected override void OnSizeChanged(EventArgs e)
+		{
+			base.OnSizeChanged(e);
+		}
+
+		protected override void OnResize(EventArgs e)
+		{
+			base.OnResize(e);
+		}
+
 		protected override void OnClientSizeChanged(EventArgs e)
 		{
-			if(SciterWnd.Handle.ToInt32()!=0)
-			{
-				var sz = this.Size;
-				PInvokeWindows.MoveWindow(SciterWnd.Handle, 0, 0, sz.Width, sz.Height, true);
-			}
+			if(SciterWnd != null && SciterWnd?.Handle != IntPtr.Zero)
+            {
+                var sz = this.Size;
+                PInvokeWindows.MoveWindow(hWnd: SciterWnd.Handle, X: this.Left, Y: this.Top, nWidth: sz.Width, nHeight: sz.Height, bRepaint: true);
+            }
 			base.OnClientSizeChanged(e);
 		}
 		#endregion
@@ -82,5 +144,15 @@ namespace SciterCore.WinForms
 
         public string Html { get; set; }
 
+    }
+
+    internal class WindowCreatedEventArgs : EventArgs
+    {
+	    public SciterWindow Window { get; }
+
+	    public WindowCreatedEventArgs(SciterWindow window)
+	    {
+		    Window = window;
+	    }
     }
 }

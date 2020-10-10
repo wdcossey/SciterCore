@@ -16,43 +16,36 @@
 // along with SciterSharp.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 namespace SciterCore
 {
 	public class SciterRequest
 	{
-		private static Interop.SciterRequest.SciterRequestApi _requestApi = Interop.Sciter.RequestApi;
-		public readonly IntPtr _hrq;
-
-		private SciterRequest() 
+		private static readonly Interop.SciterRequest.SciterRequestApi RequestApi = Interop.Sciter.RequestApi;
+		private readonly IntPtr _requestHandle;
+		
+		public IntPtr Handle => _requestHandle;
+		
+		private SciterRequest(IntPtr requestHandle) 
 		{
-			//
-		}
-
-		public SciterRequest(IntPtr hrq)
-			: this()
-		{
-			_hrq = hrq;
+			_requestHandle = requestHandle;
 		}
 
 		public string Url
 		{
 			get
 			{
-				string strval = null;
-				Interop.SciterXDom.LPCSTR_RECEIVER frcv = (IntPtr str, uint str_length, IntPtr param) =>
-				{
-					strval = Marshal.PtrToStringAnsi(str, (int)str_length);
-				};
-
-				_requestApi.RequestUrl(_hrq, frcv, IntPtr.Zero);
-				return strval;
+				string result = null;
+				RequestApi.RequestUrl(
+					Handle, 
+					(IntPtr str, uint strLength, IntPtr param) =>
+						{
+							result = Marshal.PtrToStringAnsi(str, (int)strLength);
+						}, 
+					IntPtr.Zero);
+				
+				return result;
 			}
 		}
 
@@ -60,40 +53,42 @@ namespace SciterCore
 		{
 			get
 			{
-				string strval = null;
-				Interop.SciterXDom.LPCSTR_RECEIVER frcv = (IntPtr str, uint str_length, IntPtr param) =>
-				{
-					strval = Marshal.PtrToStringAnsi(str, (int)str_length);
-				};
+				string result = null;
 
-				_requestApi.RequestContentUrl(_hrq, frcv, IntPtr.Zero);
-				return strval;
+				RequestApi.RequestContentUrl(
+					Handle, 
+					(IntPtr str, uint strLength, IntPtr param) =>
+						{
+							result = Marshal.PtrToStringAnsi(str, (int)strLength);
+						},
+					IntPtr.Zero);
+				
+				return result;
 			}
 		}
 
-		public Interop.SciterRequest.SciterResourceType RequestedType
+		public SciterResourceType RequestedType
 		{
 			get
 			{
-				Interop.SciterRequest.SciterResourceType rv;
-				_requestApi.RequestGetRequestedDataType(_hrq, out rv);
-				return rv;
+				RequestApi.RequestGetRequestedDataType(Handle, out var rv);
+				return (SciterResourceType)unchecked((int)rv);
 			}
 		}
 
-		public void Suceeded(uint status, byte[] dataOrNull = null)
+		public void Succeeded(uint status, byte[] dataOrNull = null)
 		{
-			_requestApi.RequestSetSucceeded(_hrq, status, dataOrNull, dataOrNull == null ? 0 : (uint)dataOrNull.Length);
+			RequestApi.RequestSetSucceeded(Handle, status, dataOrNull, dataOrNull == null ? 0 : (uint)dataOrNull.Length);
 		}
 
 		public void Failed(uint status, byte[] dataOrNull = null)
 		{
-			_requestApi.RequestSetFailed(_hrq, status, dataOrNull, dataOrNull == null ? 0 : (uint)dataOrNull.Length);
+			RequestApi.RequestSetFailed(Handle, status, dataOrNull, dataOrNull == null ? 0 : (uint)dataOrNull.Length);
 		}
 
 		public void AppendData(byte[] data)
 		{
-			_requestApi.RequestAppendDataChunk(_hrq, data, (uint)data.Length);
+			RequestApi.RequestAppendDataChunk(Handle, data, (uint)data.Length);
 		}
 	}
 }

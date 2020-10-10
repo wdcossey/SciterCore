@@ -1,10 +1,6 @@
 using SciterCore;
 using SciterCore.Interop;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Diagnostics;
 using System.IO;
 using SciterValue = SciterCore.SciterValue;
@@ -27,17 +23,15 @@ namespace SciterTest.Idioms
 
 	class HostEventHandler : SciterEventHandler
 	{
-		protected override bool OnScriptCall(SciterElement se, string name, SciterValue[] args, out SciterValue result)
+		protected override ScriptEventResult OnScriptCall(SciterElement element, MethodInfo method, SciterValue[] args)
 		{
-			switch(name)
+			switch(method.Name)
 			{
 				case "Host_HelloWorld":
-					result = new SciterValue($"Hello World! (from {new StackTrace().GetFrame(1).GetMethod().Name})");
-					return true;
+					return ScriptEventResult.Successful(SciterValue.Create($"Hello World! (from {new StackTrace().GetFrame(1).GetMethod().Name})"));
 			}
 
-			result = null;
-			return false;
+			return ScriptEventResult.Failed();
 		}
 	}
 
@@ -58,35 +52,31 @@ namespace SciterTest.Idioms
 			_window = window;
 
 #if !DEBUG
-			_archive.Open($"{this.GetType().Namespace}.SiteResource.bin");
+			_archive.Open();
 #endif
 		}
 
 		public void SetupPage(string page)
 		{
 #if DEBUG
-			string location = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-
-			location += "\\..\\..";
-
-			string path = Path.Combine(location, "res", page);
+			var location = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+			var path = Path.Combine(location ?? string.Empty, "..\\..", "wwwroot", page);
 			Debug.Assert(File.Exists(path));
 
-			Uri uri = new Uri(path, UriKind.Absolute);
+			var uri = new Uri(path, UriKind.Absolute);
 #else
 			Uri uri = new Uri(baseUri: _archive.Uri, page);
 #endif
 			_window.LoadPage(uri: uri);
 		}
 
-		protected override SciterXDef.LoadResult OnLoadData(SciterXDef.SCN_LOAD_DATA sld)
+		protected override LoadResult OnLoadData(object sender, LoadDataArgs args)
 		{
-			var uri = new Uri(sld.uri);
-
 			// load resource from SciterArchive
-			_archive?.GetItem(uri, (data, path) =>
+			_archive?.GetItem(args.Uri, (result) =>
 			{
-				_api.SciterDataReady(_window.Handle, path, data, (uint)data.Length);
+				if (result.IsSuccessful)
+					_api.SciterDataReady(_window.Handle, result.Path, result.Data, (uint) result.Size);
 			});
 
 			//if(_archive?.IsOpen == true && sld.uri.StartsWith(_archive.Uri.GetLeftPart(UriPartial.Path)))
@@ -98,7 +88,7 @@ namespace SciterTest.Idioms
 			//		_api.SciterDataReady(_window.Handle, sld.uri, data, (uint) data.Length);
 			//}
 
-			return base.OnLoadData(sld);
+			return base.OnLoadData(sender: sender, args: args);
         }
     }
 }

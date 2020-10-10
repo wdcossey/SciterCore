@@ -17,17 +17,15 @@ namespace SciterTest.WinForms
 
 	class HostEvh : SciterEventHandler
 	{
-		protected override bool OnScriptCall(SciterElement se, string name, SciterValue[] args, out SciterValue result)
+		protected override ScriptEventResult OnScriptCall(SciterElement element, MethodInfo method, SciterValue[] args)
 		{
-			switch(name)
+			switch(method.Name)
 			{
 				case "Host_HelloWorld":
-					result = new SciterValue("Hello World! (from native side)");
-					return true;
+					return  ScriptEventResult.Successful(SciterValue.Create("Hello World! (from native side)"));
 			}
 
-			result = null;
-			return false;
+			return ScriptEventResult.Failed();
 		}
 	}
 
@@ -57,12 +55,9 @@ namespace SciterTest.WinForms
 
 		public void SetupPage(string page)
 		{
-#if !DEBUG
-			string location = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-
-			location += "\\..\\..";
-
-			string path = Path.Combine(location, "res", page);
+#if DEBUG
+			var location = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+			var path = Path.Combine(location ?? string.Empty, "..\\..", "wwwroot", page);
 			Debug.Assert(File.Exists(path));
 
 			Uri uri = new Uri(path, UriKind.Absolute);
@@ -73,17 +68,16 @@ namespace SciterTest.WinForms
 			_window.LoadPage(uri: uri);
 		}
 
-		protected override SciterXDef.LoadResult OnLoadData(SciterXDef.SCN_LOAD_DATA sld)
+		protected override LoadResult OnLoadData(object sender, LoadDataArgs args)
 		{
-			var uri = new Uri(sld.uri);
-
 			// load resource from SciterArchive
-			_archive?.GetItem(uri, (data, path) => 
+			_archive?.GetItem(args.Uri, (result) => 
 			{ 
-				_api.SciterDataReady(_window.Handle, path, data, (uint) data.Length);
+				if (result.IsSuccessful)
+					_api.SciterDataReady(_window.Handle, result.Path, result.Data, (uint) result.Size);
 			});
 
-			return base.OnLoadData(sld);
+			return base.OnLoadData(sender: sender, args: args);
         }
     }
 }

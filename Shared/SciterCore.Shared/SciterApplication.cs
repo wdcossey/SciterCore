@@ -1,21 +1,24 @@
 ﻿using SciterCore.Interop;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SciterCore
 {
     public class SciterApplication : IDisposable
     {
-        private static object _lock = new object();
+        private static readonly object QueueLock = new object();
 
         private SciterWindow Window { get; set; }
 
-        private SciterHost Host { get; set; }
-
+        public SciterHost Host { get; internal set; }
+        
         public SciterApplication()
         {
 
+        }
+
+        public SciterApplication(SciterHost host)
+        {
+            Host = host;
         }
 
         //public int Run<TWindow>(TWindow window)
@@ -33,12 +36,24 @@ namespace SciterCore
         {
             Host = host;
 
-            return Run(() => { PInvokeUtils.RunMsgLoop();  });
+            return Run(PInvokeUtils.RunMsgLoop);
 
             //return Run(() => { host.Show(); });
             //window.Show();
             //NativeMethods.Main();
             //return 0;
+        }
+
+        public int Run()
+        {
+            return Run(PInvokeUtils.RunMsgLoop);
+        }
+        
+
+        public int Run<THost>()
+            where THost: SciterHost
+        {
+            return Run(Activator.CreateInstance<THost>());
         }
 
         public int Run<THost>(Func<THost> hostFunc)
@@ -51,10 +66,11 @@ namespace SciterCore
         {
             try
             {
+                Host.Window?.Show();
                 QueueMain(action);
                 //NativeMethods.Main();
             }
-            catch (Exception ex)
+            catch
             {
                 return -1;
             }
@@ -63,7 +79,7 @@ namespace SciterCore
         
         public static void QueueMain(Action action)
         {
-            lock (_lock)
+            lock (QueueLock)
             {
                 action?.Invoke();
             }

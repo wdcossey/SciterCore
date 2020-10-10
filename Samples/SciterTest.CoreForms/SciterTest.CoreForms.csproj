@@ -19,9 +19,9 @@
       <DependentUpon>SciterControl.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
-
+  
   <ItemGroup>
-    <ProjectReference Include="$(SolutionDir)Platform\SciterCore.Binaries.Windows\SciterCore.Binaries.Windows.csproj" />
+    <PackageReference Include="SciterCore.Binaries" Version="0.0.55-alpha" />
   </ItemGroup>
 
   <Import Project="$(SolutionDir)Shared\SciterCore.Shared\SciterCore.Shared.projitems" Label="Shared" Condition="Exists('$(SolutionDir)Shared\SciterCore.Shared\SciterCore.Shared.projitems')" />

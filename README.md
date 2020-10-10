@@ -2,7 +2,9 @@
 
 SciterCore.PackFolder [![NuGet](https://img.shields.io/nuget/v/.svg?style=flat)]() ![Build status](https://dev.azure.com/wdcossey/GitHub/_apis/build/status/SciterCore.PackFolder)
 
-SciterCore.Binaries.Windows [![NuGet](https://img.shields.io/nuget/v/.svg?style=flat)]() ![Build status](https://dev.azure.com/wdcossey/GitHub/_apis/build/status/SciterCore.Binaries.Windows)
+SciterCore.Binaries [![NuGet](https://img.shields.io/nuget/v/.svg?style=flat)]() ![Build status](https://dev.azure.com/wdcossey/GitHub/_apis/build/status/SciterCore.Binaries.Windows)
+
+SciterCore.NetStd [![NuGet](https://img.shields.io/nuget/v/.svg?style=flat)]() ![Build status](https://dev.azure.com/wdcossey/GitHub/_apis/build/status/SciterCore.NetStd)
 
 SciterCore.WinForms [![NuGet](https://img.shields.io/nuget/v/.svg?style=flat)]() ![Build status](https://dev.azure.com/wdcossey/GitHub/_apis/build/status/SciterCore.WinForms)
 
@@ -22,7 +24,7 @@ SciterCore is based off the work done by [Ramon F. Mendes](https://github.com/ra
 
 2. **Can I build .Net Core applications in the current state of the project?**
 
-    Whilst it's possible to build .Net Core applications for Windows using some PInvoke, it's not recommended in its current state.
+    Whilst it's possible to build .Net Core applications for Windows and MacOS, it's not recommended in its current state.
     
 3. **When can I build .Net Core applications using this project?**
 
@@ -40,41 +42,59 @@ This library provides bindings of [Sciter](http://sciter.com/download/) C/C++ he
 
 ## Available Packages
 
-##### SciterCore.PackFolder
-PackFolder build Tasks for embedding Sciter packed binaries into Project resources.
+#### SciterCore.PackFolder
+PackFolder MSBuild Task for embedding Sciter packed binaries into Project resources.
 
-##### SciterCore.Binaries.Windows
-Package for x86 and x64 Windows binaries
+| Command                      |  Options                  |  Default  | Description                       |
+| ---------------------------: | :------------------------ | :-------: | :-------------------------------- |
+| `SciterCorePackType`         | `binary`                  | `binary`  | The PackFolder option; Only `binary` is currently supported, to disable folder packing use any other value (i.e `none`). |
+| `SciterCorePackDirectory`    | absolute or relative path | `wwwroot` | Path to the folder you would like to pack.                                                                               |
+| `SciterCorePackCopyToOutput` | `true` or `false`         | `false`   | Useful if you do not want to pack the files and simply want them copied to the `$(TargetDir)` during the build process.  |
 
-##### SciterCore.WinForms
-Windows/WinForms
+Example:
+```
+<PropertyGroup>
+  <SciterCorePackDirectory>..\common\wwwroot</SciterCorePackDirectory>
+  <SciterCorePackType>binary</SciterCorePackType>
+  <SciterCorePackCopyToOutput Condition=" '$(Configuration)' == 'Debug' ">true</SciterCorePackCopyToOutput>
+</PropertyGroup>
+```
 
-##### SciterCore.Gtk
+#### SciterCore.Binaries
+
+Package containing Sciter binaries for Windows, MacOS and Linux.
+
+Binaries are automatically resolved for the target configuration (i.e `x86`, `x64` and `AnyCPU`)
+
+| OS              | Architecture   | FileName              | 
+| --------------- | ---------------| --------------------- | 
+| Windows         | `x86`          | `sciter.dll`          | 
+| Windows         | `x64`          | `sciter.dll`          | 
+| MacOS           | `x64`          | `sciter-osx-64.dylib` | 
+| Linux           | `x64`          | `libsciter-gtk.so`    | 
+
+#### SciterCore.NetStd
+Windows/MacOS/Linux (via .Net Standard 2.0)
+
+#### SciterCore.WinForms
+Windows, WinForms and WPF (via .Net Framework 4.6.1)
+
+#### SciterCore.Gtk
 Linux/Gtk (via MonoDevelop)
 
-##### SciterCore.Mac
+#### SciterCore.Mac
 MacOS (via Xamarin.Mac)
 
 ## Available Samples
 
-_SciterTest.Graphics_ -- Windows sample using [SkiaSharp](https://github.com/mono/SkiaSharp)
-
-_SciterTest.Graphics.Mac_ -- MacOS sample using [SkiaSharp](https://github.com/mono/SkiaSharp)
-
-_SciterTest.Gtk_ -- Linux sample using GTK
-
-_SciterTest.Gtk.Mac_ -- MacOS sample using GTK
-
-_SciterTest.Gtk.Windows_ -- Windows sample using GTK
-
-_SciterTest.CoreForms_ -- .Net Core 3.1 Windows sample using a custom WinForms component
-
-_SciterTest.Core_ -- Windows core sample
-
-_SciterTest.Mac_ -- MacOS core sample
-
-_SciterTest.NetCore_ -- .Net Core 3.1 Windows sample
-
-_SciterTest.WinForms_ -- .Net Framework (4.6.x) Windows sample using a custom WinForms component.
-
-_SciterTest.Wpf_ -- Windows core sample
+| Project                           | Description                                               | Platform(s)                 |
+| --------------------------------- | :-------------------------------------------------------- | --------------------------- |
+| SciterTest.NetCore                | Demo using `.Net Core 3.1`                                | `MacOS`, `Windows`          |
+| SciterTest.CoreForms              | Demo using `.Net Core 3.1` and `WinForms`                 | `Windows`                   |
+| SciterCore.Sample.SkiaSharp.***   | Demo using [SkiaSharp](https://github.com/mono/SkiaSharp) | `MacOS`, `Windows`          |
+| SciterCore.Sample.Gtk.***         | Demo using `GTK`, migrated from `SciterSharp`             | `MacOS`, `Windows`, `Linux` |
+| SciterTest.WinForms               | Demo using `.Net Framework 4.6.1` and `WinForms`          | `Windows`                   |
+| SciterTest.Wpf                    | Demo using `.Net Framework 4.6.1` and `WPF`               | `Windows`                   |
+| SciterTest.Core                   | Sample migrated from `SciterSharp`                        | `Windows`                   |
+| SciterTest.Mac                    | Demo using `Xamarin.Mac`, migrated from `SciterSharp`     | `MacOS`                     |
+| SciterTest.Idioms                 | Sample migrated from `SciterSharp`                        | `Windows`                   |

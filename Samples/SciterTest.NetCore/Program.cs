@@ -1,28 +1,45 @@
 ﻿using System;
-using System.IO;
-using System.Net.Mime;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using SciterCore;
-using SciterCore.Interop;
+using SciterTest.NetCore.Behaviors;
+
 
 namespace SciterTest.NetCore
 {
     class Program
     {
         [STAThread]
-        static async Task Main(string[] args)
+        static void Main(string[] args)
         {
+            // Sciter needs this for drag'n'drop support
+            SciterPlatform.EnableDragAndDrop();
 
-            var app = new SciterApplication();
-            app.Run(() =>
-            {
-                return new Host(() => new Window());
-            });
+            var configuration = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables()
+                .Build();
+            
+            var services = new ServiceCollection()
+                .AddLogging(builder =>
+                {
+                    builder
+                        .ClearProviders()
+                        .AddConfiguration(configuration.GetSection("Logging"))
+                        .AddConsole();
+                })
+                .AddSingleton<IConfiguration>(provider => configuration)
+                .AddSingleton<ApplicationWindow>()
+                .AddSingleton<HostEventHandler>()
+                .AddSingleton<SciterHost, ApplicationHost>()
+                .AddSingleton<SciterApplication>();
+
+            var serviceProvider = services.BuildServiceProvider();
+            
+            var app = serviceProvider.GetRequiredService<SciterApplication>();
+
+            app.Run();
             
             //var host = new HostBuilder()
             //    .ConfigureHostConfiguration(configHost =>

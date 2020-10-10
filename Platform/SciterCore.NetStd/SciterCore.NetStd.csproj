@@ -1,9 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netstandard2.0</TargetFramework>
+        <TargetFrameworks>netstandard2.0;netcoreapp2.0;netcoreapp2.1;netcoreapp3.0;netcoreapp3.1</TargetFrameworks>
+        <LangVersion>8</LangVersion>
     </PropertyGroup>
-    
     
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
       <DefineConstants>TRACE;NETCORE</DefineConstants>
@@ -12,28 +12,28 @@
       <DefineConstants>TRACE;NETCORE</DefineConstants>
     </PropertyGroup>
     <ItemGroup>
-      <ProjectReference Include="..\..\SciterCore.PackFolder\SciterCore.PackFolder.csproj" />
-      <ProjectReference Include="..\SciterCore.Binaries.Windows\SciterCore.Binaries.Windows.csproj" />
+      <PackageReference Include="SciterCore.Binaries" Version="4.4.4.2" />
+      <PackageReference Include="SciterCore.PackFolder" Version="0.0.131-alpha" />
     </ItemGroup>
     
     <!-- LibConsole packaging -->
     <PropertyGroup>
         <TaskFolder>$(MSBuildThisFileDirectory)..\..\scripts\</TaskFolder>
         <PackSourceFolder>$(MSBuildThisFileDirectory)..\..\Shared\SciterCore.Shared\LibConsole</PackSourceFolder>
-        <PackOutputFile>$(ProjectDir).sciter\LibConsole.bin</PackOutputFile>
+        <PackOutputFile>$(ProjectDir)sciter.build\LibConsole.bin</PackOutputFile>
         <TaskAssembly Condition="$([MSBuild]::IsOsPlatform(Windows))">packfolder.exe</TaskAssembly>
-        <TaskAssembly Condition="$([MSBuild]::IsOsPlatform(OSX))">packOSX.sh</TaskAssembly>
-        <TaskAssembly Condition="$([MSBuild]::IsOsPlatform(Linux))">packOSX.sh</TaskAssembly>
+        <TaskAssembly Condition="$([MSBuild]::IsOsPlatform(OSX))">packfolder</TaskAssembly>
+        <TaskAssembly Condition="$([MSBuild]::IsOsPlatform(Linux))">packfolder</TaskAssembly>
     </PropertyGroup>
     
     <Target Name="SciterPreBuild" BeforeTargets="PreBuildEvent">
-        <MakeDir Directories="$(ProjectDir).sciter" />
+        <MakeDir Directories="$(ProjectDir)sciter.build" />
         <Exec Command="$(TaskFolder)$(TaskAssembly) &quot;$(PackSourceFolder)&quot; &quot;$(PackOutputFile)&quot; -binary" />
     </Target>
 
     <Target Name="SciterEmbedLocal" BeforeTargets="PrepareForBuild">
         <ItemGroup>
-            <EmbeddedResource Include="$(ProjectDir).sciter\LibConsole.bin">
+            <EmbeddedResource Include="$(ProjectDir)sciter.build\LibConsole.bin">
                 <LogicalName>LibConsole</LogicalName>
             </EmbeddedResource>
         </ItemGroup>

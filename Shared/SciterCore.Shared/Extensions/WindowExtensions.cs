@@ -1,7 +1,6 @@
 ﻿using System;
-using SciterCore;
 
-namespace SciterCoreShared.Extensions
+namespace SciterCore
 {
     public static class WindowExtensions
     {

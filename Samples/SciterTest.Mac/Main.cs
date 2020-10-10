@@ -3,7 +3,6 @@ using System.Diagnostics;
 using AppKit;
 using SciterCore;
 using SciterCore.Interop;
-using SciterCoreShared.Extensions;
 
 namespace SciterTest.Mac
 {

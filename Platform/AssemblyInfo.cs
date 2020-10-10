@@ -1,8 +1,5 @@
 ﻿using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using SciterCore;
-
 
 #if WINDOWS
 [assembly: AssemblyTitle("SciterCore")]
@@ -40,5 +37,5 @@ using SciterCore;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion(LibVersion.AssemblyVersion)]// use three version numbers only to match Nuget system
-[assembly: AssemblyFileVersion(LibVersion.AssemblyVersion)]
+[assembly: AssemblyVersion("1.0.*")]// use three version numbers only to match Nuget system
+[assembly: AssemblyFileVersion("1.0.*")]

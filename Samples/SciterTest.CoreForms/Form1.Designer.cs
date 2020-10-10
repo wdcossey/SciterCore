@@ -40,7 +40,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
             this.Controls.Add(this.sciterControl1);
-            this.Text = "Form1";
+            this.Text = "SciterCore::NetCore::Forms";
             this.ResumeLayout(false);
         }
 

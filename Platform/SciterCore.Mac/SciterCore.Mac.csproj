@@ -11,6 +11,7 @@
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <TargetFrameworkIdentifier>Xamarin.Mac</TargetFrameworkIdentifier>
     <MonoMacResourcePrefix>Resources</MonoMacResourcePrefix>
+    <LangVersion>8</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -63,6 +64,10 @@
     <Reference Include="System.Core" />
     <Reference Include="Xamarin.Mac" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="SciterCore.Binaries" Version="0.0.55-alpha" />
+    <PackageReference Include="SciterCore.PackFolder" Version="0.0.131-alpha" />
+  </ItemGroup>
   <Import Project="$(SolutionDir)Shared\SciterCore.Shared\SciterCore.Shared.projitems" Label="Shared" Condition="Exists('$(SolutionDir)Shared\SciterCore.Shared\SciterCore.Shared.projitems')" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets" />
 
@@ -70,20 +75,20 @@
   <PropertyGroup>
     <TaskFolder>$(MSBuildThisFileDirectory)..\..\scripts\</TaskFolder>
     <PackSourceFolder>$(MSBuildThisFileDirectory)..\..\Shared\SciterCore.Shared\LibConsole</PackSourceFolder>
-    <PackOutputFile>$(ProjectDir).sciter\LibConsole.bin</PackOutputFile>
+    <PackOutputFile>$(ProjectDir)sciter.build\LibConsole.bin</PackOutputFile>
     <TaskAssembly Condition="$([MSBuild]::IsOsPlatform(Windows))">packfolder.exe</TaskAssembly>
-    <TaskAssembly Condition="$([MSBuild]::IsOsPlatform(OSX))">packOSX.sh</TaskAssembly>
-    <TaskAssembly Condition="$([MSBuild]::IsOsPlatform(Linux))">packOSX.sh</TaskAssembly>
+    <TaskAssembly Condition="$([MSBuild]::IsOsPlatform(OSX))">packfolder</TaskAssembly>
+    <TaskAssembly Condition="$([MSBuild]::IsOsPlatform(Linux))">packfolder</TaskAssembly>
   </PropertyGroup>
 
-  <Target Name="SciterPreBuild" BeforeTargets="PreBuildEvent" >
-    <MakeDir Directories="$(ProjectDir).sciter" />
+  <Target Name="SciterPreBuild" BeforeTargets="PreBuildEvent">
+    <MakeDir Directories="$(ProjectDir)sciter.build" />
     <Exec Command="$(TaskFolder)$(TaskAssembly) &quot;$(PackSourceFolder)&quot; &quot;$(PackOutputFile)&quot; -binary" />
   </Target>
 
   <Target Name="SciterEmbedLocal" BeforeTargets="PrepareForBuild">
     <ItemGroup>
-      <EmbeddedResource Include="$(ProjectDir).sciter\LibConsole.bin">
+      <EmbeddedResource Include="$(ProjectDir)sciter.build\LibConsole.bin">
         <LogicalName>LibConsole</LogicalName>
       </EmbeddedResource>
     </ItemGroup>

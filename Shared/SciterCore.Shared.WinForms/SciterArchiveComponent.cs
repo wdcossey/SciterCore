@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SciterCore.WinForms
 {
@@ -35,16 +31,18 @@ namespace SciterCore.WinForms
 
         public SciterArchiveComponent()
         {
+            if (this.DesignMode)
+                return;
+            
             Archive = new SciterArchive();
         }
 
-        public Uri Uri
+        public string BaseAddress
         {
             get
             {
-                return Archive.Uri;
+                return Archive?.Uri?.AbsoluteUri ?? SciterArchive.DEFAULT_ARCHIVE_URI;
             }
-
             set
             {
                 //Archive.Uri = value;

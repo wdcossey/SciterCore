@@ -18,17 +18,13 @@
 #pragma warning disable 0169
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 
 namespace SciterCore.Interop
 {
 	public static class SciterXDef
 	{
-		public enum LoadResult : uint
+		internal enum LoadResult : uint
 		{
 			/// <summary>
 			/// do default loading if data not set
@@ -53,7 +49,7 @@ namespace SciterCore.Interop
 			LOAD_MYSELF = 3,
 		}
 
-		public enum SCITER_CALLBACK_CODE : uint
+		internal enum SCITER_CALLBACK_CODE : uint
 		{
 			SC_LOAD_DATA = 0x01,
 
@@ -70,7 +66,7 @@ namespace SciterCore.Interop
 
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct SCITER_CALLBACK_NOTIFICATION
+		internal struct SCITER_CALLBACK_NOTIFICATION
 		{
 			public SCITER_CALLBACK_CODE code;// SC_LOAD_DATA or SC_DATA_LOADED or ..
 			public IntPtr hwnd;
@@ -79,7 +75,7 @@ namespace SciterCore.Interop
 		public delegate uint SCITER_HOST_CALLBACK(IntPtr ns /*SCITER_CALLBACK_NOTIFICATION*/, IntPtr callbackParam);
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct SCN_LOAD_DATA
+		internal struct SCN_LOAD_DATA
 		{
 			public uint code;				// UINT - [in] one of the codes above.
 			public IntPtr hwnd;				// HWINDOW - [in] HWINDOW of the window this callback was attached to.
@@ -98,7 +94,7 @@ namespace SciterCore.Interop
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct SCN_DATA_LOADED
+		internal struct SCN_DATA_LOADED
 		{
 			public uint code;	// UINT - [in] one of the codes above.
 			public IntPtr hwnd;	// HWINDOW - [in] HWINDOW of the window this callback was attached to.
@@ -116,7 +112,7 @@ namespace SciterCore.Interop
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct SCN_ATTACH_BEHAVIOR
+		internal struct SCN_ATTACH_BEHAVIOR
 		{
 			public uint code;			// UINT - [in] one of the codes above.
 			public IntPtr hwnd;			// HWINDOW - [in] HWINDOW of the window this callback was attached to.

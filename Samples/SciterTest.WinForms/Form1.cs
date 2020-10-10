@@ -2,7 +2,7 @@
 using System.Windows.Forms;
 using SciterCore;
 using SciterCore.Interop;
-using TestWinForms;
+using SciterCore.WinForms;
 
 namespace SciterTest.WinForms
 {
@@ -13,14 +13,28 @@ namespace SciterTest.WinForms
 			InitializeComponent();
 
 			sciterControl1.HandleCreated += SciterControl1_HandleCreated;
+			
+			sciterHost.GetArchiveItem += SciterHostOnGetArchiveItem;
 		}
 
-		private SciterWindow AppWnd;
-		private Host AppHost = new Host();
+		private void SciterHostOnGetArchiveItem(object sender, GetArchiveItemEventArgs e)
+		{
+			switch (e.Path.OriginalString)
+			{
+				case "archive://app/icons8-visual-studio-code-2019.svg" :
+					e.Path = new Uri($"{e.BaseAddress}icons8-visual-studio-2019.svg");
+					break;
+			}
+		}
+
+		//private SciterWindow AppWnd;
+		//private Host AppHost = new Host();
 
 		private void SciterControl1_HandleCreated(object sender, EventArgs e)
 		{
-			var vm = Sciter.Api.SciterGetVM(sciterControl1.SciterWnd.Handle);
+			//var vm = sciterControl1.SciterWnd.VM;
+			
+			//var vm = Sciter.Api.SciterGetVM(sciterControl1.SciterWnd.Handle);
 			//AppWnd = new SciterWindow(sciterControl1.SciterWnd.Handle);
 			//AppHost.Setup(AppWnd);
 		}

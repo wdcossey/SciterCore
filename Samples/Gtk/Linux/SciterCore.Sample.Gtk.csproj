@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{95EE3B89-3300-4482-95A3-DC42EC8B3676}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>SciterTest.Gtk</RootNamespace>
+    <AssemblyName>SciterCore.Sample.Gtk</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
+    <TargetFrameworkProfile />
+    <SciterCorePackDirectory>..\common\wwwroot</SciterCorePackDirectory>
+    <!--<SciterCorePackType>binary</SciterCorePackType>-->
+    <SciterCorePackCopyToOutput Condition=" '$(Configuration)' == 'Debug' ">true</SciterCorePackCopyToOutput>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;GTKMONO;MONO</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <WarningLevel>4</WarningLevel>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>GTKMONO;MONO</DefineConstants>
+    <Optimize>true</Optimize>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\common\Behaviors\DrawGeometryBehavior.cs">
+      <Link>Behaviors\DrawGeometryBehavior.cs</Link>
+    </Compile>
+    <Compile Include="..\common\Src\Host.cs">
+      <Link>Src\Host.cs</Link>
+    </Compile>
+    <Compile Include="..\common\Src\Mono.cs">
+      <Link>Src\Mono.cs</Link>
+    </Compile>
+    <Compile Include="..\common\Src\ProgramWL.cs">
+      <Link>Src\ProgramWL.cs</Link>
+    </Compile>
+    <Compile Include="..\common\Src\Window.cs">
+      <Link>Src\Window.cs</Link>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="wwwroot\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Platform\SciterCore.Gtk\SciterCore.Gtk.csproj">
+      <Project>{d60acae0-c246-4936-b92b-b756841db545}</Project>
+      <Name>SciterCore.Gtk</Name>
+    </ProjectReference>
+  </ItemGroup>
+    <ItemGroup>
+    <PackageReference Include="SciterCore.PackFolder" Version="0.0.131-alpha" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+</Project>

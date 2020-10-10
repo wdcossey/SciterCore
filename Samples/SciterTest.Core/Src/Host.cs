@@ -53,11 +53,9 @@ namespace SciterTest.Core
 		public void SetupPage(string page)
 		{
 #if DEBUG
-			string location = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-
-			location += "\\..\\..";
-
-			string path = Path.Combine(location, "res", page);
+			string location = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty;
+			
+			string path = Path.Combine(location, "wwwroot", page);
 
 			Uri uri = new Uri(path, UriKind.Absolute);
 
@@ -71,17 +69,16 @@ namespace SciterTest.Core
 			_window.LoadPage(uri: uri);
 		}
 
-		protected override SciterXDef.LoadResult OnLoadData(SciterXDef.SCN_LOAD_DATA sld)
+		protected override LoadResult OnLoadData(object sender, LoadDataArgs args)
 		{
-			var uri = new Uri(sld.uri);
-
 			// load resource from SciterArchive
-			_archive?.GetItem(uri, (data, path) => 
+			_archive?.GetItem(args.Uri, (result) => 
 			{ 
-				_api.SciterDataReady(_window.Handle, path, data, (uint) data.Length);
+				if (result.IsSuccessful)
+					_api.SciterDataReady(_window.Handle, result.Path, result.Data, (uint) result.Size);
 			});
 			
-			return base.OnLoadData(sld);
+			return base.OnLoadData(sender: sender, args: args);
 		}
 	}
 }

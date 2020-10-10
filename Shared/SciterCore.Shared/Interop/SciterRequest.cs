@@ -16,10 +16,6 @@
 // along with SciterSharp.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 
 namespace SciterCore.Interop
@@ -74,7 +70,7 @@ namespace SciterCore.Interop
 			public FPTR_RequestUrl						RequestUrl;
 			public FPTR_RequestContentUrl				RequestContentUrl;
 			public FPTR_RequestGetRequestType			RequestGetRequestType;
-			public FPTR_RequestGetRequestedDataType		RequestGetRequestedDataType;
+			public FPTR_RequestGetRequestedDataType	    RequestGetRequestedDataType;
 			public FPTR_RequestGetReceivedDataType		RequestGetReceivedDataType;
 			public FPTR_RequestGetNumberOfParameters	RequestGetNumberOfParameters;
 			public FPTR_RequestGetNthParameterName		RequestGetNthParameterName;
@@ -124,7 +120,6 @@ namespace SciterCore.Interop
 			// get received data type, string, mime type
 			// REQUEST_RESULT SCFN(RequestGetReceivedDataType)( HREQUEST rq, LPCSTR_RECEIVER* rcv, LPVOID rcv_param );
 			public delegate REQUEST_RESULT FPTR_RequestGetReceivedDataType(IntPtr rq, SciterXDom.LPCSTR_RECEIVER rcv, IntPtr rcv_param);
-
 
 			// get number of request parameters passed
 			// REQUEST_RESULT SCFN(RequestGetNumberOfParameters)( HREQUEST rq, UINT* pNumber );

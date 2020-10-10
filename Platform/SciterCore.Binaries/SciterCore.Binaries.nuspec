@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>SciterCore.Binaries</id>
+    <version>$version$</version>
+    <title>SciterCore.Binaries</title>
+    <authors>William D Cossey</authors>
+    <owners>wdcossey</owners>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <licenseUrl>https://www.gnu.org/licenses/gpl-3.0html</licenseUrl>
+    <projectUrl>https://github.com/wdcossey/SciterCore</projectUrl>
+    <description>SciterCore binaries for Windows, MacOS and Linux.</description>
+    <copyright>© Sciter.</copyright>
+    <tags>Sciter SciterCore WinForms WPF Gtk Xamarin</tags>
+  </metadata>
+  <files>
+  <!--
+    <file src="build\**\*.targets" target="build\net461" />
+    <file src="build\**\*.targets" target="build\netstandard2.0" />
+    <file src="build\**\*.targets" target="buildMultiTargeting\net461" />
+	-->
+    <file src="..\..\sciter-sdk\bin.lnx\x64\libsciter-gtk.so" target="runtimes\linux-x64\native\libsciter-gtk.so" />
+    <file src="..\..\sciter-sdk\bin.osx\sciter-osx-64.dylib" target="runtimes\osx\native\sciter-osx-64.dylib" />
+    <file src="..\..\sciter-sdk\bin.win\x32\sciter.dll" target="runtimes\win-x86\native\sciter.dll" />
+    <file src="..\..\sciter-sdk\bin.win\x64\sciter.dll" target="runtimes\win-x64\native\sciter.dll" />
+  </files>
+</package>

@@ -16,21 +16,21 @@
 // along with SciterSharp.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using SciterCore.Interop;
 #if OSX && XAMARIN
 using AppKit;
 using Foundation;
-#else
+#elif WINDOWS && !WPF
 using System.Drawing;
 #endif
 
+// ReSharper disable UnusedMember.Global
+// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable UnusedMethodReturnValue.Global
 namespace SciterCore
 {
 #if OSX && XAMARIN
@@ -48,7 +48,7 @@ namespace SciterCore
 		: System.Windows.Forms.IWin32Window
 #endif
 	{
-		protected static Sciter.SciterApi _api = Sciter.Api;
+		private static readonly Sciter.SciterApi Api = Sciter.Api;
 
 		private IntPtr _handle;
 
@@ -73,7 +73,7 @@ namespace SciterCore
 		public bool SetSciterOption(SciterXDef.SCITER_RT_OPTIONS option, IntPtr value)
 		{
 			Debug.Assert(Handle != IntPtr.Zero);
-			return _api.SciterSetOption(Handle, option, value);
+			return Api.SciterSetOption(Handle, option, value);
 		}
 
 		public SciterWindow()
@@ -84,7 +84,7 @@ namespace SciterCore
 						SciterXDef.SCRIPT_RUNTIME_FEATURES.ALLOW_SOCKET_IO |
 						SciterXDef.SCRIPT_RUNTIME_FEATURES.ALLOW_SYSINFO;
 
-			_api.SciterSetOption(IntPtr.Zero, SciterXDef.SCITER_RT_OPTIONS.SCITER_SET_SCRIPT_RUNTIME_FEATURES, new IntPtr((int)allow));
+			Api.SciterSetOption(IntPtr.Zero, SciterXDef.SCITER_RT_OPTIONS.SCITER_SET_SCRIPT_RUNTIME_FEATURES, new IntPtr((int)allow));
 
 #if WINDOWS || NETCORE
 			_proc = InternalProcessSciterWindowMessage;
@@ -131,7 +131,7 @@ namespace SciterCore
 			creationFlags |= SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_ENABLE_DEBUG;
 #endif
 			Debug.Assert(Handle == IntPtr.Zero);
-			Handle = _api.SciterCreateWindow(
+			Handle = Api.SciterCreateWindow(
 				creationFlags,
 				ref frame,
 				_proc,
@@ -154,13 +154,13 @@ namespace SciterCore
 
 		public SciterWindow CreateMainWindow(int width, int height, SciterXDef.SCITER_CREATE_WINDOW_FLAGS creationFlags = DefaultCreateFlags)
 		{
-			PInvokeUtils.RECT frame = new PInvokeUtils.RECT(width, height);
+			var frame = new PInvokeUtils.RECT(width, height);
 			return CreateWindow(frame, creationFlags);
 		}
 
 		public SciterWindow CreateOwnedWindow(IntPtr owner, int width, int height, SciterXDef.SCITER_CREATE_WINDOW_FLAGS creationFlags = DefaultCreateFlags)
 		{
-			PInvokeUtils.RECT frame = new PInvokeUtils.RECT(width, height);
+			var frame = new PInvokeUtils.RECT(width, height);
             return CreateWindow(frame, creationFlags, owner);
 		}
 
@@ -181,16 +181,19 @@ namespace SciterCore
 		}*/
 
 #if WINDOWS || NETCORE
-		public SciterWindow CreateChildWindow(IntPtr hwnd_parent, SciterXDef.SCITER_CREATE_WINDOW_FLAGS flags = SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_CHILD)
+		public SciterWindow CreateChildWindow(IntPtr hwndParent, SciterXDef.SCITER_CREATE_WINDOW_FLAGS flags = SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_CHILD)
 		{
-			if(PInvokeWindows.IsWindow(hwnd_parent) == false)
+			if(PInvokeWindows.IsWindow(hwndParent) == false)
 				throw new ArgumentException("Invalid parent window");
 
-			PInvokeUtils.RECT frame;
-			PInvokeWindows.GetClientRect(hwnd_parent, out frame);
+			PInvokeWindows.GetClientRect(hwndParent, out var frame);
+
+#if DEBUG
+			Api.SciterSetOption(IntPtr.Zero, SciterXDef.SCITER_RT_OPTIONS.SCITER_SET_DEBUG_MODE, new IntPtr(1));
+#endif
 
 #if true
-            string wndclass = Marshal.PtrToStringUni(_api.SciterClassName());
+            string wndclass = Marshal.PtrToStringUni(Api.SciterClassName());
 
             Handle = PInvokeWindows.CreateWindowEx(
 				(int)(PInvokeWindows.WindowStyles.WS_EX_TRANSPARENT),
@@ -201,11 +204,11 @@ namespace SciterCore
                 0, 
                 frame.Right, 
                 frame.Bottom,
-                hwnd_parent,
+                hwndParent,
 				IntPtr.Zero,
 				IntPtr.Zero,
 				IntPtr.Zero);
-
+            
 			//Hwnd = PInvokeWindows.CreateWindowEx(0, wndclass, null, (int)PInvokeWindows.WindowStyles.WS_CHILD, 0, 0, frame.Right, frame.Bottom, hwnd_parent, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero);
 			//SetSciterOption(SciterXDef.SCITER_RT_OPTIONS.SCITER_SET_DEBUG_MODE, new IntPtr(1));// NO, user should opt for it
 #else
@@ -263,8 +266,7 @@ namespace SciterCore
 		public SciterWindow CenterTopLevelWindow()
 		{
 #if WINDOWS || NETCORE
-			PInvokeUtils.RECT rectWindow;
-			PInvokeWindows.GetWindowRect(Handle, out rectWindow);
+			PInvokeWindows.GetWindowRect(Handle, out var rectWindow);
 
 			PInvokeUtils.RECT rectWorkArea = new PInvokeUtils.RECT();
 			PInvokeWindows.SystemParametersInfo(PInvokeWindows.SPI_GETWORKAREA, 0, ref rectWorkArea, 0);
@@ -294,23 +296,23 @@ namespace SciterCore
 		/// Cross-platform handy method to get the size of the screen
 		/// </summary>
 		/// <returns>SIZE measures of the screen of primary monitor</returns>
-		public static PInvokeUtils.SIZE GetPrimaryMonitorScreenSize()
+		public static SciterSize GetPrimaryMonitorScreenSize()
 		{
 #if WINDOWS || NETCORE
 			int nScreenWidth = PInvokeWindows.GetSystemMetrics(PInvokeWindows.SystemMetric.SM_CXSCREEN);
 			int nScreenHeight = PInvokeWindows.GetSystemMetrics(PInvokeWindows.SystemMetric.SM_CYSCREEN);
-			return new PInvokeUtils.SIZE() { cx = nScreenWidth, cy = nScreenHeight };
+			return new SciterSize(nScreenWidth, nScreenHeight);
 #elif GTKMONO
-			int screen_width = PInvokeGTK.gdk_screen_width();
-			int screen_height = PInvokeGTK.gdk_screen_height();
-			return new PInvokeUtils.SIZE() { cx = screen_width, cy = screen_height };
+			var screenWidth = PInvokeGTK.gdk_screen_width();
+			var screenHeight = PInvokeGTK.gdk_screen_height();
+			return new SciterSize(screenWidth, screenHeight);
 #elif OSX && XAMARIN
 			var sz = NSScreen.MainScreen.Frame.Size;
-			return new PInvokeUtils.SIZE((int)sz.Width, (int)sz.Height);
+			return new SciterSize((int)sz.Width, (int)sz.Height);
 #endif
 		}
 
-		public PInvokeUtils.SIZE ScreenSize
+		public SciterSize ScreenSize
 		{
 			get
 			{
@@ -318,55 +320,53 @@ namespace SciterCore
 				IntPtr hmonitor = PInvokeWindows.MonitorFromWindow(Handle, PInvokeWindows.MONITOR_DEFAULTTONEAREST);
 				PInvokeWindows.MONITORINFO mi = new PInvokeWindows.MONITORINFO() { cbSize = Marshal.SizeOf(typeof(PInvokeWindows.MONITORINFO)) };
 				PInvokeWindows.GetMonitorInfo(hmonitor, ref mi);
-				return new PInvokeUtils.SIZE(mi.rcMonitor.Width, mi.rcMonitor.Height);
+				return new SciterSize(mi.rcMonitor.Width, mi.rcMonitor.Height);
 #elif GTKMONO
-				return new PInvokeUtils.SIZE();
+				return SciterSize.Empty;
 #elif OSX && XAMARIN
 				var sz = _nsview.Window.Screen.Frame.Size;
-				return new PInvokeUtils.SIZE((int)sz.Width, (int)sz.Height);
+				return new SciterSize((int)sz.Width, (int)sz.Height);
 #endif
 			}
 		}
 
-		public PInvokeUtils.SIZE Size
+		public SciterSize Size
 		{
 			get
 			{
 #if WINDOWS || NETCORE
-				PInvokeUtils.RECT rectWindow;
-				PInvokeWindows.GetWindowRect(Handle, out rectWindow);
-				return new PInvokeUtils.SIZE { cx = rectWindow.Width, cy = rectWindow.Height };
+				PInvokeWindows.GetWindowRect(Handle, out var rectWindow);
+				return new SciterSize(rectWindow.Width, rectWindow.Height);
 #elif GTKMONO
 				int window_width, window_height;
 				PInvokeGTK.gtk_window_get_size(_gtkwindow, out window_width, out window_height);
-				return new PInvokeUtils.SIZE(window_width, window_height);
+				return new SciterSize(window_width, window_height);
 #elif OSX && XAMARIN
 				var sz = _nsview.Window.Frame.Size;
-				return new PInvokeUtils.SIZE { cx = (int)sz.Width, cy = (int)sz.Height };
+				return new SciterSize((int)sz.Width, (int)sz.Height);
 #endif
 			}
 		}
 
-		public PInvokeUtils.POINT Position
+		public SciterPoint Position
 		{
 			get
 			{
 #if WINDOWS || NETCORE
-				PInvokeUtils.RECT rectWindow;
-				PInvokeWindows.GetWindowRect(Handle, out rectWindow);
-				return new PInvokeUtils.POINT(rectWindow.Left, rectWindow.Top);
+				PInvokeWindows.GetWindowRect(Handle, out var rectWindow);
+				return new SciterPoint(rectWindow.Left, rectWindow.Top);
 #elif GTKMONO
-				return new PInvokeUtils.POINT();
+				return SciterPoint.Empty;
 #elif OSX && XAMARIN
 				var pos = _nsview.Window.Frame.Location;
-				return new PInvokeUtils.POINT((int)pos.X, (int)pos.Y);
+				return new SciterPoint((int)pos.X, (int)pos.Y);
 #endif
 			}
 
 			set
 			{
 #if WINDOWS || NETCORE
-				PInvokeWindows.MoveWindow(Handle, value.X, value.Y, Size.cx, Size.cy, false);
+				PInvokeWindows.MoveWindow(Handle, value.X, value.Y, Size.Width, Size.Height, false);
 #elif GTKMONO
 				PInvokeGTK.gtk_window_move(_gtkwindow, value.X, value.Y);
 #elif OSX && XAMARIN
@@ -379,52 +379,47 @@ namespace SciterCore
 		/// <summary>
 		/// Loads the page resource from the given URL or file path
 		/// </summary>
-		/// <param name="url">URL or file path of the page</param>
-		public SciterWindow LoadPage(Uri uri)
+		/// <param name="uri">URL or file path of the page</param>
+		internal void LoadPageInternal(Uri uri)
 		{
-			return LoadPage(uri: uri, out _);
+			TryLoadPageInternal(uri);
 		}
 
-        /// <summary>
+		/// <summary>
         /// Loads the page resource from the given URL or file path
         /// </summary>
-        /// <param name="url">URL or file path of the page</param>
-        /// <param name="loadResult">Result of <see cref="Sciter.SciterApi.SciterLoadFile"/></param>
-        public SciterWindow LoadPage(Uri uri, out bool loadResult)
-		{
-			//TODO: Check why SciterLoadFile() behaves differently in Windows with AbsoluteUri (file:///)
+        /// <param name="uri">URL or file path of the page</param>
+        internal bool TryLoadPageInternal(Uri uri)
+        {
+	        var absoluteUri = uri.AbsoluteUri;
+
 #if WINDOWS || NETCORE
-			loadResult = _api.SciterLoadFile(hwnd: Handle, filename: uri.AbsoluteUri.Replace(":///", "://"));
-#else
-			loadResult = _api.SciterLoadFile(hwnd: Handle, filename: uri.AbsoluteUri);
+	        //TODO: Check why SciterLoadFile() behaves differently in Windows with AbsoluteUri (file:///)
+	        absoluteUri = absoluteUri.Replace(":///", "://");
 #endif
-			Debug.Assert(loadResult);
-			return this;
-		}
+	        return Api.SciterLoadFile(hwnd: Handle, filename: absoluteUri);
+        }
 
 		/// <summary>
 		/// Loads HTML input from a string
 		/// </summary>
 		/// <param name="html">HTML of the page to be loaded</param>
 		/// <param name="baseUrl">Base Url given to the loaded page</param>
-		public SciterWindow LoadHtml(string html, string baseUrl = null)
+        internal void LoadHtmlInternal(string html, string baseUrl = null)
 		{
-            return LoadHtml(html: html, loadResult: out _, baseUrl: baseUrl);
+            TryLoadHtmlInternal(html: html, baseUrl: baseUrl);
 		}
-
+        
         /// <summary>
         /// Loads HTML input from a string
         /// </summary>
         /// <param name="html">HTML of the page to be loaded</param>
-        /// <param name="loadResult">Result of <see cref="Sciter.SciterApi.SciterLoadHtml"/></param>
         /// <param name="baseUrl">Base Url given to the loaded page</param>
-        public SciterWindow LoadHtml(string html, out bool loadResult, string baseUrl = null)
+        internal bool TryLoadHtmlInternal(string html, string baseUrl = null)
 		{
 			var bytes = Encoding.UTF8.GetBytes(s: html);
-            loadResult = _api.SciterLoadHtml(hwnd: Handle, html: bytes, htmlSize: (uint)bytes.Length, baseUrl: baseUrl);
-            Debug.Assert(loadResult);
-            return this;
-        }
+			return Api.SciterLoadHtml(hwnd: Handle, html: bytes, htmlSize: (uint)bytes.Length, baseUrl: baseUrl);
+		}
 
 		public SciterWindow Show(bool show = true)
 		{
@@ -446,8 +441,13 @@ namespace SciterCore
 				_nsview.Window.OrderOut(_nsview.Window);// PerformMiniaturize?
 			}
 #endif
+			
+			OnWindowShow?.Invoke(this, EventArgs.Empty);
+			
 			return this;
 		}
+
+		public EventHandler OnWindowShow;
 
 		public void ShowModal()
 		{
@@ -461,6 +461,13 @@ namespace SciterCore
 		/// </summary>
 		public void Close()
 		{
+			var args = new CancelEventArgs(false);
+			
+			OnWindowClosing?.Invoke(this, args);
+			
+			if (args.Cancel)
+				return;
+			
 #if WINDOWS || NETCORE
 			PInvokeWindows.PostMessage(Handle, PInvokeWindows.Win32Msg.WM_CLOSE, IntPtr.Zero, IntPtr.Zero);
 #elif GTKMONO
@@ -468,7 +475,13 @@ namespace SciterCore
 #elif OSX && XAMARIN
 			_nsview.Window.Close();
 #endif
+			
+			OnWindowClosed?.Invoke(this, EventArgs.Empty);
 		}
+		
+		public EventHandler<CancelEventArgs> OnWindowClosing;
+		
+		public EventHandler OnWindowClosed;
 
 		public bool IsVisible
 		{
@@ -484,11 +497,6 @@ namespace SciterCore
 			}
 		}
 
-		public IntPtr VM
-		{
-			get { return _api.SciterGetVM(Handle); }
-		}
-
 #if WINDOWS && !WPF
         public SciterWindow SetIcon(Icon icon)
         {
@@ -501,118 +509,167 @@ namespace SciterCore
         }
 #endif
 
-		public SciterWindow SetTitle(string title)
+		#region Title
+		
+		internal void SetTitleInternal(string title)
         {
-			Title = title;
-			return this;
+	        Debug.Assert(Handle != IntPtr.Zero);
+			
+#if WINDOWS || NETCORE
+	        IntPtr strPtr = Marshal.StringToHGlobalUni(title);
+			PInvokeWindows.SendMessageW(Handle, PInvokeWindows.Win32Msg.WM_SETTEXT, IntPtr.Zero, strPtr);
+			Marshal.FreeHGlobal(strPtr);
+#elif GTKMONO
+			PInvokeGTK.gtk_window_set_title(_gtkwindow, title);
+#elif OSX && XAMARIN
+			_nsview.Window.Title = title;
+#endif
+        }
+
+		internal string GetTitleInternal()
+        {
+	        Debug.Assert(Handle != IntPtr.Zero);
+#if WINDOWS || NETCORE
+	        var unmanagedPointer = Marshal.AllocHGlobal(2048);
+	        var lengthPtr = PInvokeWindows.SendMessageW(Handle, PInvokeWindows.Win32Msg.WM_GETTEXT, new IntPtr(2048), unmanagedPointer);
+	        var title = Marshal.PtrToStringUni(unmanagedPointer, lengthPtr.ToInt32());
+	        Marshal.FreeHGlobal(unmanagedPointer);
+	        return title;
+#elif GTKMONO
+			var titlePtr = PInvokeGTK.gtk_window_get_title(_gtkwindow);
+			return Marshal.PtrToStringAnsi(titlePtr);
+#elif OSX && XAMARIN
+			return _nsview.Window.Title;
+#endif
         }
 
         public string Title
-		{
-			private set
-			{
-				Debug.Assert(Handle != IntPtr.Zero);
-#if WINDOWS || NETCORE
-				IntPtr strPtr = Marshal.StringToHGlobalUni(value);
-				PInvokeWindows.SendMessageW(Handle, PInvokeWindows.Win32Msg.WM_SETTEXT, IntPtr.Zero, strPtr);
-				Marshal.FreeHGlobal(strPtr);
-#elif GTKMONO
-				PInvokeGTK.gtk_window_set_title(_gtkwindow, value);
-#elif OSX && XAMARIN
-				_nsview.Window.Title = value;
-#endif
-			}
+        {
+	        get => GetTitleInternal();
+	        private set => SetTitleInternal(value);
+        }
+        
+        #endregion
 
-			get
-			{
-				Debug.Assert(Handle != IntPtr.Zero);
-#if WINDOWS || NETCORE
-				IntPtr unmanagedPointer = Marshal.AllocHGlobal(2048);
-				IntPtr chars_copied = PInvokeWindows.SendMessageW(Handle, PInvokeWindows.Win32Msg.WM_GETTEXT, new IntPtr(2048), unmanagedPointer);
-				string title = Marshal.PtrToStringUni(unmanagedPointer, chars_copied.ToInt32());
-				Marshal.FreeHGlobal(unmanagedPointer);
-				return title;
-#elif GTKMONO
-				IntPtr str_ptr = PInvokeGTK.gtk_window_get_title(_gtkwindow);
-				return Marshal.PtrToStringAnsi(str_ptr);
-#elif OSX && XAMARIN
-				return _nsview.Window.Title;
-#endif
-			}
+        #region Elements
+        
+		public SciterElement RootElement => GetRootElementInternal();
+
+		internal SciterElement GetRootElementInternal()
+		{
+			TryGetRootElementInternal(out var result);
+			return result;
 		}
 
-		public SciterElement RootElement
+		internal bool TryGetRootElementInternal(out SciterElement element)
 		{
-			get
-			{
-				Debug.Assert(Handle != IntPtr.Zero);
-				IntPtr he;
-				var r = _api.SciterGetRootElement(Handle, out he);
-				Debug.Assert(r == SciterXDom.SCDOM_RESULT.SCDOM_OK);
+			Debug.Assert(Handle != IntPtr.Zero);
+			
+			var result = Api.SciterGetRootElement(Handle, out var elementHandle)
+				.IsOk();
 
-				if(he == IntPtr.Zero)
-					return null;// no page loaded yet?
-				return new SciterElement(he);
-			}
+			element = result ? new SciterElement(elementHandle) : null; // no page loaded yet?
+			return result;
 		}
 
 		/// <summary>
 		/// Find element at point x/y of the window, client area relative
 		/// </summary>
-		public SciterElement ElementAtPoint(int x, int y)
+		internal SciterElement GetElementAtPointInternal(int x, int y)
 		{
-			PInvokeUtils.POINT pt = new PInvokeUtils.POINT() 
+			TryGetElementAtPointInternal(out var result, x, y);
+			return result;
+		}
+
+		/// <summary>
+		/// Find element at point x/y of the window, client area relative
+		/// </summary>
+		internal bool TryGetElementAtPointInternal(out SciterElement value, int x, int y)
+		{
+			var point = new PInvokeUtils.POINT
 			{ 
 				X = x, 
 				Y = y 
 			};
+			
+			var result = Api.SciterFindElement(Handle, point, out var elementHandle)
+				.IsOk();
 
-			IntPtr outhe;
-			var r = _api.SciterFindElement(Handle, pt, out outhe);
-
-			Debug.Assert(r == SciterXDom.SCDOM_RESULT.SCDOM_OK);
-
-			if(outhe == IntPtr.Zero)
-				return null;
-			return new SciterElement(outhe);
+			value = result ? new SciterElement(elementHandle) : null;
+				
+			return result;
 		}
 
 		/// <summary>
-		/// Searches this windows DOM tree for element with the given UID
+		/// Find element at point x/y of the window, client area relative
+		/// </summary>
+		internal bool TryGetElementAtPointInternal(out SciterElement value, SciterPoint point)
+		{
+			return TryGetElementAtPointInternal(out value, point.X, point.Y);
+		}
+
+		/// <summary>
+		/// Find element at point x/y of the window, client area relative
+		/// </summary>
+		internal SciterElement GetElementAtPointInternal(SciterPoint point)
+		{
+			return GetElementAtPointInternal(point.X, point.Y);
+		}
+
+		/// <summary>
+		/// Searches this window DOM tree for element with the given UID
 		/// </summary>
 		/// <returns>The element, or null if it doesn't exists</returns>
-		public SciterElement ElementByUID(uint uid)
+		internal SciterElement GetElementByUidInternal(uint uid)
 		{
-			IntPtr he;
-			var r = _api.SciterGetElementByUID(Handle, uid, out he);
-			Debug.Assert(r == SciterXDom.SCDOM_RESULT.SCDOM_OK);
-
-			if(he != IntPtr.Zero)
-			{
-				return new SciterElement(he);
-			}
-
-			return null;
+			TryGetElementByUidInternal(out var result, uid);
+			return result;
 		}
 
-		public uint GetMinWidth()
+		/// <summary>
+		/// Searches this window DOM tree for element with the given UID
+		/// </summary>
+		/// <returns>The element, or null if it doesn't exists</returns>
+		internal bool TryGetElementByUidInternal(out SciterElement value, uint uid)
 		{
-			Debug.Assert(Handle != IntPtr.Zero);
-			return _api.SciterGetMinWidth(Handle);
+			var result = Api.SciterGetElementByUID(Handle, uid, out var elementHandle)
+				.IsOk();
+			
+			value = result ? new SciterElement(elementHandle) : null;
+
+			return result;
+		}
+		
+		#endregion
+
+		#region Dimentions
+
+		internal int GetMinWidthInternal()
+		{
+			return unchecked((int)Api.SciterGetMinWidth(Handle));
 		}
 
-		public uint GetMinHeight(uint for_width)
+		internal int GetMinHeightInternal(int width)
 		{
-			Debug.Assert(Handle != IntPtr.Zero);
-			return _api.SciterGetMinHeight(Handle, for_width);
+			return unchecked((int)Api.SciterGetMinHeight(Handle, unchecked((uint)width)));
+		}
+
+		#endregion
+
+		/// <summary>
+		/// Update pending changes in Sciter window and forces painting if necessary
+		/// </summary>
+		internal void UpdateWindowInternal()
+		{
+			TryUpdateWindowInternal();
 		}
 
 		/// <summary>
 		/// Update pending changes in Sciter window and forces painting if necessary
 		/// </summary>
-		public bool UpdateWindow()
+		internal bool TryUpdateWindowInternal()
 		{
-			return _api.SciterUpdateWindow(Handle);
+			return Api.SciterUpdateWindow(Handle);
 		}
 
 		public SciterValue CallFunction(string name, params SciterValue[] args)
@@ -621,7 +678,7 @@ namespace SciterCore
 			Debug.Assert(name != null);
 
 			Interop.SciterValue.VALUE vret = new Interop.SciterValue.VALUE();
-			_api.SciterCall(Handle, name, (uint)args.Length, SciterValue.ToVALUEArray(args), out vret);
+			Api.SciterCall(Handle, name, (uint)args.Length, SciterValue.ToVALUEArray(args), out vret);
 			return new SciterValue(vret);
 		}
 
@@ -631,7 +688,7 @@ namespace SciterCore
 			Debug.Assert(script != null);
 
 			Interop.SciterValue.VALUE vret = new Interop.SciterValue.VALUE();
-			_api.SciterEval(Handle, script, (uint)script.Length, out vret);
+			Api.SciterEval(Handle, script, (uint)script.Length, out vret);
 			return new SciterValue(vret);
 		}
 
@@ -643,7 +700,7 @@ namespace SciterCore
 		/// </summary>
 		public bool SetMediaType(string mediaType)
 		{
-			return _api.SciterSetMediaType(Handle, mediaType);
+			return Api.SciterSetMediaType(Handle, mediaType);
 		}
 
 		/// <summary>
@@ -655,7 +712,7 @@ namespace SciterCore
 		public bool SetMediaVars(SciterValue mediaVars)
 		{
 			Interop.SciterValue.VALUE v = mediaVars.ToVALUE();
-			return _api.SciterSetMediaVars(Handle, ref v);
+			return Api.SciterSetMediaVars(Handle, ref v);
 		}
 
 #if WINDOWS || NETCORE

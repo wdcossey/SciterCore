@@ -1,14 +1,8 @@
 using SciterCore;
 using SciterCore.Interop;
 using System;
-using System.Runtime.InteropServices;
 using System.Diagnostics;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
-using System.Reflection;
 using SciterValue = SciterCore.SciterValue;
 
 namespace SciterTest.Core
@@ -32,26 +26,20 @@ namespace SciterTest.Core
 
 		public static SciterWindow AppWindow;
 		public static Host AppHost;
-		private static SciterMessages sm = new SciterMessages();
 
 		[STAThread]
 		static void Main(string[] args)
 		{
 			var list = new List<int> { 123 };
 
-			var ss = SciterValue.FromObject(new { aa = list });
+			var ss = SciterValue.Create(new { aa = list });
 
 			Console.WriteLine("Sciter: " + Sciter.Version());
 			Console.WriteLine("Bitness: " + IntPtr.Size);
 
-			// Sciter needs this for drag'n'drop support; STAThread is required for OleInitialize succeess
-			int oleres = PInvokeWindows.OleInitialize(IntPtr.Zero);
-			Debug.Assert(oleres == 0);
+			// Sciter needs this for drag'n'drop support
+			SciterPlatform.EnableDragAndDrop();
 			
-			var rc = new PInvokeUtils.RECT(800, 600);
-
-			//wnd.CreateWindow(rc, SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_POPUP | SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_MAIN | SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_RESIZEABLE);
-
 			// Create the window
 			AppWindow = new SciterWindow()
 				.CreateMainWindow(800, 600)

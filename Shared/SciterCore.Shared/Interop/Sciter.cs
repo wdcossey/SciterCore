@@ -16,13 +16,8 @@
 // along with SciterSharp.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 // ReSharper disable MemberCanBePrivate.Global
 
@@ -79,9 +74,9 @@ namespace SciterCore.Interop
 #if WINDOWS || NETCORE
 		[DllImport("sciter.dll", EntryPoint = "SciterAPI")]
 #elif GTKMONO
-		[DllImport("sciter-gtk-64.so")]
+		[DllImport("x64\\sciter-gtk-64.so")]
 #elif OSX
-		[DllImport("sciter-osx-64.dylib", EntryPoint = "SciterAPI")]
+		[DllImport("x64\\sciter-osx-64.dylib", EntryPoint = "SciterAPI")]
 #endif
 		private static extern IntPtr SciterAPI();
 
@@ -98,8 +93,9 @@ namespace SciterCore.Interop
                 var codeBaseDirectory = Path.GetDirectoryName(codeBasePath);
                 var is64 = Environment.Is64BitProcess;
                 var bitDirectory = is64 ? "x64" : "x86";
-				
-                PInvokeWindows.LoadLibrary(Path.Combine(codeBaseDirectory, bitDirectory, "sciter.dll"));
+                var libName = Path.Combine(codeBaseDirectory, bitDirectory, "sciter.dll");
+                
+                PInvokeWindows.LoadLibrary(libName);
 #elif GTKMONO
 				if(IntPtr.Size != 8)
 					throw new Exception("SciterSharp GTK/Mono only supports 64bits builds");
@@ -358,6 +354,8 @@ namespace SciterCore.Interop
 
 			// tiscript VM API
 			public readonly TI_SCRIPT_API TIScriptAPI;
+			
+			[Obsolete("Deprecated in v4.4.3.24", true)]
 			public readonly SCITER_GET_VM SciterGetVM;
 
 			public readonly SCITER_v2V Sciter_v2V;
@@ -571,13 +569,14 @@ namespace SciterCore.Interop
 			//SCDOM_RESULT function( HELEMENT he, UINT milliseconds, UINT_PTR timer_id ) SciterSetTimer;
 			public delegate SciterXDom.SCDOM_RESULT SCITER_SET_TIMER(IntPtr he, uint milliseconds, IntPtr timerId);
 			//SCDOM_RESULT function( HELEMENT he, LPELEMENT_EVENT_PROC pep, LPVOID tag ) SciterDetachEventHandler;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_DETACH_EVENT_HANDLER(IntPtr he, SciterBehaviors.ELEMENT_EVENT_PROC pep, IntPtr tag);
+			public delegate SciterXDom.SCDOM_RESULT SCITER_DETACH_EVENT_HANDLER(IntPtr he, MulticastDelegate pep, IntPtr tag);
 			//SCDOM_RESULT function( HELEMENT he, LPELEMENT_EVENT_PROC pep, LPVOID tag ) SciterAttachEventHandler;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_ATTACH_EVENT_HANDLER(IntPtr he, SciterBehaviors.ELEMENT_EVENT_PROC pep, IntPtr tag);
+			public delegate SciterXDom.SCDOM_RESULT SCITER_ATTACH_EVENT_HANDLER(IntPtr he, MulticastDelegate pep, IntPtr tag);
 			//SCDOM_RESULT function( HWINDOW hwndLayout, LPELEMENT_EVENT_PROC pep, LPVOID tag, UINT subscription ) SciterWindowAttachEventHandler;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_WINDOW_ATTACH_EVENT_HANDLER(IntPtr hwndLayout, SciterBehaviors.ELEMENT_EVENT_PROC pep, IntPtr tag, uint subscription);
+			
+			public delegate SciterXDom.SCDOM_RESULT SCITER_WINDOW_ATTACH_EVENT_HANDLER(IntPtr hwndLayout, MulticastDelegate pep, IntPtr tag, uint subscription);
 			//SCDOM_RESULT function( HWINDOW hwndLayout, LPELEMENT_EVENT_PROC pep, LPVOID tag ) SciterWindowDetachEventHandler;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_WINDOW_DETACH_EVENT_HANDLER(IntPtr hwndLayout, SciterBehaviors.ELEMENT_EVENT_PROC pep, IntPtr tag);
+			public delegate SciterXDom.SCDOM_RESULT SCITER_WINDOW_DETACH_EVENT_HANDLER(IntPtr hwndLayout, MulticastDelegate pep, IntPtr tag);
 			//SCDOM_RESULT function( HELEMENT he, UINT appEventCode, HELEMENT heSource, UINT_PTR reason, /*out*/ BOOL* handled) SciterSendEvent;
 			public delegate SciterXDom.SCDOM_RESULT SCITER_SEND_EVENT(IntPtr he, uint appEventCode, IntPtr heSource, IntPtr reason, out bool handled);
 			//SCDOM_RESULT function( HELEMENT he, UINT appEventCode, HELEMENT heSource, UINT_PTR reason) SciterPostEvent;
@@ -741,6 +740,7 @@ namespace SciterCore.Interop
 			// tiscript VM API
 			// tiscript_native_interface* function() TIScriptAPI;
 			public delegate IntPtr TI_SCRIPT_API();
+			
 			// HVM function(HWINDOW hwnd) SciterGetVM;
 			public delegate IntPtr SCITER_GET_VM(IntPtr hwnd);
 
@@ -757,7 +757,7 @@ namespace SciterCore.Interop
 			public delegate bool SCITER_CLOSE_ARCHIVE(IntPtr harc);
 
 			// SCDOM_RESULT function( const BEHAVIOR_EVENT_PARAMS* evt, BOOL post, BOOL *handled ) SciterFireEvent;
-			public delegate int SCITER_FIRE_EVENT(ref SciterBehaviors.BEHAVIOR_EVENT_PARAMS evt, bool post, out bool handled);
+			public delegate SciterXDom.SCDOM_RESULT SCITER_FIRE_EVENT(ref SciterBehaviors.BEHAVIOR_EVENT_PARAMS evt, bool post, out bool handled);
 
 			// LPVOID function(HWINDOW hwnd) SciterGetCallbackParam;
 			public delegate IntPtr SCITER_GET_CALLBACK_PARAM(IntPtr hwnd);

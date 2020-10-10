@@ -1,95 +1,158 @@
-﻿using SciterCore.Interop;
-using System;
-using System.Collections.Generic;
+﻿using System;
+using SciterCore.Interop;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SciterCore.WinForms
 {
-    [DisplayName("Host")]
+    [DisplayName("FormsHost")]
     [DesignerCategory("Sciter")]
     [Category("Sciter")]
     public class SciterHostComponent : Component
     {
-        internal InternalHost Host { get; }
+        internal SciterFormsHost FormsHost { get; }
 
         private SciterArchiveComponent _archive;
         private SciterControl _control;
-
+        
+        [Category("Sciter")]
+        public string RootPage { get; set; }
+        
+        [Category("Sciter")]
+        public event EventHandler<GetArchiveItemEventArgs> GetArchiveItem;
+        
         public SciterArchiveComponent Archive
         { 
-            get
-            {
-                return _archive;
-            }
+            get => _archive;
             set
             {
                 _archive = value;
 
+                if (this.DesignMode)
+                    return;
+                
                 if (value != null)
                 {
-                    Host.SetArchive(value?.Archive);
+                   FormsHost?.SetArchive(value?.Archive);
                 }
             }
         }
         
-        //public SciterControl Control
-        //{ 
-        //    get
-        //    {
-        //        return _control;
-        //    }
-        //    set
-        //    {
-        //        _control = value;
+        public SciterControl Control
+        {
+            get => _control;
+            set
+            {
+                _control = value;
 
-        //        if (value != null)
-        //        {
-        //            Host.SetWindow(value?.SciterWnd);
-        //        }
-        //    }
-        //}
+                if (_control == null) 
+                    return;
+                
+                if (this.DesignMode)
+                    return;
+                
+                if (_control.SciterWnd != null && _control.SciterWnd?.Handle != IntPtr.Zero)
+                {
+                    OnWindowCreated(_control, new WindowCreatedEventArgs(_control.SciterWnd));
+                }
+                
+                _control.WindowCreated += OnWindowCreated;
+            }
+        }
+
+        private void OnWindowCreated(object sender, WindowCreatedEventArgs e)
+        {
+            if (this.DesignMode)
+                return;
+            
+            this.FormsHost?.SetWindow(e.Window);
+            
+            e.Window.LoadPage(uri: new Uri(baseUri: new Uri(_archive.BaseAddress), RootPage ?? ""));
+
+        }
 
         public SciterHostComponent()
         {
-            Host = new InternalHost();
+            if (this.DesignMode)
+                return;
+            
+            FormsHost = new SciterFormsHost();
+            
+            FormsHost.InternalGetItem += FormsHostOnInternalGetItem;
         }
+
+        private void FormsHostOnInternalGetItem(object sender, InternalGetArchiveItemEventArgs e)
+        {
+            if (this.DesignMode)
+                return;
+            
+            var args = new GetArchiveItemEventArgs(_archive.BaseAddress, e.Uri);
+            GetArchiveItem?.Invoke(this, args);
+            e.Uri = args.Path;
+        }
+        
     }
 
-    class InternalHost : SciterHost
+    internal class SciterFormsHost : SciterHost
     {
         protected static Sciter.SciterApi _api = Sciter.Api;
         private SciterArchive _archive;
 
-        internal InternalHost()
-        {
+        internal event EventHandler<InternalGetArchiveItemEventArgs> InternalGetItem;
 
+        internal SciterFormsHost()
+        {
+            
         }
 
-        internal InternalHost SetArchive(SciterArchive archive)
+        internal SciterFormsHost SetArchive(SciterArchive archive)
         {
             _archive = archive;
+            _archive.Open();
             return this;
         }
         
-        internal InternalHost SetWindow(SciterWindow window)
+        internal SciterFormsHost SetWindow(SciterWindow window)
         {
-            this.SetupWindow(window: window);
+            base.SetupWindow(window: window);
             return this;
         }
 
-        protected override SciterXDef.LoadResult OnLoadData(SciterXDef.SCN_LOAD_DATA sld)
+        protected override LoadResult OnLoadData(object sender, LoadDataArgs args)
         {
+            var intArgs = new InternalGetArchiveItemEventArgs(args.Uri);
+                
+            InternalGetItem?.Invoke(this, intArgs);
+            
             // load resource from SciterArchive
-            _archive?.GetItem(uriString: sld.uri, onFound: (data, path) =>
+            _archive?.GetItem(uri: args.Uri, onGetResult: (result) =>
             {
-               _api.SciterDataReady(WindowHandle, path, data, (uint)data.Length);
+                if (result.IsSuccessful)
+                    _api.SciterDataReady(WindowHandle, result.Path, result.Data, (uint)result.Size);
             });
 
-            return base.OnLoadData(sld);
+            return base.OnLoadData(sender: sender, args: args);
+        }
+    }
+    
+    internal class InternalGetArchiveItemEventArgs : EventArgs
+    {
+        public Uri Uri { get; set; }
+
+        public InternalGetArchiveItemEventArgs(Uri uri)
+        {
+            Uri = uri;
         }
     }
 
+    public class GetArchiveItemEventArgs : EventArgs
+    {
+        public string BaseAddress { get; set; }
+        public Uri Path { get; set; }
+
+        public GetArchiveItemEventArgs(string baseAddress, Uri path)
+        {
+            BaseAddress = baseAddress;
+            Path = path;
+        }
+    }
 }

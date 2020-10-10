@@ -31,24 +31,21 @@ namespace SciterCore
 
         internal SciterEventHandler EventHandler
         {
-            get
-            {
-                return GetOrCreateEventHandler(_eventHandler);
-            }
-
-            private set
-            {
-                _eventHandler = value;
-            }
+            get => GetOrCreateEventHandler(_eventHandler);
+            private set => _eventHandler = value;
         }
 
         private SciterEventHandler GetOrCreateEventHandler(SciterEventHandler eventHandler)
         {
-            if (eventHandler == null)
-            {
-                eventHandler = (SciterEventHandler)Activator.CreateInstance(Type);
-                eventHandler.Name = $"Create by registered native behavior factory: {Name}";
-            }
+            if (eventHandler != null) 
+                return eventHandler;
+            
+            eventHandler = (SciterEventHandler)Activator.CreateInstance(Type);
+            
+            if (eventHandler == null) 
+                return null;
+            
+            eventHandler.Name = $"Create by registered native behavior factory: {Name}";
             return eventHandler;
         }
 
