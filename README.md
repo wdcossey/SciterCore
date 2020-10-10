@@ -1,17 +1,5 @@
 ![https://sciter.com/](https://sciter.com/wp-content/themes/sciter/!images/logo.png)
 
-SciterCore.PackFolder [![NuGet](https://img.shields.io/nuget/v/.svg?style=flat)]() ![Build status](https://dev.azure.com/wdcossey/GitHub/_apis/build/status/SciterCore.PackFolder)
-
-SciterCore.Binaries [![NuGet](https://img.shields.io/nuget/v/.svg?style=flat)]() ![Build status](https://dev.azure.com/wdcossey/GitHub/_apis/build/status/SciterCore.Binaries.Windows)
-
-SciterCore.NetStd [![NuGet](https://img.shields.io/nuget/v/.svg?style=flat)]() ![Build status](https://dev.azure.com/wdcossey/GitHub/_apis/build/status/SciterCore.NetStd)
-
-SciterCore.WinForms [![NuGet](https://img.shields.io/nuget/v/.svg?style=flat)]() ![Build status](https://dev.azure.com/wdcossey/GitHub/_apis/build/status/SciterCore.WinForms)
-
-SciterCore.Gtk [![NuGet](https://img.shields.io/nuget/v/.svg?style=flat)]() ![Build status](https://dev.azure.com/wdcossey/GitHub/_apis/build/status/SciterCore.Gtk)
-
-SciterCore.Mac [![NuGet](https://img.shields.io/nuget/v/.svg?style=flat)]() ![Build status](https://dev.azure.com/wdcossey/GitHub/_apis/build/status/SciterCore.Mac)
-
 ## About this project
 
 SciterCore is based off the work done by [Ramon F. Mendes](https://github.com/ramon-mendes) on [SciterSharp](https://github.com/ramon-mendes/SciterSharp)
