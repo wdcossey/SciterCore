@@ -213,6 +213,7 @@ namespace SciterTest.NetCore
 
 		protected override void Attached(SciterElement element)
 		{
+			_logger?.LogDebug($"{nameof(Attached)}");
 			base.Attached(element);
 		}
 
@@ -227,18 +228,27 @@ namespace SciterTest.NetCore
 
 		protected override bool OnMethodCall(SciterElement element, SciterBehaviors.BEHAVIOR_METHOD_IDENTIFIERS methodId)
 		{
+			_logger?.LogDebug($"{nameof(OnMethodCall)}: {nameof(methodId)}: {methodId}");
 			return base.OnMethodCall(element, methodId);
 		}
 
 		protected override ScriptEventResult OnScriptCall(SciterElement element, MethodInfo method, SciterValue[] args)
 		{
+			_logger?.LogDebug($"{nameof(OnScriptCall)}: {nameof(method)}: {method.Name}");
 			return base.OnScriptCall(element, method, args);
 		}
 
 		protected override bool OnEvent(SciterElement sourceElement, SciterElement targetElement,
 			SciterBehaviors.BEHAVIOR_EVENTS type, IntPtr reason, SciterValue data, string eventName)
 		{
+			_logger?.LogDebug($"{nameof(OnEvent)}: {nameof(type)}: {type}");
 			return base.OnEvent(sourceElement, targetElement, type, reason, data, eventName);
+		}
+
+		protected override bool OnDataArrived(SciterElement element, SciterBehaviors.DATA_ARRIVED_PARAMS prms)
+		{
+			_logger?.LogDebug($"{nameof(OnDataArrived)}: {nameof(prms)}: {prms.uri}");
+			return base.OnDataArrived(element, prms);
 		}
 
 		// (Hint: to overload C# methods of SciterEventHandler base class, type 'override', press space, and VS/Xamarin will suggest the methods you can override)
@@ -320,5 +330,7 @@ namespace SciterTest.NetCore
 		{
 			return base.OnPostedNotification(wparam, lparam);
 		}
+		
+		
 	}
 }

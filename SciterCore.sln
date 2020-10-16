@@ -77,6 +77,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SciterCore.Sample.Gtk.MacOS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SciterCore.Sample.Gtk.Windows", "Samples\Gtk\Windows\SciterCore.Sample.Gtk.Windows.csproj", "{47D6EAB0-FC66-4DFA-BF99-914878F019A5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SciterTest.NetCore.Playground", "Samples\SciterTest.NetCore.Playground\SciterTest.NetCore.Playground.csproj", "{1A94767C-756F-44BA-9443-8053F2BCA2AC}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Shared\SciterCore.Shared.WinForms\SciterCore.Shared.WinForms.projitems*{18b2e4e7-cb77-44c3-865b-be05620aba4d}*SharedItemsImports = 4
@@ -437,6 +439,26 @@ Global
 		{47D6EAB0-FC66-4DFA-BF99-914878F019A5}.Release|x64.Build.0 = Release|x64
 		{47D6EAB0-FC66-4DFA-BF99-914878F019A5}.Release|x86.ActiveCfg = Release|x86
 		{47D6EAB0-FC66-4DFA-BF99-914878F019A5}.Release|x86.Build.0 = Release|x86
+		{1A94767C-756F-44BA-9443-8053F2BCA2AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A94767C-756F-44BA-9443-8053F2BCA2AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A94767C-756F-44BA-9443-8053F2BCA2AC}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{1A94767C-756F-44BA-9443-8053F2BCA2AC}.Debug|ARM.Build.0 = Debug|Any CPU
+		{1A94767C-756F-44BA-9443-8053F2BCA2AC}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{1A94767C-756F-44BA-9443-8053F2BCA2AC}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{1A94767C-756F-44BA-9443-8053F2BCA2AC}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1A94767C-756F-44BA-9443-8053F2BCA2AC}.Debug|x64.Build.0 = Debug|Any CPU
+		{1A94767C-756F-44BA-9443-8053F2BCA2AC}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1A94767C-756F-44BA-9443-8053F2BCA2AC}.Debug|x86.Build.0 = Debug|Any CPU
+		{1A94767C-756F-44BA-9443-8053F2BCA2AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A94767C-756F-44BA-9443-8053F2BCA2AC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1A94767C-756F-44BA-9443-8053F2BCA2AC}.Release|ARM.ActiveCfg = Release|Any CPU
+		{1A94767C-756F-44BA-9443-8053F2BCA2AC}.Release|ARM.Build.0 = Release|Any CPU
+		{1A94767C-756F-44BA-9443-8053F2BCA2AC}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{1A94767C-756F-44BA-9443-8053F2BCA2AC}.Release|ARM64.Build.0 = Release|Any CPU
+		{1A94767C-756F-44BA-9443-8053F2BCA2AC}.Release|x64.ActiveCfg = Release|Any CPU
+		{1A94767C-756F-44BA-9443-8053F2BCA2AC}.Release|x64.Build.0 = Release|Any CPU
+		{1A94767C-756F-44BA-9443-8053F2BCA2AC}.Release|x86.ActiveCfg = Release|Any CPU
+		{1A94767C-756F-44BA-9443-8053F2BCA2AC}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -470,6 +492,7 @@ Global
 		{95EE3B89-3300-4482-95A3-DC42EC8B3676} = {9B9E7187-1FB1-453B-884D-D5AA1BC8A9AD}
 		{77C8C5E7-4AB3-49FF-B8CD-4EE0B850576A} = {007FB3FA-5AC9-41CF-8C2A-B01AADC19EE0}
 		{47D6EAB0-FC66-4DFA-BF99-914878F019A5} = {97E48573-3641-4B1A-BABC-DA48CAE9F9E1}
+		{1A94767C-756F-44BA-9443-8053F2BCA2AC} = {6D8C3511-BC01-45B5-82BF-DECE39DFB129}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {ACCCA607-3FFA-4A98-AB4B-302FEDF13D01}
