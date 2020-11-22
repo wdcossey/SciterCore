@@ -13,10 +13,16 @@ namespace SciterCore
         /// </summary>
         public int Code { get; internal set; }
         
+        ///// <summary>
+        ///// The <see cref="SciterWindow"/> this callback was attached to.
+        ///// </summary>
+        //public SciterWindow Window { get; internal set; }
+        
+        
         /// <summary>
         /// The <see cref="SciterWindow"/> this callback was attached to.
         /// </summary>
-        public SciterWindow Window { get; internal set; }
+        public IntPtr WindowHandle { get; internal set; }
         
         /// <summary>
         /// Zero terminated string, fully qualified uri, for example "http://server/folder/file.ext".

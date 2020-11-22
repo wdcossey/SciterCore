@@ -59,6 +59,7 @@ namespace SciterCore
 		}
 
 		private SciterXDef.SCITER_WINDOW_DELEGATE _proc;
+		
 #if GTKMONO || NETCORE
 		public IntPtr _gtkwindow { get; private set; }
 #elif OSX && XAMARIN
@@ -726,7 +727,7 @@ namespace SciterCore
 			return lResult;
 		}
 
-		protected virtual bool ProcessWindowMessage(IntPtr hwnd, uint msg, IntPtr wParam, IntPtr lParam, ref IntPtr lResult)// overrisable
+		protected virtual bool ProcessWindowMessage(IntPtr hwnd, uint msg, IntPtr wParam, IntPtr lParam, ref IntPtr lResult)// overridable
 		{
 			return false;
 		}

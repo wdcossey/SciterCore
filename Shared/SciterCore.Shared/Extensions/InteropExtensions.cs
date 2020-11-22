@@ -10,7 +10,8 @@ namespace SciterCore.Interop
             {
                 Code = unchecked((int)loadData.code),
                 Data = loadData.outData,
-                Window = new SciterWindow(loadData.hwnd),
+                //Window = new SciterWindow(loadData.hwnd),
+                WindowHandle = loadData.hwnd,
                 Initiator = loadData.initiator,
                 Principal = loadData.principal,
                 Uri = new Uri(loadData.uri, UriKind.RelativeOrAbsolute),
@@ -26,7 +27,8 @@ namespace SciterCore.Interop
             {
                 Code = unchecked((int)loadData.code),
                 Data = loadData.data,
-                Window = new SciterWindow(loadData.hwnd),
+                //Window = new SciterWindow(loadData.hwnd),
+                WindowHandle = loadData.hwnd,
                 Uri = new Uri(loadData.uri, UriKind.RelativeOrAbsolute),
                 DataSize = unchecked((int)loadData.dataSize),
                 DataType = (SciterResourceType)unchecked((int)loadData.dataType),
