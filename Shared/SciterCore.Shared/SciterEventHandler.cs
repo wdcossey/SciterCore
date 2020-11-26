@@ -203,8 +203,9 @@ namespace SciterCore
 							Debug.Assert(_isAttached == true);
 							_isAttached = false;
 #endif
-							AttachedHandlers.Remove(this);
+							
 							Detached(se);
+							AttachedHandlers.Remove(this);
 						}
 						return true;
 					}

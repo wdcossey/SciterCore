@@ -28,16 +28,23 @@ namespace SciterTest.NetCore
                         .AddConsole();
                 })
                 .AddSingleton<IConfiguration>(provider => configuration)
-                .AddSingleton<ApplicationWindow>()
-                .AddSingleton<HostEventHandler>()
-                .AddSingleton<SciterHost, ApplicationHost>()
-                .AddSingleton<SciterApplication>();
+                .AddTransient<ApplicationWindow>()
+                
+                .AddTransient<HostEventHandler>()
+                //.AddScoped<SciterHost>()
+                .AddTransient<BaseHost>()
+                .AddTransient<ApplicationHost>()
+                
+                .AddTransient<CustomHostEventHandler>()
+                .AddTransient<CustomHost>()
+                .AddTransient<CustomWindow>()
+                .AddTransient<SciterApplication>();
 
             var serviceProvider = services.BuildServiceProvider();
             
             var app = serviceProvider.GetRequiredService<SciterApplication>();
 
-            app.Run();
+            app.Run(serviceProvider.GetRequiredService<ApplicationHost>());
             
             //var host = new HostBuilder()
             //    .ConfigureHostConfiguration(configHost =>

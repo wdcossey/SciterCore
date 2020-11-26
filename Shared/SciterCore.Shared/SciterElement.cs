@@ -417,7 +417,7 @@ namespace SciterCore
 			get
 			{
 				var hwnd = GetWindowHandleInternal();
-				return hwnd != IntPtr.Zero ? new SciterWindow(hwnd) : null;
+				return hwnd != IntPtr.Zero ? new SciterWindow(hwnd, false) : null;
 			}
 		}
 		

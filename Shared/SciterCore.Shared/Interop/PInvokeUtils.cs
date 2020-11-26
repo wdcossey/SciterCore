@@ -26,8 +26,7 @@ namespace SciterCore.Interop
 		public static void RunMsgLoop()
 		{
 #if WINDOWS || NETCORE
-			PInvokeWindows.MSG msg;
-			while(PInvokeWindows.GetMessage(out msg, IntPtr.Zero, 0, 0) != 0)
+			while (PInvokeWindows.GetMessage(out var msg, IntPtr.Zero, 0, 0) != 0)
 			{
 				PInvokeWindows.TranslateMessage(ref msg);
 				PInvokeWindows.DispatchMessage(ref msg);

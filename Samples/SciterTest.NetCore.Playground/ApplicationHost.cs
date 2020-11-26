@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SciterCore;
 using SciterCore.Interop;
@@ -19,7 +20,8 @@ namespace SciterTest.NetCore
 			host
 				.AttachEventHandler(hostEventHandler)
 				.RegisterBehaviorHandler<VirtualTreeBehavior>()
-				.RegisterBehaviorHandler<DragDropBehavior>();
+				.RegisterBehaviorHandler<DragDropBehavior>()
+				.RegisterBehaviorHandler<CustomWindowEventHandler>();
 
 			host.LoadPage("vtree.html",
 				onFailed: (sciterHost, window) => throw new InvalidOperationException("Unable to load the requested page."));
@@ -43,12 +45,19 @@ namespace SciterTest.NetCore
 	public class HostEventHandler : SciterEventHandler
 	{
 		private readonly ILogger<HostEventHandler> _logger;
+		private readonly IServiceProvider _provider;
 
-		public HostEventHandler(ILogger<HostEventHandler> logger)
+		public HostEventHandler(ILogger<HostEventHandler> logger, IServiceProvider provider)
 		{
 			_logger = logger;
+			_provider = provider;
 		}
 
+		public void SynchronousFunction()
+		{
+			// _logger.LogInformation($"{nameof(SynchronousFunction)} was executed!");
+		}
+		
 		protected override EventGroups SubscriptionsRequest(SciterElement element)
 		{
 			return EventGroups.HandleAll;
@@ -56,33 +65,45 @@ namespace SciterTest.NetCore
 
 		protected override void Attached(SciterElement element)
 		{
-			_logger?.LogDebug($"{nameof(Attached)}");
+			//_logger?.LogDebug($"{nameof(Attached)}");
 			base.Attached(element);
+
+			
 		}
 
 		protected override bool OnMethodCall(SciterElement element, SciterBehaviors.BEHAVIOR_METHOD_IDENTIFIERS methodId)
 		{
-			_logger?.LogDebug($"{nameof(OnMethodCall)}: {nameof(methodId)}: {methodId}");
+			//_logger?.LogDebug($"{nameof(OnMethodCall)}: {nameof(methodId)}: {methodId}");
 			return base.OnMethodCall(element, methodId);
 		}
 
 		protected override ScriptEventResult OnScriptCall(SciterElement element, MethodInfo method, SciterValue[] args)
 		{
-			_logger?.LogDebug($"{nameof(OnScriptCall)}: {nameof(method)}: {method.Name}");
+			//_logger?.LogDebug($"{nameof(OnScriptCall)}: {nameof(method)}: {method.Name}");
 			return base.OnScriptCall(element, method, args);
 		}
 
 		protected override bool OnEvent(SciterElement sourceElement, SciterElement targetElement,
 			SciterBehaviors.BEHAVIOR_EVENTS type, IntPtr reason, SciterValue data, string eventName)
 		{
-			_logger?.LogDebug($"{nameof(OnEvent)}: {nameof(type)}: {type}");
+			//_logger?.LogDebug($"{nameof(OnEvent)}: {nameof(type)}: {type}");
 			return base.OnEvent(sourceElement, targetElement, type, reason, data, eventName);
 		}
 
 		protected override bool OnDataArrived(SciterElement element, SciterBehaviors.DATA_ARRIVED_PARAMS prms)
 		{
-			_logger?.LogDebug($"{nameof(OnDataArrived)}: {nameof(prms)}: {prms.uri}");
+			//_logger?.LogDebug($"{nameof(OnDataArrived)}: {nameof(prms)}: {prms.uri}");
 			return base.OnDataArrived(element, prms);
+		}
+
+		public void TestNewDialog()
+		{
+			//var scope = _provider.CreateScope();
+			{
+				_provider.GetRequiredService<CustomHost>().Window.Show();
+			}
+			
+			GC.Collect();
 		}
 	}
 
@@ -128,7 +149,7 @@ namespace SciterTest.NetCore
 
 		protected override LoadResult OnLoadData(object sender, LoadDataArgs args)
 		{
-			_logger?.LogDebug(args.Uri.ToString());
+			//_logger?.LogDebug(args.Uri.ToString());
 			
 			// load resource from SciterArchive
 			_archive?.GetItem(args.Uri, (res) => 
@@ -143,7 +164,7 @@ namespace SciterTest.NetCore
 
 		protected override bool OnAttachBehavior(SciterElement element, string behaviorName, out SciterEventHandler eventHandler)
 		{
-			_logger?.LogDebug($"{nameof(OnAttachBehavior)}: {nameof(element)}: {element.Tag} ({element.UniqueId}); {nameof(behaviorName)}: {behaviorName}");
+			//_logger?.LogDebug($"{nameof(OnAttachBehavior)}: {nameof(element)}: {element.Tag} ({element.UniqueId}); {nameof(behaviorName)}: {behaviorName}");
 			return base.OnAttachBehavior(element, behaviorName, out eventHandler);
 		}
 
@@ -154,7 +175,7 @@ namespace SciterTest.NetCore
 
 		protected override void OnEngineDestroyed(object sender, EngineDestroyedArgs args)
 		{
-			_logger?.LogDebug(args.Code.ToString());
+			//_logger?.LogDebug(args.Code.ToString());
 			base.OnEngineDestroyed(sender, args);
 		}
 

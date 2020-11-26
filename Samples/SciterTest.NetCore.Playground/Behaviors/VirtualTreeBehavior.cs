@@ -131,18 +131,26 @@ namespace SciterTest.NetCore.Behaviors
          */
         private void expandOption(SciterElement opt)
         {
-            
-            foreach (var file in Directory.GetDirectories(opt["filename"], "*.*", SearchOption.TopDirectoryOnly))
+            try
             {
-                appendChild(opt, Path.GetFileName(file), file, true);
-            }
+                foreach (var file in Directory.GetDirectories(opt["filename"], "*.*", SearchOption.TopDirectoryOnly))
+                {
+                    appendChild(opt, Path.GetFileName(file), file, true);
+                }
             
-            foreach (var file in Directory.GetFiles(opt["filename"], "*.*", SearchOption.TopDirectoryOnly))
-            {
-                appendChild(opt, Path.GetFileName(file), file, false);
-            }
+                foreach (var file in Directory.GetFiles(opt["filename"], "*.*", SearchOption.TopDirectoryOnly))
+                {
+                    appendChild(opt, Path.GetFileName(file), file, false);
+                }
 
-            opt.SetState(ElementState.Expanded);
+                opt.SetState(ElementState.Expanded);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                //throw;
+            }
+           
         }
         
         private void appendChild(SciterElement parent, string caption, string path, bool isFolder)
