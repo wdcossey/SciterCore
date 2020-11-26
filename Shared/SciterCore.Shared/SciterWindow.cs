@@ -772,7 +772,7 @@ namespace SciterCore
 			return lResult;
 		}
 
-		protected virtual bool ProcessWindowMessage(IntPtr hwnd, uint msg, IntPtr wParam, IntPtr lParam, ref IntPtr lResult)// overrisable
+		protected virtual bool ProcessWindowMessage(IntPtr hwnd, uint msg, IntPtr wParam, IntPtr lParam, ref IntPtr lResult)// overridable
 		{
 			return false;
 		}

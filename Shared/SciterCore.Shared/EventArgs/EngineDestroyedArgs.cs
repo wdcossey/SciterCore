@@ -12,12 +12,15 @@ namespace SciterCore
         internal EngineDestroyedArgs(IntPtr windowHandle, uint code)
         : this()
         {
-            Window = new SciterWindow(windowHandle);
+            //Window = new SciterWindow(windowHandle);
+            WindowHandle = windowHandle;
             Code = (CallbackCode)unchecked((int)code);
         }
 
-        public SciterWindow Window { get; }
-
+        //public SciterWindow Window { get; }
+        
+        public IntPtr WindowHandle { get; }
+        
         public CallbackCode Code { get; }
     }
 }
