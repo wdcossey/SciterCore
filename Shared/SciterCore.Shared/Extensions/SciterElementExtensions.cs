@@ -114,7 +114,19 @@ namespace SciterCore
         
         //TODO: Add TryAppendChildElement
         
-        
+        /// <summary>
+        /// Deletes all Children from the the given <paramref name="element"/>. 
+        /// </summary>
+        /// <param name="element">The parent <see cref="SciterElement"/></param>
+        public static SciterElement ClearChildren(this SciterElement element)
+        {
+            if (element != null && element.ChildCount > 0)
+                foreach (var child in element.Children)
+                    child.Delete();
+            
+            return element;
+        }
+
         public static void Delete(this SciterElement element)
         {
             element?.TryDelete();
@@ -341,6 +353,27 @@ namespace SciterCore
         }
 
         public static SciterElement SetAttributeValue<T>(this SciterElement element, string key, Func<T, string> func, T @object)
+        {
+            return element.SetAttributeValue(key: key, value: func?.Invoke(@object));
+        }
+
+        public static SciterElement SetAttributeValue(this SciterElement element, string key, object value)
+        {
+            element?.SetAttributeValueInternal(key: key, value: value?.ToString());
+            return element;
+        }
+        
+        public static SciterElement SetAttributeValue(this SciterElement element, string key, Func<object> func)
+        {
+            return element.SetAttributeValue(key: key, value: func?.Invoke());
+        }
+        
+        public static SciterElement SetAttributeValue(this SciterElement element, string key, Func<object> func, Func<bool> conditional)
+        {
+            return conditional() ? element.SetAttributeValue(key: key, value: func?.Invoke()) : element;
+        }
+
+        public static SciterElement SetAttributeValue<T>(this SciterElement element, string key, Func<T, object> func, T @object)
         {
             return element.SetAttributeValue(key: key, value: func?.Invoke(@object));
         }

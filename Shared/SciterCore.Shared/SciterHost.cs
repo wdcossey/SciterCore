@@ -16,6 +16,7 @@
 // along with SciterSharp.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -28,7 +29,35 @@ using SciterCore.Interop;
 
 namespace SciterCore
 {
-	public class SciterHost
+
+	internal static class HostCallbackDelegateRegistry
+	{
+		private static ConcurrentDictionary<SciterHost, SciterXDef.SCITER_HOST_CALLBACK> Registry { get; } =
+			new ConcurrentDictionary<SciterHost, SciterXDef.SCITER_HOST_CALLBACK>();
+
+		internal static SciterXDef.SCITER_HOST_CALLBACK Get(SciterHost host)
+		{
+			return Registry.TryGetValue(host, out var result) ? result : null;
+		}
+
+		internal static SciterXDef.SCITER_HOST_CALLBACK Set(SciterHost host, SciterXDef.SCITER_HOST_CALLBACK @delegate)
+		{
+			if (Registry.ContainsKey(host))
+				return Get(host);
+
+			Registry.TryAdd(host, @delegate);
+
+			return @delegate;
+		}
+
+		internal static void Remove(SciterHost host)
+		{
+			if (Registry.ContainsKey(host))
+				Registry.TryRemove(host, out _);
+		}
+	}
+
+	public class SciterHost : IDisposable
 	{
 		const int INVOKE_NOTIFICATION = 0x8206241;
 
@@ -38,7 +67,13 @@ namespace SciterCore
 		
 		private Dictionary<string, EventHandlerRegistry> _behaviorMap = new Dictionary<string, EventHandlerRegistry>();
 
-		private SciterXDef.SCITER_HOST_CALLBACK _hostCallback;
+		//private SciterXDef.SCITER_HOST_CALLBACK _hostCallback;
+		
+		//delegate uint SciterHostCallbackDelegate(IntPtr ptrNotification, IntPtr callbackParam);
+		
+		//static SciterHostCallbackDelegate HostCallbackDelegateProc;// keep a copy of the delegate so it survives GC
+		
+		
 		private SciterEventHandler _windowEventHandler;
 
 		public static bool InjectLibConsole = true;
@@ -114,8 +149,7 @@ namespace SciterCore
 			WindowHandle = handle;
 
 			// Register a global event handler for this Sciter window
-			_hostCallback = NotificationHandler;
-			Api.SciterSetCallback(handle, Marshal.GetFunctionPointerForDelegate(_hostCallback), IntPtr.Zero);
+			Api.SciterSetCallback(handle, Marshal.GetFunctionPointerForDelegate(HostCallbackDelegateRegistry.Set(this, NotificationHandler)), IntPtr.Zero);
 
 			return this;
 		}
@@ -170,7 +204,9 @@ namespace SciterCore
 			Debug.Assert(_windowEventHandler == null, "You can attach only a single SciterEventHandler per SciterHost/Window");
 			
 			_windowEventHandler = eventHandler;
-			return Api.SciterWindowAttachEventHandler(WindowHandle, eventHandler.EventProc, IntPtr.Zero, (uint)SciterBehaviors.EVENT_GROUPS.HANDLE_ALL).IsOk();
+			return Api
+				.SciterWindowAttachEventHandler(WindowHandle, eventHandler.EventProc, IntPtr.Zero, (uint)SciterBehaviors.EVENT_GROUPS.HANDLE_ALL)
+				.IsOk();
 		}
 
 		/// <summary>
@@ -419,6 +455,9 @@ namespace SciterCore
 					return 1;
 
 				case SciterXDef.SCITER_CALLBACK_CODE.SC_ENGINE_DESTROYED:
+					
+					HostCallbackDelegateRegistry.Remove(this);
+						
 					if(_windowEventHandler != null)
 					{
 						Api.SciterWindowDetachEventHandler(WindowHandle, _windowEventHandler.EventProc, IntPtr.Zero);
@@ -505,5 +544,29 @@ namespace SciterCore
 		protected virtual void OnGraphicsCriticalFailure(IntPtr handle, uint code) { }
 		
 		#endregion
+
+		private void ReleaseUnmanagedResources()
+		{
+			// TODO release unmanaged resources here
+		}
+
+		protected virtual void Dispose(bool disposing)
+		{
+			ReleaseUnmanagedResources();
+			if (disposing)
+			{
+			}
+		}
+
+		public void Dispose()
+		{
+			Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+
+		~SciterHost()
+		{
+			Dispose(false);
+		}
 	}
 }

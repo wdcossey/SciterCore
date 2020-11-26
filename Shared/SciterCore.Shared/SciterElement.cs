@@ -198,7 +198,7 @@ namespace SciterCore
 		
 		internal bool TrySetTextInternal(string text)
 		{
-			return Api.SciterSetElementText(this.Handle, text, Convert.ToUInt32(text.Length))
+			return Api.SciterSetElementText(this.Handle, text, Convert.ToUInt32(text?.Length ?? 0))
 				.IsOk();
 		}
 		

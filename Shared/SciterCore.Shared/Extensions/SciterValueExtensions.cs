@@ -313,6 +313,39 @@ namespace SciterCore
 		    value = null;
 		    return sciterValue?.TryAsJsonStringInternal(value: out value, conversionType: conversionType) == true;
 	    }
+	    
+	    
+	    //TODO: Work in progress
+	    public static T MapTo<T>(this SciterValue sciterValue)
+			where T: class, new()
+	    {
+		    
+		    if (sciterValue.IsObjectObject)
+			    sciterValue = sciterValue.Isolate();
+		    
+		    if (!sciterValue.IsMap)
+		    {
+			    throw new ArgumentOutOfRangeException(nameof(sciterValue), $"{nameof(sciterValue)} cannot be converted to Map");
+		    }
+		    
+		    var result = new T();
+
+		    foreach (var property in typeof(T).GetProperties())
+		    {
+			    sciterValue.TryGetItemInternal(out var value, property.Name);
+			    property.SetValue(result, value.ToObject());
+		    }
+
+		    return result;
+	    }
+
+	    //TODO: Work in progress
+	    public static bool TryMapTo<T>(this SciterValue sciterValue, out T value)
+		    where T: class, new()
+	    {
+		    value = default;
+		    return false;
+	    }
 
 	    #endregion
 	    

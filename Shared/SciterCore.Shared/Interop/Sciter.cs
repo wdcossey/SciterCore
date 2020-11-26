@@ -460,7 +460,7 @@ namespace SciterCore.Interop
 			public delegate IntPtr SCITER_CREATE_WIDGET(ref PInvokeUtils.RECT frame);
 #endif
 			// HWINDOW	function(UINT creationFlags, LPRECT frame, SciterWindowDelegate* delegt, LPVOID delegateParam, HWINDOW parent) SciterCreateWindow;
-			public delegate IntPtr SCITER_CREATE_WINDOW(SciterXDef.SCITER_CREATE_WINDOW_FLAGS creationFlags, ref PInvokeUtils.RECT frame, SciterXDef.SCITER_WINDOW_DELEGATE delegt, IntPtr delegateParam, IntPtr parent);
+			public delegate IntPtr SCITER_CREATE_WINDOW(SciterXDef.SCITER_CREATE_WINDOW_FLAGS creationFlags, ref PInvokeUtils.RECT frame, MulticastDelegate delegt, IntPtr delegateParam, IntPtr parent);
 			//VOID	function(
 			//  HWINDOW               hwndOrNull,// HWINDOW or null if this is global output handler
 			//  LPVOID                param,     // param to be passed "as is" to the pfOutput

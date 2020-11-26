@@ -731,6 +731,96 @@ namespace SciterCore
 		
 		#region As
 		
+		public object ToObject()
+		{
+			if (IsUndefined) 
+				return null;
+
+			if (IsBool) 
+				return AsBooleanInternal();
+
+			if (IsInt) 
+				return AsInt32Internal();
+
+			if (IsFloat) 
+				return AsDoubleInternal();
+			
+			if (IsString)
+				return AsStringInternal(string.Empty);
+
+			if (IsSymbol)
+				return AsStringInternal(string.Empty);
+			
+			//if (IsErrorString) 
+			//	what = nameof(IsErrorString);
+			
+			if (IsDate) 
+				return AsInt64Internal();
+			
+			if (IsCurrency) 
+				return AsCurrencyInternal();
+			
+			//if (IsMap) 
+			//	what = nameof(IsMap);
+			
+			//if (IsArray) 
+			//	what = nameof(IsArray);
+			
+			//if (IsFunction) 
+			//	what = nameof(IsFunction);
+			
+			//if (IsBytes) 
+			//	what = nameof(IsBytes);
+			
+			//if (IsObject) 
+			//	what = nameof(IsObject);
+			
+			//if (IsDomElement) 
+			//	what = nameof(IsDomElement);
+			
+			//if (IsNativeFunction) 
+			//	what = nameof(IsNativeFunction);
+			
+			if (IsColor) 
+				return AsColorInternal();
+			
+			if (IsDuration) 
+				return AsDurationInternal();
+			
+			if (IsAngle) 
+				return AsAngleInternal();
+			
+			if (IsNull) 
+				return null;
+			
+			return null;
+			
+			//if (IsObjectNative) 
+			//	what = nameof(IsObjectNative);
+			
+			//if (IsObjectArray) 
+			//	what = nameof(IsObjectArray);
+			
+			//if (IsObjectFunction) 
+			//	what = nameof(IsObjectFunction);
+			
+			//if (IsObjectObject) 
+			//	what = nameof(IsObjectObject);
+			
+			//if (IsObjectClass) 
+			//	what = nameof(IsObjectClass);
+			
+			//if (IsObjectError) 
+			//	what = nameof(IsObjectError);
+			
+			//if (IsMap)
+			//{
+			//	what = $"{nameof(IsMap)} {Regex.Replace(this.AsJsonString(),@"\t|\n|\r","")}";
+			//}
+
+			//return what;// + " - SciterValue JSON: " + Regex.Replace(ToJSONString(), @"\t|\n|\r", "");
+		}
+		
 		/// <summary>
 		/// Reads the <see cref="SciterValue"/> as a <see cref="Boolean"/>
 		/// </summary>
