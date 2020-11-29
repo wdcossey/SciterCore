@@ -9,8 +9,8 @@
     <ProjectGuid>{2ED64300-CB6A-4CB3-B687-D2795395FC44}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SciterCore.UnitTests</RootNamespace>
-    <AssemblyName>SciterCore.UnitTests</AssemblyName>
+    <RootNamespace>SciterCore.Tests.Unit</RootNamespace>
+    <AssemblyName>SciterCore.Tests.Unit</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -45,6 +45,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -72,6 +73,7 @@
     <Compile Include="SciterArchiveTests.cs" />
     <Compile Include="SciterElementTests.cs" />
     <Compile Include="SciterValueTests.cs" />
+    <Compile Include="SciterHostTests.cs" />
     <Compile Include="UnitTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

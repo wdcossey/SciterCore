@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using SciterCore.Interop;
 
-namespace SciterCore.UnitTests
+namespace SciterCore.Tests.Unit
 {
 	public class UnitTests
 	{

@@ -76,7 +76,7 @@ namespace SciterCore
 
 		public static bool TryCreate(out SciterImage sciterImage, int width, int height, bool withAlpha)
 		{
-			var result = GraphicsApi.imageCreate(out var imageHandle, Convert.ToUInt32(Math.Max(width, 0)), Convert.ToUInt32(Math.Max(height, 0)), withAlpha)
+			var result = GraphicsApi.imageCreate(out var imageHandle, System.Convert.ToUInt32(Math.Max(width, 0)), System.Convert.ToUInt32(Math.Max(height, 0)), withAlpha)
 				.IsOk();
 			
 			sciterImage = result ? new SciterImage(imageHandle: imageHandle) : default;
@@ -205,7 +205,7 @@ namespace SciterCore
 					{
 						Debug.Assert(outBuffer == null);
 						var tmpBuffer = new byte[dataLength];
-						Marshal.Copy(data, tmpBuffer, 0, Convert.ToInt32(dataLength));
+						Marshal.Copy(data, tmpBuffer, 0, System.Convert.ToInt32(dataLength));
 						outBuffer = tmpBuffer;
 						return true;
 					},
@@ -231,7 +231,7 @@ namespace SciterCore
 			var result = GraphicsApi.imageGetInfo(himg: this.Handle, width: out var width, height: out var height, usesAlpha: out _)
 					.IsOk();
 			
-			size = result ? new SciterSize(width: Convert.ToInt32(width), height: Convert.ToInt32(height)) : default;
+			size = result ? new SciterSize(width: System.Convert.ToInt32(width), height: System.Convert.ToInt32(height)) : default;
 			return result;
 		}
 

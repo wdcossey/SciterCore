@@ -2,7 +2,7 @@
 using System.Reflection;
 using NUnit.Framework;
 
-namespace SciterCore.UnitTests
+namespace SciterCore.Tests.Unit
 {
     public class SciterArchiveTests
     {

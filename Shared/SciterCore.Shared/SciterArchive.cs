@@ -108,7 +108,7 @@ namespace SciterCore
 		{
 			ArchiveAlreadyOpened();
 			_pinnedArray = GCHandle.Alloc(buffer, GCHandleType.Pinned);
-			_handle = Api.SciterOpenArchive(_pinnedArray.AddrOfPinnedObject(), Convert.ToUInt32(buffer.Length));
+			_handle = Api.SciterOpenArchive(_pinnedArray.AddrOfPinnedObject(), System.Convert.ToUInt32(buffer.Length));
 			return !_handle.Equals(IntPtr.Zero);
 		}
 
@@ -174,7 +174,7 @@ namespace SciterCore
 				return false;
 				
 			var buffer = new byte[dataLength];
-			Marshal.Copy(dataPtr, buffer, 0, Convert.ToInt32(dataLength));
+			Marshal.Copy(dataPtr, buffer, 0, System.Convert.ToInt32(dataLength));
 			data = buffer;
 			
 			return true;

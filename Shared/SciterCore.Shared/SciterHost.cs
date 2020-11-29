@@ -16,7 +16,6 @@
 // along with SciterSharp.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -29,34 +28,6 @@ using SciterCore.Interop;
 
 namespace SciterCore
 {
-
-	internal static class HostCallbackDelegateRegistry
-	{
-		private static ConcurrentDictionary<SciterHost, SciterXDef.SCITER_HOST_CALLBACK> Registry { get; } =
-			new ConcurrentDictionary<SciterHost, SciterXDef.SCITER_HOST_CALLBACK>();
-
-		internal static SciterXDef.SCITER_HOST_CALLBACK Get(SciterHost host)
-		{
-			return Registry.TryGetValue(host, out var result) ? result : null;
-		}
-
-		internal static SciterXDef.SCITER_HOST_CALLBACK Set(SciterHost host, SciterXDef.SCITER_HOST_CALLBACK @delegate)
-		{
-			if (Registry.ContainsKey(host))
-				return Get(host);
-
-			Registry.TryAdd(host, @delegate);
-
-			return @delegate;
-		}
-
-		internal static void Remove(SciterHost host)
-		{
-			if (Registry.ContainsKey(host))
-				Registry.TryRemove(host, out _);
-		}
-	}
-
 	public class SciterHost : IDisposable
 	{
 		const int INVOKE_NOTIFICATION = 0x8206241;
@@ -66,13 +37,6 @@ namespace SciterCore
 		private IntPtr _windowHandle;
 		
 		private Dictionary<string, EventHandlerRegistry> _behaviorMap = new Dictionary<string, EventHandlerRegistry>();
-
-		//private SciterXDef.SCITER_HOST_CALLBACK _hostCallback;
-		
-		//delegate uint SciterHostCallbackDelegate(IntPtr ptrNotification, IntPtr callbackParam);
-		
-		//static SciterHostCallbackDelegate HostCallbackDelegateProc;// keep a copy of the delegate so it survives GC
-		
 		
 		private SciterEventHandler _windowEventHandler;
 
@@ -138,7 +102,7 @@ namespace SciterCore
 
 		public SciterWindow Window { get; internal set; }
 
-		private SciterHost SetupWindow(IntPtr handle)
+		internal SciterHost SetupWindow(IntPtr handle)
 		{
 			if (handle.Equals(IntPtr.Zero))
 				throw new ArgumentOutOfRangeException(nameof(handle), $"Cannot be {nameof(IntPtr.Zero)}.");
@@ -149,7 +113,7 @@ namespace SciterCore
 			WindowHandle = handle;
 
 			// Register a global event handler for this Sciter window
-			Api.SciterSetCallback(handle, Marshal.GetFunctionPointerForDelegate(HostCallbackDelegateRegistry.Set(this, NotificationHandler)), IntPtr.Zero);
+			Api.SciterSetCallback(handle, HostCallbackRegistry.Set(this, NotificationHandler), IntPtr.Zero);
 
 			return this;
 		}
@@ -232,22 +196,36 @@ namespace SciterCore
 			return result;
 		}
 
-		public SciterValue CallFunction(string name, params SciterValue[] args)
+		internal SciterValue CallFunctionInternal(string functionName, params SciterValue[] args)
 		{
-			Debug.Assert(WindowHandle != IntPtr.Zero, "Call SciterHost.SetupWindow() first");
-			Debug.Assert(name != null);
-
-			Api.SciterCall(WindowHandle, name, (uint)args.Length, SciterValue.ToVALUEArray(args), out var value);
-			return new SciterValue(value);
+			TryCallFunctionInternal(out var result, functionName: functionName, args: args);
+			return result;
 		}
 
-		public SciterValue EvalScript(string script)
+		internal bool TryCallFunctionInternal(out SciterValue value, string functionName, params SciterValue[] args)
+		{
+			Debug.Assert(WindowHandle != IntPtr.Zero, "Call SciterHost.SetupWindow() first");
+			Debug.Assert(functionName != null);
+
+			var result = Api.SciterCall(WindowHandle, functionName, (uint)args.Length, args.AsValueArray(), out var retValue);
+			value = result ? new SciterValue(retValue) : SciterValue.Null;
+			return result;
+		}
+
+		internal SciterValue EvalScriptInternal(string script)
+		{
+			TryEvalScriptInternal(out var result, script: script);
+			return result;
+		}
+
+		internal bool TryEvalScriptInternal(out SciterValue value, string script)
 		{
 			Debug.Assert(WindowHandle != IntPtr.Zero, "Call SciterHost.SetupWindow() first");
 			Debug.Assert(script != null);
 
-			Api.SciterEval(WindowHandle, script, (uint)script.Length, out var value);
-			return new SciterValue(value);
+			var result = Api.SciterEval(WindowHandle, script, (uint)script.Length, out var retValue);
+			value = result ? new SciterValue(retValue) : SciterValue.Null;
+			return result;
 		}
 
 		/// <summary>
@@ -283,22 +261,20 @@ namespace SciterCore
 		{
 			var inspectorProc = "inspector";
 			var processes = Process.GetProcessesByName(inspectorProc);
-			if(!processes.Any())
+			if (!processes.Any())
 			{
-				var value = EvalScript(@"view.msgbox { type:#warning, " +
-				                             			"title:\"Inspector\", " +
-				                             			"content:\"Inspector process is not running. You should run it before calling ConnectToInspector()\", " +
-				                                        "buttons:#ok" +
-				                                        "};");
-				
+				var value = EvalScriptInternal(@"view.msgbox { type:#warning, " +
+				                               "title:\"Inspector\", " +
+				                               "content:\"Inspector process is not running. You should run it before calling ConnectToInspector()\", " +
+				                               "buttons:#ok" +
+				                               "};");
 				return;
 				//throw new Exception("Inspector process is not running. You should run it before calling DebugInspect()");
 			}
-
-
+			
 			await Task.Delay(100);
 			
-			EvalScript("view.connectToInspector()");
+			EvalScriptInternal("view.connectToInspector()");
 #if OSX
 			var app_inspector = AppKit.NSRunningApplication.GetRunningApplications("terrainformatica.inspector");
 			if(app_inspector.Length==1)
@@ -398,7 +374,6 @@ namespace SciterCore
 
 		#endregion
 		
-
 		// Properties
 		public SciterElement RootElement
 		{
@@ -456,7 +431,7 @@ namespace SciterCore
 
 				case SciterXDef.SCITER_CALLBACK_CODE.SC_ENGINE_DESTROYED:
 					
-					HostCallbackDelegateRegistry.Remove(this);
+					HostCallbackRegistry.Remove(this);
 						
 					if(_windowEventHandler != null)
 					{
@@ -547,7 +522,7 @@ namespace SciterCore
 
 		private void ReleaseUnmanagedResources()
 		{
-			// TODO release unmanaged resources here
+			HostCallbackRegistry.Remove(this);
 		}
 
 		protected virtual void Dispose(bool disposing)

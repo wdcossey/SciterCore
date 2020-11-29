@@ -1,7 +1,7 @@
 ﻿using System;
 using NUnit.Framework;
 
-namespace SciterCore.UnitTests
+namespace SciterCore.Tests.Unit
 {
     public class SciterElementTests
     {

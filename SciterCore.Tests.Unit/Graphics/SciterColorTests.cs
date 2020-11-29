@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Drawing;
-using System.Globalization;
 using NUnit.Framework;
 
-namespace SciterCore.UnitTests.Graphics
+namespace SciterCore.Tests.Unit.Graphics
 {
     public class SciterColorTests
     {

@@ -45,47 +45,9 @@ namespace SciterCore
 	}
 #endif
 
-
-	internal static class WindowDelegateRegistry
-	{
-		private static readonly object Lock = new object();
-		
-		private static Dictionary<SciterWindow, SciterXDef.SCITER_WINDOW_DELEGATE> Registry { get; } = new Dictionary<SciterWindow, SciterXDef.SCITER_WINDOW_DELEGATE>();
-
-		internal static SciterXDef.SCITER_WINDOW_DELEGATE Get(SciterWindow window)
-		{
-			lock (Lock)
-			{
-				return Registry.TryGetValue(window, out var result) ? result : null;
-			}
-		}
-		
-		internal static SciterXDef.SCITER_WINDOW_DELEGATE Set(SciterWindow window, SciterXDef.SCITER_WINDOW_DELEGATE @delegate)
-		{
-			lock (Lock)
-			{
-				if (Registry.ContainsKey(window))
-					return Get(window);
-
-				Registry.Add(window, @delegate);
-
-				return @delegate;
-			}
-		}
-		
-		internal static void Remove(SciterWindow window)
-		{
-			lock (Lock)
-			{
-				if (Registry.ContainsKey(window))
-					Registry.Remove(window);
-			}
-		}
-	}
-	
 	public class SciterWindow : IDisposable
 #if WINDOWS && !WPF
-		: System.Windows.Forms.IWin32Window
+		, System.Windows.Forms.IWin32Window
 #endif
 	{
 		private static readonly Sciter.SciterApi Api = Sciter.Api;
@@ -98,9 +60,6 @@ namespace SciterCore
 			protected set => _handle = value;
 		}
 
-		//private SciterXDef.SCITER_WINDOW_DELEGATE _proc;
-
-		
 #if GTKMONO || NETCORE
 		public IntPtr _gtkwindow { get; private set; }
 #elif OSX && XAMARIN
@@ -130,8 +89,6 @@ namespace SciterCore
 
 #if WINDOWS || NETCORE
 			WindowDelegateRegistry.Set(this, InternalProcessSciterWindowMessage);
-#else
-			_proc = null;
 #endif
 		}
 
@@ -144,8 +101,6 @@ namespace SciterCore
 
 #if WINDOWS || NETCORE
 				WindowDelegateRegistry.Set(this, InternalProcessSciterWindowMessage);
-#else
-				//_proc = null;
 #endif
 
 #if GTKMONO
@@ -724,7 +679,7 @@ namespace SciterCore
 			Debug.Assert(name != null);
 
 			Interop.SciterValue.VALUE vret = new Interop.SciterValue.VALUE();
-			Api.SciterCall(Handle, name, (uint)args.Length, SciterValue.ToVALUEArray(args), out vret);
+			Api.SciterCall(Handle, name, (uint)args.Length, args.AsValueArray(), out vret);
 			return new SciterValue(vret);
 		}
 
@@ -769,6 +724,10 @@ namespace SciterCore
 
 			IntPtr lResult = IntPtr.Zero;
 			handled = ProcessWindowMessage(hwnd, msg, wParam, lParam, ref lResult);
+
+			if (msg == (int) PInvokeWindows.Win32Msg.WM_CLOSE && hwnd == this._handle)
+				this.Dispose();
+			
 			return lResult;
 		}
 
@@ -778,9 +737,8 @@ namespace SciterCore
 		}
 #endif
 		private void ReleaseUnmanagedResources()
-		{
+		{ 
 			WindowDelegateRegistry.Remove(this);
-			// TODO release unmanaged resources here
 		}
 
 		protected virtual void Dispose(bool disposing)

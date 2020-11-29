@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
 
-namespace SciterCore.UnitTests.Graphics
+namespace SciterCore.Tests.Unit.Graphics
 {
     public class TextMetricsTests
     {
@@ -8,7 +8,7 @@ namespace SciterCore.UnitTests.Graphics
         public void SciterPoint_width_and_height_from_ctor(float minWidth, float maxWidth, float height, float ascent, float descent, int noLines)
         {
             var actual = new TextMetrics(minWidth, maxWidth, height, ascent, descent, noLines);
-
+            
             Assert.AreEqual(ascent, actual.Ascent);
             Assert.AreEqual(descent, actual.Descent);
             Assert.AreEqual(height, actual.Height);

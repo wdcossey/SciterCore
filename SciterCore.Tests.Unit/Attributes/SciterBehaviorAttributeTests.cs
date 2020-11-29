@@ -1,4 +1,4 @@
-﻿namespace SciterCore.UnitTests.Attributes
+﻿namespace SciterCore.Tests.Unit.Attributes
 {
     public class SciterBehaviorAttributeTests
     {

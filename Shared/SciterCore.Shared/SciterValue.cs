@@ -59,11 +59,6 @@ namespace SciterCore
 			};
 		}
 
-		public static Interop.SciterValue.VALUE[] ToVALUEArray(SciterValue[] values)
-		{
-			return values.Select(sv => sv._data).ToArray();
-		}
-
 		public Interop.SciterValue.VALUE ToVALUE()
 		{
 			Api.ValueInit(out var copy);
@@ -316,6 +311,9 @@ namespace SciterCore
 				case decimal @decimal:
 					Api.ValueFloatDataSet(ref _data, (double)@decimal, (uint)Interop.SciterValue.VALUE_TYPE.T_FLOAT, 0);
 					break;
+				case float @float:
+					Api.ValueFloatDataSet(ref _data, (float)@float, (uint)Interop.SciterValue.VALUE_TYPE.T_FLOAT, 0);
+					break;
 				case string @string:
 					Api.ValueStringDataSet(ref _data, @string, (uint) @string.Length, (uint) Interop.SciterValue.VALUE_UNIT_TYPE_STRING.UT_STRING_STRING);
 					break;
@@ -396,11 +394,14 @@ namespace SciterCore
 		{
 			if(depth++ >= 10)
 				throw new InvalidOperationException("Recursion too deep");
-
-			if(value is IConvertible convertible)
+			
+			if (value == null)
+				return SciterValue.Null;
+			
+			if (value is IConvertible convertible)
 				return new SciterValue(convertible);
 
-			if(antiRecurse.Contains(value))
+			if (antiRecurse.Contains(value))
 				throw new InvalidOperationException("Found recursive property");
 			
 			antiRecurse.Add(antiRecurse);
@@ -728,9 +729,10 @@ namespace SciterCore
 		public bool IsObjectError => _data.t == (uint) Interop.SciterValue.VALUE_TYPE.T_OBJECT && _data.u == (uint) Interop.SciterValue.VALUE_UNIT_TYPE_OBJECT.UT_OBJECT_ERROR;
 
 		#endregion
-		
-		#region As
-		
+
+		#region To
+
+		//TODO: Clean this up
 		public object ToObject()
 		{
 			if (IsUndefined) 
@@ -820,7 +822,11 @@ namespace SciterCore
 
 			//return what;// + " - SciterValue JSON: " + Regex.Replace(ToJSONString(), @"\t|\n|\r", "");
 		}
+
+		#endregion
 		
+		#region As
+
 		/// <summary>
 		/// Reads the <see cref="SciterValue"/> as a <see cref="Boolean"/>
 		/// </summary>

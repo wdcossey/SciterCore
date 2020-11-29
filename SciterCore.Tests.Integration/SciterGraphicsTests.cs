@@ -1,33 +1,14 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 using SciterCore.Attributes;
 using SciterCore.Interop;
 
-namespace SciterCore.UnitTests.Graphics
+namespace SciterCore.Tests.Integration
 {
     public class SciterGraphicsTests
     {
         private SciterWindow _sciterWindow;
-
-
-        [SciterBehavior("draw-content")]
-        class DrawContentBehavior : SciterEventHandler
-        {
-            private readonly SciterWindow _window;
-            private readonly Func<SciterElement, DrawArgs, bool> _drawCallback;
-
-            public DrawContentBehavior(SciterWindow window, Func<SciterElement, DrawArgs, bool> drawCallback)
-            {
-                _window = window;
-                _drawCallback = drawCallback;
-            }
-
-            protected override bool OnDraw(SciterElement se, DrawArgs args)
-            {
-                return _drawCallback.Invoke(se, args);
-            }
-        }
         
         [SetUp]
         public void Setup()
@@ -47,13 +28,31 @@ namespace SciterCore.UnitTests.Graphics
             
             _sciterWindow.LoadHtml(pageData);
         }
-        
+
         [TearDown]
         public void TearDown()
         {
             
         }
+        
+        [SciterBehavior("draw-content")]
+        class DrawContentBehavior : SciterEventHandler
+        {
+            private readonly SciterWindow _window;
+            private readonly Func<SciterElement, DrawArgs, bool> _drawCallback;
 
+            public DrawContentBehavior(SciterWindow window, Func<SciterElement, DrawArgs, bool> drawCallback)
+            {
+                _window = window;
+                _drawCallback = drawCallback;
+            }
+
+            protected override bool OnDraw(SciterElement se, DrawArgs args)
+            {
+                return _drawCallback.Invoke(se, args);
+            }
+        }
+        
         private void TranslateAndDispatch()
         {
             while(PInvokeWindows.GetMessage(lpMsg: out var msg, hWnd: IntPtr.Zero, wMsgFilterMin: 0, wMsgFilterMax: 0) != 0)
@@ -62,27 +61,27 @@ namespace SciterCore.UnitTests.Graphics
                 PInvokeWindows.DispatchMessage(ref msg);
             }
         }
+        
+        [TestCase("draw-lines", LineCapType.Round, LineJoinType.Bevel)]
+        [TestCase("draw-lines", LineCapType.Round, LineJoinType.Miter)]
+        [TestCase("draw-lines", LineCapType.Round, LineJoinType.Round)]
+        [TestCase("draw-lines", LineCapType.Round, LineJoinType.MiterOrBevel)]
+        
+        [TestCase("draw-lines", LineCapType.Butt, LineJoinType.Bevel)]
+        [TestCase("draw-lines", LineCapType.Butt, LineJoinType.Miter)]
+        [TestCase("draw-lines", LineCapType.Butt, LineJoinType.Round)]
+        [TestCase("draw-lines", LineCapType.Butt, LineJoinType.MiterOrBevel)]
 
-        [TestCase(LineCapType.Round, LineJoinType.Bevel)]
-        [TestCase(LineCapType.Round, LineJoinType.Miter)]
-        [TestCase(LineCapType.Round, LineJoinType.Round)]
-        [TestCase(LineCapType.Round, LineJoinType.MiterOrBevel)]
-        
-        [TestCase(LineCapType.Butt, LineJoinType.Bevel)]
-        [TestCase(LineCapType.Butt, LineJoinType.Miter)]
-        [TestCase(LineCapType.Butt, LineJoinType.Round)]
-        [TestCase(LineCapType.Butt, LineJoinType.MiterOrBevel)]
-        
-        [TestCase(LineCapType.Square, LineJoinType.Bevel)]
-        [TestCase(LineCapType.Square, LineJoinType.Miter)]
-        [TestCase(LineCapType.Square, LineJoinType.Round)]
-        [TestCase(LineCapType.Square, LineJoinType.MiterOrBevel)]
-        
-        [TestCase(LineCapType.Round, LineJoinType.Bevel)]
-        [TestCase(LineCapType.Round, LineJoinType.Miter)]
-        [TestCase(LineCapType.Round, LineJoinType.Round)]
-        [TestCase(LineCapType.Round, LineJoinType.MiterOrBevel)]
-        public void DrawLine_with_lineCap_and_lineJoin(LineCapType lineCap, LineJoinType lineJoin)
+        [TestCase("draw-lines", LineCapType.Square, LineJoinType.Bevel)]
+        [TestCase("draw-lines", LineCapType.Square, LineJoinType.Miter)]
+        [TestCase("draw-lines", LineCapType.Square, LineJoinType.Round)]
+        [TestCase("draw-lines", LineCapType.Square, LineJoinType.MiterOrBevel)]
+
+        [TestCase("draw-lines", LineCapType.Round, LineJoinType.Bevel)]
+        [TestCase("draw-lines", LineCapType.Round, LineJoinType.Miter)]
+        [TestCase("draw-lines", LineCapType.Round, LineJoinType.Round)]
+        [TestCase("draw-lines", LineCapType.Round, LineJoinType.MiterOrBevel)]
+        public void DrawLine_with_lineCap_and_lineJoin(string behaviorName, LineCapType lineCap, LineJoinType lineJoin)
         {
             var random = new Random();
             
@@ -94,7 +93,7 @@ namespace SciterCore.UnitTests.Graphics
                 
                 using(var graphics = SciterGraphics.Create(args.Handle))
                 {
-                    for (var i = 0; i < 10; i++)
+                    for (var i = 0; i < 1000; i++)
                     {
                         graphics.SaveState()
                             .Translate(args.Area.Left, args.Area.Top)
@@ -123,18 +122,20 @@ namespace SciterCore.UnitTests.Graphics
                 
                 return true;
 
-            }), behaviorName: "draw-lines");
+            }), behaviorName: behaviorName);
             
             _sciterWindow.Show();
             
             _sciterWindow.RootElement.AppendChildElement("body")
                 .SetStyleValue("background", $"rgb({random.Next(byte.MinValue, byte.MaxValue)}, {random.Next(byte.MinValue, byte.MaxValue)}, {random.Next(byte.MinValue, byte.MaxValue)})")
-                .SetStyleValue("behavior", "draw-lines");
+                .SetStyleValue("behavior", behaviorName);
 
             TranslateAndDispatch();
             
             //Assert.NotNull(_sciterGraphics);
         }
+        
+        
         
         [Test]
         public void Polygon()
@@ -149,7 +150,7 @@ namespace SciterCore.UnitTests.Graphics
                 
                 using(var graphics = SciterGraphics.Create(prms.Handle))
                 {
-                    for (int i = 0; i < 10; i++)
+                    for (int i = 0; i < 1000; i++)
                     {
                         graphics.SaveState()
                             .Translate(prms.Area.Left, prms.Area.Top)
@@ -223,7 +224,7 @@ namespace SciterCore.UnitTests.Graphics
                 
                 using(var graphics = SciterGraphics.Create(prms.Handle))
                 {
-                    for (int i = 0; i < 10; i++)
+                    for (int i = 0; i < 1000; i++)
                     {
                         graphics.SaveState()
                             .Translate(prms.Area.Left, prms.Area.Top)
@@ -282,7 +283,7 @@ namespace SciterCore.UnitTests.Graphics
                     case DrawEvent.Content:
                         using(var graphics = SciterGraphics.Create(prms.Handle))
                         {
-                            for (int i = 0; i < 20; i++)
+                            for (int i = 0; i < 1000; i++)
                             {
                                 var color = SciterColor.Create(
                                     (byte)random.Next(byte.MinValue, byte.MaxValue),
@@ -361,7 +362,7 @@ namespace SciterCore.UnitTests.Graphics
                 
                 using(var graphics = SciterGraphics.Create(prms.Handle))
                 {
-                    for (int i = 0; i < 20; i++)
+                    for (int i = 0; i < 1000; i++)
                     {
                         graphics.SaveState()
                             .Translate(prms.Area.Left, prms.Area.Top)
@@ -413,7 +414,7 @@ namespace SciterCore.UnitTests.Graphics
                 
                 using(var graphics = SciterGraphics.Create(prms.Handle))
                 {
-                    for (var i = 0; i < 20; i++)
+                    for (var i = 0; i < 1000; i++)
                     {
                         graphics.SaveState()
                             .Translate(prms.Area.Left, prms.Area.Top)

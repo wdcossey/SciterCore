@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
+using SciterCore.Convert;
 
-namespace SciterCore.UnitTests
+namespace SciterCore.Tests.Unit
 {
     public class SciterValueTests
     {
@@ -377,6 +378,138 @@ namespace SciterCore.UnitTests
             Assert.IsTrue(actual.IsMap);
             
             Assert.AreEqual(dictionary.Keys, actual.Keys.Select(s => s.AsString()));
+        }
+        
+        private class TestClass
+        {
+            public object key1 { get; set; }
+            public bool key2 { get; set; }
+            public byte key3 { get; set; }
+            public int key4 { get; set; }
+            
+            [SciterPropertyName("key5")]
+            public double DoubleProperty { get; set; }
+            
+            [SciterPropertyName("key6")]
+            public float SingleProperty { get; set; }
+            
+            [SciterPropertyName("key7")]
+            public long LongProperty { get; set; }
+        }
+        
+        [Test]
+        public void Value_MapTo_v1()
+        {
+            var obj = new
+            {
+                key1 = (object)null,
+                key2 = true,
+                key3 = (byte)1,
+                key4 = 1,
+                key5 = 1d,
+                key6 = 1f,
+                key7 = 1L
+            };
+            
+            var actual = SciterValue.Create(obj);
+
+            Assert.IsTrue(actual.IsMap);
+
+            var mapToClass = actual.MapTo<TestClass>();
+            
+            Assert.NotNull(mapToClass);
+            Assert.AreEqual(mapToClass.key1, null);
+            Assert.AreEqual(mapToClass.key2, true);
+            Assert.AreEqual(mapToClass.key3, (byte)1);
+            Assert.AreEqual(mapToClass.key4, 1);
+            Assert.AreEqual(mapToClass.DoubleProperty, 1d);
+            Assert.AreEqual(mapToClass.SingleProperty, 1f);
+            Assert.AreEqual(mapToClass.LongProperty, 1L);
+        }
+        
+        private class TestNestedClass : TestClass
+        {
+            public TestClass key8 { get; set; }
+            public TestNestedClass key9 { get; set; }
+        }
+        
+        [Test]
+        public void Value_MapTo_v2()
+        {
+            var obj = new
+            {
+                key1 = (object)null,
+                key2 = true,
+                key3 = (byte)1,
+                key4 = 1,
+                key5 = 1d,
+                key6 = 1f,
+                key7 = 1L,
+                key8 = new
+                {
+                    key1 = (object)null,
+                    key2 = true,
+                    key3 = (byte)2,
+                    key4 = 2,
+                    key5 = 2d,
+                    SingleProperty = 2f,
+                    LongProperty = 2L,
+                },
+                key9 = new 
+                {
+                    key1 = (object)null,
+                    key2 = true,
+                    key3 = (byte)3,
+                    key4 = 3,
+                    DoubleProperty = 3d,
+                    key6 = 3f,
+                    key7 = 3L,
+                    key8 = new 
+                    {
+                        key1 = (object)null,
+                        key2 = true,
+                        key3 = (byte)4,
+                        key4 = 4,
+                        DoubleProperty = 4d,
+                        SingleProperty = 4f,
+                        LongProperty = 4L,
+                    },
+                    key9 = new
+                    {
+                        key1 = (object)null,
+                        key2 = true,
+                        key3 = (byte)5,
+                        key4 = 5,
+                        DoubleProperty = 5d,
+                        SingleProperty = 5f,
+                        LongProperty = 5L,
+                        key8 = new 
+                        {
+                            key1 = (object)null,
+                            key2 = true,
+                            key3 = (byte)6,
+                            key4 = 6,
+                            key5 = 6d,
+                            SingleProperty = 6f,
+                            key7 = 6L,
+                        },
+                    }
+                }
+            };
+            
+            var actual = SciterValue.Create(obj);
+
+            Assert.IsTrue(actual.IsMap);
+            
+            var mapToClass = actual.MapTo<TestNestedClass>();
+            
+            Assert.NotNull(mapToClass);
+            Assert.AreEqual(mapToClass.key8.SingleProperty, 2L);
+            Assert.AreEqual(mapToClass.key9.DoubleProperty, 3d);
+            Assert.AreEqual(mapToClass.key9.key8.SingleProperty, 4d);
+            Assert.AreEqual(mapToClass.key9.key9.DoubleProperty, 5d);
+            Assert.AreEqual(mapToClass.key9.key9.key8.LongProperty, 6L);
+
         }
         
     }

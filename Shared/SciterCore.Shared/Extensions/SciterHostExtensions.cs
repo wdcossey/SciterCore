@@ -89,6 +89,40 @@ namespace SciterCore
             return host?.TryDetachEventHandlerInternal() == true;
         }
         
+        /// <summary>
+        /// Detaches the event-handler previously attached with AttachEvh()
+        /// </summary>
+        public static SciterValue CallFunction(this SciterHost host, string functionName, params SciterValue[] args)
+        {
+            return host?.CallFunctionInternal(functionName: functionName, args: args);
+        }
+        
+        /// <summary>
+        /// Detaches the event-handler previously attached with AttachEvh()
+        /// </summary>
+        public static bool TryCallFunction(this SciterHost host, out SciterValue value, string functionName, params SciterValue[] args)
+        {
+            value = SciterValue.Null;
+            return host?.TryCallFunctionInternal(value: out value, functionName: functionName, args: args) == true;
+        }
+        
+        /// <summary>
+        /// Detaches the event-handler previously attached with AttachEvh()
+        /// </summary>
+        public static SciterValue EvalScript(this SciterHost host, string script)
+        {
+            return host?.EvalScriptInternal(script: script);
+        }
+        
+        /// <summary>
+        /// Detaches the event-handler previously attached with AttachEvh()
+        /// </summary>
+        public static bool TryEvalScript(this SciterHost host, out SciterValue value, string script)
+        {
+            value = SciterValue.Null;
+            return host?.TryEvalScriptInternal(value: out value, script: script) == true;
+        }
+        
         #endregion
         #region Notification
 

@@ -1,4 +1,4 @@
-﻿namespace SciterCore.UnitTests.EventArgs
+﻿namespace SciterCore.Tests.Unit.EventArgs
 {
     public class DataLoadedEventArgsTests
     {

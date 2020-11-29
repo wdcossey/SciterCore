@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
 
-namespace SciterCore.UnitTests.Graphics
+namespace SciterCore.Tests.Unit.Graphics
 {
     public class SciterPointTests
     {
