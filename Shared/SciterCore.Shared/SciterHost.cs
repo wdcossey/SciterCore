@@ -269,7 +269,6 @@ namespace SciterCore
 				                               "buttons:#ok" +
 				                               "};");
 				return;
-				//throw new Exception("Inspector process is not running. You should run it before calling DebugInspect()");
 			}
 			
 			await Task.Delay(100);
