@@ -1,5 +1,7 @@
 ![https://sciter.com/](https://sciter.com/wp-content/themes/sciter/!images/logo.png)
 
+##### Note: All packages are currently on my private NuGet repo in Azure DevOps, message me if you would like access.
+
 SciterCore.PackFolder [![NuGet](https://img.shields.io/nuget/v/.svg?style=flat)]() ![Build status](https://dev.azure.com/wdcossey/GitHub/_apis/build/status/SciterCore.PackFolder)
 
 SciterCore.Binaries [![NuGet](https://img.shields.io/nuget/v/.svg?style=flat)]() ![Build status](https://dev.azure.com/wdcossey/GitHub/_apis/build/status/SciterCore.Binaries.Windows)
@@ -98,3 +100,9 @@ MacOS (via Xamarin.Mac)
 | SciterTest.Core                   | Sample migrated from `SciterSharp`                        | `Windows`                   |
 | SciterTest.Mac                    | Demo using `Xamarin.Mac`, migrated from `SciterSharp`     | `MacOS`                     |
 | SciterTest.Idioms                 | Sample migrated from `SciterSharp`                        | `Windows`                   |
+
+## Screenshots
+
+![https://github.com/wdcossey/SciterCore/](https://github.com/wdcossey/SciterCore/raw/master/Assets/preview/scitercore_preview_001.png)
+
+![https://github.com/wdcossey/SciterCore/](https://github.com/wdcossey/SciterCore/raw/master/Assets/preview/scitercore_preview_002.png)
