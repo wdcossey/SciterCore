@@ -153,7 +153,7 @@ namespace SciterCore
 					out var ascent, out var descent, out var lines)
 				.IsOk();
 
-			textMetrics = result ? TextMetrics.Create(minWidth: minWidth, maxWidth: maxWidth, height: height, ascent: ascent, descent: descent, noLines: Convert.ToInt32(lines)) : default;
+			textMetrics = result ? TextMetrics.Create(minWidth: minWidth, maxWidth: maxWidth, height: height, ascent: ascent, descent: descent, noLines: System.Convert.ToInt32(lines)) : default;
 			return result;
 		}
 		

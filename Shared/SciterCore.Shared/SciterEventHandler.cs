@@ -18,8 +18,10 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using SciterCore.Attributes;
 using SciterCore.Interop;
 // ReSharper disable VirtualMemberNeverOverridden.Global
 // ReSharper disable UnusedParameter.Global
@@ -32,6 +34,10 @@ namespace SciterCore
 #if DEBUG
 		
 		private volatile bool _isAttached = false;
+
+		protected SciterElement Element { get; set; } = null;
+		
+		protected SciterHost Host { get; private set;  } = null;
 		
 		~SciterEventHandler()
 		{
@@ -60,6 +66,12 @@ namespace SciterCore
 		
 		internal readonly WorkDelegate EventProc;// keep a copy of the delegate so it survives GC
 
+		internal SciterEventHandler UpdateHost(SciterHost sciterHost)
+		{
+			Host = sciterHost;
+			return this;
+		}
+		
 		#region Protected Virtual
 
 		/// <summary>
@@ -134,13 +146,13 @@ namespace SciterCore
 		/// </summary>
 		/// <param name="sourceElement"><para>Source element e.g. in SELECTION_CHANGED it is new selected &lt;option&gt;, in MENU_ITEM_CLICK it is menu item (LI) element</para></param>
 		/// <param name="targetElement"><para>Target element, in MENU_ITEM_CLICK this is owner element that caused this menu - e.g. context menu owner<br/>In scripting this field named as Event.owner</para></param>
-		/// <param name="type"></param>
+		/// <param name="eventType"></param>
 		/// <param name="reason"><para>CLICK_REASON or EDIT_CHANGED_REASON - UI action causing change.<br/>In case of custom event notifications this may be any application specific value.</para></param>
 		/// <param name="data"><para>Auxiliary data accompanied with the event. E.g. FORM_SUBMIT event is using this field to pass collection of values.</para></param>
-		/// <param name="eventName"><para>name of custom event (when <see cref="type"/> == <see cref="SciterBehaviors.BEHAVIOR_EVENTS.CUSTOM"/>)</para></param>
+		/// <param name="eventName"><para>name of custom event (when <see cref="eventType"/> == <see cref="SciterBehaviors.BEHAVIOR_EVENTS.CUSTOM"/>)</para></param>
 		/// <returns></returns>
 		protected virtual bool OnEvent(SciterElement sourceElement, SciterElement targetElement,
-			SciterBehaviors.BEHAVIOR_EVENTS type, IntPtr reason, SciterValue data, string eventName)
+			SciterBehaviors.BEHAVIOR_EVENTS eventType, IntPtr reason, SciterValue data, string eventName)
 		{
 			return false;
 		}
@@ -172,15 +184,15 @@ namespace SciterCore
 		private bool EventProcMethod(IntPtr tag, IntPtr he, uint evtg, IntPtr prms)
 		{
 
-			SciterElement se = null;
+			SciterElement source = null;
 			if(he != IntPtr.Zero)
-				se = new SciterElement(he);
+				source = new SciterElement(he);
 
 			switch((SciterBehaviors.EVENT_GROUPS)evtg)
 			{
 				case SciterBehaviors.EVENT_GROUPS.SUBSCRIPTIONS_REQUEST:
 					{
-						var groups = SubscriptionsRequest(se);
+						var groups = SubscriptionsRequest(source);
 						Marshal.WriteInt32(prms, (int)groups);
 						return true;
 					}
@@ -195,7 +207,7 @@ namespace SciterCore
 							_isAttached = true;
 #endif
 							AttachedHandlers.Add(this);
-							Attached(se);
+							Attached(source);
 						}
 						else if(p.cmd == SciterBehaviors.INITIALIZATION_EVENTS.BEHAVIOR_DETACH)
 						{
@@ -203,8 +215,9 @@ namespace SciterCore
 							Debug.Assert(_isAttached == true);
 							_isAttached = false;
 #endif
+							
+							Detached(source);
 							AttachedHandlers.Remove(this);
-							Detached(se);
 						}
 						return true;
 					}
@@ -229,63 +242,76 @@ namespace SciterCore
 				case SciterBehaviors.EVENT_GROUPS.HANDLE_MOUSE:
 					{
 						var args = Marshal.PtrToStructure<SciterBehaviors.MOUSE_PARAMS>(prms).ToEventArgs();
-						return OnMouse(element: se, args: args);
+						return OnMouse(element: source, args: args);
 					}
 
 				case SciterBehaviors.EVENT_GROUPS.HANDLE_KEY:
 					{
 						var args = Marshal.PtrToStructure<SciterBehaviors.KEY_PARAMS>(prms).ToEventArgs();
-						return OnKey(element: se, args: args);
+						return OnKey(element: source, args: args);
 					}
 
 				case SciterBehaviors.EVENT_GROUPS.HANDLE_FOCUS:
 					{
 						var args = Marshal.PtrToStructure<SciterBehaviors.FOCUS_PARAMS>(prms).ToEventArgs();
-						return OnFocus(element: se, args: args);
+						return OnFocus(element: source, args: args);
 					}
 
 				case SciterBehaviors.EVENT_GROUPS.HANDLE_DRAW:
 					{
 						var args = Marshal.PtrToStructure<SciterBehaviors.DRAW_PARAMS>(prms).ToEventArgs();
-						return OnDraw(element: se, args: args);
+						return OnDraw(element: source, args: args);
 					}
 
 				case SciterBehaviors.EVENT_GROUPS.HANDLE_TIMER:
 					{
 						var @params = Marshal.PtrToStructure<SciterBehaviors.TIMER_PARAMS>(prms);
 						if(@params.timerId != IntPtr.Zero)
-							return OnTimer(se, @params.timerId);
-						return OnTimer(se);
+							return OnTimer(source, @params.timerId);
+						return OnTimer(source);
 					}
 
 				case SciterBehaviors.EVENT_GROUPS.HANDLE_BEHAVIOR_EVENT:
 					{
 						var @params = Marshal.PtrToStructure<SciterBehaviors.BEHAVIOR_EVENT_PARAMS>(prms);
-						SciterElement se2 = @params.he != IntPtr.Zero ? new SciterElement(@params.he) : null;
-						return OnEvent(se, se2, 
-							@params.cmd, @params.reason, new SciterValue(@params.data), @params.name);
+						SciterElement target = @params.he != IntPtr.Zero ? new SciterElement(@params.he) : null;
+						
+						switch (@params.cmd)
+						{
+							case SciterBehaviors.BEHAVIOR_EVENTS.DOCUMENT_CREATED:
+								Element = target;
+								break;
+							case SciterBehaviors.BEHAVIOR_EVENTS.DOCUMENT_CLOSE:
+								Element = null;
+								break;
+						}
+						
+						//
+						return OnEvent(sourceElement: source, targetElement: target, 
+							eventType: @params.cmd, reason: @params.reason, 
+							data: new SciterValue(@params.data), eventName: @params.name);
 					}
 
 				case SciterBehaviors.EVENT_GROUPS.HANDLE_METHOD_CALL:
 					{
 						var @params = Marshal.PtrToStructure<SciterXDom.METHOD_PARAMS>(prms);
-						return OnMethodCall(se, @params.methodID);
+						return OnMethodCall(source, @params.methodID);
 					}
 
 				case SciterBehaviors.EVENT_GROUPS.HANDLE_DATA_ARRIVED:
 					{
 						var @params = Marshal.PtrToStructure<SciterBehaviors.DATA_ARRIVED_PARAMS>(prms);
-						return OnDataArrived(se, @params);
+						return OnDataArrived(source, @params);
 					}
 
 				case SciterBehaviors.EVENT_GROUPS.HANDLE_SCROLL:
 					{
 						var args = Marshal.PtrToStructure<SciterBehaviors.SCROLL_PARAMS>(prms).ToEventArgs();
-						return OnScroll(element: se, args: args);
+						return OnScroll(element: source, args: args);
 					}
 
 				case SciterBehaviors.EVENT_GROUPS.HANDLE_SIZE:
-					return OnSize(se);
+					return OnSize(source);
 
 				case SciterBehaviors.EVENT_GROUPS.HANDLE_SCRIPTING_METHOD_CALL:
 					{
@@ -302,13 +328,15 @@ namespace SciterCore
 
 						SciterBehaviors.SCRIPTING_METHOD_PARAMS p = Marshal.PtrToStructure<SciterBehaviors.SCRIPTING_METHOD_PARAMS>(prms);
 						SciterBehaviors.SCRIPTING_METHOD_PARAMS_WRAPPER pw = new SciterBehaviors.SCRIPTING_METHOD_PARAMS_WRAPPER(p);
-
-						var methodInfo = GetType().GetMethod(pw.name);
+						
+						var methodInfo = GetType().GetMethod(pw.name) ?? GetType().GetMethods().SingleOrDefault(s => s.GetCustomAttributes<SciterFunctionNameAttribute>().Any(a => a.FunctionName.Equals(pw.name)));
 
 						if (methodInfo == null)
+						{
 							return false;
-						
-						var scriptResult = OnScriptCall(se, methodInfo, pw.args);
+						}
+
+						var scriptResult = OnScriptCall(source, methodInfo, pw.args);
 						
 						if (scriptResult.IsSuccessful)
 						{
@@ -324,13 +352,13 @@ namespace SciterCore
 				case SciterBehaviors.EVENT_GROUPS.HANDLE_EXCHANGE:
 					{
 						var args = Marshal.PtrToStructure<SciterBehaviors.EXCHANGE_PARAMS>(prms).ToEventArgs();
-						return OnExchange(element: se, args: args);
+						return OnExchange(element: source, args: args);
 					}
 
 				case SciterBehaviors.EVENT_GROUPS.HANDLE_GESTURE:
 					{
 						var args = Marshal.PtrToStructure<SciterBehaviors.GESTURE_PARAMS>(prms).ToEventArgs();
-						return OnGesture(element: se, args: args);
+						return OnGesture(element: source, args: args);
 					}
 
 				//case SciterBehaviors.EVENT_GROUPS.HANDLE_TISCRIPT_METHOD_CALL: //Obsolete

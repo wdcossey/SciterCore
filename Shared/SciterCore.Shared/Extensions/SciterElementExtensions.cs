@@ -114,7 +114,19 @@ namespace SciterCore
         
         //TODO: Add TryAppendChildElement
         
-        
+        /// <summary>
+        /// Deletes all Children from the the given <paramref name="element"/>. 
+        /// </summary>
+        /// <param name="element">The parent <see cref="SciterElement"/></param>
+        public static SciterElement ClearChildren(this SciterElement element)
+        {
+            if (element != null && element.ChildCount > 0)
+                foreach (var child in element.Children)
+                    child.Delete();
+            
+            return element;
+        }
+
         public static void Delete(this SciterElement element)
         {
             element?.TryDelete();
@@ -344,6 +356,27 @@ namespace SciterCore
         {
             return element.SetAttributeValue(key: key, value: func?.Invoke(@object));
         }
+
+        public static SciterElement SetAttributeValue(this SciterElement element, string key, object value)
+        {
+            element?.SetAttributeValueInternal(key: key, value: value?.ToString());
+            return element;
+        }
+        
+        public static SciterElement SetAttributeValue(this SciterElement element, string key, Func<object> func)
+        {
+            return element.SetAttributeValue(key: key, value: func?.Invoke());
+        }
+        
+        public static SciterElement SetAttributeValue(this SciterElement element, string key, Func<object> func, Func<bool> conditional)
+        {
+            return conditional() ? element.SetAttributeValue(key: key, value: func?.Invoke()) : element;
+        }
+
+        public static SciterElement SetAttributeValue<T>(this SciterElement element, string key, Func<T, object> func, T @object)
+        {
+            return element.SetAttributeValue(key: key, value: func?.Invoke(@object));
+        }
         
         public static bool TrySetAttributeValue(this SciterElement element, string key, string value)
         {
@@ -524,6 +557,20 @@ namespace SciterCore
         /// <param name="parent"></param>
         /// <param name="tag"></param>
         /// <param name="text"></param>
+        /// <returns>The Parent <see cref="SciterElement"/> of the newly created <see cref="SciterElement"/></returns>
+        /// <exception cref="ArgumentNullException">If the <paramref name="tag"/> is null.</exception>
+        public static SciterElement AppendElement(this SciterElement parent, string tag, string text = null)
+        { 
+            parent?.TryAppendElement(tag: tag, element: out _, text: text, callback: (Action<SciterElement>)null);
+            return parent;
+        }
+
+        /// <summary>
+        /// Creates a new <see cref="SciterElement"/> with the given <paramref name="tag"/> and appends it to the <paramref name="parent"/>.
+        /// </summary>
+        /// <param name="parent"></param>
+        /// <param name="tag"></param>
+        /// <param name="text"></param>
         /// <param name="callback"></param>
         /// <returns>The Parent <see cref="SciterElement"/> of the newly created <see cref="SciterElement"/></returns>
         /// <exception cref="ArgumentNullException">If the <paramref name="tag"/> is null.</exception>
@@ -627,6 +674,13 @@ namespace SciterCore
         public static SciterElement AttachEventHandler(this SciterElement element, SciterEventHandler eventHandler)
         {
             element?.TryAttachEventHandler(eventHandler);
+            return element;
+        }
+		
+        public static SciterElement AttachEventHandler<THandler>(this SciterElement element)
+        where THandler: SciterEventHandler
+        {
+            element?.TryAttachEventHandler(Activator.CreateInstance<THandler>());
             return element;
         }
 		

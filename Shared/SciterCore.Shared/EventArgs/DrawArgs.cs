@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
+
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 
 namespace SciterCore
@@ -24,6 +26,7 @@ namespace SciterCore
 		/// <para>For <see cref="SciterCore.DrawEvent.Background"/>/<see cref="SciterCore.DrawEvent.Foreground"/> - it is a border box.</para><br/>
 		/// For <see cref="SciterCore.DrawEvent.Content"/> - it is a content box.
 		/// </summary>
+		[ExcludeFromCodeCoverage]
 		public int Reserved { get; internal set; }
     }
 }

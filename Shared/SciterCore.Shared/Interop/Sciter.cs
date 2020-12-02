@@ -408,7 +408,7 @@ namespace SciterCore.Interop
 			// BOOL function(HWINDOW hWndSciter, LPCBYTE html, UINT htmlSize, LPCWSTR baseUrl) SciterLoadHtml;
 			public delegate bool SCITER_LOAD_HTML(IntPtr hwnd, byte[] html, uint htmlSize, string baseUrl);
 			// VOID	function(HWINDOW hWndSciter, LPSciterHostCallback cb, LPVOID cbParam) SciterSetCallback;
-			public delegate void SCITER_SET_CALLBACK(IntPtr hwnd, IntPtr cb, IntPtr param);// TODO
+			public delegate void SCITER_SET_CALLBACK(IntPtr hwnd, MulticastDelegate cb, IntPtr param);// TODO
 			// BOOL	function(LPCBYTE utf8, UINT numBytes) SciterSetMasterCSS;
 			public delegate bool SCITER_SET_MASTER_CSS(byte[] utf8, uint numBytes);
 			// BOOL	function(LPCBYTE utf8, UINT numBytes) SciterAppendMasterCSS;
@@ -460,7 +460,7 @@ namespace SciterCore.Interop
 			public delegate IntPtr SCITER_CREATE_WIDGET(ref PInvokeUtils.RECT frame);
 #endif
 			// HWINDOW	function(UINT creationFlags, LPRECT frame, SciterWindowDelegate* delegt, LPVOID delegateParam, HWINDOW parent) SciterCreateWindow;
-			public delegate IntPtr SCITER_CREATE_WINDOW(SciterXDef.SCITER_CREATE_WINDOW_FLAGS creationFlags, ref PInvokeUtils.RECT frame, SciterXDef.SCITER_WINDOW_DELEGATE delegt, IntPtr delegateParam, IntPtr parent);
+			public delegate IntPtr SCITER_CREATE_WINDOW(SciterXDef.SCITER_CREATE_WINDOW_FLAGS creationFlags, ref PInvokeUtils.RECT frame, MulticastDelegate delegt, IntPtr delegateParam, IntPtr parent);
 			//VOID	function(
 			//  HWINDOW               hwndOrNull,// HWINDOW or null if this is global output handler
 			//  LPVOID                param,     // param to be passed "as is" to the pfOutput

@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using SciterCore.Convert;
 
 // ReSharper disable RedundantTypeSpecificationInDefaultExpression
 // ReSharper disable UnusedMember.Global
@@ -12,6 +15,11 @@ namespace SciterCore
     {
 	    #region As
 
+	    internal static Interop.SciterValue.VALUE[] AsValueArray(this IEnumerable<SciterValue> values)
+	    {
+		    return values.Select(sv => sv._data).ToArray();
+	    }
+	    
 	    /// <summary>
 	    /// Reads the <see cref="SciterValue"/> as a <see cref="Boolean"/>
 	    /// </summary>
@@ -312,6 +320,55 @@ namespace SciterCore
 	    {
 		    value = null;
 		    return sciterValue?.TryAsJsonStringInternal(value: out value, conversionType: conversionType) == true;
+	    }
+	    
+	    /// <summary>
+	    /// Maps the <see cref="SciterValue"/> to the specified Type (<see cref="T"/>)
+	    /// </summary>
+	    /// <param name="sciterValue"></param>
+	    /// <typeparam name="T"></typeparam>
+	    /// <returns></returns>
+	    public static T MapTo<T>(this SciterValue sciterValue)
+			where T: class, new()
+	    {
+		    return (T)sciterValue.MapTo(typeof(T));
+	    }
+	    
+	    /// <summary>
+	    /// Maps the <see cref="SciterValue"/> to the specified <see cref="Type"/>
+	    /// </summary>
+	    /// <param name="sciterValue"></param>
+	    /// <param name="type"></param>
+	    /// <returns></returns>
+	    /// <exception cref="ArgumentOutOfRangeException"></exception>
+	    public static object MapTo(this SciterValue sciterValue, Type type)
+	    {
+		    
+		    if (sciterValue.IsObjectObject)
+			    sciterValue = sciterValue.Isolate();
+		    
+		    if (!sciterValue.IsMap)
+			    throw new ArgumentOutOfRangeException(nameof(sciterValue), $"{nameof(sciterValue)} cannot be converted to Map");
+
+		    var result = Activator.CreateInstance(type);
+
+		    foreach (var property in type.GetProperties())
+		    {
+			    var propertyName = property.GetCustomAttribute<SciterPropertyName>()?.PropertyName ?? property.Name;
+
+			    if (!sciterValue.TryGetItemInternal(out var value, propertyName) || value.IsUndefined)
+				    sciterValue.TryGetItemInternal(out value, property.Name);
+			    
+			    if (value.IsObject || value.IsObjectObject || value.IsMap)
+			    {
+				    property.SetValue(result, value.MapTo(property.PropertyType));
+				    continue;
+			    }
+
+			    property.SetValue(result, System.Convert.ChangeType(value.ToObject(), property.PropertyType));
+		    }
+
+		    return result;
 	    }
 
 	    #endregion

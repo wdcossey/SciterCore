@@ -28,7 +28,7 @@ using SciterCore.Interop;
 
 namespace SciterCore
 {
-	public class SciterHost
+	public class SciterHost : IDisposable
 	{
 		const int INVOKE_NOTIFICATION = 0x8206241;
 
@@ -37,8 +37,7 @@ namespace SciterCore
 		private IntPtr _windowHandle;
 		
 		private Dictionary<string, EventHandlerRegistry> _behaviorMap = new Dictionary<string, EventHandlerRegistry>();
-
-		private SciterXDef.SCITER_HOST_CALLBACK _hostCallback;
+		
 		private SciterEventHandler _windowEventHandler;
 
 		public static bool InjectLibConsole = true;
@@ -103,7 +102,7 @@ namespace SciterCore
 
 		public SciterWindow Window { get; internal set; }
 
-		private SciterHost SetupWindow(IntPtr handle)
+		internal SciterHost SetupWindow(IntPtr handle)
 		{
 			if (handle.Equals(IntPtr.Zero))
 				throw new ArgumentOutOfRangeException(nameof(handle), $"Cannot be {nameof(IntPtr.Zero)}.");
@@ -114,8 +113,7 @@ namespace SciterCore
 			WindowHandle = handle;
 
 			// Register a global event handler for this Sciter window
-			_hostCallback = NotificationHandler;
-			Api.SciterSetCallback(handle, Marshal.GetFunctionPointerForDelegate(_hostCallback), IntPtr.Zero);
+			Api.SciterSetCallback(handle, HostCallbackRegistry.Set(this, NotificationHandler), IntPtr.Zero);
 
 			return this;
 		}
@@ -155,7 +153,7 @@ namespace SciterCore
 		/// </summary>
 		internal void AttachEventHandlerInternal(SciterEventHandler eventHandler)
 		{
-			TryAttachEventHandlerInternal(eventHandler);
+			TryAttachEventHandlerInternal(eventHandler: eventHandler);
 		}
 
 		/// <summary>
@@ -170,7 +168,13 @@ namespace SciterCore
 			Debug.Assert(_windowEventHandler == null, "You can attach only a single SciterEventHandler per SciterHost/Window");
 			
 			_windowEventHandler = eventHandler;
-			return Api.SciterWindowAttachEventHandler(WindowHandle, eventHandler.EventProc, IntPtr.Zero, (uint)SciterBehaviors.EVENT_GROUPS.HANDLE_ALL).IsOk();
+			var result = Api
+				.SciterWindowAttachEventHandler(WindowHandle, eventHandler.EventProc, IntPtr.Zero, (uint)SciterBehaviors.EVENT_GROUPS.HANDLE_ALL)
+				.IsOk();
+			
+			eventHandler?.UpdateHost(result ? this : null);
+
+			return result;
 		}
 
 		/// <summary>
@@ -196,22 +200,36 @@ namespace SciterCore
 			return result;
 		}
 
-		public SciterValue CallFunction(string name, params SciterValue[] args)
+		internal SciterValue CallFunctionInternal(string functionName, params SciterValue[] args)
 		{
-			Debug.Assert(WindowHandle != IntPtr.Zero, "Call SciterHost.SetupWindow() first");
-			Debug.Assert(name != null);
-
-			Api.SciterCall(WindowHandle, name, (uint)args.Length, SciterValue.ToVALUEArray(args), out var value);
-			return new SciterValue(value);
+			TryCallFunctionInternal(out var result, functionName: functionName, args: args);
+			return result;
 		}
 
-		public SciterValue EvalScript(string script)
+		internal bool TryCallFunctionInternal(out SciterValue value, string functionName, params SciterValue[] args)
+		{
+			Debug.Assert(WindowHandle != IntPtr.Zero, "Call SciterHost.SetupWindow() first");
+			Debug.Assert(functionName != null);
+
+			var result = Api.SciterCall(WindowHandle, functionName, (uint)args.Length, args.AsValueArray(), out var retValue);
+			value = result ? new SciterValue(retValue) : SciterValue.Null;
+			return result;
+		}
+
+		internal SciterValue EvalScriptInternal(string script)
+		{
+			TryEvalScriptInternal(out var result, script: script);
+			return result;
+		}
+
+		internal bool TryEvalScriptInternal(out SciterValue value, string script)
 		{
 			Debug.Assert(WindowHandle != IntPtr.Zero, "Call SciterHost.SetupWindow() first");
 			Debug.Assert(script != null);
 
-			Api.SciterEval(WindowHandle, script, (uint)script.Length, out var value);
-			return new SciterValue(value);
+			var result = Api.SciterEval(WindowHandle, script, (uint)script.Length, out var retValue);
+			value = result ? new SciterValue(retValue) : SciterValue.Null;
+			return result;
 		}
 
 		/// <summary>
@@ -247,22 +265,19 @@ namespace SciterCore
 		{
 			var inspectorProc = "inspector";
 			var processes = Process.GetProcessesByName(inspectorProc);
-			if(!processes.Any())
+			if (!processes.Any())
 			{
-				var value = EvalScript(@"view.msgbox { type:#warning, " +
-				                             			"title:\"Inspector\", " +
-				                             			"content:\"Inspector process is not running. You should run it before calling ConnectToInspector()\", " +
-				                                        "buttons:#ok" +
-				                                        "};");
-				
+				var value = EvalScriptInternal(@"view.msgbox { type:#warning, " +
+				                               "title:\"Inspector\", " +
+				                               "content:\"Inspector process is not running. You should run it before calling ConnectToInspector()\", " +
+				                               "buttons:#ok" +
+				                               "};");
 				return;
-				//throw new Exception("Inspector process is not running. You should run it before calling DebugInspect()");
 			}
-
-
+			
 			await Task.Delay(100);
 			
-			EvalScript("view.connectToInspector()");
+			EvalScriptInternal("view.connectToInspector()");
 #if OSX
 			var app_inspector = AppKit.NSRunningApplication.GetRunningApplications("terrainformatica.inspector");
 			if(app_inspector.Length==1)
@@ -362,7 +377,6 @@ namespace SciterCore
 
 		#endregion
 		
-
 		// Properties
 		public SciterElement RootElement
 		{
@@ -419,6 +433,9 @@ namespace SciterCore
 					return 1;
 
 				case SciterXDef.SCITER_CALLBACK_CODE.SC_ENGINE_DESTROYED:
+					
+					HostCallbackRegistry.Remove(this);
+						
 					if(_windowEventHandler != null)
 					{
 						Api.SciterWindowDetachEventHandler(WindowHandle, _windowEventHandler.EventProc, IntPtr.Zero);
@@ -505,5 +522,29 @@ namespace SciterCore
 		protected virtual void OnGraphicsCriticalFailure(IntPtr handle, uint code) { }
 		
 		#endregion
+
+		private void ReleaseUnmanagedResources()
+		{
+			HostCallbackRegistry.Remove(this);
+		}
+
+		protected virtual void Dispose(bool disposing)
+		{
+			ReleaseUnmanagedResources();
+			if (disposing)
+			{
+			}
+		}
+
+		public void Dispose()
+		{
+			Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+
+		~SciterHost()
+		{
+			Dispose(false);
+		}
 	}
 }

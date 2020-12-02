@@ -165,6 +165,29 @@ namespace SciterCore
         {
 	        return window?.TryLoadHtmlInternal(html: html, baseUrl: baseUrl) == true;
         }
+
+        /// <summary>
+        /// Loads HTML input from a string
+        /// </summary>
+        /// <param name="window"></param>
+        /// <param name="html">HTML of the page to be loaded</param>
+        /// <param name="baseUrl">Base Url given to the loaded page</param>
+        public static SciterWindow LoadHtml(this SciterWindow window, Func<string> html, string baseUrl = null)
+        {
+	        window?.LoadHtmlInternal(html: html?.Invoke(), baseUrl: baseUrl);
+	        return window;
+        }
+
+        /// <summary>
+        /// Loads HTML input from a string
+        /// </summary>
+        /// <param name="window"></param>
+        /// <param name="html">HTML of the page to be loaded</param>
+        /// <param name="baseUrl">Base Url given to the loaded page</param>
+        public static bool TryLoadHtml(this SciterWindow window, Func<string> html, string baseUrl = null)
+        {
+	        return window?.TryLoadHtmlInternal(html: html?.Invoke(), baseUrl: baseUrl) == true;
+        }
         
         #endregion
     }

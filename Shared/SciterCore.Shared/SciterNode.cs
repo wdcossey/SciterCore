@@ -32,7 +32,7 @@ namespace SciterCore
 
 		internal bool TryCreateTextNodeInternal(string text, out SciterNode value)
 		{
-			var result = Api.SciterCreateTextNode(text, Convert.ToUInt32(text.Length), out var nodeHandle)
+			var result = Api.SciterCreateTextNode(text, System.Convert.ToUInt32(text.Length), out var nodeHandle)
 				.IsOk();
 			
 			value = result ? new SciterNode(nodeHandle) : default;
@@ -48,7 +48,7 @@ namespace SciterCore
 
 		internal bool TryCreateCommentNodeInternal(string text, out SciterNode value)
 		{
-			var result= Api.SciterCreateCommentNode(text, Convert.ToUInt32(text.Length), out var nodeHandle)
+			var result= Api.SciterCreateCommentNode(text, System.Convert.ToUInt32(text.Length), out var nodeHandle)
 				.IsOk();
 			
 			value = result ? new SciterNode(nodeHandle) : default;
@@ -68,7 +68,7 @@ namespace SciterCore
 		{
 			var result = Api.SciterNodeChildrenCount(this.Handle, out var count)
 				.IsOk();
-			value = result ? Convert.ToInt32(count) : 0;
+			value = result ? System.Convert.ToInt32(count) : 0;
 			return result;
 		}
 
@@ -119,7 +119,7 @@ namespace SciterCore
 				this.Handle, 
 				(IntPtr strPtr, uint strLength, IntPtr param) =>
 				{
-					outText = Marshal.PtrToStringUni(strPtr, Convert.ToInt32(strLength));
+					outText = Marshal.PtrToStringUni(strPtr, System.Convert.ToInt32(strLength));
 				}, 
 				IntPtr.Zero);
 			
@@ -135,7 +135,7 @@ namespace SciterCore
 		
 		internal bool TrySetTextInternal(string text)
 		{
-			return Api.SciterNodeSetText(this.Handle, text, Convert.ToUInt32(text.Length))
+			return Api.SciterNodeSetText(this.Handle, text, System.Convert.ToUInt32(text.Length))
 				.IsOk();
 		}
 		
@@ -145,13 +145,13 @@ namespace SciterCore
 		
 		internal SciterNode GetChildInternal(int index)
 		{
-			Api.SciterNodeNthChild(this.Handle, Convert.ToUInt32(index), out var nodeHandle);
+			Api.SciterNodeNthChild(this.Handle, System.Convert.ToUInt32(index), out var nodeHandle);
 			return nodeHandle == IntPtr.Zero ? null : new SciterNode(nodeHandle);
 		}
 		
 		internal bool TryGetChildInternal(int index, out SciterNode value)
 		{
-			var result = Api.SciterNodeNthChild(this.Handle, Convert.ToUInt32(index), out var nodeHandle)
+			var result = Api.SciterNodeNthChild(this.Handle, System.Convert.ToUInt32(index), out var nodeHandle)
 				.IsOk();
 			
 			value = result ? new SciterNode(nodeHandle) : default;

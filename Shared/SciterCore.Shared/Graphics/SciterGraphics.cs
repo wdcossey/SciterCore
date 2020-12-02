@@ -151,7 +151,7 @@ namespace SciterCore
 			foreach(var point in points)
 				pointList.AddRange(point.Value);
 
-			return GraphicsApi.gPolygon(this.Handle, pointList.ToArray(), Convert.ToUInt32(points.Count()))
+			return GraphicsApi.gPolygon(this.Handle, pointList.ToArray(), System.Convert.ToUInt32(points.Count()))
 				.IsOk();
 		}
 
@@ -167,7 +167,7 @@ namespace SciterCore
 			foreach(var point in points)
 				pointList.AddRange(point.Value);
 			
-			return GraphicsApi.gPolyline(this.Handle, pointList.ToArray(), Convert.ToUInt32(points.Count))
+			return GraphicsApi.gPolyline(this.Handle, pointList.ToArray(), System.Convert.ToUInt32(points.Count))
 				.IsOk();
 		}
 

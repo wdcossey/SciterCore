@@ -1,0 +1,73 @@
+﻿<html window-blurbehind="none" theme="dark">
+<head>
+	<style>
+
+		widget#tree {
+			size: 300px *;
+			overflow-x:hidden;
+			behavior: tree-view;
+			/*behavior: virtual-tree;
+			prototype: VirtualTree;*/
+		}
+
+		widget#tree option:not(:node)
+		{
+			padding:0;
+		}
+
+		widget#tree option > text  /* option text */
+		{
+			behavior:file-icon;
+			line-height:18px;
+			padding:1dip 3dip 1dip 20dip;
+			foreground-repeat:no-repeat;
+			foreground-position:0 50%;
+			min-width:4em;
+		}
+
+		widget#tree option > text:rtl
+		{
+			padding:1dip 20dip 1dip 3dip;
+			foreground-position:100% 50%;
+		}
+
+		body { flow:horizontal; }
+
+	</style>
+	<script type="text/tiscript">
+		
+		
+        
+		include "virtual-tree.tis";
+		include "tree-data-source.tis";
+		
+		var treew = $(widget#tree);
+
+		event click $(#add-root):{
+		  // init tree view by new instance of TreeDataSource
+		  treew.dataSource(new TreeDataSource());
+		  //treew.dataSource = new TreeDataSource();
+		  //view.TestNewDialog();
+		};
+
+		event click $(#new-dialog):{
+		  view.TestNewDialog();
+		};
+
+		event click $(#post-notification):{
+		  view.PostNotification();
+		};
+	</script>
+</head>
+
+<body>
+	<widget type=tree #tree>
+	</widget>
+
+	<section #ctls>
+		<button #add-root>Add root</button>
+		<button #new-dialog>New Dialog</button>
+		<button #post-notification>Post Notification</button>
+	</section>
+</body>
+</html>

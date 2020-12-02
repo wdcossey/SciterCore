@@ -13,15 +13,20 @@ namespace SciterCore
         /// </summary>
         public int Code { get; internal set; }
 
+        ///// <summary>
+        ///// The <see cref="SciterWindow"/> this callback was attached to.
+        ///// </summary>
+        //public SciterWindow Window { get; internal set; }
+
         /// <summary>
         /// The <see cref="SciterWindow"/> this callback was attached to.
         /// </summary>
-        public SciterWindow Window { get; internal set; }
+        public IntPtr WindowHandle { get; internal set; }
         
         /// <summary>
         /// Zero terminated string, fully qualified uri, for example "http://server/folder/file.ext".
         /// </summary>
-        public Uri Uri { get; internal set; }
+        public Uri Uri { get; set; }
 
         /// <summary>
         /// Pointer to loaded data to return. If data exists in the cache then this field contain pointer to it

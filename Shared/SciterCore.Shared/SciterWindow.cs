@@ -16,6 +16,8 @@
 // along with SciterSharp.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
 using System.Diagnostics;
@@ -43,9 +45,9 @@ namespace SciterCore
 	}
 #endif
 
-	public class SciterWindow
+	public class SciterWindow : IDisposable
 #if WINDOWS && !WPF
-		: System.Windows.Forms.IWin32Window
+		, System.Windows.Forms.IWin32Window
 #endif
 	{
 		private static readonly Sciter.SciterApi Api = Sciter.Api;
@@ -58,7 +60,6 @@ namespace SciterCore
 			protected set => _handle = value;
 		}
 
-		private SciterXDef.SCITER_WINDOW_DELEGATE _proc;
 #if GTKMONO || NETCORE
 		public IntPtr _gtkwindow { get; private set; }
 #elif OSX && XAMARIN
@@ -87,28 +88,28 @@ namespace SciterCore
 			Api.SciterSetOption(IntPtr.Zero, SciterXDef.SCITER_RT_OPTIONS.SCITER_SET_SCRIPT_RUNTIME_FEATURES, new IntPtr((int)allow));
 
 #if WINDOWS || NETCORE
-			_proc = InternalProcessSciterWindowMessage;
-#else
-			_proc = null;
+			WindowDelegateRegistry.Set(this, InternalProcessSciterWindowMessage);
 #endif
 		}
 
-		public SciterWindow(IntPtr hwnd)
+		public SciterWindow(IntPtr hwnd, bool weakReference = false)
 		{
 			Handle = hwnd;
 
+			if (!weakReference)
+			{
+
 #if WINDOWS || NETCORE
-			_proc = InternalProcessSciterWindowMessage;
-#else
-			_proc = null;
+				WindowDelegateRegistry.Set(this, InternalProcessSciterWindowMessage);
 #endif
 
 #if GTKMONO
-			_gtkwindow = PInvokeGTK.gtk_widget_get_toplevel(Handle);
-			Debug.Assert(_gtkwindow != IntPtr.Zero);
+				_gtkwindow = PInvokeGTK.gtk_widget_get_toplevel(Handle);
+				Debug.Assert(_gtkwindow != IntPtr.Zero);
 #elif OSX && XAMARIN
-			_nsview = new OSXView(Handle);
+				_nsview = new OSXView(Handle);
 #endif
+			}
 		}
 
 		public const SciterXDef.SCITER_CREATE_WINDOW_FLAGS DefaultCreateFlags =
@@ -134,7 +135,7 @@ namespace SciterCore
 			Handle = Api.SciterCreateWindow(
 				creationFlags,
 				ref frame,
-				_proc,
+				WindowDelegateRegistry.Get(this),
 				IntPtr.Zero,
 				parent
 			);
@@ -678,7 +679,7 @@ namespace SciterCore
 			Debug.Assert(name != null);
 
 			Interop.SciterValue.VALUE vret = new Interop.SciterValue.VALUE();
-			Api.SciterCall(Handle, name, (uint)args.Length, SciterValue.ToVALUEArray(args), out vret);
+			Api.SciterCall(Handle, name, (uint)args.Length, args.AsValueArray(), out vret);
 			return new SciterValue(vret);
 		}
 
@@ -723,13 +724,40 @@ namespace SciterCore
 
 			IntPtr lResult = IntPtr.Zero;
 			handled = ProcessWindowMessage(hwnd, msg, wParam, lParam, ref lResult);
+
+			if (msg == (int) PInvokeWindows.Win32Msg.WM_CLOSE && hwnd == this._handle)
+				this.Dispose();
+			
 			return lResult;
 		}
 
-		protected virtual bool ProcessWindowMessage(IntPtr hwnd, uint msg, IntPtr wParam, IntPtr lParam, ref IntPtr lResult)// overrisable
+		protected virtual bool ProcessWindowMessage(IntPtr hwnd, uint msg, IntPtr wParam, IntPtr lParam, ref IntPtr lResult)// overridable
 		{
 			return false;
 		}
 #endif
+		private void ReleaseUnmanagedResources()
+		{ 
+			WindowDelegateRegistry.Remove(this);
+		}
+
+		protected virtual void Dispose(bool disposing)
+		{
+			ReleaseUnmanagedResources();
+			if (disposing)
+			{
+			}
+		}
+
+		public void Dispose()
+		{
+			Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+
+		~SciterWindow()
+		{
+			Dispose(false);
+		}
 	}
 }
