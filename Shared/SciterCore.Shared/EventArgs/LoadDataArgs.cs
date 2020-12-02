@@ -26,7 +26,7 @@ namespace SciterCore
         /// <summary>
         /// Zero terminated string, fully qualified uri, for example "http://server/folder/file.ext".
         /// </summary>
-        public Uri Uri { get; internal set; }
+        public Uri Uri { get; set; }
 
         /// <summary>
         /// Pointer to loaded data to return. If data exists in the cache then this field contain pointer to it

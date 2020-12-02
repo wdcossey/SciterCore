@@ -18,8 +18,10 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using SciterCore.Attributes;
 using SciterCore.Interop;
 // ReSharper disable VirtualMemberNeverOverridden.Global
 // ReSharper disable UnusedParameter.Global
@@ -34,6 +36,8 @@ namespace SciterCore
 		private volatile bool _isAttached = false;
 
 		protected SciterElement Element { get; set; } = null;
+		
+		protected SciterHost Host { get; private set;  } = null;
 		
 		~SciterEventHandler()
 		{
@@ -62,6 +66,12 @@ namespace SciterCore
 		
 		internal readonly WorkDelegate EventProc;// keep a copy of the delegate so it survives GC
 
+		internal SciterEventHandler UpdateHost(SciterHost sciterHost)
+		{
+			Host = sciterHost;
+			return this;
+		}
+		
 		#region Protected Virtual
 
 		/// <summary>
@@ -318,12 +328,14 @@ namespace SciterCore
 
 						SciterBehaviors.SCRIPTING_METHOD_PARAMS p = Marshal.PtrToStructure<SciterBehaviors.SCRIPTING_METHOD_PARAMS>(prms);
 						SciterBehaviors.SCRIPTING_METHOD_PARAMS_WRAPPER pw = new SciterBehaviors.SCRIPTING_METHOD_PARAMS_WRAPPER(p);
-
-						var methodInfo = GetType().GetMethod(pw.name);
+						
+						var methodInfo = GetType().GetMethod(pw.name) ?? GetType().GetMethods().SingleOrDefault(s => s.GetCustomAttributes<SciterFunctionNameAttribute>().Any(a => a.FunctionName.Equals(pw.name)));
 
 						if (methodInfo == null)
+						{
 							return false;
-						
+						}
+
 						var scriptResult = OnScriptCall(source, methodInfo, pw.args);
 						
 						if (scriptResult.IsSuccessful)

@@ -47,7 +47,15 @@
 		  // init tree view by new instance of TreeDataSource
 		  treew.dataSource(new TreeDataSource());
 		  //treew.dataSource = new TreeDataSource();
+		  //view.TestNewDialog();
+		};
+
+		event click $(#new-dialog):{
 		  view.TestNewDialog();
+		};
+
+		event click $(#post-notification):{
+		  view.PostNotification();
 		};
 	</script>
 </head>
@@ -58,6 +66,8 @@
 
 	<section #ctls>
 		<button #add-root>Add root</button>
+		<button #new-dialog>New Dialog</button>
+		<button #post-notification>Post Notification</button>
 	</section>
 </body>
 </html>

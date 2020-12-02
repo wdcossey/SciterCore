@@ -3,7 +3,10 @@ using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
-#if WINDOWS && !WPF
+#if NETCORE
+using System.Drawing;
+using System.Drawing.Imaging;
+#elif WINDOWS && !WPF
 using System.Drawing;
 using System.Drawing.Imaging;
 #elif WINDOWS && WPF
@@ -129,7 +132,20 @@ namespace SciterCore
 			return result;
 		}
 
-#if WINDOWS && !WPF
+#if NETCORE
+		public static SciterImage Create(Bitmap bmp)
+		{
+			var data = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppPArgb);
+			Debug.Assert(bmp.Width * 4 == data.Stride);
+
+			var result = GraphicsApi.imageCreateFromPixmap(out var imageHandle, (uint) bmp.Width, (uint) bmp.Height, true, data.Scan0)
+				.IsOk();
+
+			bmp.UnlockBits(data);
+
+			return result ? new SciterImage(imageHandle: imageHandle) : default;
+		}
+#elif WINDOWS && !WPF
 		public static SciterImage Create(Bitmap bmp)
 		{
 			var data = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppPArgb);

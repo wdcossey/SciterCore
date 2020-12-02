@@ -32,14 +32,5 @@ namespace SciterCore.Tests.Unit.Graphics
             Assert.AreEqual(width, actual.Width);
             Assert.AreEqual(height, actual.Height);
         }
-        
-        [Test]
-        public void SciterSize_Empty()
-        {
-            var actual = SciterSize.Empty;
-            
-            Assert.AreEqual(0, actual.Width);
-            Assert.AreEqual(0, actual.Height);
-        }
     }
 }

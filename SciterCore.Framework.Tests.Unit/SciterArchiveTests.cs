@@ -28,12 +28,6 @@ namespace SciterCore.Tests.Unit
         {
             Assert.IsFalse(_archive.IsOpen);
         }
-        
-        [Test]
-        public void Archive_not_opened_when_closing_throws_InvalidOperationException()
-        {
-            Assert.Throws<InvalidOperationException>(() => _archive.Close());
-        }
 
         [Test]
         public void Open_archive_async()

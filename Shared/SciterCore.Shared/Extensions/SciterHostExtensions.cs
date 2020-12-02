@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
+
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable ArgumentsStyleOther
-
 // ReSharper disable RedundantTypeArgumentsOfMethod
 // ReSharper disable ArgumentsStyleNamedExpression
 // ReSharper disable UnusedMember.Global

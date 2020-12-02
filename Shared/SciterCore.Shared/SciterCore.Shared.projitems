@@ -9,6 +9,7 @@
     <Import_RootNamespace>SciterCore</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Attributes\SciterFunctionNameAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Attributes\SciterCallbackWrapperAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Convert\SciterPropertyName.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\CallbackCode.cs" />

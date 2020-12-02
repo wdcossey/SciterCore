@@ -16,7 +16,6 @@ namespace SciterCore.Tests.Unit.Graphics
             Assert.AreEqual(y, actual.Y);
         }
         
-        
         [TestCase(0, 0)]
         [TestCase(1, 1)]
         [TestCase(100, 200)]
@@ -24,7 +23,7 @@ namespace SciterCore.Tests.Unit.Graphics
         [TestCase(int.MaxValue, int.MaxValue)]
         public void SciterPoint_set_width_and_height_from_property(int x, int y)
         {
-            var actual = new SciterPoint()
+            var actual = new SciterPoint
             {
                 X = x,
                 Y = y
@@ -32,14 +31,6 @@ namespace SciterCore.Tests.Unit.Graphics
             
             Assert.AreEqual(x, actual.X);
             Assert.AreEqual(y, actual.Y);
-        }
-        
-        [Test]
-        public void SciterPoint_Empty()
-        {
-            var actual = SciterPoint.Empty;
-            Assert.AreEqual(0, actual.X);
-            Assert.AreEqual(0, actual.Y);
         }
     }
 }

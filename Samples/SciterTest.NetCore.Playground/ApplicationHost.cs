@@ -98,12 +98,17 @@ namespace SciterTest.NetCore
 
 		public void TestNewDialog()
 		{
-			//var scope = _provider.CreateScope();
+			var scope = _provider.CreateScope();
 			{
-				_provider.GetRequiredService<CustomHost>().Window.Show();
+				scope.ServiceProvider.GetRequiredService<CustomHost>().Window.Show();
 			}
 			
 			GC.Collect();
+		}
+
+		public void PostNotification()
+		{
+			this.Host.PostNotification(IntPtr.Zero, IntPtr.Zero, 0U);
 		}
 	}
 

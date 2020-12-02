@@ -153,7 +153,7 @@ namespace SciterCore
 		/// </summary>
 		internal void AttachEventHandlerInternal(SciterEventHandler eventHandler)
 		{
-			TryAttachEventHandlerInternal(eventHandler);
+			TryAttachEventHandlerInternal(eventHandler: eventHandler);
 		}
 
 		/// <summary>
@@ -168,9 +168,13 @@ namespace SciterCore
 			Debug.Assert(_windowEventHandler == null, "You can attach only a single SciterEventHandler per SciterHost/Window");
 			
 			_windowEventHandler = eventHandler;
-			return Api
+			var result = Api
 				.SciterWindowAttachEventHandler(WindowHandle, eventHandler.EventProc, IntPtr.Zero, (uint)SciterBehaviors.EVENT_GROUPS.HANDLE_ALL)
 				.IsOk();
+			
+			eventHandler?.UpdateHost(result ? this : null);
+
+			return result;
 		}
 
 		/// <summary>

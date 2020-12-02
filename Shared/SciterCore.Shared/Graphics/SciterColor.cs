@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
-#if WINDOWS
 using System.Drawing;
-
-#endif
+using System.Diagnostics.CodeAnalysis;
 
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable InconsistentNaming
@@ -78,8 +75,7 @@ namespace SciterCore
         {
             return new SciterColor(r, g, b, alpha);
         }
-
-#if WINDOWS
+        
         public static SciterColor Create(Color color)
         {
             return new SciterColor(color.R, color.G, color.B, color.A);
@@ -90,7 +86,6 @@ namespace SciterCore
         //{
         //    return GraphicsApi.RGBA(color.R, color.G, color.B, color.A);
         //}
-#endif
 
         private static byte GetMinMaxValue(byte value)
         {
