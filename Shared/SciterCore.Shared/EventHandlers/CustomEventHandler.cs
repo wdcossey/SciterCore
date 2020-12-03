@@ -27,7 +27,7 @@ namespace SciterCore.EventHandlers
         /// <param name="type"></param>
         /// <param name="reason"><para>CLICK_REASON or EDIT_CHANGED_REASON - UI action causing change.<br/>In case of custom event notifications this may be any application specific value.</para></param>
         /// <param name="data"><para>Auxiliary data accompanied with the event. E.g. FORM_SUBMIT event is using this field to pass collection of values.</para></param>
-        /// <param name="eventName"><para>name of custom event (when <see cref="type"/> == <see cref="SciterBehaviors.BEHAVIOR_EVENTS.CUSTOM"/>)</para></param>
+        /// <param name="eventName"><para>name of custom event (when <paramref name="type"></paramref>  == <see cref="SciterBehaviors.BEHAVIOR_EVENTS.CUSTOM"/>)</para></param>
         /// <returns></returns>
         protected override bool OnEvent(SciterElement sourceElement, SciterElement targetElement, SciterBehaviors.BEHAVIOR_EVENTS type,
             IntPtr reason,

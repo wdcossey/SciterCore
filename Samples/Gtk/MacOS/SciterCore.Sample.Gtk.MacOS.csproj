@@ -80,7 +80,7 @@
     <None Include="wwwroot\**" />
   </ItemGroup>
     <ItemGroup>
-    <PackageReference Include="SciterCore.PackFolder" Version="0.0.156-alpha" />
+    <PackageReference Include="SciterCore.PackFolder" Version="0.0.208-alpha" />
   </ItemGroup>
     <ItemGroup>
       <Compile Include="..\common\Behaviors\DrawGeometryBehavior.cs">

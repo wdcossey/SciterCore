@@ -534,7 +534,7 @@ namespace SciterCore.Interop
 			public IntPtr	heTarget;
 			
 			/// <summary>
-			/// source element e.g. in SELECTION_CHANGED it is new selected <option>, in MENU_ITEM_CLICK it is menu item (LI) element
+			/// source element e.g. in SELECTION_CHANGED it is new selected &lt;option&gt;, in MENU_ITEM_CLICK it is menu item (LI) element
 			/// </summary>
 			public IntPtr	he;
 			

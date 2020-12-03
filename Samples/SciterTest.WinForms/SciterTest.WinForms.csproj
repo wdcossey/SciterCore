@@ -91,7 +91,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="SciterCore.PackFolder" Version="0.0.156-alpha" />
+    <PackageReference Include="SciterCore.PackFolder" Version="0.0.208-alpha" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
