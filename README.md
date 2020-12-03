@@ -1,6 +1,13 @@
 ![https://sciter.com/](https://sciter.com/wp-content/themes/sciter/!images/logo.png)
 
-##### Note: All packages are currently on my private NuGet repo in Azure DevOps, message me if you would like access.
+| Package                     | Version                                                  |
+| --------------------- | ---------------------------------------------------------------|
+| SciterCore.Binaries   | ![Nuget](https://img.shields.io/nuget/v/SciterCore.Binaries)   |
+| SciterCore.PackFolder | ![Nuget](https://img.shields.io/nuget/v/SciterCore.PackFolder) |
+| SciterCore.WinForms   | ![Nuget](https://img.shields.io/nuget/v/SciterCore.WinForms)   |
+| SciterCore.Gtk        | ![Nuget](https://img.shields.io/nuget/v/SciterCore.Gtk)        |
+| SciterCore.Mac        | ![Nuget](https://img.shields.io/nuget/v/SciterCore.Mac)        |
+| SciterCore.NetStd     | ![Nuget](https://img.shields.io/nuget/v/SciterCore.NetStd)     |
 
 ## About this project
 
