@@ -1,6 +1,6 @@
-![https://sciter.com/](https://sciter.com/wp-content/themes/sciter/!images/logo.png)
+![https://sciter.com/](https://github.com/wdcossey/SciterCore/raw/master/Assets/sciter_logo_grey.png)
 
-| Package                     | Version                                                  |
+| Package               | Version                                                        |
 | --------------------- | ---------------------------------------------------------------|
 | SciterCore.Binaries   | ![Nuget](https://img.shields.io/nuget/v/SciterCore.Binaries)   |
 | SciterCore.PackFolder | ![Nuget](https://img.shields.io/nuget/v/SciterCore.PackFolder) |
