@@ -63,8 +63,8 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="SciterCore.Binaries" Version="4.4.5.1" />
-    <PackageReference Include="SciterCore.PackFolder" Version="0.0.208-alpha" />
+    <PackageReference Include="SciterCore.Binaries" Version="4.4.5.2" />
+    <PackageReference Include="SciterCore.PackFolder" Version="0.1.257" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   
