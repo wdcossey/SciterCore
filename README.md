@@ -2,8 +2,8 @@
 
 | Package               | Version                                                                                                                 |
 | --------------------- | ------------------------------------------------------------------------------------------------------------------------|
-| SciterCore.Binaries   | [![NuGet](https://img.shields.io/nuget/v/SciterCore.Binaries)](https://www.nuget.org/packages/SciterCore.Binaries/)     |
-| SciterCore.PackFolder | [![Nuget](https://img.shields.io/nuget/v/SciterCore.PackFolder)](https://www.nuget.org/packages/SciterCore.PackFolder/) |
+| [SciterCore.Binaries](https://github.com/wdcossey/SciterCore.Binaries)   | [![NuGet](https://img.shields.io/nuget/v/SciterCore.Binaries)](https://www.nuget.org/packages/SciterCore.Binaries/)     |
+| [SciterCore.PackFolder](https://github.com/wdcossey/SciterCore.PackFolder) | [![Nuget](https://img.shields.io/nuget/v/SciterCore.PackFolder)](https://www.nuget.org/packages/SciterCore.PackFolder/) |
 | SciterCore.NetStd     | [![Nuget](https://img.shields.io/nuget/v/SciterCore.NetStd)](https://www.nuget.org/packages/SciterCore.NetStd/)         |
 | SciterCore.WinForms   | [![Nuget](https://img.shields.io/nuget/v/SciterCore.WinForms)](https://www.nuget.org/packages/SciterCore.WinForms/)     |
 | SciterCore.Gtk        | [![Nuget](https://img.shields.io/nuget/v/SciterCore.Gtk)](https://www.nuget.org/packages/SciterCore.Gtk/)               |
@@ -40,35 +40,12 @@ This library provides bindings of [Sciter](http://sciter.com/download/) C/C++ he
 ## Available Packages
 
 #### SciterCore.PackFolder
-PackFolder MSBuild Task for embedding Sciter packed binaries into Project resources.
 
-| Command                      |  Options                  |  Default  | Description                       |
-| ---------------------------: | :------------------------ | :-------: | :-------------------------------- |
-| `SciterCorePackType`         | `binary`                  | `binary`  | The PackFolder option; Only `binary` is currently supported, to disable folder packing use any other value (i.e `none`). |
-| `SciterCorePackDirectory`    | absolute or relative path | `wwwroot` | Path to the folder you would like to pack.                                                                               |
-| `SciterCorePackCopyToOutput` | `true` or `false`         | `false`   | Useful if you do not want to pack the files and simply want them copied to the `$(TargetDir)` during the build process.  |
-
-Example:
-```
-<PropertyGroup>
-  <SciterCorePackDirectory>..\common\wwwroot</SciterCorePackDirectory>
-  <SciterCorePackType>binary</SciterCorePackType>
-  <SciterCorePackCopyToOutput Condition=" '$(Configuration)' == 'Debug' ">true</SciterCorePackCopyToOutput>
-</PropertyGroup>
-```
+The source can be found [here](https://github.com/wdcossey/SciterCore.PackFolder)
 
 #### SciterCore.Binaries
 
-Package containing Sciter binaries for Windows, MacOS and Linux.
-
-Binaries are automatically resolved for the target configuration (i.e `x86`, `x64` and `AnyCPU`)
-
-| OS              | Architecture   | FileName              | 
-| --------------- | ---------------| --------------------- | 
-| Windows         | `x86`          | `sciter.dll`          | 
-| Windows         | `x64`          | `sciter.dll`          | 
-| MacOS           | `x64`          | `sciter-osx-64.dylib` | 
-| Linux           | `x64`          | `libsciter-gtk.so`    | 
+The source can be found [here](https://github.com/wdcossey/SciterCore.Binaries)
 
 #### SciterCore.NetStd
 Windows/MacOS/Linux (via .Net Standard 2.0)
