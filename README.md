@@ -1,13 +1,13 @@
-![https://sciter.com/](https://sciter.com/wp-content/themes/sciter/!images/logo.png)
+![https://sciter.com/](https://github.com/wdcossey/SciterCore/raw/master/Assets/sciter_logo_grey.png)
 
-| Package                     | Version                                                  |
-| --------------------- | ---------------------------------------------------------------|
-| SciterCore.Binaries   | ![Nuget](https://img.shields.io/nuget/v/SciterCore.Binaries)   |
-| SciterCore.PackFolder | ![Nuget](https://img.shields.io/nuget/v/SciterCore.PackFolder) |
-| SciterCore.WinForms   | ![Nuget](https://img.shields.io/nuget/v/SciterCore.WinForms)   |
-| SciterCore.Gtk        | ![Nuget](https://img.shields.io/nuget/v/SciterCore.Gtk)        |
-| SciterCore.Mac        | ![Nuget](https://img.shields.io/nuget/v/SciterCore.Mac)        |
-| SciterCore.NetStd     | ![Nuget](https://img.shields.io/nuget/v/SciterCore.NetStd)     |
+| Package               | Version                                                                                                                 |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------|
+| SciterCore.Binaries   | [![NuGet](https://img.shields.io/nuget/v/SciterCore.Binaries)](https://www.nuget.org/packages/SciterCore.Binaries/)     |
+| SciterCore.PackFolder | [![Nuget](https://img.shields.io/nuget/v/SciterCore.PackFolder)](https://www.nuget.org/packages/SciterCore.PackFolder/) |
+| SciterCore.NetStd     | [![Nuget](https://img.shields.io/nuget/v/SciterCore.NetStd)](https://www.nuget.org/packages/SciterCore.NetStd/)         |
+| SciterCore.WinForms   | [![Nuget](https://img.shields.io/nuget/v/SciterCore.WinForms)](https://www.nuget.org/packages/SciterCore.WinForms/)     |
+| SciterCore.Gtk        | [![Nuget](https://img.shields.io/nuget/v/SciterCore.Gtk)](https://www.nuget.org/packages/SciterCore.Gtk/)               |
+| SciterCore.Mac        | [![Nuget](https://img.shields.io/nuget/v/SciterCore.Mac)](https://www.nuget.org/packages/SciterCore.Mac/)               |
 
 ## About this project
 
