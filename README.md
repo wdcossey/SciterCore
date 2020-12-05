@@ -2,8 +2,8 @@
 
 | Package               | Version                                                                                                                 |
 | --------------------- | ------------------------------------------------------------------------------------------------------------------------|
-| [SciterCore.Binaries](https://github.com/wdcossey/SciterCore.PackFolder)   | [![NuGet](https://img.shields.io/nuget/v/SciterCore.Binaries)](https://www.nuget.org/packages/SciterCore.Binaries/)     |
-| [SciterCore.PackFolder](https://github.com/wdcossey/SciterCore.Binaries) | [![Nuget](https://img.shields.io/nuget/v/SciterCore.PackFolder)](https://www.nuget.org/packages/SciterCore.PackFolder/) |
+| [SciterCore.Binaries](https://github.com/wdcossey/SciterCore.Binaries)   | [![NuGet](https://img.shields.io/nuget/v/SciterCore.Binaries)](https://www.nuget.org/packages/SciterCore.Binaries/)     |
+| [SciterCore.PackFolder](https://github.com/wdcossey/SciterCore.PackFolder) | [![Nuget](https://img.shields.io/nuget/v/SciterCore.PackFolder)](https://www.nuget.org/packages/SciterCore.PackFolder/) |
 | SciterCore.NetStd     | [![Nuget](https://img.shields.io/nuget/v/SciterCore.NetStd)](https://www.nuget.org/packages/SciterCore.NetStd/)         |
 | SciterCore.WinForms   | [![Nuget](https://img.shields.io/nuget/v/SciterCore.WinForms)](https://www.nuget.org/packages/SciterCore.WinForms/)     |
 | SciterCore.Gtk        | [![Nuget](https://img.shields.io/nuget/v/SciterCore.Gtk)](https://www.nuget.org/packages/SciterCore.Gtk/)               |
