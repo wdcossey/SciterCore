@@ -1,13 +1,13 @@
 ![https://sciter.com/](https://github.com/wdcossey/SciterCore/raw/master/Assets/sciter_logo_grey.png)
 
-| Package               | Version                                                                                                                 |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------|
-| [SciterCore.Binaries](https://github.com/wdcossey/SciterCore.Binaries)   | [![NuGet](https://img.shields.io/nuget/v/SciterCore.Binaries)](https://www.nuget.org/packages/SciterCore.Binaries/)     |
-| [SciterCore.PackFolder](https://github.com/wdcossey/SciterCore.PackFolder) | [![Nuget](https://img.shields.io/nuget/v/SciterCore.PackFolder)](https://www.nuget.org/packages/SciterCore.PackFolder/) |
-| SciterCore.NetStd     | [![Nuget](https://img.shields.io/nuget/v/SciterCore.NetStd)](https://www.nuget.org/packages/SciterCore.NetStd/)         |
-| SciterCore.WinForms   | [![Nuget](https://img.shields.io/nuget/v/SciterCore.WinForms)](https://www.nuget.org/packages/SciterCore.WinForms/)     |
-| SciterCore.Gtk        | [![Nuget](https://img.shields.io/nuget/v/SciterCore.Gtk)](https://www.nuget.org/packages/SciterCore.Gtk/)               |
-| SciterCore.Mac        | [![Nuget](https://img.shields.io/nuget/v/SciterCore.Mac)](https://www.nuget.org/packages/SciterCore.Mac/)               |
+| Package               | Version                                                                                                                 | Build Status |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------|--------------|
+| [SciterCore.Binaries](https://github.com/wdcossey/SciterCore.Binaries)   | [![NuGet](https://img.shields.io/nuget/v/SciterCore.Binaries)](https://www.nuget.org/packages/SciterCore.Binaries/)     | [![Build Status](https://dev.azure.com/wdcossey/SciterCore/_apis/build/status/SciterCore.Binaries?branchName=main)](https://dev.azure.com/wdcossey/SciterCore/_build/latest?definitionId=11&branchName=main) |
+| [SciterCore.PackFolder](https://github.com/wdcossey/SciterCore.PackFolder) | [![Nuget](https://img.shields.io/nuget/v/SciterCore.PackFolder)](https://www.nuget.org/packages/SciterCore.PackFolder/) | [![Build status](https://dev.azure.com/wdcossey/SciterCore/_apis/build/status/SciterCore.PackFolder-import)](https://dev.azure.com/wdcossey/SciterCore/_build/latest?definitionId=12&branchName=main) |
+| SciterCore.NetStd     | [![Nuget](https://img.shields.io/nuget/v/SciterCore.NetStd)](https://www.nuget.org/packages/SciterCore.NetStd/)         | |
+| SciterCore.WinForms   | [![Nuget](https://img.shields.io/nuget/v/SciterCore.WinForms)](https://www.nuget.org/packages/SciterCore.WinForms/)     | |
+| SciterCore.Gtk        | [![Nuget](https://img.shields.io/nuget/v/SciterCore.Gtk)](https://www.nuget.org/packages/SciterCore.Gtk/)               | |
+| SciterCore.Mac        | [![Nuget](https://img.shields.io/nuget/v/SciterCore.Mac)](https://www.nuget.org/packages/SciterCore.Mac/)               | |
 
 ## About this project
 
