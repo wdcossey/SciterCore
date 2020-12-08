@@ -19,6 +19,11 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
+
+#if NETCOREAPP3_1
+using System.Reflection;
+#endif
+
 // ReSharper disable MemberCanBePrivate.Global
 
 namespace SciterCore.Interop
@@ -53,47 +58,61 @@ namespace SciterCore.Interop
 		private static SciterRequest.SciterRequestApi? _sciterRequestApiInstance = null;
 		private static TIScript.SCITER_TI_SCRIPT_API? _sciterScriptApi = null;
 
-		//#if WINDOWS
-		//		public static bool Use3264DLLNaming { get; set; }
+		const string SciterWindowsLibrary = "sciter.dll";
+		const string SciterUnixLibrary = "libsciter-gtk.so";
+		const string SciterMacOSLibrary = "sciter-osx-64.dylib";
+		
+#if NETCOREAPP3_1
+		//Name is purely to avoid collision
+		const string SciterPlatformLibrary = "sciter_1913ebe4-1c89-43ee-a659-949ef4e9a108_import";
 
-		//		[DllImport("sciter", EntryPoint = "SciterAPI")]
-		//		private static extern IntPtr SciterAPI();
+		private static IntPtr ImportResolver(string libraryName, Assembly assembly, DllImportSearchPath? searchPath)
+		{
+			var libHandle = IntPtr.Zero;
+			if (libraryName != SciterPlatformLibrary) 
+				return libHandle;
+			
+			var fileName = Environment.OSVersion.Platform switch
+			{
+				PlatformID.Win32NT => SciterWindowsLibrary,
+				PlatformID.Unix => SciterUnixLibrary,
+				PlatformID.MacOSX => SciterMacOSLibrary,
+				_ => throw new ArgumentOutOfRangeException()
+			};
 
-		//		[DllImport("sciter32", EntryPoint = "SciterAPI")]
-		//		private static extern IntPtr SciterAPI32();
+			var libName = fileName;
 
-		//		[DllImport("sciter64", EntryPoint = "SciterAPI")]
-		//		private static extern IntPtr SciterAPI64();
-		//#elif GTKMONO
-		//		[DllImport("sciter-gtk-64.so")]
-		//		private static extern IntPtr SciterAPI();
-		//#elif OSX
-		//		[DllImport("sciter-osx-64", EntryPoint = "SciterAPI")]
-		//		private static extern IntPtr SciterAPI64();
-		//#endif
-#if WINDOWS || NETCORE
-		[DllImport("sciter.dll", EntryPoint = "SciterAPI")]
+			NativeLibrary.TryLoad(libName, assembly, DllImportSearchPath.System32, out libHandle);
+
+			return libHandle;
+		}
+#endif
+			
+#if NETCOREAPP3_1
+		[DllImport(SciterPlatformLibrary, EntryPoint = "SciterAPI")]
+#elif WINDOWS || NETCORE
+		[DllImport(SciterWindowsLibrary, EntryPoint = "SciterAPI")]
 #elif GTKMONO
-		[DllImport("x64\\sciter-gtk-64.so")]
+		[DllImport(SciterUnixLibrary)]
 #elif OSX
-		[DllImport("x64\\sciter-osx-64.dylib", EntryPoint = "SciterAPI")]
+		[DllImport(SciterMacOSLibrary, EntryPoint = "SciterAPI")]
 #endif
 		private static extern IntPtr SciterAPI();
 
 		private static SciterApi GetSciterApi()
 		{
-			if(_sciterApi==null)
+			if(_sciterApi == null)
 			{
 				int apiStructSize = Marshal.SizeOf(typeof(SciterApi));
-				IntPtr apiPtr;
+#if NETCOREAPP3_1
+				NativeLibrary.SetDllImportResolver(typeof(Sciter).Assembly, ImportResolver);
+#elif WINDOWS || NETCORE
 
-                
-#if WINDOWS || NETCORE
 				var codeBasePath = new Uri(typeof(SciterApi).Assembly.CodeBase).LocalPath;
                 var codeBaseDirectory = Path.GetDirectoryName(codeBasePath);
                 var is64 = Environment.Is64BitProcess;
                 var bitDirectory = is64 ? "x64" : "x86";
-                var libName = Path.Combine(codeBaseDirectory, bitDirectory, "sciter.dll");
+                var libName = Path.Combine(codeBaseDirectory, bitDirectory, SciterWindowsLibrary);
                 
                 PInvokeWindows.LoadLibrary(libName);
 #elif GTKMONO
@@ -105,10 +124,13 @@ namespace SciterCore.Interop
 				Debug.Assert(IntPtr.Size == 8);
 				//Debug.Assert(apiStructSize == 648 * 2);
 #endif
-				apiPtr = SciterAPI();
+				var apiPtr = SciterAPI();
 
-				_sciterApi = (SciterApi)Marshal.PtrToStructure(ptr: apiPtr, structureType: typeof(SciterApi));
+				_sciterApi = Marshal.PtrToStructure<SciterApi>(ptr: apiPtr);
 
+				if (_sciterApi == null)
+					throw new InvalidOperationException();
+				
 				// from time to time, Sciter changes its ABI
 				// here we test the minimum Sciter version this library is compatible with
 				uint major = _sciterApi.Value.SciterVersion(true);
