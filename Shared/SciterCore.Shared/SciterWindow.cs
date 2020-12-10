@@ -50,7 +50,7 @@ namespace SciterCore
 		, System.Windows.Forms.IWin32Window
 #endif
 	{
-		private static readonly Sciter.SciterApi Api = Sciter.Api;
+		private static readonly ISciterApi Api = Sciter.Api;
 
 		private IntPtr _handle;
 
@@ -194,7 +194,7 @@ namespace SciterCore
 #endif
 
 #if true
-            string wndclass = Marshal.PtrToStringUni(Api.SciterClassName());
+            string wndclass = Api.SciterClassName();
 
             Handle = PInvokeWindows.CreateWindowEx(
 				(int)(PInvokeWindows.WindowStyles.WS_EX_TRANSPARENT),

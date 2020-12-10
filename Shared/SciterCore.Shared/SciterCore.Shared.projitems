@@ -81,9 +81,14 @@
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\TextMetrics.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HostCallbackRegistry.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)InternalsVisibility.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interop\Interfaces\ISciterApi.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\PInvokeGTK.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\PInvokeUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\PInvokeWindows.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interop\Sciter.Delegates.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interop\Sciter.LinuxSciterApi.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interop\Sciter.MacOsSciterApi.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interop\Sciter.WindowsSciterApi.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\SciterBehaviors.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\SciterGraphics.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\Sciter.cs" />

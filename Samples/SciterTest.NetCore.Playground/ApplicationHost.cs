@@ -120,7 +120,7 @@ namespace SciterTest.NetCore
 	public class BaseHost : SciterHost
 	{
 		private readonly ILogger _logger;
-		private readonly Sciter.SciterApi _api = Sciter.Api;
+		private readonly ISciterApi _api = Sciter.Api;
 		private readonly SciterArchive _archive = new SciterArchive();
 
 

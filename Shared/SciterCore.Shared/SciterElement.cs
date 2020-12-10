@@ -33,7 +33,7 @@ namespace SciterCore
 {
 	public sealed class SciterElement : IDisposable
 	{
-		private static readonly Sciter.SciterApi Api = Sciter.Api;
+		private static readonly ISciterApi Api = Sciter.Api;
 		private readonly IntPtr _elementHandle;
 
 		public IntPtr Handle => _elementHandle;

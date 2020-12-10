@@ -15,7 +15,7 @@ namespace SciterTest.Graphics
             SciterPlatform.EnableDragAndDrop();
 #endif
 
-			Console.WriteLine("Sciter: " + Sciter.Version());
+			Console.WriteLine($@"Sciter: {Sciter.Api.SciterVersion()}");
 
 			// Create the window
 			var window = new SciterWindow()

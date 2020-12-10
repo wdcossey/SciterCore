@@ -94,7 +94,7 @@ namespace SciterTest.Wpf
 
             //return result;
 
-            string wndclass = Marshal.PtrToStringUni(Sciter.Api.SciterClassName());
+            string wndclass = Sciter.Api.SciterClassName();
             _sciterHandle = PInvokeWindows.CreateWindowEx(
                 (int)0,
                 wndclass,

@@ -94,7 +94,7 @@ namespace SciterCore.WinForms
 
     internal class SciterFormsHost : SciterHost
     {
-        protected static Sciter.SciterApi _api = Sciter.Api;
+        protected static ISciterApi _api = Sciter.Api;
         private SciterArchive _archive;
 
         internal event EventHandler<InternalGetArchiveItemEventArgs> InternalGetItem;

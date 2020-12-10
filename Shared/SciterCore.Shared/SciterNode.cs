@@ -10,7 +10,7 @@ namespace SciterCore
 {
     public class SciterNode
 	{
-		private static readonly Sciter.SciterApi Api = Sciter.Api;
+		private static readonly ISciterApi Api = Sciter.Api;
 		
 		private readonly IntPtr _nodeHandle;
 

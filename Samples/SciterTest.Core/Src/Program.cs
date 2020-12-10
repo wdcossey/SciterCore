@@ -34,7 +34,7 @@ namespace SciterTest.Core
 
 			var ss = SciterValue.Create(new { aa = list });
 
-			Console.WriteLine("Sciter: " + Sciter.Version());
+			Console.WriteLine($@"Sciter: {Sciter.Api.SciterVersion()}");
 			Console.WriteLine("Bitness: " + IntPtr.Size);
 
 			// Sciter needs this for drag'n'drop support

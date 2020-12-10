@@ -42,7 +42,7 @@ namespace SciterCore
 	public class SciterValue
 	{
 		internal Interop.SciterValue.VALUE _data;
-		private static readonly Sciter.SciterApi Api = Sciter.Api;
+		private static readonly ISciterApi Api = Sciter.Api;
 
 		public static readonly SciterValue Undefined;
 		public static readonly SciterValue Null;
