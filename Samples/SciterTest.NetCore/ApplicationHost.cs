@@ -61,7 +61,7 @@ namespace SciterTest.NetCore
 			var value = SciterValue.Create(System.Text.Json.JsonSerializer.Serialize(new
 			{
 				MethodName = stackFrame?.GetMethod()?.Name,
-				FileUri = new Uri(stackFrame?.GetFileName())?.AbsoluteUri,
+				FileUri = new Uri(stackFrame?.GetFileName() ?? "file://<unknown>")?.AbsoluteUri,
 				FileName = Path.GetFileName(stackFrame?.GetFileName()),
 				LineNumber = stackFrame?.GetFileLineNumber(),
 				ColumnNumber = stackFrame?.GetFileColumnNumber()

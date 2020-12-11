@@ -616,14 +616,6 @@ namespace SciterCore.Interop
 			public SciterCore.SciterValue result;
 		}
 
-		[StructLayout(LayoutKind.Sequential)]
-		public struct TISCRIPT_METHOD_PARAMS
-		{
-			public IntPtr vm;// tiscript_VM*
-			public TIScript.tiscript_value tag;
-			public TIScript.tiscript_value result;
-		}
-	
 		// GET_VALUE/SET_VALUE methods params
 		[StructLayout(LayoutKind.Sequential)]
 		public struct VALUE_PARAMS 

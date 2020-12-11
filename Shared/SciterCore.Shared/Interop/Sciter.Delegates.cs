@@ -1,70 +1,79 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-// ReSharper disable InconsistentNaming
-
 namespace SciterCore.Interop
 {
 	public static partial class Sciter
 	{
-		internal static class SciterApi
+		internal static class SciterApiDelegates
 		{
+			
+			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+			public delegate void VoidReserved();
+			
 			/// <summary>
-			/// LPCWSTR	function() SciterClassName;
+			/// LPCWSTR function() SciterClassName;
 			/// Use Marshal.PtrToStringUni(returned IntPtr) to get the actual string
 			/// </summary>
-			public delegate IntPtr SCITER_CLASS_NAME();
+			[SciterStructMap(nameof(WindowsSciterApi.SciterClassName))]
+			public delegate IntPtr SciterClassName();
 
-			// UINT	function(BOOL major) SciterVersion;
-			public delegate uint SCITER_VERSION(bool major);
+			// UINT function(BOOL major) SciterVersion;
+			[SciterStructMap(nameof(WindowsSciterApi.SciterVersion))]
+			public delegate uint SciterVersion(bool major);
 
 			/// <summary> 
-			/// BOOL	function(HWINDOW hwnd, LPCWSTR uri, LPCBYTE data, UINT dataLength) SciterDataReady;
+			/// BOOL function(HWINDOW hwnd, LPCWSTR uri, LPCBYTE data, UINT dataLength) SciterDataReady;
 			/// </summary>
 			/// <param name="hwnd"></param>
 			/// <param name="uri"></param>
 			/// <param name="data"></param>
 			/// <param name="dataLength"></param>
-			public delegate bool SCITER_DATA_READY(IntPtr hwnd, [MarshalAs(UnmanagedType.LPWStr)] string uri,
+			[SciterStructMap(nameof(WindowsSciterApi.SciterDataReady))]
+			public delegate bool SciterDataReady(IntPtr hwnd, [MarshalAs(UnmanagedType.LPWStr)] string uri,
 				byte[] data, uint dataLength);
 
 			/// <summary>
-			/// BOOL	function(HWINDOW hwnd, LPCWSTR uri, LPCBYTE data, UINT dataLength, LPVOID requestId) SciterDataReadyAsync;
+			/// BOOL function(HWINDOW hwnd, LPCWSTR uri, LPCBYTE data, UINT dataLength, LPVOID requestId) SciterDataReadyAsync;
 			/// </summary>
 			/// <param name="hwnd"></param>
 			/// <param name="uri"></param>
 			/// <param name="data"></param>
 			/// <param name="dataLength"></param>
 			/// <param name="requestId"></param>
-			public delegate bool SCITER_DATA_READY_ASYNC(IntPtr hwnd, string uri, byte[] data, uint dataLength,
+			[SciterStructMap(nameof(WindowsSciterApi.SciterDataReadyAsync))]
+			public delegate bool SciterDataReadyAsync(IntPtr hwnd, string uri, byte[] data, uint dataLength,
 				IntPtr requestId);
 
 			/// <summary>
-			/// LRESULT	function(HWINDOW hwnd, UINT msg, WPARAM wParam, LPARAM lParam) SciterProc;
+			/// LRESULT function(HWINDOW hwnd, UINT msg, WPARAM wParam, LPARAM lParam) SciterProc;
 			/// </summary>
 			/// <param name="hwnd"></param>
 			/// <param name="msg"></param>
 			/// <param name="wParam"></param>
 			/// <param name="lParam"></param>
-			public delegate IntPtr SCITER_PROC(IntPtr hwnd, uint msg, IntPtr wParam, IntPtr lParam);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterProc))]
+			public delegate IntPtr SciterProc(IntPtr hwnd, uint msg, IntPtr wParam, IntPtr lParam);
 
 			/// <summary>
-			/// LRESULT	function(HWINDOW hwnd, UINT msg, WPARAM wParam, LPARAM lParam, BOOL* pbHandled) SciterProcND;
+			/// LRESULT function(HWINDOW hwnd, UINT msg, WPARAM wParam, LPARAM lParam, BOOL* pbHandled) SciterProcND;
 			/// </summary>
 			/// <param name="hwnd"></param>
 			/// <param name="msg"></param>
 			/// <param name="wParam"></param>
 			/// <param name="lParam"></param>
 			/// <param name="pbHandled"></param>
-			public delegate IntPtr SCITER_PROC_ND(IntPtr hwnd, uint msg, IntPtr wParam, IntPtr lParam,
+			[SciterStructMap(nameof(WindowsSciterApi.SciterProcND))]
+			public delegate IntPtr SciterProcNd(IntPtr hwnd, uint msg, IntPtr wParam, IntPtr lParam,
 				ref bool pbHandled);
 
 			/// <summary>
-			/// BOOL	function(HWINDOW hWndSciter, LPCWSTR filename) SciterLoadFile;
+			/// BOOL function(HWINDOW hWndSciter, LPCWSTR filename) SciterLoadFile;
 			/// </summary>
 			/// <param name="hwnd"></param>
 			/// <param name="filename"></param>
-			public delegate bool SCITER_LOAD_FILE(IntPtr hwnd, [MarshalAs(UnmanagedType.LPWStr)] string filename);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterLoadFile))]
+			public delegate bool SciterLoadFile(IntPtr hwnd, [MarshalAs(UnmanagedType.LPWStr)] string filename);
 
 			/// <summary>
 			/// BOOL function(HWINDOW hWndSciter, LPCBYTE html, UINT htmlSize, LPCWSTR baseUrl) SciterLoadHtml;
@@ -73,186 +82,211 @@ namespace SciterCore.Interop
 			/// <param name="html"></param>
 			/// <param name="htmlSize"></param>
 			/// <param name="baseUrl"></param>
-			public delegate bool SCITER_LOAD_HTML(IntPtr hwnd, byte[] html, uint htmlSize, string baseUrl);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterLoadHtml))]
+			public delegate bool SciterLoadHtml(IntPtr hwnd, byte[] html, uint htmlSize, string baseUrl);
 
 			/// <summary>
-			/// VOID	function(HWINDOW hWndSciter, LPSciterHostCallback cb, LPVOID cbParam) SciterSetCallback;
+			/// VOID function(HWINDOW hWndSciter, LPSciterHostCallback cb, LPVOID cbParam) SciterSetCallback;
 			/// </summary>
 			/// <param name="hwnd"></param>
 			/// <param name="cb"></param>
 			/// <param name="param"></param>
-			public delegate void SCITER_SET_CALLBACK(IntPtr hwnd, MulticastDelegate cb, IntPtr param); // TODO
+			[SciterStructMap(nameof(WindowsSciterApi.SciterSetCallback))]
+			public delegate void SciterSetCallback(IntPtr hwnd, MulticastDelegate cb, IntPtr param); // TODO
 
 			/// <summary>
-			/// BOOL	function(LPCBYTE utf8, UINT numBytes) SciterSetMasterCSS;
+			/// BOOL function(LPCBYTE utf8, UINT numBytes) SciterSetMasterCSS;
 			/// </summary>
 			/// <param name="utf8"></param>
 			/// <param name="numBytes"></param>
-			public delegate bool SCITER_SET_MASTER_CSS(byte[] utf8, uint numBytes);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterSetMasterCSS))]
+			public delegate bool SciterSetMasterCss(byte[] utf8, uint numBytes);
 
 			/// <summary>
-			/// BOOL	function(LPCBYTE utf8, UINT numBytes) SciterAppendMasterCSS;
+			/// BOOL function(LPCBYTE utf8, UINT numBytes) SciterAppendMasterCSS;
 			/// </summary>
 			/// <param name="utf8"></param>
 			/// <param name="numBytes"></param>
-			public delegate bool SCITER_APPEND_MASTER_CSS(byte[] utf8, uint numBytes);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterAppendMasterCSS))]
+			public delegate bool SciterAppendMasterCss(byte[] utf8, uint numBytes);
 
 			/// <summary>
-			/// BOOL	function(HWINDOW hWndSciter, LPCBYTE utf8, UINT numBytes, LPCWSTR baseUrl, LPCWSTR mediaType) SciterSetCSS;
+			/// BOOL function(HWINDOW hWndSciter, LPCBYTE utf8, UINT numBytes, LPCWSTR baseUrl, LPCWSTR mediaType) SciterSetCSS;
 			/// </summary>
 			/// <param name="hwnd"></param>
 			/// <param name="utf8"></param>
 			/// <param name="numBytes"></param>
 			/// <param name="baseUrl"></param>
 			/// <param name="mediaType"></param>
-			public delegate bool SCITER_SET_CSS(IntPtr hwnd, byte[] utf8, uint numBytes,
+			[SciterStructMap(nameof(WindowsSciterApi.SciterSetCSS))]
+			public delegate bool SciterSetCss(IntPtr hwnd, byte[] utf8, uint numBytes,
 				[MarshalAs(UnmanagedType.LPWStr)] string baseUrl, [MarshalAs(UnmanagedType.LPWStr)] string mediaType);
 
 			/// <summary>
-			/// BOOL	function(HWINDOW hWndSciter, LPCWSTR mediaType) SciterSetMediaType;
+			/// BOOL function(HWINDOW hWndSciter, LPCWSTR mediaType) SciterSetMediaType;
 			/// </summary>
 			/// <param name="hwnd"></param>
 			/// <param name="mediaType"></param>
-			public delegate bool SCITER_SET_MEDIA_TYPE(IntPtr hwnd, [MarshalAs(UnmanagedType.LPWStr)] string mediaType);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterSetMediaType))]
+			public delegate bool SciterSetMediaType(IntPtr hwnd, [MarshalAs(UnmanagedType.LPWStr)] string mediaType);
 
 			/// <summary>
-			/// BOOL	function(HWINDOW hWndSciter, const SCITER_VALUE *mediaVars) SciterSetMediaVars;
+			/// BOOL function(HWINDOW hWndSciter, const SCITER_VALUE *mediaVars) SciterSetMediaVars;
 			/// </summary>
 			/// <param name="hwnd"></param>
 			/// <param name="mediaVars"></param>
-			public delegate bool SCITER_SET_MEDIA_VARS(IntPtr hwnd, ref SciterValue.VALUE mediaVars);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterSetMediaVars))]
+			public delegate bool SciterSetMediaVars(IntPtr hwnd, ref SciterValue.VALUE mediaVars);
 
 			/// <summary>
-			/// UINT	function(HWINDOW hWndSciter) SciterGetMinWidth;
+			/// UINT function(HWINDOW hWndSciter) SciterGetMinWidth;
 			/// </summary>
 			/// <param name="hwnd"></param>
-			public delegate uint SCITER_GET_MIN_WIDTH(IntPtr hwnd);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterGetMinWidth))]
+			public delegate uint SciterGetMinWidth(IntPtr hwnd);
 
 			/// <summary>
-			/// UINT	function(HWINDOW hWndSciter, UINT width) SciterGetMinHeight;
+			/// UINT function(HWINDOW hWndSciter, UINT width) SciterGetMinHeight;
 			/// </summary>
 			/// <param name="hwnd"></param>
 			/// <param name="width"></param>
-			public delegate uint SCITER_GET_MIN_HEIGHT(IntPtr hwnd, uint width);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterGetMinHeight))]
+			public delegate uint SciterGetMinHeight(IntPtr hwnd, uint width);
 
 			/// <summary>
-			/// BOOL	function(HWINDOW hWnd, LPCSTR functionName, UINT argc, const SCITER_VALUE* argv, SCITER_VALUE* retval) SciterCall;
+			/// BOOL function(HWINDOW hWnd, LPCSTR functionName, UINT argc, const SCITER_VALUE* argv, SCITER_VALUE* retval) SciterCall;
 			/// </summary>
 			/// <param name="hwnd"></param>
 			/// <param name="functionName"></param>
 			/// <param name="argc"></param>
 			/// <param name="argv"></param>
 			/// <param name="retval"></param>
-			public delegate bool SCITER_CALL(IntPtr hwnd, [MarshalAs(UnmanagedType.LPStr)] string functionName,
+			[SciterStructMap(nameof(WindowsSciterApi.SciterCall))]
+			public delegate bool SciterCall(IntPtr hwnd, [MarshalAs(UnmanagedType.LPStr)] string functionName,
 				uint argc, SciterValue.VALUE[] argv, out SciterValue.VALUE retval);
 
 			/// <summary>
-			/// BOOL	function(HWINDOW hwnd, LPCWSTR script, UINT scriptLength, SCITER_VALUE* pretval) SciterEval;
+			/// BOOL function(HWINDOW hwnd, LPCWSTR script, UINT scriptLength, SCITER_VALUE* pretval) SciterEval;
 			/// </summary>
 			/// <param name="hwnd"></param>
 			/// <param name="script"></param>
 			/// <param name="scriptLength"></param>
 			/// <param name="pretval"></param>
-			public delegate bool SCITER_EVAL(IntPtr hwnd, [MarshalAs(UnmanagedType.LPWStr)] string script,
+			[SciterStructMap(nameof(WindowsSciterApi.SciterEval))]
+			public delegate bool SciterEval(IntPtr hwnd, [MarshalAs(UnmanagedType.LPWStr)] string script,
 				uint scriptLength, out SciterValue.VALUE pretval);
 
 			/// <summary>
-			/// VOID	function(HWINDOW hwnd) SciterUpdateWindow;
+			/// VOID function(HWINDOW hwnd) SciterUpdateWindow;
 			/// </summary>
 			/// <param name="hwnd"></param>
-			public delegate bool SCITER_UPDATE_WINDOW(IntPtr hwnd);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterUpdateWindow))]
+			public delegate bool SciterUpdateWindow(IntPtr hwnd);
 
 			/// <summary>
-			/// BOOL	function(MSG* lpMsg) SciterTranslateMessage;
+			/// BOOL function(MSG* lpMsg) SciterTranslateMessage;
 			/// </summary>
 			/// <param name="lpMsg"></param>
-			public delegate bool SCITER_TRANSLATE_MESSAGE(IntPtr lpMsg); // TODO: MSG
+			[SciterStructMap(nameof(WindowsSciterApi.SciterTranslateMessage))]
+			public delegate bool SciterTranslateMessage(IntPtr lpMsg); // TODO: MSG
 
 			/// <summary>
-			/// BOOL	function(HWINDOW hWnd, UINT option, UINT_PTR value ) SciterSetOption;
+			/// BOOL function(HWINDOW hWnd, UINT option, UINT_PTR value ) SciterSetOption;
 			/// </summary>
 			/// <param name="hwnd"></param>
 			/// <param name="option"></param>
 			/// <param name="value"></param>
-			public delegate bool SCITER_SET_OPTION(IntPtr hwnd, SciterXDef.SCITER_RT_OPTIONS option, IntPtr value);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterSetOption))]
+			public delegate bool SciterSetOption(IntPtr hwnd, SciterXDef.SCITER_RT_OPTIONS option, IntPtr value);
 
 			/// <summary>
-			/// VOID	function(HWINDOW hWndSciter, UINT* px, UINT* py) SciterGetPPI;
+			/// VOID function(HWINDOW hWndSciter, UINT* px, UINT* py) SciterGetPPI;
 			/// </summary>
 			/// <param name="hwnd"></param>
 			/// <param name="px"></param>
 			/// <param name="py"></param>
-			public delegate void SCITER_GET_PPI(IntPtr hwnd, ref uint px, ref uint py);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterGetPPI))]
+			public delegate void SciterGetPpi(IntPtr hwnd, ref uint px, ref uint py);
 
 			/// <summary>
-			/// BOOL	function(HWINDOW hwnd, VALUE* pval) SciterGetViewExpando;
+			/// BOOL function(HWINDOW hwnd, VALUE* pval) SciterGetViewExpando;
 			/// </summary>
 			/// <param name="hwnd"></param>
 			/// <param name="pval"></param>
-			public delegate bool SCITER_GET_VIEW_EXPANDO(IntPtr hwnd, out SciterValue.VALUE pval);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterGetViewExpando))]
+			public delegate bool SciterGetViewExpando(IntPtr hwnd, out SciterValue.VALUE pval);
 
 			/// <summary>
-			/// BOOL	function(HWINDOW hWndSciter, ID2D1RenderTarget* prt) SciterRenderD2D;
+			/// BOOL function(HWINDOW hWndSciter, ID2D1RenderTarget* prt) SciterRenderD2D;
 			/// </summary>
 			/// <param name="hwnd"></param>
 			/// <param name="prt"></param>
-			public delegate bool SCITER_RENDER_D2D(IntPtr hwnd, IntPtr prt); // TODO
+			[SciterStructMap(nameof(WindowsSciterApi.SciterRenderD2D))]
+			public delegate bool SciterRenderD2D(IntPtr hwnd, IntPtr prt); // TODO
 
 			/// <summary>
-			/// BOOL	function(ID2D1Factory ** ppf) SciterD2DFactory;
+			/// BOOL function(ID2D1Factory ** ppf) SciterD2DFactory;
 			/// </summary>
 			/// <param name="ppf"></param>
-			public delegate bool SCITER_D2D_FACTORY(IntPtr ppf); // TODO
+			[SciterStructMap(nameof(WindowsSciterApi.SciterD2DFactory))]
+			public delegate bool SciterD2DFactory(IntPtr ppf); // TODO
 
 			/// <summary>
-			/// BOOL	function(IDWriteFactory ** ppf) SciterDWFactory;
+			/// BOOL function(IDWriteFactory ** ppf) SciterDWFactory;
 			/// </summary>
 			/// <param name="ppf"></param>
-			public delegate bool SCITER_DW_FACTORY(IntPtr ppf); // TODO
+			[SciterStructMap(nameof(WindowsSciterApi.SciterDWFactory))]
+			public delegate bool SciterDwFactory(IntPtr ppf); // TODO
 
 			/// <summary>
-			/// BOOL	function(LPUINT pcaps) SciterGraphicsCaps;
+			/// BOOL function(LPUINT pcaps) SciterGraphicsCaps;
 			/// </summary>
 			/// <param name="pcaps"></param>
-			public delegate bool SCITER_GRAPHICS_CAPS(ref uint pcaps);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterGraphicsCaps))]
+			public delegate bool SciterGraphicsCaps(ref uint pcaps);
 
 			/// <summary>
-			/// BOOL	function(HWINDOW hWndSciter, LPCWSTR baseUrl) SciterSetHomeURL;
+			/// BOOL function(HWINDOW hWndSciter, LPCWSTR baseUrl) SciterSetHomeURL;
 			/// </summary>
 			/// <param name="hwnd"></param>
 			/// <param name="baseUrl"></param>
-			public delegate bool SCITER_SET_HOME_URL(IntPtr hwnd, string baseUrl);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterSetHomeURL))]
+			public delegate bool SciterSetHomeUrl(IntPtr hwnd, string baseUrl);
 
 			/// <summary>
 			/// HWINDOW function( LPRECT frame ) SciterCreateNSView;// returns NSView*
 			/// </summary>
 			/// <param name="frame"></param>
-			public delegate IntPtr SCITER_CREATE_NS_VIEW(ref PInvokeUtils.RECT frame);
+			[SciterStructMap(nameof(MacOsSciterApi.SciterCreateNSView))]
+			public delegate IntPtr SciterCreateNsView(ref PInvokeUtils.RECT frame);
 
 			/// <summary>
 			/// HWINDOW SCFN( SciterCreateWidget )( LPRECT frame ); // returns GtkWidget
 			/// </summary>
 			/// <param name="frame"></param>
-			public delegate IntPtr SCITER_CREATE_WIDGET(ref PInvokeUtils.RECT frame);
+			[SciterStructMap(nameof(LinuxSciterApi.SciterCreateWidget))]
+			public delegate IntPtr SciterCreateWidget(ref PInvokeUtils.RECT frame);
 
 			/// <summary>
-			/// HWINDOW	function(UINT creationFlags, LPRECT frame, SciterWindowDelegate* delegt, LPVOID delegateParam, HWINDOW parent) SciterCreateWindow;
+			/// HWINDOW function(UINT creationFlags, LPRECT frame, SciterWindowDelegate* delegt, LPVOID delegateParam, HWINDOW parent) SciterCreateWindow;
 			/// </summary>
 			/// <param name="creationFlags"></param>
 			/// <param name="frame"></param>
 			/// <param name="delegt"></param>
 			/// <param name="delegateParam"></param>
 			/// <param name="parent"></param>
-			public delegate IntPtr SCITER_CREATE_WINDOW(SciterXDef.SCITER_CREATE_WINDOW_FLAGS creationFlags,
+			[SciterStructMap(nameof(WindowsSciterApi.SciterCreateWindow))]
+			public delegate IntPtr SciterCreateWindow(SciterXDef.SCITER_CREATE_WINDOW_FLAGS creationFlags,
 				ref PInvokeUtils.RECT frame, MulticastDelegate delegt, IntPtr delegateParam, IntPtr parent);
 
 			/// <summary>
-			/// VOID	function(HWINDOW hwndOrNull, LPVOID param, DEBUG_OUTPUT_PROC     pfOutput) SciterSetupDebugOutput;
+			/// VOID function(HWINDOW hwndOrNull, LPVOID param, DEBUG_OUTPUT_PROC     pfOutput) SciterSetupDebugOutput;
 			/// </summary>
 			/// <param name="hwndOrNull">HWINDOW or null if this is global output handler</param>
 			/// <param name="param">param to be passed "as is" to the pfOutput</param>
 			/// <param name="pfOutput">output function, output stream alike thing.</param>
-			public delegate void SCITER_SETUP_DEBUG_OUTPUT(IntPtr hwndOrNull, IntPtr param,
+			[SciterStructMap(nameof(WindowsSciterApi.SciterSetupDebugOutput))]
+			public delegate void SciterSetupDebugOutput(IntPtr hwndOrNull, IntPtr param,
 				SciterXDef.DEBUG_OUTPUT_PROC pfOutput);
 
 			#region DOM Element API
@@ -261,27 +295,31 @@ namespace SciterCore.Interop
 			/// SCDOM_RESULT function(HELEMENT he) Sciter_UseElement;
 			/// </summary>
 			/// <param name="he"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_USE_ELEMENT(IntPtr he);
+			[SciterStructMap(nameof(WindowsSciterApi.Sciter_UseElement))]
+			public delegate SciterXDom.SCDOM_RESULT SciterUseElement(IntPtr he);
 
 			/// <summary>
 			/// SCDOM_RESULT function(HELEMENT he) Sciter_UnuseElement;
 			/// </summary>
 			/// <param name="he"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_UNUSE_ELEMENT(IntPtr he);
+			[SciterStructMap(nameof(WindowsSciterApi.Sciter_UnuseElement))]
+			public delegate SciterXDom.SCDOM_RESULT SciterUnuseElement(IntPtr he);
 
 			/// <summary>
 			/// SCDOM_RESULT function(HWINDOW hwnd, HELEMENT *phe) SciterGetRootElement;
 			/// </summary>
 			/// <param name="hwnd"></param>
 			/// <param name="phe"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_GET_ROOT_ELEMENT(IntPtr hwnd, out IntPtr phe);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterGetRootElement))]
+			public delegate SciterXDom.SCDOM_RESULT SciterGetRootElement(IntPtr hwnd, out IntPtr phe);
 
 			/// <summary>
 			/// SCDOM_RESULT function(HWINDOW hwnd, HELEMENT *phe) SciterGetFocusElement;
 			/// </summary>
 			/// <param name="hwnd"></param>
 			/// <param name="phe"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_GET_FOCUS_ELEMENT(IntPtr hwnd, out IntPtr phe);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterGetFocusElement))]
+			public delegate SciterXDom.SCDOM_RESULT SciterGetFocusElement(IntPtr hwnd, out IntPtr phe);
 
 			/// <summary>
 			/// SCDOM_RESULT function(HWINDOW hwnd, POINT pt, HELEMENT* phe) SciterFindElement;
@@ -289,7 +327,8 @@ namespace SciterCore.Interop
 			/// <param name="hwnd"></param>
 			/// <param name="pt"></param>
 			/// <param name="phe"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_FIND_ELEMENT(IntPtr hwnd, PInvokeUtils.POINT pt,
+			[SciterStructMap(nameof(WindowsSciterApi.SciterFindElement))]
+			public delegate SciterXDom.SCDOM_RESULT SciterFindElement(IntPtr hwnd, PInvokeUtils.POINT pt,
 				out IntPtr phe);
 
 			/// <summary>
@@ -297,7 +336,8 @@ namespace SciterCore.Interop
 			/// </summary>
 			/// <param name="he"></param>
 			/// <param name="count"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_GET_CHILDREN_COUNT(IntPtr he, out uint count);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterGetChildrenCount))]
+			public delegate SciterXDom.SCDOM_RESULT SciterGetChildrenCount(IntPtr he, out uint count);
 
 			/// <summary>
 			/// SCDOM_RESULT function(HELEMENT he, UINT n, HELEMENT* phe) SciterGetNthChild;
@@ -305,14 +345,16 @@ namespace SciterCore.Interop
 			/// <param name="he"></param>
 			/// <param name="n"></param>
 			/// <param name="phe"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_GET_NTH_CHILD(IntPtr he, uint n, out IntPtr phe);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterGetNthChild))]
+			public delegate SciterXDom.SCDOM_RESULT SciterGetNthChild(IntPtr he, uint n, out IntPtr phe);
 
 			/// <summary>
 			/// SCDOM_RESULT function(HELEMENT he, HELEMENT* p_parent_he) SciterGetParentElement;
 			/// </summary>
 			/// <param name="he"></param>
 			/// <param name="pParentHe"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_GET_PARENT_ELEMENT(IntPtr he, out IntPtr pParentHe);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterGetParentElement))]
+			public delegate SciterXDom.SCDOM_RESULT SciterGetParentElement(IntPtr he, out IntPtr pParentHe);
 
 			/// <summary>
 			/// SCDOM_RESULT function(HELEMENT he, BOOL outer, LPCBYTE_RECEIVER rcv, LPVOID rcv_param) SciterGetElementHtmlCB;
@@ -321,7 +363,8 @@ namespace SciterCore.Interop
 			/// <param name="outer"></param>
 			/// <param name="rcv"></param>
 			/// <param name="rcvParam"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_GET_ELEMENT_HTML_CB(IntPtr he, bool outer,
+			[SciterStructMap(nameof(WindowsSciterApi.SciterGetElementHtmlCB))]
+			public delegate SciterXDom.SCDOM_RESULT SciterGetElementHtmlCb(IntPtr he, bool outer,
 				SciterXDom.LPCBYTE_RECEIVER rcv, IntPtr rcvParam);
 
 			/// <summary>
@@ -330,7 +373,8 @@ namespace SciterCore.Interop
 			/// <param name="he"></param>
 			/// <param name="rcv"></param>
 			/// <param name="rcvParam"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_GET_ELEMENT_TEXT_CB(IntPtr he,
+			[SciterStructMap(nameof(WindowsSciterApi.SciterGetElementTextCB))]
+			public delegate SciterXDom.SCDOM_RESULT SciterGetElementTextCb(IntPtr he,
 				SciterXDom.LPCWSTR_RECEIVER rcv, IntPtr rcvParam);
 
 			/// <summary>
@@ -339,7 +383,8 @@ namespace SciterCore.Interop
 			/// <param name="he"></param>
 			/// <param name="utf16"></param>
 			/// <param name="length"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_SET_ELEMENT_TEXT(IntPtr he,
+			[SciterStructMap(nameof(WindowsSciterApi.SciterSetElementText))]
+			public delegate SciterXDom.SCDOM_RESULT SciterSetElementText(IntPtr he,
 				[MarshalAs(UnmanagedType.LPWStr)] string utf16, uint length);
 
 			/// <summary>
@@ -347,7 +392,8 @@ namespace SciterCore.Interop
 			/// </summary>
 			/// <param name="he"></param>
 			/// <param name="pCount"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_GET_ATTRIBUTE_COUNT(IntPtr he, out uint pCount);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterGetAttributeCount))]
+			public delegate SciterXDom.SCDOM_RESULT SciterGetAttributeCount(IntPtr he, out uint pCount);
 
 			/// <summary>
 			/// SCDOM_RESULT function(HELEMENT he, UINT n, LPCSTR_RECEIVER rcv, LPVOID rcv_param) SciterGetNthAttributeNameCB;
@@ -356,7 +402,8 @@ namespace SciterCore.Interop
 			/// <param name="n"></param>
 			/// <param name="rcv"></param>
 			/// <param name="rcvParam"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_GET_NTH_ATTRIBUTE_NAME_CB(IntPtr he, uint n,
+			[SciterStructMap(nameof(WindowsSciterApi.SciterGetNthAttributeNameCB))]
+			public delegate SciterXDom.SCDOM_RESULT SciterGetNthAttributeNameCb(IntPtr he, uint n,
 				SciterXDom.LPCSTR_RECEIVER rcv, IntPtr rcvParam);
 
 			/// <summary>
@@ -366,7 +413,8 @@ namespace SciterCore.Interop
 			/// <param name="n"></param>
 			/// <param name="rcv"></param>
 			/// <param name="rcvParam"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_GET_NTH_ATTRIBUTE_VALUE_CB(IntPtr he, uint n,
+			[SciterStructMap(nameof(WindowsSciterApi.SciterGetNthAttributeValueCB))]
+			public delegate SciterXDom.SCDOM_RESULT SciterGetNthAttributeValueCb(IntPtr he, uint n,
 				SciterXDom.LPCWSTR_RECEIVER rcv, IntPtr rcvParam);
 
 			/// <summary>
@@ -376,7 +424,8 @@ namespace SciterCore.Interop
 			/// <param name="name"></param>
 			/// <param name="rcv"></param>
 			/// <param name="rcvParam"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_GET_ATTRIBUTE_BY_NAME_CB(IntPtr he,
+			[SciterStructMap(nameof(WindowsSciterApi.SciterGetAttributeByNameCB))]
+			public delegate SciterXDom.SCDOM_RESULT SciterGetAttributeByNameCb(IntPtr he,
 				[MarshalAs(UnmanagedType.LPStr)] string name, SciterXDom.LPCWSTR_RECEIVER rcv, IntPtr rcvParam);
 
 			/// <summary>
@@ -385,28 +434,32 @@ namespace SciterCore.Interop
 			/// <param name="he"></param>
 			/// <param name="name"></param>
 			/// <param name="value"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_SET_ATTRIBUTE_BY_NAME(IntPtr he,
+			[SciterStructMap(nameof(WindowsSciterApi.SciterSetAttributeByName))]
+			public delegate SciterXDom.SCDOM_RESULT SciterSetAttributeByName(IntPtr he,
 				[MarshalAs(UnmanagedType.LPStr)] string name, [MarshalAs(UnmanagedType.LPWStr)] string value);
 
 			/// <summary>
 			/// SCDOM_RESULT function(HELEMENT he) SciterClearAttributes;
 			/// </summary>
 			/// <param name="he"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_CLEAR_ATTRIBUTES(IntPtr he);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterClearAttributes))]
+			public delegate SciterXDom.SCDOM_RESULT SciterClearAttributes(IntPtr he);
 
 			/// <summary>
 			/// SCDOM_RESULT function(HELEMENT he, LPUINT p_index) SciterGetElementIndex;
 			/// </summary>
 			/// <param name="he"></param>
 			/// <param name="pIndex"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_GET_ELEMENT_INDEX(IntPtr he, out uint pIndex);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterGetElementIndex))]
+			public delegate SciterXDom.SCDOM_RESULT SciterGetElementIndex(IntPtr he, out uint pIndex);
 
 			/// <summary>
 			/// SCDOM_RESULT function(HELEMENT he, LPCSTR* p_type) SciterGetElementType;
 			/// </summary>
 			/// <param name="he"></param>
 			/// <param name="pType"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_GET_ELEMENT_TYPE(IntPtr he, out IntPtr pType);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterGetElementType))]
+			public delegate SciterXDom.SCDOM_RESULT SciterGetElementType(IntPtr he, out IntPtr pType);
 
 			/// <summary>
 			/// SCDOM_RESULT function(HELEMENT he, LPCSTR_RECEIVER rcv, LPVOID rcv_param) SciterGetElementTypeCB;
@@ -414,7 +467,8 @@ namespace SciterCore.Interop
 			/// <param name="he"></param>
 			/// <param name="rcv"></param>
 			/// <param name="rcvParam"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_GET_ELEMENT_TYPE_CB(IntPtr he,
+			[SciterStructMap(nameof(WindowsSciterApi.SciterGetElementTypeCB))]
+			public delegate SciterXDom.SCDOM_RESULT SciterGetElementTypeCb(IntPtr he,
 				SciterXDom.LPCSTR_RECEIVER rcv, IntPtr rcvParam);
 
 			/// <summary>
@@ -424,7 +478,8 @@ namespace SciterCore.Interop
 			/// <param name="name"></param>
 			/// <param name="rcv"></param>
 			/// <param name="rcvParam"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_GET_STYLE_ATTRIBUTE_CB(IntPtr he,
+			[SciterStructMap(nameof(WindowsSciterApi.SciterGetStyleAttributeCB))]
+			public delegate SciterXDom.SCDOM_RESULT SciterGetStyleAttributeCb(IntPtr he,
 				[MarshalAs(UnmanagedType.LPStr)] string name, SciterXDom.LPCWSTR_RECEIVER rcv, IntPtr rcvParam);
 
 			/// <summary>
@@ -433,7 +488,8 @@ namespace SciterCore.Interop
 			/// <param name="he"></param>
 			/// <param name="name"></param>
 			/// <param name="value"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_SET_STYLE_ATTRIBUTE(IntPtr he,
+			[SciterStructMap(nameof(WindowsSciterApi.SciterSetStyleAttribute))]
+			public delegate SciterXDom.SCDOM_RESULT SciterSetStyleAttribute(IntPtr he,
 				[MarshalAs(UnmanagedType.LPStr)] string name, [MarshalAs(UnmanagedType.LPWStr)] string value);
 
 			/// <summary>
@@ -442,7 +498,8 @@ namespace SciterCore.Interop
 			/// <param name="he"></param>
 			/// <param name="pLocation"></param>
 			/// <param name="areas"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_GET_ELEMENT_LOCATION(IntPtr he,
+			[SciterStructMap(nameof(WindowsSciterApi.SciterGetElementLocation))]
+			public delegate SciterXDom.SCDOM_RESULT SciterGetElementLocation(IntPtr he,
 				out PInvokeUtils.RECT pLocation, SciterXDom.ELEMENT_AREAS areas);
 
 			/// <summary>
@@ -450,33 +507,38 @@ namespace SciterCore.Interop
 			/// </summary>
 			/// <param name="he"></param>
 			/// <param name="sciterScrollFlags"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_SCROLL_TO_VIEW(IntPtr he, uint sciterScrollFlags);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterScrollToView))]
+			public delegate SciterXDom.SCDOM_RESULT SciterScrollToView(IntPtr he, uint sciterScrollFlags);
 
 			/// <summary>
 			/// SCDOM_RESULT function(HELEMENT he, BOOL andForceRender) SciterUpdateElement;
 			/// </summary>
 			/// <param name="he"></param>
 			/// <param name="andForceRender"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_UPDATE_ELEMENT(IntPtr he, bool andForceRender);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterUpdateElement))]
+			public delegate SciterXDom.SCDOM_RESULT SciterUpdateElement(IntPtr he, bool andForceRender);
 
 			/// <summary>
 			/// SCDOM_RESULT function(HELEMENT he, RECT rc) SciterRefreshElementArea;
 			/// </summary>
 			/// <param name="he"></param>
 			/// <param name="rc"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_REFRESH_ELEMENT_AREA(IntPtr he, PInvokeUtils.RECT rc);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterRefreshElementArea))]
+			public delegate SciterXDom.SCDOM_RESULT SciterRefreshElementArea(IntPtr he, PInvokeUtils.RECT rc);
 
 			/// <summary>
 			/// SCDOM_RESULT function(HELEMENT he) SciterSetCapture;
 			/// </summary>
 			/// <param name="he"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_SET_CAPTURE(IntPtr he);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterSetCapture))]
+			public delegate SciterXDom.SCDOM_RESULT SciterSetCapture(IntPtr he);
 
 			/// <summary>
 			/// SCDOM_RESULT function(HELEMENT he) SciterReleaseCapture;
 			/// </summary>
 			/// <param name="he"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_RELEASE_CAPTURE(IntPtr he);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterReleaseCapture))]
+			public delegate SciterXDom.SCDOM_RESULT SciterReleaseCapture(IntPtr he);
 
 			/// <summary>
 			/// SCDOM_RESULT function(HELEMENT he, HWINDOW* p_hwnd, BOOL rootWindow) SciterGetElementHwnd;
@@ -484,7 +546,8 @@ namespace SciterCore.Interop
 			/// <param name="he"></param>
 			/// <param name="pHwnd"></param>
 			/// <param name="rootWindow"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_GET_ELEMENT_HWND(IntPtr he, out IntPtr pHwnd,
+			[SciterStructMap(nameof(WindowsSciterApi.SciterGetElementHwnd))]
+			public delegate SciterXDom.SCDOM_RESULT SciterGetElementHwnd(IntPtr he, out IntPtr pHwnd,
 				bool rootWindow);
 
 			/// <summary>
@@ -493,7 +556,8 @@ namespace SciterCore.Interop
 			/// <param name="he"></param>
 			/// <param name="szUrlBuffer"></param>
 			/// <param name="urlBufferSize"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_COMBINE_URL(IntPtr he, /*[MarshalAs(UnmanagedType.LPWStr)]*/
+			[SciterStructMap(nameof(WindowsSciterApi.SciterCombineURL))]
+			public delegate SciterXDom.SCDOM_RESULT SciterCombineUrl(IntPtr he, /*[MarshalAs(UnmanagedType.LPWStr)]*/
 				IntPtr szUrlBuffer, uint urlBufferSize);
 
 			/// <summary>
@@ -503,7 +567,8 @@ namespace SciterCore.Interop
 			/// <param name="cssSelectors"></param>
 			/// <param name="callback"></param>
 			/// <param name="param"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_SELECT_ELEMENTS(IntPtr he,
+			[SciterStructMap(nameof(WindowsSciterApi.SciterSelectElements))]
+			public delegate SciterXDom.SCDOM_RESULT SciterSelectElements(IntPtr he,
 				[MarshalAs(UnmanagedType.LPStr)] string cssSelectors, SciterXDom.SCITER_ELEMENT_CALLBACK callback,
 				IntPtr param);
 
@@ -514,7 +579,8 @@ namespace SciterCore.Interop
 			/// <param name="cssSelectors"></param>
 			/// <param name="callback"></param>
 			/// <param name="param"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_SELECT_ELEMENTS_W(IntPtr he,
+			[SciterStructMap(nameof(WindowsSciterApi.SciterSelectElementsW))]
+			public delegate SciterXDom.SCDOM_RESULT SciterSelectElementsW(IntPtr he,
 				[MarshalAs(UnmanagedType.LPWStr)] string cssSelectors, SciterXDom.SCITER_ELEMENT_CALLBACK callback,
 				IntPtr param);
 
@@ -525,7 +591,8 @@ namespace SciterCore.Interop
 			/// <param name="selector"></param>
 			/// <param name="depth"></param>
 			/// <param name="heFound"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_SELECT_PARENT(IntPtr he,
+			[SciterStructMap(nameof(WindowsSciterApi.SciterSelectParent))]
+			public delegate SciterXDom.SCDOM_RESULT SciterSelectParent(IntPtr he,
 				[MarshalAs(UnmanagedType.LPStr)] string selector, uint depth, out IntPtr heFound);
 
 			/// <summary>
@@ -535,7 +602,8 @@ namespace SciterCore.Interop
 			/// <param name="selector"></param>
 			/// <param name="depth"></param>
 			/// <param name="heFound"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_SELECT_PARENT_W(IntPtr he,
+			[SciterStructMap(nameof(WindowsSciterApi.SciterSelectParentW))]
+			public delegate SciterXDom.SCDOM_RESULT SciterSelectParentW(IntPtr he,
 				[MarshalAs(UnmanagedType.LPWStr)] string selector, uint depth, out IntPtr heFound);
 
 			/// <summary>
@@ -545,7 +613,8 @@ namespace SciterCore.Interop
 			/// <param name="html"></param>
 			/// <param name="htmlLength"></param>
 			/// <param name="where"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_SET_ELEMENT_HTML(IntPtr he, byte[] html, uint htmlLength,
+			[SciterStructMap(nameof(WindowsSciterApi.SciterSetElementHtml))]
+			public delegate SciterXDom.SCDOM_RESULT SciterSetElementHtml(IntPtr he, byte[] html, uint htmlLength,
 				SciterXDom.SET_ELEMENT_HTML where);
 
 			/// <summary>
@@ -553,7 +622,8 @@ namespace SciterCore.Interop
 			/// </summary>
 			/// <param name="he"></param>
 			/// <param name="puid"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_GET_ELEMENT_UID(IntPtr he, out uint puid);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterGetElementUID))]
+			public delegate SciterXDom.SCDOM_RESULT SciterGetElementUid(IntPtr he, out uint puid);
 
 			/// <summary>
 			/// SCDOM_RESULT function(HWINDOW hwnd, UINT uid, HELEMENT* phe) SciterGetElementByUID;
@@ -561,7 +631,8 @@ namespace SciterCore.Interop
 			/// <param name="hwnd"></param>
 			/// <param name="uid"></param>
 			/// <param name="phe"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_GET_ELEMENT_BY_UID(IntPtr hwnd, uint uid, out IntPtr phe);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterGetElementByUID))]
+			public delegate SciterXDom.SCDOM_RESULT SciterGetElementByUid(IntPtr hwnd, uint uid, out IntPtr phe);
 
 			/// <summary>
 			/// SCDOM_RESULT function(HELEMENT hePopup, HELEMENT heAnchor, UINT placement) SciterShowPopup;
@@ -569,7 +640,8 @@ namespace SciterCore.Interop
 			/// <param name="he"></param>
 			/// <param name="heAnchor"></param>
 			/// <param name="placement"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_SHOW_POPUP(IntPtr he, IntPtr heAnchor, uint placement);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterShowPopup))]
+			public delegate SciterXDom.SCDOM_RESULT SciterShowPopup(IntPtr he, IntPtr heAnchor, uint placement);
 
 			/// <summary>
 			/// SCDOM_RESULT function(HELEMENT hePopup, POINT pos, UINT placement) SciterShowPopupAt;
@@ -577,21 +649,24 @@ namespace SciterCore.Interop
 			/// <param name="he"></param>
 			/// <param name="pos"></param>
 			/// <param name="placement"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_SHOW_POPUP_AT(IntPtr he, PInvokeUtils.POINT pos,
+			[SciterStructMap(nameof(WindowsSciterApi.SciterShowPopupAt))]
+			public delegate SciterXDom.SCDOM_RESULT SciterShowPopupAt(IntPtr he, PInvokeUtils.POINT pos,
 				uint placement);
 
 			/// <summary>
 			/// SCDOM_RESULT function(HELEMENT he) SciterHidePopup;
 			/// </summary>
 			/// <param name="he"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_HIDE_POPUP(IntPtr he);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterHidePopup))]
+			public delegate SciterXDom.SCDOM_RESULT SciterHidePopup(IntPtr he);
 
 			/// <summary>
 			/// SCDOM_RESULT function( HELEMENT he, UINT* pstateBits) SciterGetElementState;
 			/// </summary>
 			/// <param name="he"></param>
 			/// <param name="pstateBits"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_GET_ELEMENT_STATE(IntPtr he, out uint pstateBits);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterGetElementState))]
+			public delegate SciterXDom.SCDOM_RESULT SciterGetElementState(IntPtr he, out uint pstateBits);
 
 			/// <summary>
 			/// SCDOM_RESULT function( HELEMENT he, UINT stateBitsToSet, UINT stateBitsToClear, BOOL updateView) SciterSetElementState;
@@ -600,7 +675,8 @@ namespace SciterCore.Interop
 			/// <param name="stateBitsToSet"></param>
 			/// <param name="stateBitsToClear"></param>
 			/// <param name="updateView"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_SET_ELEMENT_STATE(IntPtr he, uint stateBitsToSet,
+			[SciterStructMap(nameof(WindowsSciterApi.SciterSetElementState))]
+			public delegate SciterXDom.SCDOM_RESULT SciterSetElementState(IntPtr he, uint stateBitsToSet,
 				uint stateBitsToClear, bool updateView);
 
 			/// <summary>
@@ -609,7 +685,8 @@ namespace SciterCore.Interop
 			/// <param name="tagname"></param>
 			/// <param name="textOrNull"></param>
 			/// <param name="phe"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_CREATE_ELEMENT(
+			[SciterStructMap(nameof(WindowsSciterApi.SciterCreateElement))]
+			public delegate SciterXDom.SCDOM_RESULT SciterCreateElement(
 				[MarshalAs(UnmanagedType.LPStr)] string tagname, [MarshalAs(UnmanagedType.LPWStr)] string textOrNull,
 				out IntPtr phe);
 
@@ -618,7 +695,8 @@ namespace SciterCore.Interop
 			/// </summary>
 			/// <param name="he"></param>
 			/// <param name="phe"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_CLONE_ELEMENT(IntPtr he, out IntPtr phe);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterCloneElement))]
+			public delegate SciterXDom.SCDOM_RESULT SciterCloneElement(IntPtr he, out IntPtr phe);
 
 			/// <summary>
 			/// SCDOM_RESULT function( HELEMENT he, HELEMENT hparent, UINT index ) SciterInsertElement;
@@ -626,19 +704,22 @@ namespace SciterCore.Interop
 			/// <param name="he"></param>
 			/// <param name="hparent"></param>
 			/// <param name="index"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_INSERT_ELEMENT(IntPtr he, IntPtr hparent, uint index);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterInsertElement))]
+			public delegate SciterXDom.SCDOM_RESULT SciterInsertElement(IntPtr he, IntPtr hparent, uint index);
 
 			/// <summary>
 			/// SCDOM_RESULT function( HELEMENT he ) SciterDetachElement;
 			/// </summary>
 			/// <param name="he"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_DETACH_ELEMENT(IntPtr he);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterDetachElement))]
+			public delegate SciterXDom.SCDOM_RESULT SciterDetachElement(IntPtr he);
 
 			/// <summary>
 			/// SCDOM_RESULT function(HELEMENT he) SciterDeleteElement;
 			/// </summary>
 			/// <param name="he"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_DELETE_ELEMENT(IntPtr he);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterDeleteElement))]
+			public delegate SciterXDom.SCDOM_RESULT SciterDeleteElement(IntPtr he);
 
 			/// <summary>
 			/// SCDOM_RESULT function( HELEMENT he, UINT milliseconds, UINT_PTR timer_id ) SciterSetTimer;
@@ -646,7 +727,8 @@ namespace SciterCore.Interop
 			/// <param name="he"></param>
 			/// <param name="milliseconds"></param>
 			/// <param name="timerId"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_SET_TIMER(IntPtr he, uint milliseconds, IntPtr timerId);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterSetTimer))]
+			public delegate SciterXDom.SCDOM_RESULT SciterSetTimer(IntPtr he, uint milliseconds, IntPtr timerId);
 
 			/// <summary>
 			/// SCDOM_RESULT function( HELEMENT he, LPELEMENT_EVENT_PROC pep, LPVOID tag ) SciterDetachEventHandler;
@@ -654,7 +736,8 @@ namespace SciterCore.Interop
 			/// <param name="he"></param>
 			/// <param name="pep"></param>
 			/// <param name="tag"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_DETACH_EVENT_HANDLER(IntPtr he, MulticastDelegate pep,
+			[SciterStructMap(nameof(WindowsSciterApi.SciterDetachEventHandler))]
+			public delegate SciterXDom.SCDOM_RESULT SciterDetachEventHandler(IntPtr he, MulticastDelegate pep,
 				IntPtr tag);
 
 			/// <summary>
@@ -663,7 +746,8 @@ namespace SciterCore.Interop
 			/// <param name="he"></param>
 			/// <param name="pep"></param>
 			/// <param name="tag"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_ATTACH_EVENT_HANDLER(IntPtr he, MulticastDelegate pep,
+			[SciterStructMap(nameof(WindowsSciterApi.SciterAttachEventHandler))]
+			public delegate SciterXDom.SCDOM_RESULT SciterAttachEventHandler(IntPtr he, MulticastDelegate pep,
 				IntPtr tag);
 
 			/// <summary>
@@ -673,7 +757,8 @@ namespace SciterCore.Interop
 			/// <param name="pep"></param>
 			/// <param name="tag"></param>
 			/// <param name="subscription"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_WINDOW_ATTACH_EVENT_HANDLER(IntPtr hwndLayout,
+			[SciterStructMap(nameof(WindowsSciterApi.SciterWindowAttachEventHandler))]
+			public delegate SciterXDom.SCDOM_RESULT SciterWindowAttachEventHandler(IntPtr hwndLayout,
 				MulticastDelegate pep, IntPtr tag, uint subscription);
 
 			/// <summary>
@@ -682,7 +767,8 @@ namespace SciterCore.Interop
 			/// <param name="hwndLayout"></param>
 			/// <param name="pep"></param>
 			/// <param name="tag"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_WINDOW_DETACH_EVENT_HANDLER(IntPtr hwndLayout,
+			[SciterStructMap(nameof(WindowsSciterApi.SciterWindowDetachEventHandler))]
+			public delegate SciterXDom.SCDOM_RESULT SciterWindowDetachEventHandler(IntPtr hwndLayout,
 				MulticastDelegate pep, IntPtr tag);
 
 			/// <summary>
@@ -693,7 +779,8 @@ namespace SciterCore.Interop
 			/// <param name="heSource"></param>
 			/// <param name="reason"></param>
 			/// <param name="handled"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_SEND_EVENT(IntPtr he, uint appEventCode, IntPtr heSource,
+			[SciterStructMap(nameof(WindowsSciterApi.SciterSendEvent))]
+			public delegate SciterXDom.SCDOM_RESULT SciterSendEvent(IntPtr he, uint appEventCode, IntPtr heSource,
 				IntPtr reason, out bool handled);
 
 			/// <summary>
@@ -703,7 +790,8 @@ namespace SciterCore.Interop
 			/// <param name="appEventCode"></param>
 			/// <param name="heSource"></param>
 			/// <param name="reason"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_POST_EVENT(IntPtr he, uint appEventCode, IntPtr heSource,
+			[SciterStructMap(nameof(WindowsSciterApi.SciterPostEvent))]
+			public delegate SciterXDom.SCDOM_RESULT SciterPostEvent(IntPtr he, uint appEventCode, IntPtr heSource,
 				IntPtr reason);
 
 			/// <summary>
@@ -711,7 +799,8 @@ namespace SciterCore.Interop
 			/// </summary>
 			/// <param name="he"></param>
 			/// <param name="param"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_CALL_BEHAVIOR_METHOD(IntPtr he,
+			[SciterStructMap(nameof(WindowsSciterApi.SciterCallBehaviorMethod))]
+			public delegate SciterXDom.SCDOM_RESULT SciterCallBehaviorMethod(IntPtr he,
 				ref SciterXDom.METHOD_PARAMS param);
 
 			/// <summary>
@@ -721,7 +810,8 @@ namespace SciterCore.Interop
 			/// <param name="url"></param>
 			/// <param name="dataType"></param>
 			/// <param name="initiator"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_REQUEST_ELEMENT_DATA(IntPtr he,
+			[SciterStructMap(nameof(WindowsSciterApi.SciterRequestElementData))]
+			public delegate SciterXDom.SCDOM_RESULT SciterRequestElementData(IntPtr he,
 				[MarshalAs(UnmanagedType.LPWStr)] string url, uint dataType, IntPtr initiator);
 
 			/// <summary>
@@ -733,7 +823,8 @@ namespace SciterCore.Interop
 			/// <param name="requestType">one of REQUEST_TYPE values</param>
 			/// <param name="requestParams">parameters</param>
 			/// <param name="nParams">number of parameters </param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_HTTP_REQUEST(IntPtr he,
+			[SciterStructMap(nameof(WindowsSciterApi.SciterHttpRequest))]
+			public delegate SciterXDom.SCDOM_RESULT SciterHttpRequest(IntPtr he,
 				[MarshalAs(UnmanagedType.LPWStr)] string url, uint dataType, uint requestType,
 				ref SciterXDom.REQUEST_PARAM requestParams, uint nParams);
 
@@ -744,7 +835,8 @@ namespace SciterCore.Interop
 			/// <param name="scrollPos"></param>
 			/// <param name="viewRect"></param>
 			/// <param name="contentSize"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_GET_SCROLL_INFO(IntPtr he, out PInvokeUtils.POINT scrollPos,
+			[SciterStructMap(nameof(WindowsSciterApi.SciterGetScrollInfo))]
+			public delegate SciterXDom.SCDOM_RESULT SciterGetScrollInfo(IntPtr he, out PInvokeUtils.POINT scrollPos,
 				out PInvokeUtils.RECT viewRect, out PInvokeUtils.SIZE contentSize);
 
 			/// <summary>
@@ -753,7 +845,8 @@ namespace SciterCore.Interop
 			/// <param name="he"></param>
 			/// <param name="scrollPos"></param>
 			/// <param name="smooth"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_SET_SCROLL_POS(IntPtr he, PInvokeUtils.POINT scrollPos,
+			[SciterStructMap(nameof(WindowsSciterApi.SciterSetScrollPos))]
+			public delegate SciterXDom.SCDOM_RESULT SciterSetScrollPos(IntPtr he, PInvokeUtils.POINT scrollPos,
 				bool smooth);
 
 			/// <summary>
@@ -762,7 +855,8 @@ namespace SciterCore.Interop
 			/// <param name="he"></param>
 			/// <param name="pMinWidth"></param>
 			/// <param name="pMaxWidth"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_GET_ELEMENT_INTRINSIC_WIDTHS(IntPtr he, out int pMinWidth,
+			[SciterStructMap(nameof(WindowsSciterApi.SciterGetElementIntrinsicWidths))]
+			public delegate SciterXDom.SCDOM_RESULT SciterGetElementIntrinsicWidths(IntPtr he, out int pMinWidth,
 				out int pMaxWidth);
 
 			/// <summary>
@@ -771,7 +865,8 @@ namespace SciterCore.Interop
 			/// <param name="he"></param>
 			/// <param name="forWidth"></param>
 			/// <param name="pHeight"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_GET_ELEMENT_INTRINSIC_HEIGHT(IntPtr he, int forWidth,
+			[SciterStructMap(nameof(WindowsSciterApi.SciterGetElementIntrinsicHeight))]
+			public delegate SciterXDom.SCDOM_RESULT SciterGetElementIntrinsicHeight(IntPtr he, int forWidth,
 				out int pHeight);
 
 			/// <summary>
@@ -779,14 +874,16 @@ namespace SciterCore.Interop
 			/// </summary>
 			/// <param name="he"></param>
 			/// <param name="pVisible"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_IS_ELEMENT_VISIBLE(IntPtr he, out bool pVisible);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterIsElementVisible))]
+			public delegate SciterXDom.SCDOM_RESULT SciterIsElementVisible(IntPtr he, out bool pVisible);
 
 			/// <summary>
 			/// SCDOM_RESULT function( HELEMENT he, BOOL* pEnabled ) SciterIsElementEnabled;
 			/// </summary>
 			/// <param name="he"></param>
 			/// <param name="pEnabled"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_IS_ELEMENT_ENABLED(IntPtr he, out bool pEnabled);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterIsElementEnabled))]
+			public delegate SciterXDom.SCDOM_RESULT SciterIsElementEnabled(IntPtr he, out bool pEnabled);
 
 			/// <summary>
 			/// SCDOM_RESULT function( HELEMENT he, UINT firstIndex, UINT lastIndex, ELEMENT_COMPARATOR* cmpFunc, LPVOID cmpFuncParam ) SciterSortElements;
@@ -796,7 +893,8 @@ namespace SciterCore.Interop
 			/// <param name="lastIndex"></param>
 			/// <param name="cmpFunc"></param>
 			/// <param name="cmpFuncParam"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_SORT_ELEMENTS(IntPtr he, uint firstIndex, uint lastIndex,
+			[SciterStructMap(nameof(WindowsSciterApi.SciterSortElements))]
+			public delegate SciterXDom.SCDOM_RESULT SciterSortElements(IntPtr he, uint firstIndex, uint lastIndex,
 				SciterXDom.ELEMENT_COMPARATOR cmpFunc, IntPtr cmpFuncParam);
 
 			/// <summary>
@@ -804,7 +902,8 @@ namespace SciterCore.Interop
 			/// </summary>
 			/// <param name="he"></param>
 			/// <param name="he2"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_SWAP_ELEMENTS(IntPtr he, IntPtr he2);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterSwapElements))]
+			public delegate SciterXDom.SCDOM_RESULT SciterSwapElements(IntPtr he, IntPtr he2);
 
 			/// <summary>
 			/// SCDOM_RESULT function( UINT evt, LPVOID eventCtlStruct, BOOL* bOutProcessed ) SciterTraverseUIEvent;
@@ -812,7 +911,8 @@ namespace SciterCore.Interop
 			/// <param name="he"></param>
 			/// <param name="eventCtlStruct"></param>
 			/// <param name="bOutProcessed"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_TRAVERSE_UI_EVENT(IntPtr he, IntPtr eventCtlStruct,
+			[SciterStructMap(nameof(WindowsSciterApi.SciterTraverseUIEvent))]
+			public delegate SciterXDom.SCDOM_RESULT SciterTraverseUiEvent(IntPtr he, IntPtr eventCtlStruct,
 				out bool bOutProcessed);
 
 			/// <summary>
@@ -823,7 +923,8 @@ namespace SciterCore.Interop
 			/// <param name="argv"></param>
 			/// <param name="argc"></param>
 			/// <param name="retval"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_CALL_SCRIPTING_METHOD(IntPtr he,
+			[SciterStructMap(nameof(WindowsSciterApi.SciterCallScriptingMethod))]
+			public delegate SciterXDom.SCDOM_RESULT SciterCallScriptingMethod(IntPtr he,
 				[MarshalAs(UnmanagedType.LPStr)] string name, SciterValue.VALUE[] argv, uint argc,
 				out SciterValue.VALUE retval);
 
@@ -835,7 +936,8 @@ namespace SciterCore.Interop
 			/// <param name="argv"></param>
 			/// <param name="argc"></param>
 			/// <param name="retval"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_CALL_SCRIPTING_FUNCTION(IntPtr he,
+			[SciterStructMap(nameof(WindowsSciterApi.SciterCallScriptingFunction))]
+			public delegate SciterXDom.SCDOM_RESULT SciterCallScriptingFunction(IntPtr he,
 				[MarshalAs(UnmanagedType.LPStr)] string name, SciterValue.VALUE[] argv, uint argc,
 				out SciterValue.VALUE retval);
 
@@ -846,7 +948,8 @@ namespace SciterCore.Interop
 			/// <param name="script"></param>
 			/// <param name="scriptLength"></param>
 			/// <param name="retval"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_EVAL_ELEMENT_SCRIPT(IntPtr he,
+			[SciterStructMap(nameof(WindowsSciterApi.SciterEvalElementScript))]
+			public delegate SciterXDom.SCDOM_RESULT SciterEvalElementScript(IntPtr he,
 				[MarshalAs(UnmanagedType.LPWStr)] string script, uint scriptLength, out SciterValue.VALUE retval);
 
 			/// <summary>
@@ -854,28 +957,32 @@ namespace SciterCore.Interop
 			/// </summary>
 			/// <param name="he"></param>
 			/// <param name="hwnd"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_ATTACH_HWND_TO_ELEMENT(IntPtr he, IntPtr hwnd);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterAttachHwndToElement))]
+			public delegate SciterXDom.SCDOM_RESULT SciterAttachHwndToElement(IntPtr he, IntPtr hwnd);
 
 			/// <summary>
 			/// SCDOM_RESULT function( HELEMENT he, /*CTL_TYPE*/ UINT *pType ) SciterControlGetType;
 			/// </summary>
 			/// <param name="he"></param>
 			/// <param name="pType"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_CONTROL_GET_TYPE(IntPtr he, out uint pType);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterControlGetType))]
+			public delegate SciterXDom.SCDOM_RESULT SciterControlGetType(IntPtr he, out uint pType);
 
 			/// <summary>
 			/// SCDOM_RESULT function( HELEMENT he, VALUE* pval ) SciterGetValue;
 			/// </summary>
 			/// <param name="he"></param>
 			/// <param name="pval"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_GET_VALUE(IntPtr he, out SciterValue.VALUE pval);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterGetValue))]
+			public delegate SciterXDom.SCDOM_RESULT SciterGetValue(IntPtr he, out SciterValue.VALUE pval);
 
 			/// <summary>
 			/// SCDOM_RESULT function( HELEMENT he, const VALUE* pval ) SciterSetValue;
 			/// </summary>
 			/// <param name="he"></param>
 			/// <param name="pval"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_SET_VALUE(IntPtr he, ref SciterValue.VALUE pval);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterSetValue))]
+			public delegate SciterXDom.SCDOM_RESULT SciterSetValue(IntPtr he, ref SciterValue.VALUE pval);
 
 			/// <summary>
 			/// SCDOM_RESULT function( HELEMENT he, VALUE* pval, BOOL forceCreation ) SciterGetExpando;
@@ -883,7 +990,8 @@ namespace SciterCore.Interop
 			/// <param name="he"></param>
 			/// <param name="pval"></param>
 			/// <param name="forceCreation"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_GET_EXPANDO(IntPtr he, out SciterValue.VALUE pval,
+			[SciterStructMap(nameof(WindowsSciterApi.SciterGetExpando))]
+			public delegate SciterXDom.SCDOM_RESULT SciterGetExpando(IntPtr he, out SciterValue.VALUE pval,
 				bool forceCreation);
 
 			/// <summary>
@@ -892,7 +1000,8 @@ namespace SciterCore.Interop
 			/// <param name="he"></param>
 			/// <param name="pval"></param>
 			/// <param name="forceCreation"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_GET_OBJECT(IntPtr he, out TIScript.tiscript_value pval,
+			[SciterStructMap(nameof(WindowsSciterApi.SciterGetObject))]
+			public delegate SciterXDom.SCDOM_RESULT SciterGetObject(IntPtr he, out IntPtr pval,
 				bool forceCreation);
 
 			/// <summary>
@@ -900,22 +1009,25 @@ namespace SciterCore.Interop
 			/// </summary>
 			/// <param name="he"></param>
 			/// <param name="pval"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_GET_ELEMENT_NAMESPACE(IntPtr he,
-				out TIScript.tiscript_value pval);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterGetElementNamespace))]
+			public delegate SciterXDom.SCDOM_RESULT SciterGetElementNamespace(IntPtr he,
+				out IntPtr pval);
 
 			/// <summary>
 			/// SCDOM_RESULT function( HWINDOW hwnd, HELEMENT* phe) SciterGetHighlightedElement;
 			/// </summary>
 			/// <param name="hwnd"></param>
 			/// <param name="phe"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_GET_HIGHLIGHTED_ELEMENT(IntPtr hwnd, out IntPtr phe);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterGetHighlightedElement))]
+			public delegate SciterXDom.SCDOM_RESULT SciterGetHighlightedElement(IntPtr hwnd, out IntPtr phe);
 
 			/// <summary>
 			/// SCDOM_RESULT function( HWINDOW hwnd, HELEMENT he) SciterSetHighlightedElement;
 			/// </summary>
 			/// <param name="hwnd"></param>
 			/// <param name="he"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_SET_HIGHLIGHTED_ELEMENT(IntPtr hwnd, IntPtr he);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterSetHighlightedElement))]
+			public delegate SciterXDom.SCDOM_RESULT SciterSetHighlightedElement(IntPtr hwnd, IntPtr he);
 
 			#endregion
 
@@ -925,62 +1037,71 @@ namespace SciterCore.Interop
 			/// SCDOM_RESULT function(HNODE hn) SciterNodeAddRef;
 			/// </summary>
 			/// <param name="hn"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_NODE_ADD_REF(IntPtr hn);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterNodeAddRef))]
+			public delegate SciterXDom.SCDOM_RESULT SciterNodeAddRef(IntPtr hn);
 
 			/// <summary>
 			/// SCDOM_RESULT function(HNODE hn) SciterNodeRelease;
 			/// </summary>
 			/// <param name="hn"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_NODE_RELEASE(IntPtr hn);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterNodeRelease))]
+			public delegate SciterXDom.SCDOM_RESULT SciterNodeRelease(IntPtr hn);
 
 			/// <summary>
 			/// SCDOM_RESULT function(HELEMENT he, HNODE* phn) SciterNodeCastFromElement;
 			/// </summary>
 			/// <param name="he"></param>
 			/// <param name="phn"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_NODE_CAST_FROM_ELEMENT(IntPtr he, out IntPtr phn);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterNodeCastFromElement))]
+			public delegate SciterXDom.SCDOM_RESULT SciterNodeCastFromElement(IntPtr he, out IntPtr phn);
 
 			/// <summary>
 			/// SCDOM_RESULT function(HNODE hn, HELEMENT* he) SciterNodeCastToElement;
 			/// </summary>
 			/// <param name="hn"></param>
 			/// <param name="he"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_NODE_CAST_TO_ELEMENT(IntPtr hn, out IntPtr he);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterNodeCastToElement))]
+			public delegate SciterXDom.SCDOM_RESULT SciterNodeCastToElement(IntPtr hn, out IntPtr he);
 
 			/// <summary>
 			/// SCDOM_RESULT function(HNODE hn, HNODE* phn) SciterNodeFirstChild;
 			/// </summary>
 			/// <param name="hn"></param>
 			/// <param name="phn"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_NODE_FIRST_CHILD(IntPtr hn, out IntPtr phn);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterNodeFirstChild))]
+			public delegate SciterXDom.SCDOM_RESULT SciterNodeFirstChild(IntPtr hn, out IntPtr phn);
 
 			/// <summary>
 			/// SCDOM_RESULT function(HNODE hn, HNODE* phn) SciterNodeLastChild;
 			/// </summary>
 			/// <param name="hn"></param>
 			/// <param name="phn"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_NODE_LAST_CHILD(IntPtr hn, out IntPtr phn);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterNodeLastChild))]
+			public delegate SciterXDom.SCDOM_RESULT SciterNodeLastChild(IntPtr hn, out IntPtr phn);
 
 			/// <summary>
 			/// SCDOM_RESULT function(HNODE hn, HNODE* phn) SciterNodeNextSibling;
 			/// </summary>
 			/// <param name="hn"></param>
 			/// <param name="phn"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_NODE_NEXT_SIBLING(IntPtr hn, out IntPtr phn);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterNodeNextSibling))]
+			public delegate SciterXDom.SCDOM_RESULT SciterNodeNextSibling(IntPtr hn, out IntPtr phn);
 
 			/// <summary>
 			/// SCDOM_RESULT function(HNODE hn, HNODE* phn) SciterNodePrevSibling;
 			/// </summary>
 			/// <param name="hn"></param>
 			/// <param name="phn"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_NODE_PREV_SIBLING(IntPtr hn, out IntPtr phn);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterNodePrevSibling))]
+			public delegate SciterXDom.SCDOM_RESULT SciterNodePrevSibling(IntPtr hn, out IntPtr phn);
 
 			/// <summary>
 			/// SCDOM_RESULT function(HNODE hnode, HELEMENT* pheParent) SciterNodeParent;
 			/// </summary>
 			/// <param name="hn"></param>
 			/// <param name="pheParent"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_NODE_PARENT(IntPtr hn, out IntPtr pheParent);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterNodeParent))]
+			public delegate SciterXDom.SCDOM_RESULT SciterNodeParent(IntPtr hn, out IntPtr pheParent);
 
 			/// <summary>
 			/// SCDOM_RESULT function(HNODE hnode, UINT n, HNODE* phn) SciterNodeNthChild;
@@ -988,21 +1109,24 @@ namespace SciterCore.Interop
 			/// <param name="hn"></param>
 			/// <param name="n"></param>
 			/// <param name="phn"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_NODE_NTH_CHILD(IntPtr hn, uint n, out IntPtr phn);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterNodeNthChild))]
+			public delegate SciterXDom.SCDOM_RESULT SciterNodeNthChild(IntPtr hn, uint n, out IntPtr phn);
 
 			/// <summary>
 			/// SCDOM_RESULT function(HNODE hnode, UINT* pn) SciterNodeChildrenCount;
 			/// </summary>
 			/// <param name="hn"></param>
 			/// <param name="pn"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_NODE_CHILDREN_COUNT(IntPtr hn, out uint pn);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterNodeChildrenCount))]
+			public delegate SciterXDom.SCDOM_RESULT SciterNodeChildrenCount(IntPtr hn, out uint pn);
 
 			/// <summary>
 			/// /SCDOM_RESULT function(HNODE hnode, UINT* pNodeType /*NODE_TYPE*/) SciterNodeType;
 			/// </summary>
 			/// <param name="hn"></param>
 			/// <param name="pn"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_NODE_TYPE(IntPtr hn, out SciterXDom.NODE_TYPE pn);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterNodeType))]
+			public delegate SciterXDom.SCDOM_RESULT SciterNodeType(IntPtr hn, out SciterXDom.NODE_TYPE pn);
 
 			/// <summary>
 			/// SCDOM_RESULT function(HNODE hnode, LPCWSTR_RECEIVER rcv, LPVOID rcv_param) SciterNodeGetText;
@@ -1010,7 +1134,8 @@ namespace SciterCore.Interop
 			/// <param name="hn"></param>
 			/// <param name="rcv"></param>
 			/// <param name="rcvParam"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_NODE_GET_TEXT(IntPtr hn, SciterXDom.LPCWSTR_RECEIVER rcv,
+			[SciterStructMap(nameof(WindowsSciterApi.SciterNodeGetText))]
+			public delegate SciterXDom.SCDOM_RESULT SciterNodeGetText(IntPtr hn, SciterXDom.LPCWSTR_RECEIVER rcv,
 				IntPtr rcvParam);
 
 			/// <summary>
@@ -1019,7 +1144,8 @@ namespace SciterCore.Interop
 			/// <param name="hn"></param>
 			/// <param name="text"></param>
 			/// <param name="textLength"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_NODE_SET_TEXT(IntPtr hn,
+			[SciterStructMap(nameof(WindowsSciterApi.SciterNodeSetText))]
+			public delegate SciterXDom.SCDOM_RESULT SciterNodeSetText(IntPtr hn,
 				[MarshalAs(UnmanagedType.LPWStr)] string text, uint textLength);
 
 			/// <summary>
@@ -1028,14 +1154,16 @@ namespace SciterCore.Interop
 			/// <param name="hn"></param>
 			/// <param name="where"></param>
 			/// <param name="what"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_NODE_INSERT(IntPtr hn, uint where, IntPtr what);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterNodeInsert))]
+			public delegate SciterXDom.SCDOM_RESULT SciterNodeInsert(IntPtr hn, uint where, IntPtr what);
 
 			/// <summary>
 			/// SCDOM_RESULT function(HNODE hnode, BOOL finalize) SciterNodeRemove;
 			/// </summary>
 			/// <param name="hn"></param>
 			/// <param name="finalize"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_NODE_REMOVE(IntPtr hn, bool finalize);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterNodeRemove))]
+			public delegate SciterXDom.SCDOM_RESULT SciterNodeRemove(IntPtr hn, bool finalize);
 
 			/// <summary>
 			/// SCDOM_RESULT function(LPCWSTR text, UINT textLength, HNODE* phnode) SciterCreateTextNode;
@@ -1043,7 +1171,8 @@ namespace SciterCore.Interop
 			/// <param name="text"></param>
 			/// <param name="textLength"></param>
 			/// <param name="phnode"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_CREATE_TEXT_NODE(
+			[SciterStructMap(nameof(WindowsSciterApi.SciterCreateTextNode))]
+			public delegate SciterXDom.SCDOM_RESULT SciterCreateTextNode(
 				[MarshalAs(UnmanagedType.LPWStr)] string text, uint textLength, out IntPtr phnode);
 
 			/// <summary>
@@ -1052,7 +1181,8 @@ namespace SciterCore.Interop
 			/// <param name="text"></param>
 			/// <param name="textLength"></param>
 			/// <param name="phnode"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_CREATE_COMMENT_NODE(
+			[SciterStructMap(nameof(WindowsSciterApi.SciterCreateCommentNode))]
+			public delegate SciterXDom.SCDOM_RESULT SciterCreateCommentNode(
 				[MarshalAs(UnmanagedType.LPWStr)] string text, uint textLength, out IntPtr phnode);
 
 			#endregion
@@ -1063,33 +1193,38 @@ namespace SciterCore.Interop
 			/// UINT function( VALUE* pval ) ValueInit;
 			/// </summary>
 			/// <param name="pval"></param>
-			public delegate SciterValue.VALUE_RESULT VALUE_INIT(out SciterValue.VALUE pval);
+			[SciterStructMap(nameof(WindowsSciterApi.ValueInit))]
+			public delegate SciterValue.VALUE_RESULT ValueInit(out SciterValue.VALUE pval);
 
 			/// <summary>
 			/// UINT function( VALUE* pval ) ValueClear;
 			/// </summary>
 			/// <param name="pval"></param>
-			public delegate SciterValue.VALUE_RESULT VALUE_CLEAR(out SciterValue.VALUE pval);
+			[SciterStructMap(nameof(WindowsSciterApi.ValueClear))]
+			public delegate SciterValue.VALUE_RESULT ValueClear(out SciterValue.VALUE pval);
 
 			/// <summary>
 			/// UINT function( const VALUE* pval1, const VALUE* pval2 ) ValueCompare;
 			/// </summary>
 			/// <param name="pval"></param>
 			/// <param name="pval2"></param>
-			public delegate SciterValue.VALUE_RESULT VALUE_COMPARE(ref SciterValue.VALUE pval, ref IntPtr pval2);
+			[SciterStructMap(nameof(WindowsSciterApi.ValueCompare))]
+			public delegate SciterValue.VALUE_RESULT ValueCompare(ref SciterValue.VALUE pval, ref IntPtr pval2);
 
 			/// <summary>
 			/// UINT function( VALUE* pdst, const VALUE* psrc ) ValueCopy;
 			/// </summary>
 			/// <param name="pdst"></param>
 			/// <param name="psrc"></param>
-			public delegate SciterValue.VALUE_RESULT VALUE_COPY(out SciterValue.VALUE pdst, ref SciterValue.VALUE psrc);
+			[SciterStructMap(nameof(WindowsSciterApi.ValueCopy))]
+			public delegate SciterValue.VALUE_RESULT ValueCopy(out SciterValue.VALUE pdst, ref SciterValue.VALUE psrc);
 
 			/// <summary>
 			/// UINT function( VALUE* pdst ) ValueIsolate;
 			/// </summary>
 			/// <param name="pdst"></param>
-			public delegate SciterValue.VALUE_RESULT VALUE_ISOLATE(ref SciterValue.VALUE pdst);
+			[SciterStructMap(nameof(WindowsSciterApi.ValueIsolate))]
+			public delegate SciterValue.VALUE_RESULT ValueIsolate(ref SciterValue.VALUE pdst);
 
 			/// <summary>
 			/// UINT function( const VALUE* pval, UINT* pType, UINT* pUnits ) ValueType;
@@ -1097,7 +1232,8 @@ namespace SciterCore.Interop
 			/// <param name="pval"></param>
 			/// <param name="pType"></param>
 			/// <param name="pUnits"></param>
-			public delegate SciterValue.VALUE_RESULT VALUE_TYPE(ref SciterValue.VALUE pval, out uint pType,
+			[SciterStructMap(nameof(WindowsSciterApi.ValueType))]
+			public delegate SciterValue.VALUE_RESULT ValueType(ref SciterValue.VALUE pval, out uint pType,
 				out uint pUnits);
 
 			/// <summary>
@@ -1106,7 +1242,8 @@ namespace SciterCore.Interop
 			/// <param name="pval"></param>
 			/// <param name="pChars"></param>
 			/// <param name="pNumChars"></param>
-			public delegate SciterValue.VALUE_RESULT VALUE_STRING_DATA(ref SciterValue.VALUE pval, out IntPtr pChars,
+			[SciterStructMap(nameof(WindowsSciterApi.ValueStringData))]
+			public delegate SciterValue.VALUE_RESULT ValueStringData(ref SciterValue.VALUE pval, out IntPtr pChars,
 				out uint pNumChars);
 
 			/// <summary>
@@ -1116,7 +1253,8 @@ namespace SciterCore.Interop
 			/// <param name="chars"></param>
 			/// <param name="numChars"></param>
 			/// <param name="units"></param>
-			public delegate SciterValue.VALUE_RESULT VALUE_STRING_DATA_SET(ref SciterValue.VALUE pval,
+			[SciterStructMap(nameof(WindowsSciterApi.ValueStringDataSet))]
+			public delegate SciterValue.VALUE_RESULT ValueStringDataSet(ref SciterValue.VALUE pval,
 				[MarshalAs(UnmanagedType.LPWStr)] string chars, uint numChars, uint units);
 
 			/// <summary>
@@ -1124,7 +1262,8 @@ namespace SciterCore.Interop
 			/// </summary>
 			/// <param name="pval"></param>
 			/// <param name="pData"></param>
-			public delegate SciterValue.VALUE_RESULT VALUE_INT_DATA(ref SciterValue.VALUE pval, out int pData);
+			[SciterStructMap(nameof(WindowsSciterApi.ValueIntData))]
+			public delegate SciterValue.VALUE_RESULT ValueIntData(ref SciterValue.VALUE pval, out int pData);
 
 			/// <summary>
 			/// UINT function( VALUE* pval, INT data, UINT type, UINT units ) ValueIntDataSet;
@@ -1133,7 +1272,8 @@ namespace SciterCore.Interop
 			/// <param name="data"></param>
 			/// <param name="type"></param>
 			/// <param name="units"></param>
-			public delegate SciterValue.VALUE_RESULT VALUE_INT_DATA_SET(ref SciterValue.VALUE pval, int data, uint type,
+			[SciterStructMap(nameof(WindowsSciterApi.ValueIntDataSet))]
+			public delegate SciterValue.VALUE_RESULT ValueIntDataSet(ref SciterValue.VALUE pval, int data, uint type,
 				uint units);
 
 			/// <summary>
@@ -1141,7 +1281,8 @@ namespace SciterCore.Interop
 			/// </summary>
 			/// <param name="pval"></param>
 			/// <param name="pData"></param>
-			public delegate SciterValue.VALUE_RESULT VALUE_INT_64DATA(ref SciterValue.VALUE pval, out long pData);
+			[SciterStructMap(nameof(WindowsSciterApi.ValueInt64Data))]
+			public delegate SciterValue.VALUE_RESULT ValueInt64Data(ref SciterValue.VALUE pval, out long pData);
 
 			/// <summary>
 			/// UINT function( VALUE* pval, INT64 data, UINT type, UINT units ) ValueInt64DataSet;
@@ -1150,7 +1291,8 @@ namespace SciterCore.Interop
 			/// <param name="data"></param>
 			/// <param name="type"></param>
 			/// <param name="units"></param>
-			public delegate SciterValue.VALUE_RESULT VALUE_INT_64DATA_SET(ref SciterValue.VALUE pval, long data,
+			[SciterStructMap(nameof(WindowsSciterApi.ValueInt64DataSet))]
+			public delegate SciterValue.VALUE_RESULT ValueInt64DataSet(ref SciterValue.VALUE pval, long data,
 				uint type, uint units);
 
 			/// <summary>
@@ -1158,7 +1300,8 @@ namespace SciterCore.Interop
 			/// </summary>
 			/// <param name="pval"></param>
 			/// <param name="pData"></param>
-			public delegate SciterValue.VALUE_RESULT VALUE_FLOAT_DATA(ref SciterValue.VALUE pval, out double pData);
+			[SciterStructMap(nameof(WindowsSciterApi.ValueFloatData))]
+			public delegate SciterValue.VALUE_RESULT ValueFloatData(ref SciterValue.VALUE pval, out double pData);
 
 			/// <summary>
 			/// UINT function( VALUE* pval, FLOAT_VALUE data, UINT type, UINT units ) ValueFloatDataSet;
@@ -1167,7 +1310,8 @@ namespace SciterCore.Interop
 			/// <param name="data"></param>
 			/// <param name="type"></param>
 			/// <param name="units"></param>
-			public delegate SciterValue.VALUE_RESULT VALUE_FLOAT_DATA_SET(ref SciterValue.VALUE pval, double data,
+			[SciterStructMap(nameof(WindowsSciterApi.ValueFloatDataSet))]
+			public delegate SciterValue.VALUE_RESULT ValueFloatDataSet(ref SciterValue.VALUE pval, double data,
 				uint type, uint units);
 
 			/// <summary>
@@ -1176,7 +1320,8 @@ namespace SciterCore.Interop
 			/// <param name="pval"></param>
 			/// <param name="pBytes"></param>
 			/// <param name="pnBytes"></param>
-			public delegate SciterValue.VALUE_RESULT VALUE_BINARY_DATA(ref SciterValue.VALUE pval, out IntPtr pBytes,
+			[SciterStructMap(nameof(WindowsSciterApi.ValueBinaryData))]
+			public delegate SciterValue.VALUE_RESULT ValueBinaryData(ref SciterValue.VALUE pval, out IntPtr pBytes,
 				out uint pnBytes);
 
 			/// <summary>
@@ -1187,7 +1332,8 @@ namespace SciterCore.Interop
 			/// <param name="nBytes"></param>
 			/// <param name="type"></param>
 			/// <param name="units"></param>
-			public delegate SciterValue.VALUE_RESULT VALUE_BINARY_DATA_SET(ref SciterValue.VALUE pval,
+			[SciterStructMap(nameof(WindowsSciterApi.ValueBinaryDataSet))]
+			public delegate SciterValue.VALUE_RESULT ValueBinaryDataSet(ref SciterValue.VALUE pval,
 				[MarshalAs(UnmanagedType.LPArray)] byte[] pBytes, uint nBytes, uint type, uint units);
 
 			/// <summary>
@@ -1195,7 +1341,8 @@ namespace SciterCore.Interop
 			/// </summary>
 			/// <param name="pval"></param>
 			/// <param name="pn"></param>
-			public delegate SciterValue.VALUE_RESULT VALUE_ELEMENTS_COUNT(ref SciterValue.VALUE pval, out int pn);
+			[SciterStructMap(nameof(WindowsSciterApi.ValueElementsCount))]
+			public delegate SciterValue.VALUE_RESULT ValueElementsCount(ref SciterValue.VALUE pval, out int pn);
 
 			/// <summary>
 			/// UINT function( const VALUE* pval, INT n, VALUE* pretval) ValueNthElementValue;
@@ -1203,7 +1350,8 @@ namespace SciterCore.Interop
 			/// <param name="pval"></param>
 			/// <param name="n"></param>
 			/// <param name="pretval"></param>
-			public delegate SciterValue.VALUE_RESULT VALUE_NTH_ELEMENT_VALUE(ref SciterValue.VALUE pval, int n,
+			[SciterStructMap(nameof(WindowsSciterApi.ValueNthElementValue))]
+			public delegate SciterValue.VALUE_RESULT ValueNthElementValue(ref SciterValue.VALUE pval, int n,
 				out SciterValue.VALUE pretval);
 
 			/// <summary>
@@ -1212,7 +1360,8 @@ namespace SciterCore.Interop
 			/// <param name="pval"></param>
 			/// <param name="n"></param>
 			/// <param name="pvalToSet"></param>
-			public delegate SciterValue.VALUE_RESULT VALUE_NTH_ELEMENT_VALUE_SET(ref SciterValue.VALUE pval, int n,
+			[SciterStructMap(nameof(WindowsSciterApi.ValueNthElementValueSet))]
+			public delegate SciterValue.VALUE_RESULT ValueNthElementValueSet(ref SciterValue.VALUE pval, int n,
 				ref SciterValue.VALUE pvalToSet);
 
 			/// <summary>
@@ -1221,7 +1370,8 @@ namespace SciterCore.Interop
 			/// <param name="pval"></param>
 			/// <param name="n"></param>
 			/// <param name="pretval"></param>
-			public delegate SciterValue.VALUE_RESULT VALUE_NTH_ELEMENT_KEY(ref SciterValue.VALUE pval, int n,
+			[SciterStructMap(nameof(WindowsSciterApi.ValueNthElementKey))]
+            			public delegate SciterValue.VALUE_RESULT ValueNthElementKey(ref SciterValue.VALUE pval, int n,
 				out SciterValue.VALUE pretval);
 
 			/// <summary>
@@ -1230,7 +1380,8 @@ namespace SciterCore.Interop
 			/// <param name="pval"></param>
 			/// <param name="penum"></param>
 			/// <param name="param"></param>
-			public delegate SciterValue.VALUE_RESULT VALUE_ENUM_ELEMENTS(ref SciterValue.VALUE pval,
+			[SciterStructMap(nameof(WindowsSciterApi.ValueEnumElements))]
+			public delegate SciterValue.VALUE_RESULT ValueEnumElements(ref SciterValue.VALUE pval,
 				SciterValue.KEY_VALUE_CALLBACK penum, IntPtr param);
 
 			/// <summary>
@@ -1239,7 +1390,8 @@ namespace SciterCore.Interop
 			/// <param name="pval"></param>
 			/// <param name="pkey"></param>
 			/// <param name="pvalToSet"></param>
-			public delegate SciterValue.VALUE_RESULT VALUE_SET_VALUE_TO_KEY(ref SciterValue.VALUE pval,
+			[SciterStructMap(nameof(WindowsSciterApi.ValueSetValueToKey))]
+			public delegate SciterValue.VALUE_RESULT ValueSetValueToKey(ref SciterValue.VALUE pval,
 				ref SciterValue.VALUE pkey, ref SciterValue.VALUE pvalToSet);
 
 			/// <summary>
@@ -1248,7 +1400,8 @@ namespace SciterCore.Interop
 			/// <param name="pval"></param>
 			/// <param name="pkey"></param>
 			/// <param name="pretval"></param>
-			public delegate SciterValue.VALUE_RESULT VALUE_GET_VALUE_OF_KEY(ref SciterValue.VALUE pval,
+			[SciterStructMap(nameof(WindowsSciterApi.ValueGetValueOfKey))]
+			public delegate SciterValue.VALUE_RESULT ValueGetValueOfKey(ref SciterValue.VALUE pval,
 				ref SciterValue.VALUE pkey, out SciterValue.VALUE pretval);
 
 			/// <summary>
@@ -1256,7 +1409,8 @@ namespace SciterCore.Interop
 			/// </summary>
 			/// <param name="pval"></param>
 			/// <param name="how"></param>
-			public delegate SciterValue.VALUE_RESULT VALUE_TO_STRING(ref SciterValue.VALUE pval,
+			[SciterStructMap(nameof(WindowsSciterApi.ValueToString))]
+			public delegate SciterValue.VALUE_RESULT ValueToString(ref SciterValue.VALUE pval,
 				SciterValue.VALUE_STRING_CVT_TYPE how);
 
 			/// <summary>
@@ -1266,7 +1420,8 @@ namespace SciterCore.Interop
 			/// <param name="str"></param>
 			/// <param name="strLength"></param>
 			/// <param name="how"></param>
-			public delegate SciterValue.VALUE_RESULT VALUE_FROM_STRING(ref SciterValue.VALUE pval,
+			[SciterStructMap(nameof(WindowsSciterApi.ValueFromString))]
+			public delegate SciterValue.VALUE_RESULT ValueFromString(ref SciterValue.VALUE pval,
 				[MarshalAs(UnmanagedType.LPWStr)] string str, uint strLength, uint how);
 
 			/// <summary>
@@ -1278,7 +1433,8 @@ namespace SciterCore.Interop
 			/// <param name="argv"></param>
 			/// <param name="pretval"></param>
 			/// <param name="url"></param>
-			public delegate SciterValue.VALUE_RESULT VALUE_INVOKE(ref SciterValue.VALUE pval,
+			[SciterStructMap(nameof(WindowsSciterApi.ValueInvoke))]
+			public delegate SciterValue.VALUE_RESULT ValueInvoke(ref SciterValue.VALUE pval,
 				ref SciterValue.VALUE pthis, uint argc, SciterValue.VALUE[] argv, out SciterValue.VALUE pretval,
 				[MarshalAs(UnmanagedType.LPWStr)] string url);
 
@@ -1289,51 +1445,50 @@ namespace SciterCore.Interop
 			/// <param name="pinvoke"></param>
 			/// <param name="prelease"></param>
 			/// <param name="tag"></param>
-			public delegate SciterValue.VALUE_RESULT VALUE_NATIVE_FUNCTOR_SET(ref SciterValue.VALUE pval,
+			[SciterStructMap(nameof(WindowsSciterApi.ValueNativeFunctorSet))]
+			public delegate SciterValue.VALUE_RESULT ValueNativeFunctorSet(ref SciterValue.VALUE pval,
 				SciterValue.NATIVE_FUNCTOR_INVOKE pinvoke, SciterValue.NATIVE_FUNCTOR_RELEASE prelease, IntPtr tag);
 
 			/// <summary>
 			/// BOOL function( const VALUE* pval) ValueIsNativeFunctor;
 			/// </summary>
 			/// <param name="pval"></param>
-			public delegate SciterValue.VALUE_RESULT VALUE_IS_NATIVE_FUNCTOR(ref SciterValue.VALUE pval);
+			[SciterStructMap(nameof(WindowsSciterApi.ValueIsNativeFunctor))]
+			public delegate SciterValue.VALUE_RESULT ValueIsNativeFunctor(ref SciterValue.VALUE pval);
 
 			#endregion
 
-			#region TIScript
+			#region Used to be script VM API (Deprecated in v4.4.3.24)
+			
+#pragma warning disable 618
+			/// <summary>
+			/// 
+			/// </summary>
+			[SciterStructMap(nameof(WindowsSciterApi.reserved1))]
+			public delegate void Reserved1();
+			
+			/// <summary>
+			/// 
+			/// </summary>
+			[SciterStructMap(nameof(WindowsSciterApi.reserved2))]
+			public delegate void Reserved2();
+			
+			/// <summary>
+			/// 
+			/// </summary>
+			[SciterStructMap(nameof(WindowsSciterApi.reserved3))]
+			public delegate void Reserved3();
 
 			/// <summary>
-			/// tiscript_native_interface* function() TIScriptAPI;
+			/// 
 			/// </summary>
-			public delegate IntPtr TI_SCRIPT_API();
 
+			[SciterStructMap(nameof(WindowsSciterApi.reserved4))]
+			public delegate void Reserved4();
+			
+#pragma warning restore 618			
 			#endregion
-
-			/// <summary>
-			/// HVM function(HWINDOW hwnd) SciterGetVM;
-			/// </summary>
-			/// <param name="hwnd"></param>
-			public delegate IntPtr SCITER_GET_VM(IntPtr hwnd);
-
-			/// <summary>
-			/// BOOL function(HVM vm, tiscript_value script_value, VALUE* value, BOOL isolate) Sciter_v2V;
-			/// </summary>
-			/// <param name="vm"></param>
-			/// <param name="scriptValue"></param>
-			/// <param name="value"></param>
-			/// <param name="isolate"></param>
-			public delegate bool SCITER_v2V(IntPtr vm, TIScript.tiscript_value scriptValue, ref SciterValue.VALUE value,
-				bool isolate);
-
-			/// <summary>
-			/// BOOL function(HVM vm, const VALUE* valuev, tiscript_value* script_value) Sciter_V2v;
-			/// </summary>
-			/// <param name="vm"></param>
-			/// <param name="value"></param>
-			/// <param name="scriptValue"></param>
-			public delegate bool SCITER_V2v(IntPtr vm, ref SciterValue.VALUE value,
-				ref TIScript.tiscript_value scriptValue);
-
+			
 			#region Archive
 
 			/// <summary>
@@ -1341,8 +1496,9 @@ namespace SciterCore.Interop
 			/// </summary>
 			/// <param name="archiveData"></param>
 			/// <param name="archiveDataLength"></param>
+			[SciterStructMap(nameof(WindowsSciterApi.SciterOpenArchive))]
 			public delegate IntPtr
-				SCITER_OPEN_ARCHIVE(IntPtr archiveData,
+				SciterOpenArchive(IntPtr archiveData,
 					uint archiveDataLength); // archiveData must point to a pinned byte[] array!
 
 			/// <summary>
@@ -1352,14 +1508,16 @@ namespace SciterCore.Interop
 			/// <param name="path"></param>
 			/// <param name="pdata"></param>
 			/// <param name="pdataLength"></param>
-			public delegate bool SCITER_GET_ARCHIVE_ITEM(IntPtr harc, [MarshalAs(UnmanagedType.LPWStr)] string path,
+			[SciterStructMap(nameof(WindowsSciterApi.SciterGetArchiveItem))]
+			public delegate bool SciterGetArchiveItem(IntPtr harc, [MarshalAs(UnmanagedType.LPWStr)] string path,
 				out IntPtr pdata, out uint pdataLength);
 
 			/// <summary>
 			/// BOOL function(HSARCHIVE harc) SciterCloseArchive;
 			/// </summary>
 			/// <param name="harc"></param>
-			public delegate bool SCITER_CLOSE_ARCHIVE(IntPtr harc);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterCloseArchive))]
+			public delegate bool SciterCloseArchive(IntPtr harc);
 
 			#endregion
 
@@ -1369,14 +1527,16 @@ namespace SciterCore.Interop
 			/// <param name="evt"></param>
 			/// <param name="post"></param>
 			/// <param name="handled"></param>
-			public delegate SciterXDom.SCDOM_RESULT SCITER_FIRE_EVENT(ref SciterBehaviors.BEHAVIOR_EVENT_PARAMS evt,
+			[SciterStructMap(nameof(WindowsSciterApi.SciterFireEvent))]
+			public delegate SciterXDom.SCDOM_RESULT SciterFireEvent(ref SciterBehaviors.BEHAVIOR_EVENT_PARAMS evt,
 				bool post, out bool handled);
 
 			/// <summary>
 			/// LPVOID function(HWINDOW hwnd) SciterGetCallbackParam;
 			/// </summary>
 			/// <param name="hwnd"></param>
-			public delegate IntPtr SCITER_GET_CALLBACK_PARAM(IntPtr hwnd);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterGetCallbackParam))]
+			public delegate IntPtr SciterGetCallbackParam(IntPtr hwnd);
 
 			/// <summary>
 			/// UINT_PTR function(HWINDOW hwnd, UINT_PTR wparam, UINT_PTR lparam, UINT timeoutms) SciterPostCallback;
@@ -1385,17 +1545,20 @@ namespace SciterCore.Interop
 			/// <param name="wparam"></param>
 			/// <param name="lparam"></param>
 			/// <param name="timeoutms">if > 0 then it is a send, not a post</param>
-			public delegate IntPtr SCITER_POST_CALLBACK(IntPtr hwnd, IntPtr wparam, IntPtr lparam, uint timeoutms);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterPostCallback))]
+			public delegate IntPtr SciterPostCallback(IntPtr hwnd, IntPtr wparam, IntPtr lparam, uint timeoutms);
 
 			/// <summary>
 			/// LPSciterGraphicsAPI function() GetSciterGraphicsAPI;
 			/// </summary>
-			public delegate IntPtr GET_SCITER_GRAPHICS_API();
+			[SciterStructMap(nameof(WindowsSciterApi.GetSciterGraphicsAPI))]
+			public delegate IntPtr GetSciterGraphicsApi();
 
 			/// <summary>
 			/// LPSciterRequestAPI SCFN(GetSciterRequestAPI )();
 			/// </summary>
-			public delegate IntPtr GET_SCITER_REQUEST_API();
+			[SciterStructMap(nameof(WindowsSciterApi.GetSciterRequestAPI))]
+			public delegate IntPtr GetSciterRequestApi();
 
 			#region DirectX API
 
@@ -1404,7 +1567,8 @@ namespace SciterCore.Interop
 			/// </summary>
 			/// <param name="hwnd"></param>
 			/// <param name="pSwapChain"></param>
-			public delegate bool SCITER_CREATE_ON_DIRECT_X_WINDOW(IntPtr hwnd, IntPtr pSwapChain);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterCreateOnDirectXWindow))]
+			public delegate bool SciterCreateOnDirectXWindow(IntPtr hwnd, IntPtr pSwapChain);
 
 			/// <summary>
 			/// BOOL SCFN(SciterRenderOnDirectXWindow ) (HWINDOW hwnd, HELEMENT elementToRenderOrNull, BOOL frontLayer);
@@ -1412,7 +1576,8 @@ namespace SciterCore.Interop
 			/// <param name="hwnd"></param>
 			/// <param name="elementToRenderOrNull"></param>
 			/// <param name="frontLayer"></param>
-			public delegate bool SCITER_RENDER_ON_DIRECT_X_WINDOW(IntPtr hwnd, IntPtr elementToRenderOrNull,
+			[SciterStructMap(nameof(WindowsSciterApi.SciterRenderOnDirectXWindow))]
+			public delegate bool SciterRenderOnDirectXWindow(IntPtr hwnd, IntPtr elementToRenderOrNull,
 				bool frontLayer);
 
 			/// <summary>
@@ -1421,7 +1586,8 @@ namespace SciterCore.Interop
 			/// <param name="hwnd"></param>
 			/// <param name="elementToRenderOrNull"></param>
 			/// <param name="surface"></param>
-			public delegate bool SCITER_RENDER_ON_DIRECT_X_TEXTURE(IntPtr hwnd, IntPtr elementToRenderOrNull,
+			[SciterStructMap(nameof(WindowsSciterApi.SciterRenderOnDirectXTexture))]
+			public delegate bool SciterRenderOnDirectXTexture(IntPtr hwnd, IntPtr elementToRenderOrNull,
 				IntPtr surface);
 
 			#endregion
@@ -1432,7 +1598,8 @@ namespace SciterCore.Interop
 			/// <param name="hwnd"></param>
 			/// <param name="pMsg"></param>
 			/// <returns>TRUE if handled</returns>
-			public delegate bool SCITER_PROC_X(IntPtr hwnd, IntPtr pMsg);
+			[SciterStructMap(nameof(WindowsSciterApi.SciterProcX))]
+			public delegate bool SciterProcX(IntPtr hwnd, IntPtr pMsg);
 		}
 	}
 }

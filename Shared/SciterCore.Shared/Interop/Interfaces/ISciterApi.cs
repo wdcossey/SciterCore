@@ -184,8 +184,28 @@ namespace SciterCore.Interop
 		SciterXDom.SCDOM_RESULT SciterGetValue(IntPtr he, out SciterValue.VALUE pval);
 		SciterXDom.SCDOM_RESULT SciterSetValue(IntPtr he, ref SciterValue.VALUE pval);
 		SciterXDom.SCDOM_RESULT SciterGetExpando(IntPtr he, out SciterValue.VALUE pval, bool forceCreation);
-		SciterXDom.SCDOM_RESULT SciterGetObject(IntPtr he, out TIScript.tiscript_value pval, bool forceCreation);
-		SciterXDom.SCDOM_RESULT SciterGetElementNamespace(IntPtr he, out TIScript.tiscript_value pval);
+		
+		/// <summary>
+		/// <para>SciterGetObject - Get 'expando' object of the element. 'expando' is a scripting object (of class Element) <br/>
+		/// that is assigned to the DOM element. 'expando' could be null as they are created on demand by script.</para>
+		/// <para>ATTN!: If you plan to store the reference or use it inside code that calls script VM functions <br/>
+		///  then you should use tiscript::pinned holder for the value.</para>
+		/// </summary>
+		/// <param name="he">Element which expando will be retrieved.</param>
+		/// <param name="pval">Pointer to tiscript::value that will get reference to the scripting object associated with the element or null.</param>
+		/// <param name="forceCreation">If there is no expando then when forceCreation==TRUE the function will create it.</param>
+		/// <returns></returns>
+		SciterXDom.SCDOM_RESULT SciterGetObject(IntPtr he, out IntPtr pval, bool forceCreation);
+		
+		/// <summary>
+		/// <para>SciterGetElementNamespace - Get namespace of document of the DOM element.</para>
+		/// <para>ATTN!: If you plan to store the reference or use it inside code that calls script VM functions</para>
+		/// then you should use tiscript::pinned holder for the value.</summary>
+		/// <param name="he">Element which expando will be retrieved.</param>
+		/// <param name="pval">Pointer to tiscript::value that will get reference to the namespace scripting object. <br/>
+		/// </param>
+		/// <returns></returns>
+		SciterXDom.SCDOM_RESULT SciterGetElementNamespace(IntPtr he, out IntPtr pval);
 		SciterXDom.SCDOM_RESULT SciterGetHighlightedElement(IntPtr hwnd, out IntPtr phe);
 		SciterXDom.SCDOM_RESULT SciterSetHighlightedElement(IntPtr hwnd, IntPtr he);
 
@@ -271,15 +291,19 @@ namespace SciterCore.Interop
 
 		#endregion
 
-		#region TIScript VM API
+		#region Used to be TIScript VM API (Deprecated in v4.4.3.24)
+		
+		[Obsolete("Reserved in v4.4.3.24", true)]
+		void Reserved1();
 
-		IntPtr TIScriptAPI();
+		[Obsolete("Reserved in v4.4.3.24", true)]
+		void Reserved2();
 
-		[Obsolete("Deprecated in v4.4.3.24", true)]
-		IntPtr SciterGetVM(IntPtr hwnd);
-
-		bool Sciter_v2V(IntPtr vm, TIScript.tiscript_value scriptValue, ref SciterValue.VALUE value, bool isolate);
-		bool Sciter_V2v(IntPtr vm, ref SciterValue.VALUE value, ref TIScript.tiscript_value scriptValue);
+		[Obsolete("Reserved in v4.4.3.24", true)]
+		void Reserved3();
+		
+		[Obsolete("Reserved in v4.4.3.24", true)]
+		void Reserved4();
 
 		#endregion
 
@@ -313,5 +337,3 @@ namespace SciterCore.Interop
 		bool SciterProcX(IntPtr hwnd, IntPtr pMsg);
 	}
 }
-
-// ReSharper restore InconsistentNaming

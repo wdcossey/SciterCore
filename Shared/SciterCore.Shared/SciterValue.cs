@@ -1152,6 +1152,7 @@ namespace SciterCore
 
 		internal bool TryAsJsonStringInternal(out string value, StringConversionType conversionType = StringConversionType.JsonLiteral)
 		{
+			
 			value = null;
 			
 			if (conversionType == StringConversionType.Simple && IsString)

@@ -81,7 +81,15 @@
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\TextMetrics.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HostCallbackRegistry.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)InternalsVisibility.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interop\Interfaces\ISciterRequestApi.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interop\SciterGraphics.Entities.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interop\SciterGraphics.SciterGraphicsApi.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interop\SciterRequest.Delegates.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interop\SciterRequest.Entities.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interop\SciterRequest.SciterRequestApi.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interop\SciterStructMapAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\Interfaces\ISciterApi.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interop\Interfaces\ISciterGraphicsApi.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\PInvokeGTK.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\PInvokeUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\PInvokeWindows.cs" />
@@ -92,6 +100,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Interop\SciterBehaviors.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\SciterGraphics.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\Sciter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interop\SciterGraphics.Delegates.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\SciterXDef.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\SciterXDom.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\SciterXMsg.cs" />
@@ -99,7 +108,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Interop\SciterValue.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\SciterVideoApi.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\ScreenCapture.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Interop\TIScript.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MessageBox.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SciterApplication.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SciterArchive.cs" />

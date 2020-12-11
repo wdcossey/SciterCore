@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Diagnostics.CodeAnalysis;
+using SciterCore.Interop;
 
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable InconsistentNaming
@@ -11,7 +12,7 @@ namespace SciterCore
 {
     public readonly struct SciterColor : IConvertible
     {
-        private static readonly Interop.SciterGraphics.SciterGraphicsApi GraphicsApi = Interop.Sciter.GraphicsApi;
+        private static readonly ISciterGraphicsApi GraphicsApi = Interop.Sciter.GraphicsApi;
         private readonly uint _value;
 
         public uint Value => _value;

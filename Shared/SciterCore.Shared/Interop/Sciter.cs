@@ -4,9 +4,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-#if NETCOREAPP3_1
 using System.Reflection;
-#endif
+
 // ReSharper restore RedundantUsingDirective
 
 // ReSharper disable MemberCanBePrivate.Global
@@ -15,18 +14,20 @@ namespace SciterCore.Interop
 {
 	public static partial class Sciter
 	{
+		private static readonly object SciterApiLock = new object();
+		private static readonly object SciterGraphicsApiLock = new object();
+		private static readonly object SciterRequestApiLock = new object();
+		private static readonly object SciterScriptApiLock = new object();
+		
 		public static ISciterApi Api => GetSciterApi();
 
-		public static SciterGraphics.SciterGraphicsApi GraphicsApi => GetGraphicsApi();
+		public static ISciterGraphicsApi GraphicsApi => GetGraphicsApi();
 
-		public static SciterRequest.SciterRequestApi RequestApi => GetRequestApi();
-
-		public static TIScript.SCITER_TI_SCRIPT_API ScriptApi => GetScriptApi();
-
+		public static ISciterRequestApi RequestApi => GetRequestApi();
+		
         private static ISciterApi _sciterApi = null;
-		private static SciterGraphics.SciterGraphicsApi? _sciterGraphicsApi = null;
-		private static SciterRequest.SciterRequestApi? _sciterRequestApiInstance = null;
-		private static TIScript.SCITER_TI_SCRIPT_API? _sciterScriptApi = null;
+		private static ISciterGraphicsApi _sciterGraphicsApi = null;
+		private static ISciterRequestApi _sciterRequestApiInstance = null;
 
 		// ReSharper disable InconsistentNaming
 		private const string SciterWindowsLibrary = "sciter.dll";
@@ -35,7 +36,10 @@ namespace SciterCore.Interop
 		// ReSharper enable InconsistentNaming
 		
 #if NETCOREAPP3_1
-		//Name is purely to avoid collision
+		
+		/// <summary>
+		/// Name is purely to avoid collision
+		/// </summary>
 		private const string SciterPlatformLibrary = "sciter_1913ebe4-1c89-43ee-a659-949ef4e9a108_import";
 
 		private static IntPtr ImportResolver(string libraryName, Assembly assembly, DllImportSearchPath? searchPath)
@@ -74,375 +78,357 @@ namespace SciterCore.Interop
 
 		private static ISciterApi GetSciterApi()
 		{
-			if (_sciterApi != null)
-				return _sciterApi;
-			
-			//var apiStructSize = Marshal.SizeOf(typeof(SciterApi));
-			
-#if NETCOREAPP3_1 
-			NativeLibrary.SetDllImportResolver(typeof(Sciter).Assembly, ImportResolver);
+			lock (SciterApiLock)
+			{
+				if (_sciterApi != null)
+					return _sciterApi;
+
+				//var apiStructSize = Marshal.SizeOf(typeof(SciterApi));
+
+#if NETCOREAPP3_1
+				NativeLibrary.SetDllImportResolver(typeof(Sciter).Assembly, ImportResolver);
 #elif WINDOWS || NETCORE
 
-			var codeBasePath = new Uri(typeof(SciterApi).Assembly.CodeBase).LocalPath;
-			var codeBaseDirectory = Path.GetDirectoryName(codeBasePath);
-			var is64 = Environment.Is64BitProcess;
-			var bitDirectory = is64 ? "x64" : "x86";
-			var libName = Path.Combine(codeBaseDirectory, bitDirectory, SciterWindowsLibrary);
-                
-			PInvokeWindows.LoadLibrary(libName);
+				var codeBasePath = new Uri(typeof(SciterApiDelegates).Assembly.CodeBase).LocalPath;
+				var codeBaseDirectory = Path.GetDirectoryName(codeBasePath);
+				var is64 = Environment.Is64BitProcess;
+				var bitDirectory = is64 ? "x64" : "x86";
+				var libName = Path.Combine(codeBaseDirectory, bitDirectory, SciterWindowsLibrary);
+            	    
+				PInvokeWindows.LoadLibrary(libName);
 #elif GTKMONO
-			if(IntPtr.Size != 8)
-				throw new Exception("SciterSharp GTK/Mono only supports 64bits builds");
-
-			//Debug.Assert(apiStructSize == 1304);
+				if(IntPtr.Size != 8)
+					throw new Exception("SciterSharp GTK/Mono only supports 64bits builds");
+	
+				//Debug.Assert(apiStructSize == 1304);
 #elif OSX
-			Debug.Assert(IntPtr.Size == 8);
-			//Debug.Assert(apiStructSize == 648 * 2);
+				Debug.Assert(IntPtr.Size == 8);
+				//Debug.Assert(apiStructSize == 648 * 2);
 #endif
-			var apiPtr = SciterAPI();
+				var apiPtr = SciterAPI();
 
-			_sciterApi = UnsafeNativeMethods.GetSciterApiInterface(); 
+				_sciterApi = UnsafeNativeMethods.GetApiInterface();
 
-			if (_sciterApi == null)
-				throw new NullReferenceException($"{nameof(ISciterApi)} cannot be null");
+				if (_sciterApi == null)
+					throw new NullReferenceException($"{nameof(ISciterApi)} cannot be null");
+
+				// from time to time, Sciter changes its API
+				// here we test the minimum Sciter version this library is compatible with
+				var major = _sciterApi.SciterVersion(true);
+				var minor = _sciterApi.SciterVersion(false);
+				Debug.Assert(major >= 0x00040000);
+				Debug.Assert(_sciterApi.Version >= 0);
+
+				return _sciterApi;
+			}
+		}
+
+		private static ISciterGraphicsApi GetGraphicsApi()
+		{
+			lock (SciterGraphicsApiLock)
+			{
+				if (_sciterGraphicsApi != null)
+					return _sciterGraphicsApi;
+			
+				var major = Api.SciterVersion(true);
+				var minor = Api.SciterVersion(false);
+				Debug.Assert(major >= 0x00040000);
+
+				var apiStructSize = Marshal.SizeOf(t: typeof(SciterGraphics.SciterGraphicsApi));
+			
+				if(IntPtr.Size == 8)
+					Debug.Assert(apiStructSize == 276 * 2);
+				else
+					Debug.Assert(apiStructSize == 276);
+
+				_sciterGraphicsApi = SciterGraphics.UnsafeNativeMethods.GetApiInterface(Api);
+
+				if (_sciterGraphicsApi == null)
+					throw new NullReferenceException($"{nameof(_sciterGraphicsApi)} cannot be null");
+			
+				return _sciterGraphicsApi;
+			}
+		}
+
+		private static ISciterRequestApi GetRequestApi()
+		{
+			lock (SciterRequestApiLock)
+			{
+				if (_sciterRequestApiInstance != null)
+					return _sciterRequestApiInstance;
 				
-			// from time to time, Sciter changes its API
-			// here we test the minimum Sciter version this library is compatible with
-			var major = _sciterApi.SciterVersion(true);
-			var minor = _sciterApi.SciterVersion(false);
-			Debug.Assert(major >= 0x00040000);
-			Debug.Assert(_sciterApi.Version >= 0);
-			
-			return _sciterApi;
+				var apiStructSize = Marshal.SizeOf(t: typeof(SciterRequest.SciterRequestApi));
+				
+				if (IntPtr.Size == 8)
+					Debug.Assert(apiStructSize == 112 * 2);
+				else
+					Debug.Assert(apiStructSize == 112);
+				
+				_sciterRequestApiInstance = SciterRequest.UnsafeNativeMethods.GetApiInterface(Api);
+				
+				if (_sciterRequestApiInstance == null)
+					throw new NullReferenceException($"{nameof(_sciterRequestApiInstance)} cannot be null");
+				
+				return _sciterRequestApiInstance;
+			}
 		}
 
-		private static SciterGraphics.SciterGraphicsApi GetGraphicsApi()
-		{
-			if (_sciterGraphicsApi != null)
-				return _sciterGraphicsApi.Value;
-			
-			var major = Api.SciterVersion(true);
-			var minor = Api.SciterVersion(false);
-			Debug.Assert(major >= 0x00040000);
-
-			var apiStructSize = Marshal.SizeOf(t: typeof(SciterGraphics.SciterGraphicsApi));
-			
-			if(IntPtr.Size == 8)
-				Debug.Assert(apiStructSize == 276 * 2);
-			else
-				Debug.Assert(apiStructSize == 276);
-
-			var apiPtr = Api.GetSciterGraphicsAPI();
-			_sciterGraphicsApi = Marshal.PtrToStructure<SciterGraphics.SciterGraphicsApi>(ptr: apiPtr);
-			
-			if (_sciterGraphicsApi == null)
-				throw new NullReferenceException($"{nameof(_sciterGraphicsApi)} cannot be null");
-			
-			return _sciterGraphicsApi.Value;
-		}
-
-		private static SciterRequest.SciterRequestApi GetRequestApi()
-		{
-			if (_sciterRequestApiInstance != null)
-				return _sciterRequestApiInstance.Value;
-
-			var apiStructSize = Marshal.SizeOf(t: typeof(SciterRequest.SciterRequestApi));
-
-			if (IntPtr.Size == 8)
-				Debug.Assert(apiStructSize == 104 * 2);
-			else
-				Debug.Assert(apiStructSize == 104);
-
-			var apiPtr = Api.GetSciterRequestAPI();
-			_sciterRequestApiInstance = Marshal.PtrToStructure<SciterRequest.SciterRequestApi>(ptr: apiPtr);
-
-			if (_sciterRequestApiInstance == null)
-				throw new NullReferenceException($"{nameof(_sciterRequestApiInstance)} cannot be null");
-
-			return _sciterRequestApiInstance.Value;
-		}
-
-		private static TIScript.SCITER_TI_SCRIPT_API GetScriptApi()
-		{
-			if (_sciterScriptApi != null)
-				return _sciterScriptApi.Value;
-
-			var apiStructSize = Marshal.SizeOf(typeof(TIScript.SCITER_TI_SCRIPT_API));
-			if (IntPtr.Size == 8)
-				Debug.Assert(apiStructSize == 616);
-			else
-				Debug.Assert(apiStructSize == 308);
-
-			var apiPtr = Api.TIScriptAPI();
-			_sciterScriptApi = Marshal.PtrToStructure<TIScript.SCITER_TI_SCRIPT_API>(ptr: apiPtr);
-
-			if (_sciterScriptApi == null)
-				throw new NullReferenceException($"{nameof(_sciterScriptApi)} cannot be null");
-
-			return _sciterScriptApi.Value;
-		}
-		
 		internal static class UnsafeNativeMethods
 		{
-			public static ISciterApi GetSciterApiInterface()
+			public static ISciterApi GetApiInterface()
 			{
-				var sciterApi = SciterAPI();
+				var sciterApiPtr = SciterAPI();
 				
 				if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-					return new NativeSciterApiWrapper(sciterApi, Marshal.PtrToStructure<WindowsSciterApi>(sciterApi));
+					return new NativeSciterApiWrapper<WindowsSciterApi>(sciterApiPtr);
 
 				if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-					return new NativeSciterApiWrapper(sciterApi, Marshal.PtrToStructure<MacOsSciterApi>(sciterApi));
+					return new NativeSciterApiWrapper<MacOsSciterApi>(sciterApiPtr);
 
 				if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-					return new NativeSciterApiWrapper(sciterApi, Marshal.PtrToStructure<LinuxSciterApi>(sciterApi));
+					return new NativeSciterApiWrapper<LinuxSciterApi>(sciterApiPtr);
 				
 				throw new PlatformNotSupportedException();
 			}
 			
 
-			private sealed class NativeSciterApiWrapper : ISciterApi
+			private sealed class NativeSciterApiWrapper<TStruct> : ISciterApi
+				where TStruct : struct
 			{
-				private IntPtr _sciterApiPtr;
+				private IntPtr _apiPtr;
 				
 #pragma warning disable 649
 				private readonly int _version;
-				private readonly SciterApi.SCITER_CLASS_NAME _sciterClassName = null;
-				private readonly SciterApi.SCITER_VERSION _sciterVersion = null;
-				private readonly SciterApi.SCITER_DATA_READY _sciterDataReady = null;
-				private readonly SciterApi.SCITER_DATA_READY_ASYNC _sciterDataReadyAsync = null;
-				private readonly SciterApi.SCITER_PROC _sciterProc = null;
-				private readonly SciterApi.SCITER_PROC_ND _sciterProcND = null;
-				private readonly SciterApi.SCITER_LOAD_FILE _sciterLoadFile = null;
-				private readonly SciterApi.SCITER_LOAD_HTML _sciterLoadHtml = null;
-				private readonly SciterApi.SCITER_SET_CALLBACK _sciterSetCallback = null;
-				private readonly SciterApi.SCITER_SET_MASTER_CSS _sciterSetMasterCSS = null;
-				private readonly SciterApi.SCITER_APPEND_MASTER_CSS _sciterAppendMasterCSS = null;
-				private readonly SciterApi.SCITER_SET_CSS _sciterSetCSS = null;
-				private readonly SciterApi.SCITER_SET_MEDIA_TYPE _sciterSetMediaType = null;
-				private readonly SciterApi.SCITER_SET_MEDIA_VARS _sciterSetMediaVars = null;
-				private readonly SciterApi.SCITER_GET_MIN_WIDTH _sciterGetMinWidth = null;
-				private readonly SciterApi.SCITER_GET_MIN_HEIGHT _sciterGetMinHeight = null;
-				private readonly SciterApi.SCITER_CALL _sciterCall = null;
-				private readonly SciterApi.SCITER_EVAL _sciterEval = null;
-				private readonly SciterApi.SCITER_UPDATE_WINDOW _sciterUpdateWindow = null;
+				private readonly SciterApiDelegates.SciterClassName _sciterClassName = null;
+				private readonly SciterApiDelegates.SciterVersion _sciterVersion = null;
+				private readonly SciterApiDelegates.SciterDataReady _sciterDataReady = null;
+				private readonly SciterApiDelegates.SciterDataReadyAsync _sciterDataReadyAsync = null;
+				private readonly SciterApiDelegates.SciterProc _sciterProc = null;
+				private readonly SciterApiDelegates.SciterProcNd _sciterProcND = null;
+				private readonly SciterApiDelegates.SciterLoadFile _sciterLoadFile = null;
+				private readonly SciterApiDelegates.SciterLoadHtml _sciterLoadHtml = null;
+				private readonly SciterApiDelegates.SciterSetCallback _sciterSetCallback = null;
+				private readonly SciterApiDelegates.SciterSetMasterCss _sciterSetMasterCSS = null;
+				private readonly SciterApiDelegates.SciterAppendMasterCss _sciterAppendMasterCSS = null;
+				private readonly SciterApiDelegates.SciterSetCss _sciterSetCSS = null;
+				private readonly SciterApiDelegates.SciterSetMediaType _sciterSetMediaType = null;
+				private readonly SciterApiDelegates.SciterSetMediaVars _sciterSetMediaVars = null;
+				private readonly SciterApiDelegates.SciterGetMinWidth _sciterGetMinWidth = null;
+				private readonly SciterApiDelegates.SciterGetMinHeight _sciterGetMinHeight = null;
+				private readonly SciterApiDelegates.SciterCall _sciterCall = null;
+				private readonly SciterApiDelegates.SciterEval _sciterEval = null;
+				private readonly SciterApiDelegates.SciterUpdateWindow _sciterUpdateWindow = null;
 				
-				private readonly SciterApi.SCITER_TRANSLATE_MESSAGE _sciterTranslateMessage = null;
-				private readonly SciterApi.SCITER_SET_OPTION _sciterSetOption = null;
-				private readonly SciterApi.SCITER_GET_PPI _sciterGetPPI = null;
-				private readonly SciterApi.SCITER_GET_VIEW_EXPANDO _sciterGetViewExpando = null;
-				private readonly SciterApi.SCITER_RENDER_D2D _sciterRenderD2D = null;
-				private readonly SciterApi.SCITER_D2D_FACTORY _sciterD2DFactory = null;
-				private readonly SciterApi.SCITER_DW_FACTORY _sciterDWFactory = null;
-				private readonly SciterApi.SCITER_GRAPHICS_CAPS _sciterGraphicsCaps = null;
-				private readonly SciterApi.SCITER_SET_HOME_URL _sciterSetHomeURL = null;
-				private readonly SciterApi.SCITER_CREATE_NS_VIEW _sciterCreateNSView = null;
-				private readonly SciterApi.SCITER_CREATE_WIDGET _sciterCreateWidget = null;
+				private readonly SciterApiDelegates.SciterTranslateMessage _sciterTranslateMessage = null;
+				private readonly SciterApiDelegates.SciterSetOption _sciterSetOption = null;
+				private readonly SciterApiDelegates.SciterGetPpi _sciterGetPPI = null;
+				private readonly SciterApiDelegates.SciterGetViewExpando _sciterGetViewExpando = null;
+				private readonly SciterApiDelegates.SciterRenderD2D _sciterRenderD2D = null;
+				private readonly SciterApiDelegates.SciterD2DFactory _sciterD2DFactory = null;
+				private readonly SciterApiDelegates.SciterDwFactory _sciterDWFactory = null;
+				private readonly SciterApiDelegates.SciterGraphicsCaps _sciterGraphicsCaps = null;
+				private readonly SciterApiDelegates.SciterSetHomeUrl _sciterSetHomeURL = null;
+				private readonly SciterApiDelegates.SciterCreateNsView _sciterCreateNSView = null;
+				private readonly SciterApiDelegates.SciterCreateWidget _sciterCreateWidget = null;
 
-				private readonly SciterApi.SCITER_CREATE_WINDOW _sciterCreateWindow = null;
-				private readonly SciterApi.SCITER_SETUP_DEBUG_OUTPUT _sciterSetupDebugOutput = null;
+				private readonly SciterApiDelegates.SciterCreateWindow _sciterCreateWindow = null;
+				private readonly SciterApiDelegates.SciterSetupDebugOutput _sciterSetupDebugOutput = null;
 				
 				#region DOM Element API
 				
-				private readonly SciterApi.SCITER_USE_ELEMENT _sciter_UseElement = null;
-				private readonly SciterApi.SCITER_UNUSE_ELEMENT _sciter_UnuseElement = null;
-				private readonly SciterApi.SCITER_GET_ROOT_ELEMENT _sciterGetRootElement = null;
-				private readonly SciterApi.SCITER_GET_FOCUS_ELEMENT _sciterGetFocusElement = null;
-				private readonly SciterApi.SCITER_FIND_ELEMENT _sciterFindElement = null;
-				private readonly SciterApi.SCITER_GET_CHILDREN_COUNT _sciterGetChildrenCount = null;
-				private readonly SciterApi.SCITER_GET_NTH_CHILD _sciterGetNthChild = null;
-				private readonly SciterApi.SCITER_GET_PARENT_ELEMENT _sciterGetParentElement = null;
-				private readonly SciterApi.SCITER_GET_ELEMENT_HTML_CB _sciterGetElementHtmlCB = null;
-				private readonly SciterApi.SCITER_GET_ELEMENT_TEXT_CB _sciterGetElementTextCB = null;
-				private readonly SciterApi.SCITER_SET_ELEMENT_TEXT _sciterSetElementText = null;
-				private readonly SciterApi.SCITER_GET_ATTRIBUTE_COUNT _sciterGetAttributeCount = null;
-				private readonly SciterApi.SCITER_GET_NTH_ATTRIBUTE_NAME_CB _sciterGetNthAttributeNameCB = null;
-				private readonly SciterApi.SCITER_GET_NTH_ATTRIBUTE_VALUE_CB _sciterGetNthAttributeValueCB = null;
-				private readonly SciterApi.SCITER_GET_ATTRIBUTE_BY_NAME_CB _sciterGetAttributeByNameCB = null;
-				private readonly SciterApi.SCITER_SET_ATTRIBUTE_BY_NAME _sciterSetAttributeByName = null;
-				private readonly SciterApi.SCITER_CLEAR_ATTRIBUTES _sciterClearAttributes = null;
-				private readonly SciterApi.SCITER_GET_ELEMENT_INDEX _sciterGetElementIndex = null;
-				private readonly SciterApi.SCITER_GET_ELEMENT_TYPE _sciterGetElementType = null;
-				private readonly SciterApi.SCITER_GET_ELEMENT_TYPE_CB _sciterGetElementTypeCB = null;
-				private readonly SciterApi.SCITER_GET_STYLE_ATTRIBUTE_CB _sciterGetStyleAttributeCB = null;
-				private readonly SciterApi.SCITER_SET_STYLE_ATTRIBUTE _sciterSetStyleAttribute = null;
-				private readonly SciterApi.SCITER_GET_ELEMENT_LOCATION _sciterGetElementLocation = null;
-				private readonly SciterApi.SCITER_SCROLL_TO_VIEW _sciterScrollToView = null;
-				private readonly SciterApi.SCITER_UPDATE_ELEMENT _sciterUpdateElement = null;
-				private readonly SciterApi.SCITER_REFRESH_ELEMENT_AREA _sciterRefreshElementArea = null;
-				private readonly SciterApi.SCITER_SET_CAPTURE _sciterSetCapture = null;
-				private readonly SciterApi.SCITER_RELEASE_CAPTURE _sciterReleaseCapture = null;
-				private readonly SciterApi.SCITER_GET_ELEMENT_HWND _sciterGetElementHwnd = null;
-				private readonly SciterApi.SCITER_COMBINE_URL _sciterCombineURL = null;
-				private readonly SciterApi.SCITER_SELECT_ELEMENTS _sciterSelectElements = null;
-				private readonly SciterApi.SCITER_SELECT_ELEMENTS_W _sciterSelectElementsW = null;
-				private readonly SciterApi.SCITER_SELECT_PARENT _sciterSelectParent = null;
-				private readonly SciterApi.SCITER_SELECT_PARENT_W _sciterSelectParentW = null;
-				private readonly SciterApi.SCITER_SET_ELEMENT_HTML _sciterSetElementHtml = null;
-				private readonly SciterApi.SCITER_GET_ELEMENT_UID _sciterGetElementUID = null;
-				private readonly SciterApi.SCITER_GET_ELEMENT_BY_UID _sciterGetElementByUID = null;
-				private readonly SciterApi.SCITER_SHOW_POPUP _sciterShowPopup = null;
-				private readonly SciterApi.SCITER_SHOW_POPUP_AT _sciterShowPopupAt = null;
-				private readonly SciterApi.SCITER_HIDE_POPUP _sciterHidePopup = null;
-				private readonly SciterApi.SCITER_GET_ELEMENT_STATE _sciterGetElementState = null;
-				private readonly SciterApi.SCITER_SET_ELEMENT_STATE _sciterSetElementState = null;
-				private readonly SciterApi.SCITER_CREATE_ELEMENT _sciterCreateElement = null;
-				private readonly SciterApi.SCITER_CLONE_ELEMENT _sciterCloneElement = null;
-				private readonly SciterApi.SCITER_INSERT_ELEMENT _sciterInsertElement = null;
-				private readonly SciterApi.SCITER_DETACH_ELEMENT _sciterDetachElement = null;
-				private readonly SciterApi.SCITER_DELETE_ELEMENT _sciterDeleteElement = null;
-				private readonly SciterApi.SCITER_SET_TIMER _sciterSetTimer = null;
-				private readonly SciterApi.SCITER_DETACH_EVENT_HANDLER _sciterDetachEventHandler = null;
-				private readonly SciterApi.SCITER_ATTACH_EVENT_HANDLER _sciterAttachEventHandler = null;
-				private readonly SciterApi.SCITER_WINDOW_ATTACH_EVENT_HANDLER _sciterWindowAttachEventHandler = null;
-				private readonly SciterApi.SCITER_WINDOW_DETACH_EVENT_HANDLER _sciterWindowDetachEventHandler = null;
-				private readonly SciterApi.SCITER_SEND_EVENT _sciterSendEvent = null;
-				private readonly SciterApi.SCITER_POST_EVENT _sciterPostEvent = null;
-				private readonly SciterApi.SCITER_CALL_BEHAVIOR_METHOD _sciterCallBehaviorMethod = null;
-				private readonly SciterApi.SCITER_REQUEST_ELEMENT_DATA _sciterRequestElementData = null;
-				private readonly SciterApi.SCITER_HTTP_REQUEST _sciterHttpRequest = null;
-				private readonly SciterApi.SCITER_GET_SCROLL_INFO _sciterGetScrollInfo = null;
-				private readonly SciterApi.SCITER_SET_SCROLL_POS _sciterSetScrollPos = null;
-				private readonly SciterApi.SCITER_GET_ELEMENT_INTRINSIC_WIDTHS _sciterGetElementIntrinsicWidths = null;
-				private readonly SciterApi.SCITER_GET_ELEMENT_INTRINSIC_HEIGHT _sciterGetElementIntrinsicHeight = null;
-				private readonly SciterApi.SCITER_IS_ELEMENT_VISIBLE _sciterIsElementVisible = null;
-				private readonly SciterApi.SCITER_IS_ELEMENT_ENABLED _sciterIsElementEnabled = null;
-				private readonly SciterApi.SCITER_SORT_ELEMENTS _sciterSortElements = null;
-				private readonly SciterApi.SCITER_SWAP_ELEMENTS _sciterSwapElements = null;
-				private readonly SciterApi.SCITER_TRAVERSE_UI_EVENT _sciterTraverseUIEvent = null;
-				private readonly SciterApi.SCITER_CALL_SCRIPTING_METHOD _sciterCallScriptingMethod = null;
-				private readonly SciterApi.SCITER_CALL_SCRIPTING_FUNCTION _sciterCallScriptingFunction = null;
-				private readonly SciterApi.SCITER_EVAL_ELEMENT_SCRIPT _sciterEvalElementScript = null;
-				private readonly SciterApi.SCITER_ATTACH_HWND_TO_ELEMENT _sciterAttachHwndToElement = null;
-				private readonly SciterApi.SCITER_CONTROL_GET_TYPE _sciterControlGetType = null;
-				private readonly SciterApi.SCITER_GET_VALUE _sciterGetValue = null;
-				private readonly SciterApi.SCITER_SET_VALUE _sciterSetValue = null;
-				private readonly SciterApi.SCITER_GET_EXPANDO _sciterGetExpando = null;
-				private readonly SciterApi.SCITER_GET_OBJECT _sciterGetObject = null;
-				private readonly SciterApi.SCITER_GET_ELEMENT_NAMESPACE _sciterGetElementNamespace = null;
-				private readonly SciterApi.SCITER_GET_HIGHLIGHTED_ELEMENT _sciterGetHighlightedElement = null;
-				private readonly SciterApi.SCITER_SET_HIGHLIGHTED_ELEMENT _sciterSetHighlightedElement = null;
+				private readonly SciterApiDelegates.SciterUseElement _sciter_UseElement = null;
+				private readonly SciterApiDelegates.SciterUnuseElement _sciter_UnuseElement = null;
+				private readonly SciterApiDelegates.SciterGetRootElement _sciterGetRootElement = null;
+				private readonly SciterApiDelegates.SciterGetFocusElement _sciterGetFocusElement = null;
+				private readonly SciterApiDelegates.SciterFindElement _sciterFindElement = null;
+				private readonly SciterApiDelegates.SciterGetChildrenCount _sciterGetChildrenCount = null;
+				private readonly SciterApiDelegates.SciterGetNthChild _sciterGetNthChild = null;
+				private readonly SciterApiDelegates.SciterGetParentElement _sciterGetParentElement = null;
+				private readonly SciterApiDelegates.SciterGetElementHtmlCb _sciterGetElementHtmlCB = null;
+				private readonly SciterApiDelegates.SciterGetElementTextCb _sciterGetElementTextCB = null;
+				private readonly SciterApiDelegates.SciterSetElementText _sciterSetElementText = null;
+				private readonly SciterApiDelegates.SciterGetAttributeCount _sciterGetAttributeCount = null;
+				private readonly SciterApiDelegates.SciterGetNthAttributeNameCb _sciterGetNthAttributeNameCB = null;
+				private readonly SciterApiDelegates.SciterGetNthAttributeValueCb _sciterGetNthAttributeValueCB = null;
+				private readonly SciterApiDelegates.SciterGetAttributeByNameCb _sciterGetAttributeByNameCB = null;
+				private readonly SciterApiDelegates.SciterSetAttributeByName _sciterSetAttributeByName = null;
+				private readonly SciterApiDelegates.SciterClearAttributes _sciterClearAttributes = null;
+				private readonly SciterApiDelegates.SciterGetElementIndex _sciterGetElementIndex = null;
+				private readonly SciterApiDelegates.SciterGetElementType _sciterGetElementType = null;
+				private readonly SciterApiDelegates.SciterGetElementTypeCb _sciterGetElementTypeCB = null;
+				private readonly SciterApiDelegates.SciterGetStyleAttributeCb _sciterGetStyleAttributeCB = null;
+				private readonly SciterApiDelegates.SciterSetStyleAttribute _sciterSetStyleAttribute = null;
+				private readonly SciterApiDelegates.SciterGetElementLocation _sciterGetElementLocation = null;
+				private readonly SciterApiDelegates.SciterScrollToView _sciterScrollToView = null;
+				private readonly SciterApiDelegates.SciterUpdateElement _sciterUpdateElement = null;
+				private readonly SciterApiDelegates.SciterRefreshElementArea _sciterRefreshElementArea = null;
+				private readonly SciterApiDelegates.SciterSetCapture _sciterSetCapture = null;
+				private readonly SciterApiDelegates.SciterReleaseCapture _sciterReleaseCapture = null;
+				private readonly SciterApiDelegates.SciterGetElementHwnd _sciterGetElementHwnd = null;
+				private readonly SciterApiDelegates.SciterCombineUrl _sciterCombineURL = null;
+				private readonly SciterApiDelegates.SciterSelectElements _sciterSelectElements = null;
+				private readonly SciterApiDelegates.SciterSelectElementsW _sciterSelectElementsW = null;
+				private readonly SciterApiDelegates.SciterSelectParent _sciterSelectParent = null;
+				private readonly SciterApiDelegates.SciterSelectParentW _sciterSelectParentW = null;
+				private readonly SciterApiDelegates.SciterSetElementHtml _sciterSetElementHtml = null;
+				private readonly SciterApiDelegates.SciterGetElementUid _sciterGetElementUID = null;
+				private readonly SciterApiDelegates.SciterGetElementByUid _sciterGetElementByUID = null;
+				private readonly SciterApiDelegates.SciterShowPopup _sciterShowPopup = null;
+				private readonly SciterApiDelegates.SciterShowPopupAt _sciterShowPopupAt = null;
+				private readonly SciterApiDelegates.SciterHidePopup _sciterHidePopup = null;
+				private readonly SciterApiDelegates.SciterGetElementState _sciterGetElementState = null;
+				private readonly SciterApiDelegates.SciterSetElementState _sciterSetElementState = null;
+				private readonly SciterApiDelegates.SciterCreateElement _sciterCreateElement = null;
+				private readonly SciterApiDelegates.SciterCloneElement _sciterCloneElement = null;
+				private readonly SciterApiDelegates.SciterInsertElement _sciterInsertElement = null;
+				private readonly SciterApiDelegates.SciterDetachElement _sciterDetachElement = null;
+				private readonly SciterApiDelegates.SciterDeleteElement _sciterDeleteElement = null;
+				private readonly SciterApiDelegates.SciterSetTimer _sciterSetTimer = null;
+				private readonly SciterApiDelegates.SciterDetachEventHandler _sciterDetachEventHandler = null;
+				private readonly SciterApiDelegates.SciterAttachEventHandler _sciterAttachEventHandler = null;
+				private readonly SciterApiDelegates.SciterWindowAttachEventHandler _sciterWindowAttachEventHandler = null;
+				private readonly SciterApiDelegates.SciterWindowDetachEventHandler _sciterWindowDetachEventHandler = null;
+				private readonly SciterApiDelegates.SciterSendEvent _sciterSendEvent = null;
+				private readonly SciterApiDelegates.SciterPostEvent _sciterPostEvent = null;
+				private readonly SciterApiDelegates.SciterCallBehaviorMethod _sciterCallBehaviorMethod = null;
+				private readonly SciterApiDelegates.SciterRequestElementData _sciterRequestElementData = null;
+				private readonly SciterApiDelegates.SciterHttpRequest _sciterHttpRequest = null;
+				private readonly SciterApiDelegates.SciterGetScrollInfo _sciterGetScrollInfo = null;
+				private readonly SciterApiDelegates.SciterSetScrollPos _sciterSetScrollPos = null;
+				private readonly SciterApiDelegates.SciterGetElementIntrinsicWidths _sciterGetElementIntrinsicWidths = null;
+				private readonly SciterApiDelegates.SciterGetElementIntrinsicHeight _sciterGetElementIntrinsicHeight = null;
+				private readonly SciterApiDelegates.SciterIsElementVisible _sciterIsElementVisible = null;
+				private readonly SciterApiDelegates.SciterIsElementEnabled _sciterIsElementEnabled = null;
+				private readonly SciterApiDelegates.SciterSortElements _sciterSortElements = null;
+				private readonly SciterApiDelegates.SciterSwapElements _sciterSwapElements = null;
+				private readonly SciterApiDelegates.SciterTraverseUiEvent _sciterTraverseUIEvent = null;
+				private readonly SciterApiDelegates.SciterCallScriptingMethod _sciterCallScriptingMethod = null;
+				private readonly SciterApiDelegates.SciterCallScriptingFunction _sciterCallScriptingFunction = null;
+				private readonly SciterApiDelegates.SciterEvalElementScript _sciterEvalElementScript = null;
+				private readonly SciterApiDelegates.SciterAttachHwndToElement _sciterAttachHwndToElement = null;
+				private readonly SciterApiDelegates.SciterControlGetType _sciterControlGetType = null;
+				private readonly SciterApiDelegates.SciterGetValue _sciterGetValue = null;
+				private readonly SciterApiDelegates.SciterSetValue _sciterSetValue = null;
+				private readonly SciterApiDelegates.SciterGetExpando _sciterGetExpando = null;
+				private readonly SciterApiDelegates.SciterGetObject _sciterGetObject = null;
+				private readonly SciterApiDelegates.SciterGetElementNamespace _sciterGetElementNamespace = null;
+				private readonly SciterApiDelegates.SciterGetHighlightedElement _sciterGetHighlightedElement = null;
+				private readonly SciterApiDelegates.SciterSetHighlightedElement _sciterSetHighlightedElement = null;
 				
 				#endregion
 			
 				#region DOM Node API 
 				
-				private readonly SciterApi.SCITER_NODE_ADD_REF _sciterNodeAddRef = null;
-				private readonly SciterApi.SCITER_NODE_RELEASE _sciterNodeRelease = null;
-				private readonly SciterApi.SCITER_NODE_CAST_FROM_ELEMENT _sciterNodeCastFromElement = null;
-				private readonly SciterApi.SCITER_NODE_CAST_TO_ELEMENT _sciterNodeCastToElement = null;
-				private readonly SciterApi.SCITER_NODE_FIRST_CHILD _sciterNodeFirstChild = null;
-				private readonly SciterApi.SCITER_NODE_LAST_CHILD _sciterNodeLastChild = null;
-				private readonly SciterApi.SCITER_NODE_NEXT_SIBLING _sciterNodeNextSibling = null;
-				private readonly SciterApi.SCITER_NODE_PREV_SIBLING _sciterNodePrevSibling = null;
-				private readonly SciterApi.SCITER_NODE_PARENT _sciterNodeParent = null;
-				private readonly SciterApi.SCITER_NODE_NTH_CHILD _sciterNodeNthChild = null;
-				private readonly SciterApi.SCITER_NODE_CHILDREN_COUNT _sciterNodeChildrenCount = null;
-				private readonly SciterApi.SCITER_NODE_TYPE _sciterNodeType = null;
-				private readonly SciterApi.SCITER_NODE_GET_TEXT _sciterNodeGetText = null;
-				private readonly SciterApi.SCITER_NODE_SET_TEXT _sciterNodeSetText = null;
-				private readonly SciterApi.SCITER_NODE_INSERT _sciterNodeInsert = null;
-				private readonly SciterApi.SCITER_NODE_REMOVE _sciterNodeRemove = null;
-				private readonly SciterApi.SCITER_CREATE_TEXT_NODE _sciterCreateTextNode = null;
-				private readonly SciterApi.SCITER_CREATE_COMMENT_NODE _sciterCreateCommentNode = null;
+				private readonly SciterApiDelegates.SciterNodeAddRef _sciterNodeAddRef = null;
+				private readonly SciterApiDelegates.SciterNodeRelease _sciterNodeRelease = null;
+				private readonly SciterApiDelegates.SciterNodeCastFromElement _sciterNodeCastFromElement = null;
+				private readonly SciterApiDelegates.SciterNodeCastToElement _sciterNodeCastToElement = null;
+				private readonly SciterApiDelegates.SciterNodeFirstChild _sciterNodeFirstChild = null;
+				private readonly SciterApiDelegates.SciterNodeLastChild _sciterNodeLastChild = null;
+				private readonly SciterApiDelegates.SciterNodeNextSibling _sciterNodeNextSibling = null;
+				private readonly SciterApiDelegates.SciterNodePrevSibling _sciterNodePrevSibling = null;
+				private readonly SciterApiDelegates.SciterNodeParent _sciterNodeParent = null;
+				private readonly SciterApiDelegates.SciterNodeNthChild _sciterNodeNthChild = null;
+				private readonly SciterApiDelegates.SciterNodeChildrenCount _sciterNodeChildrenCount = null;
+				private readonly SciterApiDelegates.SciterNodeType _sciterNodeType = null;
+				private readonly SciterApiDelegates.SciterNodeGetText _sciterNodeGetText = null;
+				private readonly SciterApiDelegates.SciterNodeSetText _sciterNodeSetText = null;
+				private readonly SciterApiDelegates.SciterNodeInsert _sciterNodeInsert = null;
+				private readonly SciterApiDelegates.SciterNodeRemove _sciterNodeRemove = null;
+				private readonly SciterApiDelegates.SciterCreateTextNode _sciterCreateTextNode = null;
+				private readonly SciterApiDelegates.SciterCreateCommentNode _sciterCreateCommentNode = null;
 				
 				#endregion
 	
 				#region Value API 
 				
-				private readonly SciterApi.VALUE_INIT _valueInit = null;
-				private readonly SciterApi.VALUE_CLEAR _valueClear = null;
-				private readonly SciterApi.VALUE_COMPARE _valueCompare = null;
-				private readonly SciterApi.VALUE_COPY _valueCopy = null;
-				private readonly SciterApi.VALUE_ISOLATE _valueIsolate = null;
-				private readonly SciterApi.VALUE_TYPE _valueType = null;
-				private readonly SciterApi.VALUE_STRING_DATA _valueStringData = null;
-				private readonly SciterApi.VALUE_STRING_DATA_SET _valueStringDataSet = null;
-				private readonly SciterApi.VALUE_INT_DATA _valueIntData = null;
-				private readonly SciterApi.VALUE_INT_DATA_SET _valueIntDataSet = null;
-				private readonly SciterApi.VALUE_INT_64DATA _valueInt64Data = null;
-				private readonly SciterApi.VALUE_INT_64DATA_SET _valueInt64DataSet = null;
-				private readonly SciterApi.VALUE_FLOAT_DATA _valueFloatData = null;
-				private readonly SciterApi.VALUE_FLOAT_DATA_SET _valueFloatDataSet = null;
-				private readonly SciterApi.VALUE_BINARY_DATA _valueBinaryData = null;
-				private readonly SciterApi.VALUE_BINARY_DATA_SET _valueBinaryDataSet = null;
-				private readonly SciterApi.VALUE_ELEMENTS_COUNT _valueElementsCount = null;
-				private readonly SciterApi.VALUE_NTH_ELEMENT_VALUE _valueNthElementValue = null;
-				private readonly SciterApi.VALUE_NTH_ELEMENT_VALUE_SET _valueNthElementValueSet = null;
-				private readonly SciterApi.VALUE_NTH_ELEMENT_KEY _valueNthElementKey = null;
-				private readonly SciterApi.VALUE_ENUM_ELEMENTS _valueEnumElements = null;
-				private readonly SciterApi.VALUE_SET_VALUE_TO_KEY _valueSetValueToKey = null;
-				private readonly SciterApi.VALUE_GET_VALUE_OF_KEY _valueGetValueOfKey = null;
-				private readonly SciterApi.VALUE_TO_STRING _valueToString = null;
-				private readonly SciterApi.VALUE_FROM_STRING _valueFromString = null;
-				private readonly SciterApi.VALUE_INVOKE _valueInvoke = null;
-				private readonly SciterApi.VALUE_NATIVE_FUNCTOR_SET _valueNativeFunctorSet = null;
-				private readonly SciterApi.VALUE_IS_NATIVE_FUNCTOR _valueIsNativeFunctor = null;
+				private readonly SciterApiDelegates.ValueInit _valueInit = null;
+				private readonly SciterApiDelegates.ValueClear _valueClear = null;
+				private readonly SciterApiDelegates.ValueCompare _valueCompare = null;
+				private readonly SciterApiDelegates.ValueCopy _valueCopy = null;
+				private readonly SciterApiDelegates.ValueIsolate _valueIsolate = null;
+				private readonly SciterApiDelegates.ValueType _valueType = null;
+				private readonly SciterApiDelegates.ValueStringData _valueStringData = null;
+				private readonly SciterApiDelegates.ValueStringDataSet _valueStringDataSet = null;
+				private readonly SciterApiDelegates.ValueIntData _valueIntData = null;
+				private readonly SciterApiDelegates.ValueIntDataSet _valueIntDataSet = null;
+				private readonly SciterApiDelegates.ValueInt64Data _valueInt64Data = null;
+				private readonly SciterApiDelegates.ValueInt64DataSet _valueInt64DataSet = null;
+				private readonly SciterApiDelegates.ValueFloatData _valueFloatData = null;
+				private readonly SciterApiDelegates.ValueFloatDataSet _valueFloatDataSet = null;
+				private readonly SciterApiDelegates.ValueBinaryData _valueBinaryData = null;
+				private readonly SciterApiDelegates.ValueBinaryDataSet _valueBinaryDataSet = null;
+				private readonly SciterApiDelegates.ValueElementsCount _valueElementsCount = null;
+				private readonly SciterApiDelegates.ValueNthElementValue _valueNthElementValue = null;
+				private readonly SciterApiDelegates.ValueNthElementValueSet _valueNthElementValueSet = null;
+				private readonly SciterApiDelegates.ValueNthElementKey _valueNthElementKey = null;
+				private readonly SciterApiDelegates.ValueEnumElements _valueEnumElements = null;
+				private readonly SciterApiDelegates.ValueSetValueToKey _valueSetValueToKey = null;
+				private readonly SciterApiDelegates.ValueGetValueOfKey _valueGetValueOfKey = null;
+				private readonly SciterApiDelegates.ValueToString _valueToString = null;
+				private readonly SciterApiDelegates.ValueFromString _valueFromString = null;
+				private readonly SciterApiDelegates.ValueInvoke _valueInvoke = null;
+				private readonly SciterApiDelegates.ValueNativeFunctorSet _valueNativeFunctorSet = null;
+				private readonly SciterApiDelegates.ValueIsNativeFunctor _valueIsNativeFunctor = null;
 				
 				#endregion
 				
-				#region TIScript VM API
+				#region Used to be script VM API (Deprecated in v4.4.3.24)
 				
-				private readonly SciterApi.TI_SCRIPT_API _tIScriptAPI = null;
-				
-				private readonly SciterApi.SCITER_GET_VM _sciterGetVM = null;
-
-				private readonly SciterApi.SCITER_v2V _sciter_v2V = null;
-				private readonly SciterApi.SCITER_V2v _sciter_V2v = null;
+				private readonly SciterApiDelegates.Reserved1 _reserved1 = null;
+				private readonly SciterApiDelegates.Reserved2 _reserved2 = null;
+				private readonly SciterApiDelegates.Reserved3 _reserved3 = null;
+				private readonly SciterApiDelegates.Reserved4 _reserved4 = null;
 				
 				#endregion
 			
 				#region Archive
 				
-				private readonly SciterApi.SCITER_OPEN_ARCHIVE _sciterOpenArchive = null;
-				private readonly SciterApi.SCITER_GET_ARCHIVE_ITEM _sciterGetArchiveItem = null;
-				private readonly SciterApi.SCITER_CLOSE_ARCHIVE _sciterCloseArchive = null;
+				private readonly SciterApiDelegates.SciterOpenArchive _sciterOpenArchive = null;
+				private readonly SciterApiDelegates.SciterGetArchiveItem _sciterGetArchiveItem = null;
+				private readonly SciterApiDelegates.SciterCloseArchive _sciterCloseArchive = null;
 				
 				#endregion
 
-				private readonly SciterApi.SCITER_FIRE_EVENT _sciterFireEvent = null;
+				private readonly SciterApiDelegates.SciterFireEvent _sciterFireEvent = null;
 
-				private readonly SciterApi.SCITER_GET_CALLBACK_PARAM _sciterGetCallbackParam = null;
-				private readonly SciterApi.SCITER_POST_CALLBACK _sciterPostCallback = null;
-				private readonly SciterApi.GET_SCITER_GRAPHICS_API _getSciterGraphicsAPI = null;
-				private readonly SciterApi.GET_SCITER_REQUEST_API _getSciterRequestAPI = null;
+				private readonly SciterApiDelegates.SciterGetCallbackParam _sciterGetCallbackParam = null;
+				private readonly SciterApiDelegates.SciterPostCallback _sciterPostCallback = null;
+				private readonly SciterApiDelegates.GetSciterGraphicsApi _getSciterGraphicsAPI = null;
+				private readonly SciterApiDelegates.GetSciterRequestApi _getSciterRequestAPI = null;
 
 				#region DirectX
 				
-				private readonly SciterApi.SCITER_CREATE_ON_DIRECT_X_WINDOW _sciterCreateOnDirectXWindow = null;
-				private readonly SciterApi.SCITER_RENDER_ON_DIRECT_X_WINDOW _sciterRenderOnDirectXWindow = null;
-				private readonly SciterApi.SCITER_RENDER_ON_DIRECT_X_TEXTURE _sciterRenderOnDirectXTexture = null;
+				private readonly SciterApiDelegates.SciterCreateOnDirectXWindow _sciterCreateOnDirectXWindow = null;
+				private readonly SciterApiDelegates.SciterRenderOnDirectXWindow _sciterRenderOnDirectXWindow = null;
+				private readonly SciterApiDelegates.SciterRenderOnDirectXTexture _sciterRenderOnDirectXTexture = null;
 				
 				#endregion
 
-				private readonly SciterApi.SCITER_PROC_X _sciterProcX = null; 
+				private readonly SciterApiDelegates.SciterProcX _sciterProcX = null; 
 				
 #pragma warning restore 649
 
-				private NativeSciterApiWrapper(IntPtr sciterApiPtr, object @struct)
+				internal NativeSciterApiWrapper(IntPtr apiPtr)
 				{
-					_sciterApiPtr = sciterApiPtr;
+					_apiPtr = apiPtr;
 					
-					var myFieldInfos = this.GetType().GetFields(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
-					
+					var @struct = Marshal.PtrToStructure<TStruct>(apiPtr);
+
+					var fieldInfoDictionary = GetType()
+						.GetFields(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
+						.Where(w => w.FieldType.GetCustomAttribute<SciterStructMapAttribute>() != null)
+						.ToDictionary(key => key.FieldType.GetCustomAttribute<SciterStructMapAttribute>()?.Name,
+							value => value);
+
 					var fieldInfos = @struct.GetType().GetFields();
 					foreach (var fieldInfo in fieldInfos)
 					{
-						
-						var updateFieldInfo = myFieldInfos.FirstOrDefault(fd => fd.Name.Equals($"_{char.ToLower(fieldInfo.Name[0])}{fieldInfo.Name.Substring(1, fieldInfo.Name.Length-1)}", StringComparison.Ordinal));
-						if (updateFieldInfo != null)
-							updateFieldInfo.SetValue(this, fieldInfo.GetValue(@struct));
+						if (!fieldInfoDictionary.ContainsKey(fieldInfo.Name))
+							continue;
+						fieldInfoDictionary[fieldInfo.Name].SetValue(this, fieldInfo.GetValue(@struct));
 					}
 				}
-
-				internal NativeSciterApiWrapper(IntPtr sciterApiPtr, WindowsSciterApi windowsSciterApi)
-					: this(sciterApiPtr, (object)windowsSciterApi) { }
-
-				internal NativeSciterApiWrapper(IntPtr sciterApiPtr, MacOsSciterApi macOsSciterApi)
-					: this(sciterApiPtr, (object)macOsSciterApi) { }
-
-				internal NativeSciterApiWrapper(IntPtr sciterApiPtr, LinuxSciterApi linuxSciterApi)
-					: this(sciterApiPtr, (object)linuxSciterApi) { }
 
 				public string SciterClassName() =>
 					Marshal.PtrToStringUni(_sciterClassName());
@@ -784,10 +770,10 @@ namespace SciterCore.Interop
 				public SciterXDom.SCDOM_RESULT SciterGetExpando(IntPtr he, out SciterValue.VALUE pval, bool forceCreation) => 
 					_sciterGetExpando(he, out pval, forceCreation);
 
-				public SciterXDom.SCDOM_RESULT SciterGetObject(IntPtr he, out TIScript.tiscript_value pval, bool forceCreation) => 
+				public SciterXDom.SCDOM_RESULT SciterGetObject(IntPtr he, out IntPtr pval, bool forceCreation) => 
 					_sciterGetObject(he, out pval, forceCreation);
 
-				public SciterXDom.SCDOM_RESULT SciterGetElementNamespace(IntPtr he, out TIScript.tiscript_value pval) => 
+				public SciterXDom.SCDOM_RESULT SciterGetElementNamespace(IntPtr he, out IntPtr pval) => 
 					_sciterGetElementNamespace(he, out pval);
 
 				public SciterXDom.SCDOM_RESULT SciterGetHighlightedElement(IntPtr hwnd, out IntPtr phe) => 
@@ -838,8 +824,8 @@ namespace SciterCore.Interop
 				public SciterXDom.SCDOM_RESULT SciterNodeSetText(IntPtr hn, string text, uint textLength) => 
 					_sciterNodeSetText(hn, text, textLength);
 
-				public SciterXDom.SCDOM_RESULT SciterNodeInsert(IntPtr hn, uint @where, IntPtr what) => 
-					_sciterNodeInsert(hn, @where, what);
+				public SciterXDom.SCDOM_RESULT SciterNodeInsert(IntPtr hn, uint where, IntPtr what) => 
+					_sciterNodeInsert(hn, where, what);
 
 				public SciterXDom.SCDOM_RESULT SciterNodeRemove(IntPtr hn, bool finalize) => 
 					_sciterNodeRemove(hn, finalize);
@@ -936,19 +922,17 @@ namespace SciterCore.Interop
 				public SciterValue.VALUE_RESULT ValueIsNativeFunctor(ref SciterValue.VALUE pval) => 
 					_valueIsNativeFunctor(ref pval);
 
-				public IntPtr TIScriptAPI() => 
-					_tIScriptAPI();
-
-				[Obsolete("Deprecated in v4.4.3.24", true)]
-				public IntPtr SciterGetVM(IntPtr hwnd) => 
-					_sciterGetVM(hwnd);
-
-				public bool Sciter_v2V(IntPtr vm, TIScript.tiscript_value scriptValue, ref SciterValue.VALUE value,
-					bool isolate) =>
-					_sciter_v2V(vm, scriptValue, ref value, isolate);
-
-				public bool Sciter_V2v(IntPtr vm, ref SciterValue.VALUE value, ref TIScript.tiscript_value scriptValue) =>
-					_sciter_V2v(vm, ref value, ref scriptValue);
+				public void Reserved1() => 
+					_reserved1();
+				
+				public void Reserved2() => 
+					_reserved2();
+				
+				public void Reserved3() =>
+					_reserved3();
+				
+				public void Reserved4() =>
+					_reserved4();
 				
 				public IntPtr SciterOpenArchive(IntPtr archiveData, uint archiveDataLength) => 
 					_sciterOpenArchive(archiveData, archiveDataLength);
