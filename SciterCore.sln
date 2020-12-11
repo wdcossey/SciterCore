@@ -17,7 +17,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{2ABB
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SciterTest.Mac", "Samples\SciterTest.Mac\SciterTest.Mac.csproj", "{764A2B71-F267-4C2E-A4CD-33E050659BD6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SciterCore.Mac", "Platform\SciterCore.Mac\SciterCore.Mac.csproj", "{42BB6EC1-E806-4B5B-A242-1662AAE7BF25}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SciterCore.MacOS", "Platform\SciterCore.MacOS\SciterCore.MacOS.csproj", "{42BB6EC1-E806-4B5B-A242-1662AAE7BF25}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SciterTest.Core", "Samples\SciterTest.Core\SciterTest.Core.csproj", "{EA51B66E-0862-4D79-8FB9-4BB1ED2CFB59}"
 EndProject
@@ -27,7 +27,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SciterTest.Idioms", "Sample
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SciterCore.Gtk", "Platform\SciterCore.Gtk\SciterCore.Gtk.csproj", "{D60ACAE0-C246-4936-B92B-B756841DB545}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SciterCore.WinForms", "Platform\SciterCore.WinForms\SciterCore.WinForms.csproj", "{18B2E4E7-CB77-44C3-865B-BE05620ABA4D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SciterCore.Windows", "Platform\SciterCore.Windows\SciterCore.Windows.csproj", "{18B2E4E7-CB77-44C3-865B-BE05620ABA4D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{3F91218E-BE78-4C76-8A97-C2CD48E72FE8}"
 EndProject

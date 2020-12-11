@@ -1,5 +1,5 @@
-﻿using SciterCore.Interop;
-using System;
+﻿using System;
+using SciterCore.Interop;
 
 namespace SciterCore
 {

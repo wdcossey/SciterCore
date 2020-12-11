@@ -5,8 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Reflection;
-
-// ReSharper restore RedundantUsingDirective
+using SciterCore.Interop;
 
 // ReSharper disable MemberCanBePrivate.Global
 
@@ -19,6 +18,7 @@ namespace SciterCore.Interop
 		private static readonly object SciterRequestApiLock = new object();
 		private static readonly object SciterScriptApiLock = new object();
 		
+		// TODO: Rename to SciterApi
 		public static ISciterApi Api => GetSciterApi();
 
 		public static ISciterGraphicsApi GraphicsApi => GetGraphicsApi();
@@ -433,7 +433,8 @@ namespace SciterCore.Interop
 				public string SciterClassName() =>
 					Marshal.PtrToStringUni(_sciterClassName());
 
-				int ISciterApi.Version => _version;
+				// ReSharper disable once ConvertToAutoProperty
+				public int Version => _version;
 
 				public uint SciterVersion(bool major) =>
 					_sciterVersion(major);

@@ -12,6 +12,7 @@
         <RepositoryUrl>https://github.com/wdcossey/SciterCore</RepositoryUrl>
         <PackageTags>Sciter SciterCore SciterSharp WinForms WPF Gtk Xamarin</PackageTags>
         <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+        <RootNamespace>SciterCore</RootNamespace>
     </PropertyGroup>
     
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">

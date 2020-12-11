@@ -1,7 +1,6 @@
 using SciterCore;
 using SciterCore.Interop;
 using System;
-using System.Diagnostics;
 
 namespace SciterTest.Idioms
 {

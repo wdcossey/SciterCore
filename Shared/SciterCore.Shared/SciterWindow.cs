@@ -23,6 +23,7 @@ using System.Text;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using SciterCore.Interop;
+using SciterCore.PlatformWrappers;
 #if OSX && XAMARIN
 using AppKit;
 using Foundation;
@@ -51,6 +52,7 @@ namespace SciterCore
 #endif
 	{
 		private static readonly ISciterApi Api = Sciter.Api;
+		private static readonly ISciterWindowWrapper WindowWrapper = SciterWindowWrapper.NativeMethodWrapper.GetInterface();
 
 		private IntPtr _handle;
 
@@ -104,7 +106,7 @@ namespace SciterCore
 #endif
 
 #if GTKMONO
-				_gtkwindow = PInvokeGTK.gtk_widget_get_toplevel(Handle);
+				_gtkwindow = PInvokeGtk.gtk_widget_get_toplevel(Handle);
 				Debug.Assert(_gtkwindow != IntPtr.Zero);
 #elif OSX && XAMARIN
 				_nsview = new OSXView(Handle);
@@ -145,7 +147,7 @@ namespace SciterCore
 				throw new Exception("CreateWindow() failed");
 
 #if GTKMONO
-			_gtkwindow = PInvokeGTK.gtk_widget_get_toplevel(Handle);
+			_gtkwindow = PInvokeGtk.gtk_widget_get_toplevel(Handle);
 			Debug.Assert(_gtkwindow != IntPtr.Zero);
 #elif OSX && XAMARIN
 			_nsview = new OSXView(Handle);
@@ -225,10 +227,8 @@ namespace SciterCore
 
 		public void Destroy()
 		{
-#if WINDOWS || NETCORE
-			PInvokeWindows.DestroyWindow(Handle);
-#elif GTKMONO
-			PInvokeGTK.gtk_widget_destroy(_gtkwindow);
+#if WINDOWS || NETCORE || GTKMONO
+			WindowWrapper.Destroy(Handle);
 #endif
 		}
 
@@ -264,29 +264,11 @@ namespace SciterCore
 		/// <summary>
 		/// Centers the window in the screen. You must call it after the window is created, but before it is shown to avoid flickering
 		/// </summary>
+		// TODO: Rename to CenterWindow
 		public SciterWindow CenterTopLevelWindow()
 		{
-#if WINDOWS || NETCORE
-			PInvokeWindows.GetWindowRect(Handle, out var rectWindow);
-
-			PInvokeUtils.RECT rectWorkArea = new PInvokeUtils.RECT();
-			PInvokeWindows.SystemParametersInfo(PInvokeWindows.SPI_GETWORKAREA, 0, ref rectWorkArea, 0);
-			
-			int nX = (rectWorkArea.Width - rectWindow.Width) / 2 + rectWorkArea.Left;
-			int nY = (rectWorkArea.Height - rectWindow.Height) / 2 + rectWorkArea.Top;
-			
-			PInvokeWindows.MoveWindow(Handle, nX, nY, rectWindow.Width, rectWindow.Height, false);
-#elif GTKMONO
-			int screen_width = PInvokeGTK.gdk_screen_width();
-			int screen_height = PInvokeGTK.gdk_screen_height();
-
-			int window_width, window_height;
-			PInvokeGTK.gtk_window_get_size(_gtkwindow, out window_width, out window_height);
-
-			int nX = (screen_width - window_width) / 2;
-			int nY = (screen_height - window_height) / 2;
-
-			PInvokeGTK.gtk_window_move(_gtkwindow, nX, nY);
+#if WINDOWS || NETCORE || GTKMONO
+			WindowWrapper.CenterWindow(Handle);
 #elif OSX && XAMARIN
 			_nsview.Window.Center();
 #endif
@@ -297,33 +279,26 @@ namespace SciterCore
 		/// Cross-platform handy method to get the size of the screen
 		/// </summary>
 		/// <returns>SIZE measures of the screen of primary monitor</returns>
-		public static SciterSize GetPrimaryMonitorScreenSize()
+		// TODO: Rename to [Get]PrimaryScreenSize
+		public static SciterSize GetPrimaryMonitorScreenSize
 		{
-#if WINDOWS || NETCORE
-			int nScreenWidth = PInvokeWindows.GetSystemMetrics(PInvokeWindows.SystemMetric.SM_CXSCREEN);
-			int nScreenHeight = PInvokeWindows.GetSystemMetrics(PInvokeWindows.SystemMetric.SM_CYSCREEN);
-			return new SciterSize(nScreenWidth, nScreenHeight);
-#elif GTKMONO
-			var screenWidth = PInvokeGTK.gdk_screen_width();
-			var screenHeight = PInvokeGTK.gdk_screen_height();
-			return new SciterSize(screenWidth, screenHeight);
+			get
+			{
+#if WINDOWS || NETCORE || GTKMONO
+				return WindowWrapper.GetPrimaryScreenSize();
 #elif OSX && XAMARIN
-			var sz = NSScreen.MainScreen.Frame.Size;
-			return new SciterSize((int)sz.Width, (int)sz.Height);
+				var sz = NSScreen.MainScreen.Frame.Size;
+				return new SciterSize((int)sz.Width, (int)sz.Height);
 #endif
+			}
 		}
 
 		public SciterSize ScreenSize
 		{
 			get
 			{
-#if WINDOWS || NETCORE
-				IntPtr hmonitor = PInvokeWindows.MonitorFromWindow(Handle, PInvokeWindows.MONITOR_DEFAULTTONEAREST);
-				PInvokeWindows.MONITORINFO mi = new PInvokeWindows.MONITORINFO() { cbSize = Marshal.SizeOf(typeof(PInvokeWindows.MONITORINFO)) };
-				PInvokeWindows.GetMonitorInfo(hmonitor, ref mi);
-				return new SciterSize(mi.rcMonitor.Width, mi.rcMonitor.Height);
-#elif GTKMONO
-				return SciterSize.Empty;
+#if WINDOWS || NETCORE || GTKMONO
+				return WindowWrapper.GetScreenSize(Handle);
 #elif OSX && XAMARIN
 				var sz = _nsview.Window.Screen.Frame.Size;
 				return new SciterSize((int)sz.Width, (int)sz.Height);
@@ -335,13 +310,8 @@ namespace SciterCore
 		{
 			get
 			{
-#if WINDOWS || NETCORE
-				PInvokeWindows.GetWindowRect(Handle, out var rectWindow);
-				return new SciterSize(rectWindow.Width, rectWindow.Height);
-#elif GTKMONO
-				int window_width, window_height;
-				PInvokeGTK.gtk_window_get_size(_gtkwindow, out window_width, out window_height);
-				return new SciterSize(window_width, window_height);
+#if WINDOWS || NETCORE || GTKMONO
+				return WindowWrapper.Size(Handle);
 #elif OSX && XAMARIN
 				var sz = _nsview.Window.Frame.Size;
 				return new SciterSize((int)sz.Width, (int)sz.Height);
@@ -353,11 +323,8 @@ namespace SciterCore
 		{
 			get
 			{
-#if WINDOWS || NETCORE
-				PInvokeWindows.GetWindowRect(Handle, out var rectWindow);
-				return new SciterPoint(rectWindow.Left, rectWindow.Top);
-#elif GTKMONO
-				return SciterPoint.Empty;
+#if WINDOWS || NETCORE || GTKMONO
+				return WindowWrapper.GetPosition(Handle);
 #elif OSX && XAMARIN
 				var pos = _nsview.Window.Frame.Location;
 				return new SciterPoint((int)pos.X, (int)pos.Y);
@@ -366,10 +333,8 @@ namespace SciterCore
 
 			set
 			{
-#if WINDOWS || NETCORE
-				PInvokeWindows.MoveWindow(Handle, value.X, value.Y, Size.Width, Size.Height, false);
-#elif GTKMONO
-				PInvokeGTK.gtk_window_move(_gtkwindow, value.X, value.Y);
+#if WINDOWS || NETCORE || GTKMONO
+				WindowWrapper.SetPosition(Handle, value);
 #elif OSX && XAMARIN
 				var pt = new CoreGraphics.CGPoint(value.X, value.Y);
 				_nsview.Window.SetFrameTopLeftPoint(pt);
@@ -424,13 +389,8 @@ namespace SciterCore
 
 		public SciterWindow Show(bool show = true)
 		{
-#if WINDOWS || NETCORE
-			PInvokeWindows.ShowWindow(Handle, show ? PInvokeWindows.ShowWindowCommands.Show : PInvokeWindows.ShowWindowCommands.Hide);
-#elif GTKMONO
-			if(show)
-				PInvokeGTK.gtk_window_present(_gtkwindow);
-			else
-				PInvokeGTK.gtk_widget_hide(Handle);
+#if WINDOWS || NETCORE || GTKMONO
+			WindowWrapper.Show(Handle, show);
 #elif OSX && XAMARIN
 			if (show)
 			{
@@ -452,8 +412,9 @@ namespace SciterCore
 
 		public void ShowModal()
 		{
-			Show();
-			PInvokeUtils.RunMsgLoop();
+			WindowWrapper.ShowModal(Handle);
+			//Show();
+			//PInvokeUtils.RunMsgLoop();
 		}
 
 
@@ -469,10 +430,8 @@ namespace SciterCore
 			if (args.Cancel)
 				return;
 			
-#if WINDOWS || NETCORE
-			PInvokeWindows.PostMessage(Handle, PInvokeWindows.Win32Msg.WM_CLOSE, IntPtr.Zero, IntPtr.Zero);
-#elif GTKMONO
-			PInvokeGTK.gtk_window_close(_gtkwindow);
+#if WINDOWS || NETCORE || GTKMONO
+			WindowWrapper.Close(Handle);
 #elif OSX && XAMARIN
 			_nsview.Window.Close();
 #endif
@@ -488,10 +447,8 @@ namespace SciterCore
 		{
 			get
 			{
-#if WINDOWS || NETCORE
-				return PInvokeWindows.IsWindowVisible(Handle);
-#elif GTKMONO
-				return PInvokeGTK.gtk_widget_get_visible(_gtkwindow) != 0;
+#if WINDOWS || NETCORE || GTKMONO
+				return WindowWrapper.GetIsVisible(Handle);
 #elif OSX && XAMARIN
 				return _nsview.Window.IsVisible;
 #endif
@@ -516,12 +473,8 @@ namespace SciterCore
         {
 	        Debug.Assert(Handle != IntPtr.Zero);
 			
-#if WINDOWS || NETCORE
-	        IntPtr strPtr = Marshal.StringToHGlobalUni(title);
-			PInvokeWindows.SendMessageW(Handle, PInvokeWindows.Win32Msg.WM_SETTEXT, IntPtr.Zero, strPtr);
-			Marshal.FreeHGlobal(strPtr);
-#elif GTKMONO
-			PInvokeGTK.gtk_window_set_title(_gtkwindow, title);
+#if WINDOWS || NETCORE || GTKMONO
+	        WindowWrapper.SetTitle(Handle, title);
 #elif OSX && XAMARIN
 			_nsview.Window.Title = title;
 #endif
@@ -530,15 +483,8 @@ namespace SciterCore
 		internal string GetTitleInternal()
         {
 	        Debug.Assert(Handle != IntPtr.Zero);
-#if WINDOWS || NETCORE
-	        var unmanagedPointer = Marshal.AllocHGlobal(2048);
-	        var lengthPtr = PInvokeWindows.SendMessageW(Handle, PInvokeWindows.Win32Msg.WM_GETTEXT, new IntPtr(2048), unmanagedPointer);
-	        var title = Marshal.PtrToStringUni(unmanagedPointer, lengthPtr.ToInt32());
-	        Marshal.FreeHGlobal(unmanagedPointer);
-	        return title;
-#elif GTKMONO
-			var titlePtr = PInvokeGTK.gtk_window_get_title(_gtkwindow);
-			return Marshal.PtrToStringAnsi(titlePtr);
+#if WINDOWS || NETCORE || GTKMONO
+	        return WindowWrapper.GetTitle(Handle);
 #elif OSX && XAMARIN
 			return _nsview.Window.Title;
 #endif

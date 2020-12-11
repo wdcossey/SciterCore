@@ -21,7 +21,7 @@ namespace SciterTest.Gtk
 			SciterPlatform.EnableDragAndDrop();
 #endif
 #if GTKMONO
-			PInvokeGTK.gtk_init(IntPtr.Zero, IntPtr.Zero);
+			PInvokeGtk.gtk_init(IntPtr.Zero, IntPtr.Zero);
 			Mono.Setup();
 #endif
 

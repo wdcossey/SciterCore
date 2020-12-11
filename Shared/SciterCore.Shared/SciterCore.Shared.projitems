@@ -82,6 +82,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)HostCallbackRegistry.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)InternalsVisibility.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\Interfaces\ISciterRequestApi.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interop\PInvokeGtk.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interop\PInvokeWindows.Entities.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\SciterGraphics.Entities.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\SciterGraphics.SciterGraphicsApi.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\SciterRequest.Delegates.cs" />
@@ -90,7 +92,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Interop\SciterStructMapAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\Interfaces\ISciterApi.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\Interfaces\ISciterGraphicsApi.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Interop\PInvokeGTK.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\PInvokeUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\PInvokeWindows.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\Sciter.Delegates.cs" />
@@ -109,6 +110,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Interop\SciterVideoApi.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\ScreenCapture.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MessageBox.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformWrappers\Interfaces\ISciterWindowWrapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformWrappers\SciterWindowWrapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformWrappers\WindowWrapper.Linux.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformWrappers\WindowWrapper.Windows.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SciterApplication.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SciterArchive.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SciterDebugOutputHandler.cs" />

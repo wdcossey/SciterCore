@@ -19,6 +19,7 @@
 
 using System;
 using System.Runtime.InteropServices;
+using SciterCore.Interop;
 
 namespace SciterCore.Interop
 {

@@ -71,12 +71,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Platform\SciterCore.WinForms\SciterCore.WinForms.csproj">
-      <Project>{18b2e4e7-cb77-44c3-865b-be05620aba4d}</Project>
-      <Name>SciterCore.WinForms</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="wwwroot\index.html" />
   </ItemGroup>
   <ItemGroup>
@@ -87,6 +81,12 @@
     <PackageReference Include="xunit.core" Version="2.4.1" />
     <PackageReference Include="xunit.extensibility.core" Version="2.4.1" />
     <PackageReference Include="xunit.extensibility.execution" Version="2.4.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Platform\SciterCore.Windows\SciterCore.Windows.csproj">
+      <Project>{18b2e4e7-cb77-44c3-865b-be05620aba4d}</Project>
+      <Name>SciterCore.Windows</Name>
+    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
