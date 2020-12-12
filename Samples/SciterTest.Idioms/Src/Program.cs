@@ -15,7 +15,7 @@ namespace SciterTest.Idioms
 			// Create the window
 			var window = new SciterWindow()
 				.CreateMainWindow(1500, 800)
-				.CenterTopLevelWindow()
+				.CenterWindow()
 				.SetTitle("SciterTest.Idioms")
 				.SetIcon(Properties.Resources.IconMain);
 

@@ -39,7 +39,7 @@ namespace SciterTest.Graphics
 
 			// Create the window
 			var window = new SciterWindow().CreateMainWindow(800, 600)
-				.CenterTopLevelWindow()
+				.CenterWindow()
 				.SetTitle("SciterTest.Graphics");
 
 			// Prepares SciterHost and then load the page

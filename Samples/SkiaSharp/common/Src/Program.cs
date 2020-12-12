@@ -20,7 +20,7 @@ namespace SciterTest.Graphics
 			// Create the window
 			var window = new SciterWindow()
 				.CreateMainWindow(1500, 800)
-				.CenterTopLevelWindow()
+				.CenterWindow()
 				.SetTitle("SciterCore::Framework::Graphics::SkiaSharp");
 #if WINDOWS
 			window.SetIcon(Properties.Resources.IconMain);

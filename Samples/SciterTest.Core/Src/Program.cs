@@ -43,7 +43,7 @@ namespace SciterTest.Core
 			// Create the window
 			AppWindow = new SciterWindow()
 				.CreateMainWindow(800, 600)
-                .CenterTopLevelWindow()
+                .CenterWindow()
                 .SetTitle("SciterTest.Core")
                 .SetIcon(Properties.Resources.IconMain);
 			

@@ -7,7 +7,7 @@ namespace SciterTest.NetCore
 		public ApplicationWindow()
 		{
 			CreateMainWindow(800, 600)
-				.CenterTopLevelWindow()
+				.CenterWindow()
 				.SetTitle("SciterCore::NetCore::Playground");
 		}
 	}

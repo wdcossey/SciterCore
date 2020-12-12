@@ -117,7 +117,7 @@ namespace SciterCore.Tests.Integration
                 var sciterWindow = 
                     new SciterWindow()
                         .CreateMainWindow(320, 240)
-                        .CenterTopLevelWindow()
+                        .CenterWindow()
                         .SetTitle(nameof(SciterGraphicsTests));
                 
                 var host = new TestHost(sciterWindow);
@@ -159,7 +159,7 @@ namespace SciterCore.Tests.Integration
                 var sciterWindow = 
                     new SciterWindow()
                         .CreateMainWindow(320, 240)
-                        .CenterTopLevelWindow()
+                        .CenterWindow()
                         .SetTitle(nameof(SciterGraphicsTests));
                 
                 var host = new TestHost(sciterWindow);
@@ -205,7 +205,7 @@ namespace SciterCore.Tests.Integration
                 var sciterWindow = 
                     new SciterWindow()
                         .CreateMainWindow(320, 240)
-                        .CenterTopLevelWindow()
+                        .CenterWindow()
                         .SetTitle(nameof(SciterGraphicsTests));
                 
                 var host = new TestHost(sciterWindow);

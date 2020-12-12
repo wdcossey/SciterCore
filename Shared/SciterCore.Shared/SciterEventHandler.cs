@@ -140,6 +140,18 @@ namespace SciterCore
 				.Create(this, element, method, args)
 				.Execute();
 		}
+		
+		/// <summary>
+		/// This method is typically used with WinForms applications
+		/// </summary>
+		/// <param name="element"></param>
+		/// <param name="methodName"></param>
+		/// <param name="args"></param>
+		// TODO: Should be specific to WinForms?
+		protected virtual ScriptEventResult OnScriptCall(SciterElement element, string methodName, SciterValue[] args)
+		{
+			return ScriptEventResult.Failed();
+		}
 
 		/// <summary>
 		/// 
@@ -329,14 +341,18 @@ namespace SciterCore
 						SciterBehaviors.SCRIPTING_METHOD_PARAMS p = Marshal.PtrToStructure<SciterBehaviors.SCRIPTING_METHOD_PARAMS>(prms);
 						SciterBehaviors.SCRIPTING_METHOD_PARAMS_WRAPPER pw = new SciterBehaviors.SCRIPTING_METHOD_PARAMS_WRAPPER(p);
 						
+						var scriptResult = OnScriptCall(source, pw.name, pw.args);
+
+						//TODO: Clean this up!
+						if (scriptResult.IsSuccessful)
+							return scriptResult.IsSuccessful;
+						
 						var methodInfo = GetType().GetMethod(pw.name) ?? GetType().GetMethods().SingleOrDefault(s => s.GetCustomAttributes<SciterFunctionNameAttribute>().Any(a => a.FunctionName.Equals(pw.name)));
 
 						if (methodInfo == null)
-						{
 							return false;
-						}
 
-						var scriptResult = OnScriptCall(source, methodInfo, pw.args);
+						scriptResult = OnScriptCall(source, methodInfo, pw.args);
 						
 						if (scriptResult.IsSuccessful)
 						{

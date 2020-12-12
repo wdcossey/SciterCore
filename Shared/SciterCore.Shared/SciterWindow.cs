@@ -61,10 +61,16 @@ namespace SciterCore
 			get => _handle;
 			protected set => _handle = value;
 		}
-
-#if GTKMONO || NETCORE
-		public IntPtr _gtkwindow { get; private set; }
-#elif OSX && XAMARIN
+		
+		private IntPtr _windowHandle;
+		
+		public IntPtr WindowHandle
+		{
+			get => _windowHandle;
+			protected set => _windowHandle = value;
+		}
+		
+#if OSX && XAMARIN
 		public NSView _nsview { get; private set; }
 #endif
 
@@ -100,14 +106,14 @@ namespace SciterCore
 
 			if (!weakReference)
 			{
-
 #if WINDOWS || NETCORE
+				WindowHandle = Handle;
 				WindowDelegateRegistry.Set(this, InternalProcessSciterWindowMessage);
 #endif
 
 #if GTKMONO
-				_gtkwindow = PInvokeGtk.gtk_widget_get_toplevel(Handle);
-				Debug.Assert(_gtkwindow != IntPtr.Zero);
+				WindowHandle = PInvokeGtk.gtk_widget_get_toplevel(Handle);
+				Debug.Assert(WindowHandle != IntPtr.Zero);
 #elif OSX && XAMARIN
 				_nsview = new OSXView(Handle);
 #endif
@@ -146,9 +152,11 @@ namespace SciterCore
 			if(Handle == IntPtr.Zero)
 				throw new Exception("CreateWindow() failed");
 
-#if GTKMONO
-			_gtkwindow = PInvokeGtk.gtk_widget_get_toplevel(Handle);
-			Debug.Assert(_gtkwindow != IntPtr.Zero);
+#if WINDOWS || NETCORE && !GTKMONO
+			WindowHandle = Handle;
+#elif GTKMONO
+			WindowHandle = PInvokeGtk.gtk_widget_get_toplevel(Handle);
+			Debug.Assert(WindowHandle != IntPtr.Zero);
 #elif OSX && XAMARIN
 			_nsview = new OSXView(Handle);
 #endif
@@ -184,7 +192,7 @@ namespace SciterCore
 		}*/
 
 #if WINDOWS || NETCORE
-		public SciterWindow CreateChildWindow(IntPtr hwndParent, SciterXDef.SCITER_CREATE_WINDOW_FLAGS flags = SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_CHILD)
+		public static SciterWindow CreateChildWindow(IntPtr hwndParent, SciterXDef.SCITER_CREATE_WINDOW_FLAGS flags = SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_CHILD)
 		{
 			if(PInvokeWindows.IsWindow(hwndParent) == false)
 				throw new ArgumentException("Invalid parent window");
@@ -198,39 +206,33 @@ namespace SciterCore
 #if true
             string wndclass = Api.SciterClassName();
 
-            Handle = PInvokeWindows.CreateWindowEx(
-				(int)(PInvokeWindows.WindowStyles.WS_EX_TRANSPARENT),
-                wndclass,
-				null,
-                (int)PInvokeWindows.WindowStyles.WS_CHILD,
-                0, 
-                0, 
-                frame.Right, 
-                frame.Bottom,
-                hwndParent,
-				IntPtr.Zero,
-				IntPtr.Zero,
-				IntPtr.Zero);
+            var childWindowHandle = PInvokeWindows.CreateWindowEx(
+	            (int)(PInvokeWindows.WindowStyles.WS_EX_TRANSPARENT),
+	            wndclass,
+	            null,
+	            (int)PInvokeWindows.WindowStyles.WS_CHILD,
+	            0, 
+	            0, 
+	            frame.Right, 
+	            frame.Bottom,
+	            hwndParent,
+	            IntPtr.Zero,
+	            IntPtr.Zero,
+	            IntPtr.Zero);
+
+            return new SciterWindow(childWindowHandle);
+            
             
 			//Hwnd = PInvokeWindows.CreateWindowEx(0, wndclass, null, (int)PInvokeWindows.WindowStyles.WS_CHILD, 0, 0, frame.Right, frame.Bottom, hwnd_parent, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero);
 			//SetSciterOption(SciterXDef.SCITER_RT_OPTIONS.SCITER_SET_DEBUG_MODE, new IntPtr(1));// NO, user should opt for it
 #else
 			Hwnd = _api.SciterCreateWindow(flags, ref frame, _proc, IntPtr.Zero, hwnd_parent);
 #endif
-
-			if(Handle == IntPtr.Zero)
-				throw new Exception("CreateChildWindow() failed");
-
-            return this;
 		}
 #endif
 
-		public void Destroy()
-		{
-#if WINDOWS || NETCORE || GTKMONO
-			WindowWrapper.Destroy(Handle);
-#endif
-		}
+		public void Destroy() => 
+			WindowWrapper.Destroy(WindowHandle);
 
 #if WINDOWS || NETCORE
 		public bool ModifyStyle(PInvokeWindows.WindowStyles dwRemove, PInvokeWindows.WindowStyles dwAdd)
@@ -264,82 +266,90 @@ namespace SciterCore
 		/// <summary>
 		/// Centers the window in the screen. You must call it after the window is created, but before it is shown to avoid flickering
 		/// </summary>
-		// TODO: Rename to CenterWindow
-		public SciterWindow CenterTopLevelWindow()
+		public SciterWindow CenterWindow()
 		{
-#if WINDOWS || NETCORE || GTKMONO
-			WindowWrapper.CenterWindow(Handle);
-#elif OSX && XAMARIN
+#if OSX && XAMARIN
 			_nsview.Window.Center();
+#else
+			WindowWrapper.CenterWindow(WindowHandle);
 #endif
 			return this;
 		}
 
 		/// <summary>
-		/// Cross-platform handy method to get the size of the screen
+		/// Dimensions of the Primary Screen
 		/// </summary>
-		/// <returns>SIZE measures of the screen of primary monitor</returns>
-		// TODO: Rename to [Get]PrimaryScreenSize
-		public static SciterSize GetPrimaryMonitorScreenSize
+		/// <returns><see cref="SciterSize"/> dimensions of the primary</returns>
+		public static SciterSize PrimaryScreenSize
 		{
 			get
 			{
-#if WINDOWS || NETCORE || GTKMONO
-				return WindowWrapper.GetPrimaryScreenSize();
-#elif OSX && XAMARIN
+#if OSX && XAMARIN
 				var sz = NSScreen.MainScreen.Frame.Size;
 				return new SciterSize((int)sz.Width, (int)sz.Height);
+#else
+				return WindowWrapper.GetPrimaryScreenSize();
 #endif
 			}
 		}
 
+		/// <summary>
+		/// Dimensions of the Screen (owning the <see cref="SciterWindow"/>)
+		/// </summary>
 		public SciterSize ScreenSize
 		{
 			get
 			{
-#if WINDOWS || NETCORE || GTKMONO
-				return WindowWrapper.GetScreenSize(Handle);
-#elif OSX && XAMARIN
+#if OSX && XAMARIN
 				var sz = _nsview.Window.Screen.Frame.Size;
 				return new SciterSize((int)sz.Width, (int)sz.Height);
+#else
+				return WindowWrapper.GetScreenSize(WindowHandle);
 #endif
 			}
 		}
 
+		/// <summary>
+		/// Dimensions of this <see cref="SciterWindow"/>
+		/// </summary>
 		public SciterSize Size
 		{
 			get
 			{
-#if WINDOWS || NETCORE || GTKMONO
-				return WindowWrapper.Size(Handle);
-#elif OSX && XAMARIN
+#if OSX && XAMARIN
 				var sz = _nsview.Window.Frame.Size;
 				return new SciterSize((int)sz.Width, (int)sz.Height);
+#else
+				return WindowWrapper.Size(WindowHandle);
 #endif
 			}
 		}
 
-		public SciterPoint Position
+		/// <summary>
+		/// Get the position of this <see cref="SciterWindow"/> on the Screen
+		/// </summary>
+		public SciterPoint GetPosition()
 		{
-			get
-			{
-#if WINDOWS || NETCORE || GTKMONO
-				return WindowWrapper.GetPosition(Handle);
-#elif OSX && XAMARIN
-				var pos = _nsview.Window.Frame.Location;
-				return new SciterPoint((int)pos.X, (int)pos.Y);
+#if OSX && XAMARIN
+			var pos = _nsview.Window.Frame.Location;
+			return new SciterPoint((int)pos.X, (int)pos.Y);
+#else
+			return WindowWrapper.GetPosition(WindowHandle);
 #endif
-			}
+		}
 
-			set
-			{
-#if WINDOWS || NETCORE || GTKMONO
-				WindowWrapper.SetPosition(Handle, value);
-#elif OSX && XAMARIN
-				var pt = new CoreGraphics.CGPoint(value.X, value.Y);
-				_nsview.Window.SetFrameTopLeftPoint(pt);
+		/// <summary>
+		/// Set the position of this <see cref="SciterWindow"/> on the Screen
+		/// </summary>
+		public SciterWindow SetPosition(SciterPoint point)
+		{
+#if OSX && XAMARIN
+			var pt = new CoreGraphics.CGPoint(point.X, point.Y);
+			_nsview.Window.SetFrameTopLeftPoint(pt);
+#else
+			WindowWrapper.SetPosition(WindowHandle, point);
 #endif
-			}
+			return this;
 		}
 
 		/// <summary>
@@ -389,9 +399,7 @@ namespace SciterCore
 
 		public SciterWindow Show(bool show = true)
 		{
-#if WINDOWS || NETCORE || GTKMONO
-			WindowWrapper.Show(Handle, show);
-#elif OSX && XAMARIN
+#if OSX && XAMARIN
 			if (show)
 			{
 				_nsview.Window.MakeMainWindow();
@@ -401,6 +409,8 @@ namespace SciterCore
 			{
 				_nsview.Window.OrderOut(_nsview.Window);// PerformMiniaturize?
 			}
+#else
+			WindowWrapper.Show(WindowHandle, show);
 #endif
 			
 			OnWindowShow?.Invoke(this, EventArgs.Empty);
@@ -412,7 +422,7 @@ namespace SciterCore
 
 		public void ShowModal()
 		{
-			WindowWrapper.ShowModal(Handle);
+			WindowWrapper.ShowModal(WindowHandle);
 			//Show();
 			//PInvokeUtils.RunMsgLoop();
 		}
@@ -430,10 +440,10 @@ namespace SciterCore
 			if (args.Cancel)
 				return;
 			
-#if WINDOWS || NETCORE || GTKMONO
-			WindowWrapper.Close(Handle);
-#elif OSX && XAMARIN
+#if OSX && XAMARIN
 			_nsview.Window.Close();
+#else
+			WindowWrapper.Close(WindowHandle);
 #endif
 			
 			OnWindowClosed?.Invoke(this, EventArgs.Empty);
@@ -447,10 +457,10 @@ namespace SciterCore
 		{
 			get
 			{
-#if WINDOWS || NETCORE || GTKMONO
-				return WindowWrapper.GetIsVisible(Handle);
-#elif OSX && XAMARIN
+#if OSX && XAMARIN
 				return _nsview.Window.IsVisible;
+#else
+				return WindowWrapper.GetIsVisible(WindowHandle);
 #endif
 			}
 		}
@@ -460,9 +470,9 @@ namespace SciterCore
         {
             // instead of using this property, you can use View.windowIcon on all platforms
 			// larger icon
-			PInvokeWindows.SendMessageW(Handle, PInvokeWindows.Win32Msg.WM_SETICON, new IntPtr(1), icon.Handle);
+			PInvokeWindows.SendMessageW(WindowHandle, PInvokeWindows.Win32Msg.WM_SETICON, new IntPtr(1), icon.Handle);
 			// small icon
-			PInvokeWindows.SendMessageW(Handle, PInvokeWindows.Win32Msg.WM_SETICON, IntPtr.Zero, new Icon(icon, 16, 16).Handle);
+			PInvokeWindows.SendMessageW(WindowHandle, PInvokeWindows.Win32Msg.WM_SETICON, IntPtr.Zero, new Icon(icon, 16, 16).Handle);
             return this;
         }
 #endif
@@ -471,22 +481,22 @@ namespace SciterCore
 		
 		internal void SetTitleInternal(string title)
         {
-	        Debug.Assert(Handle != IntPtr.Zero);
-			
-#if WINDOWS || NETCORE || GTKMONO
-	        WindowWrapper.SetTitle(Handle, title);
-#elif OSX && XAMARIN
+	        Debug.Assert(WindowHandle != IntPtr.Zero);
+	        
+#if OSX && XAMARIN
 			_nsview.Window.Title = title;
+#else
+	        WindowWrapper.SetTitle(WindowHandle, title);
 #endif
         }
 
 		internal string GetTitleInternal()
         {
-	        Debug.Assert(Handle != IntPtr.Zero);
-#if WINDOWS || NETCORE || GTKMONO
-	        return WindowWrapper.GetTitle(Handle);
-#elif OSX && XAMARIN
+	        Debug.Assert(WindowHandle != IntPtr.Zero);
+#if OSX && XAMARIN
 			return _nsview.Window.Title;
+#else
+	        return WindowWrapper.GetTitle(WindowHandle);
 #endif
         }
 
@@ -666,12 +676,12 @@ namespace SciterCore
 		private IntPtr InternalProcessSciterWindowMessage(IntPtr hwnd, uint msg, IntPtr wParam, IntPtr lParam, IntPtr pParam, ref bool handled)
 		{
 			Debug.Assert(pParam.ToInt32() == 0);
-			Debug.Assert(Handle.ToInt32() == 0 || hwnd == Handle);
+			Debug.Assert(WindowHandle.ToInt32() == 0 || hwnd == WindowHandle);
 
 			IntPtr lResult = IntPtr.Zero;
 			handled = ProcessWindowMessage(hwnd, msg, wParam, lParam, ref lResult);
 
-			if (msg == (int) PInvokeWindows.Win32Msg.WM_CLOSE && hwnd == this._handle)
+			if (msg == (int) PInvokeWindows.Win32Msg.WM_CLOSE && hwnd == WindowHandle)
 				this.Dispose();
 			
 			return lResult;

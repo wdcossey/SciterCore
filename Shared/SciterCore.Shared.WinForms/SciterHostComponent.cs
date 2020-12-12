@@ -1,9 +1,45 @@
 ﻿using System;
 using SciterCore.Interop;
 using System.ComponentModel;
+using System.Reflection;
+using System.Threading.Tasks;
 
 namespace SciterCore.WinForms
 {
+
+    public class SciterFormsEventHandler : SciterEventHandler
+    {
+        internal event EventHandler<ScriptCallEventArgs> InternalScriptCall;
+        
+        protected override bool OnEvent(SciterElement sourceElement, SciterElement targetElement, SciterBehaviors.BEHAVIOR_EVENTS eventType, IntPtr reason,
+            SciterValue data, string eventName)
+        {
+            return base.OnEvent(sourceElement, targetElement, eventType, reason, data, eventName);
+        }
+
+        protected override bool OnMethodCall(SciterElement element, SciterBehaviors.BEHAVIOR_METHOD_IDENTIFIERS methodId)
+        {
+            return base.OnMethodCall(element, methodId);
+        }
+
+        protected override ScriptEventResult OnScriptCall(SciterElement element, MethodInfo method, SciterValue[] args)
+        {
+            return base.OnScriptCall(element, method, args);
+        }
+
+        protected override ScriptEventResult OnScriptCall(SciterElement element, string methodName, SciterValue[] args)
+        {
+            var eventArgs = new ScriptCallEventArgs(element, methodName, args);
+            InternalScriptCall?.Invoke(this, eventArgs);
+
+            var methodOwner = eventArgs.Owner ?? this;
+            
+            return ScriptExecutioner
+                .Create(eventArgs.Owner ?? this, element, eventArgs.Method ?? methodOwner.GetType().GetMethod(eventArgs.MethodName), args)
+                .Execute();
+        }
+    }
+    
     [DisplayName("FormsHost")]
     [DesignerCategory("Sciter")]
     [Category("Sciter")]
@@ -20,6 +56,9 @@ namespace SciterCore.WinForms
         [Category("Sciter")]
         public event EventHandler<GetArchiveItemEventArgs> GetArchiveItem;
         
+        [Category("Sciter")]
+        public event EventHandler<ScriptCallEventArgs> OnScriptCall;
+        
         public SciterArchiveComponent Archive
         { 
             get => _archive;
@@ -30,10 +69,7 @@ namespace SciterCore.WinForms
                 if (this.DesignMode)
                     return;
                 
-                if (value != null)
-                {
-                   FormsHost?.SetArchive(value?.Archive);
-                }
+                FormsHost?.SetArchive(value?.Archive);
             }
         }
         
@@ -50,9 +86,9 @@ namespace SciterCore.WinForms
                 if (this.DesignMode)
                     return;
                 
-                if (_control.SciterWnd != null && _control.SciterWnd?.Handle != IntPtr.Zero)
+                if (_control.SciterWindow != null && _control.SciterWindow?.Handle != IntPtr.Zero)
                 {
-                    OnWindowCreated(_control, new WindowCreatedEventArgs(_control.SciterWnd));
+                    OnWindowCreated(_control, new WindowCreatedEventArgs(_control.SciterWindow));
                 }
                 
                 _control.WindowCreated += OnWindowCreated;
@@ -65,6 +101,16 @@ namespace SciterCore.WinForms
                 return;
             
             this.FormsHost?.SetWindow(e.Window);
+
+            var winFormsEventHandler = new SciterFormsEventHandler();
+            winFormsEventHandler.InternalScriptCall += (o, args) =>
+            {
+                OnScriptCall?.Invoke(this, args);
+            };
+            
+            winFormsEventHandler.UpdateHost(FormsHost);
+                
+            this.FormsHost?.AttachEventHandler(winFormsEventHandler);
             
             e.Window.LoadPage(uri: new Uri(baseUri: new Uri(_archive.BaseAddress), RootPage ?? ""));
 
@@ -107,7 +153,7 @@ namespace SciterCore.WinForms
         internal SciterFormsHost SetArchive(SciterArchive archive)
         {
             _archive = archive;
-            _archive.Open();
+            _archive?.Open();
             return this;
         }
         
@@ -132,6 +178,7 @@ namespace SciterCore.WinForms
 
             return base.OnLoadData(sender: sender, args: args);
         }
+
     }
     
     internal class InternalGetArchiveItemEventArgs : EventArgs
@@ -153,6 +200,26 @@ namespace SciterCore.WinForms
         {
             BaseAddress = baseAddress;
             Path = path;
+        }
+    }
+    
+    public class ScriptCallEventArgs : EventArgs
+    {
+        public object Owner { get; set; }
+        
+        public MethodInfo Method { get; set; }
+        
+        public SciterElement Element { get; }
+        
+        public string MethodName { get; }
+        
+        public SciterValue[] Args { get; }
+        
+        public ScriptCallEventArgs(SciterElement element, string methodName, SciterValue[] args)
+        {
+            Element = element;
+            MethodName = methodName;
+            Args = args;
         }
     }
 }

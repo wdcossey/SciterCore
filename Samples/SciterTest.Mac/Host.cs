@@ -44,7 +44,7 @@ namespace SciterTest.Mac
 #endif
 
 			window.LoadPage(uri: uri);
-			window.CenterTopLevelWindow()
+			window.CenterWindow()
                 .Show();
 		}
 
