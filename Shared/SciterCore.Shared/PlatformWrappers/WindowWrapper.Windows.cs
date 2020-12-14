@@ -67,6 +67,8 @@ namespace SciterCore.PlatformWrappers
 				SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_CONTROLS |
 				SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_GLASSY;
 
+			public IntPtr GetWindowHandle(IntPtr handle) => handle;
+
 			/// <summary>
 			/// Creates the Sciter window and returns the native handle
 			/// </summary>

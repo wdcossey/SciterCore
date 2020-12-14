@@ -67,16 +67,12 @@ namespace SciterCore
 		}
 		
 		private IntPtr _windowHandle;
-		
+
 		/// <summary>
 		/// Typically this is the (platform) Window Handle.<br/>
 		/// Depending on the platform, this may coincide with the <see cref="Handle"/>
 		/// </summary>
-		public IntPtr WindowHandle
-		{
-			get => _windowHandle;
-			protected set => _windowHandle = value;
-		}
+		public IntPtr WindowHandle => WindowWrapper.GetWindowHandle(_handle);
 		
 #if OSX && XAMARIN
 		public NSView _nsview { get; private set; }
@@ -112,15 +108,6 @@ namespace SciterCore
 		public SciterWindow(IntPtr hwnd, bool weakReference = false)
 		{
 			Handle = hwnd;
-
-#if WINDOWS || NETCORE && !GTKMONO
-			WindowHandle = Handle;
-#elif GTKMONO
-			WindowHandle = PInvokeGtk.gtk_widget_get_toplevel(Handle);
-			Debug.Assert(WindowHandle != IntPtr.Zero);
-#elif OSX && XAMARIN
-			//
-#endif
 			
 			if (!weakReference)
 			{
@@ -164,12 +151,7 @@ namespace SciterCore
 			if(Handle == IntPtr.Zero)
 				throw new Exception("CreateWindow() failed");
 
-#if WINDOWS || NETCORE && !GTKMONO
-			WindowHandle = Handle;
-#elif GTKMONO
-			WindowHandle = PInvokeGtk.gtk_widget_get_toplevel(Handle);
-			Debug.Assert(WindowHandle != IntPtr.Zero);
-#elif OSX && XAMARIN
+#if OSX && XAMARIN
 			_nsview = new OSXView(Handle);
 #endif
 			return this;

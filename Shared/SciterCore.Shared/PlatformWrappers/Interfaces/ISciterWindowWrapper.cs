@@ -6,7 +6,9 @@ namespace SciterCore.PlatformWrappers
     internal interface ISciterWindowWrapper
     {
         //SciterWindow(IntPtr hwnd, bool weakReference = false)
-        
+
+        IntPtr GetWindowHandle(IntPtr handle);
+
         void CreateWindow(PInvokeUtils.RECT frame = new PInvokeUtils.RECT(),
             SciterXDef.SCITER_CREATE_WINDOW_FLAGS creationFlags = SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_MAIN |
                                                                   SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_TITLEBAR |

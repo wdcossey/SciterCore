@@ -66,6 +66,14 @@ namespace SciterCore.PlatformWrappers
 				SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_RESIZEABLE |
 				SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_CONTROLS;
 
+			public IntPtr GetWindowHandle(IntPtr handle)
+			{
+				Debug.Assert(handle != IntPtr.Zero);
+				var result = PInvokeGtk.gtk_widget_get_toplevel(handle);
+				Debug.Assert(result != IntPtr.Zero);
+				return result;
+			}
+
 			/// <summary>
 			/// Creates the Sciter window and returns the native handle
 			/// </summary>
