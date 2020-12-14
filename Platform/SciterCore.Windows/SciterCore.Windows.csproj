@@ -74,9 +74,9 @@
     <TaskFolder>$(MSBuildThisFileDirectory)..\..\scripts\</TaskFolder>
     <PackSourceFolder>$(MSBuildThisFileDirectory)..\..\Shared\SciterCore.Shared\LibConsole</PackSourceFolder>
     <PackOutputFile>$(ProjectDir)sciter.build\LibConsole.bin</PackOutputFile>
-    <TaskAssembly Condition="$([MSBuild]::IsOsPlatform(Windows))">packfolder.exe</TaskAssembly>
-    <TaskAssembly Condition="$([MSBuild]::IsOsPlatform(OSX))">packfolder</TaskAssembly>
-    <TaskAssembly Condition="$([MSBuild]::IsOsPlatform(Linux))">packfolder</TaskAssembly>
+    <TaskAssembly Condition="$([MSBuild]::IsOsPlatform(Windows))">bin.win\packfolder.exe</TaskAssembly>
+    <TaskAssembly Condition="$([MSBuild]::IsOsPlatform(OSX))">bin.osx\packfolder</TaskAssembly>
+    <TaskAssembly Condition="$([MSBuild]::IsOsPlatform(Linux))">bin.lnx\packfolder</TaskAssembly>
   </PropertyGroup>
 
   <Target Name="SciterPreBuild" BeforeTargets="PreBuildEvent">
