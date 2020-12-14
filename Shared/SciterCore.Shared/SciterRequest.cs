@@ -17,12 +17,13 @@
 
 using System;
 using System.Runtime.InteropServices;
+using SciterCore.Interop;
 
 namespace SciterCore
 {
 	public class SciterRequest
 	{
-		private static readonly Interop.SciterRequest.SciterRequestApi RequestApi = Interop.Sciter.RequestApi;
+		private static readonly ISciterRequestApi RequestApi = Interop.Sciter.RequestApi;
 		private readonly IntPtr _requestHandle;
 		
 		public IntPtr Handle => _requestHandle;

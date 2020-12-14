@@ -32,7 +32,7 @@ namespace SciterCore
 	{
 		const int INVOKE_NOTIFICATION = 0x8206241;
 
-		private static readonly Sciter.SciterApi Api = Sciter.Api;
+		private static readonly ISciterApi Api = Sciter.Api;
 
 		private IntPtr _windowHandle;
 		

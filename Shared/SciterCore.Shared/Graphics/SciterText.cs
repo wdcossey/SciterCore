@@ -1,4 +1,5 @@
 ﻿using System;
+using SciterCore.Interop;
 
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedMember.Global
@@ -9,7 +10,7 @@ namespace SciterCore
 {
     public class SciterText
 	{
-		private static readonly Interop.SciterGraphics.SciterGraphicsApi GraphicsApi = Interop.Sciter.GraphicsApi;
+		private static readonly ISciterGraphicsApi GraphicsApi = Interop.Sciter.GraphicsApi;
 
 		private readonly IntPtr _textHandle;
 
@@ -45,7 +46,7 @@ namespace SciterCore
 			if (elementHandle == IntPtr.Zero)
 				throw new ArgumentOutOfRangeException(nameof(elementHandle), $@"IntPtr.Zero received at {nameof(TryCreateForElement)}.");
 			
-			var result = GraphicsApi.textCreateForElement(out var textHandle, text, (uint) text.Length, elementHandle, className)
+			var result = GraphicsApi.TextCreateForElement(out var textHandle, text, (uint) text.Length, elementHandle, className)
 				.IsOk();
 			
 			sciterText = result ? new SciterText(textHandle) : default;
@@ -76,7 +77,7 @@ namespace SciterCore
 		/// <returns></returns>
 		public static bool TryCreateForElementAndStyle(out SciterText sciterText, string text, IntPtr elementHandle, string style)
 		{
-			var result = GraphicsApi.textCreateForElementAndStyle(out var textHandle, text, (uint)text.Length, elementHandle, style, (uint) style.Length)
+			var result = GraphicsApi.TextCreateForElementAndStyle(out var textHandle, text, (uint)text.Length, elementHandle, style, (uint) style.Length)
 				.IsOk();
 			
 			sciterText = result ? new SciterText(textHandle) : default;
@@ -117,7 +118,7 @@ namespace SciterCore
 		public static bool TryFromValue(out SciterText sciterText, SciterValue sciterValue)
 		{
 			var value = sciterValue.ToVALUE();
-			var result = GraphicsApi.vUnWrapText(ref value, out var textHandle)
+			var result = GraphicsApi.ValueUnWrapText(ref value, out var textHandle)
 				.IsOk();
 
 			sciterText = result ? new SciterText(textHandle) : default;
@@ -132,7 +133,7 @@ namespace SciterCore
 
 		internal bool TryToValueInternal(out SciterValue sciterValue)
 		{
-			var result = GraphicsApi.vWrapText(this.Handle, out var value)
+			var result = GraphicsApi.ValueWrapText(this.Handle, out var value)
 				.IsOk();
 			
 			sciterValue = result ? new SciterValue(value) : default;
@@ -149,7 +150,7 @@ namespace SciterCore
 
 		internal bool TryGetMetricsInternal(out TextMetrics textMetrics)
 		{
-			var result = GraphicsApi.textGetMetrics(this.Handle, out var minWidth, out var maxWidth, out var height,
+			var result = GraphicsApi.TextGetMetrics(this.Handle, out var minWidth, out var maxWidth, out var height,
 					out var ascent, out var descent, out var lines)
 				.IsOk();
 
@@ -164,7 +165,7 @@ namespace SciterCore
 		
 		internal bool TrySetBoxInternal(float width, float height)
 		{
-			return GraphicsApi.textSetBox(this.Handle, width, height)
+			return GraphicsApi.TextSetBox(this.Handle, width, height)
 				.IsOk();
 		}
 	}

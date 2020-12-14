@@ -19,6 +19,7 @@
 
 using System;
 using System.Runtime.InteropServices;
+using SciterCore.Interop;
 
 namespace SciterCore.Interop
 {
@@ -378,7 +379,7 @@ namespace SciterCore.Interop
 			CONTENT_REMOVED = 0x02,
 		}
 
-		public enum BEHAVIOR_EVENTS : uint
+		internal enum BEHAVIOR_EVENTS : uint
 		{
 			BUTTON_CLICK = 0,				// click on button
 			BUTTON_PRESS = 1,				// mouse down or key down in button
@@ -520,7 +521,7 @@ namespace SciterCore.Interop
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct BEHAVIOR_EVENT_PARAMS
+		internal struct BEHAVIOR_EVENT_PARAMS
 		{
 			/// <summary>
 			/// BEHAVIOR_EVENTS
@@ -616,14 +617,6 @@ namespace SciterCore.Interop
 			public SciterCore.SciterValue result;
 		}
 
-		[StructLayout(LayoutKind.Sequential)]
-		public struct TISCRIPT_METHOD_PARAMS
-		{
-			public IntPtr vm;// tiscript_VM*
-			public TIScript.tiscript_value tag;
-			public TIScript.tiscript_value result;
-		}
-	
 		// GET_VALUE/SET_VALUE methods params
 		[StructLayout(LayoutKind.Sequential)]
 		public struct VALUE_PARAMS 

@@ -140,6 +140,18 @@ namespace SciterCore
 				.Create(this, element, method, args)
 				.Execute();
 		}
+		
+		/// <summary>
+		/// This method is typically used with WinForms applications
+		/// </summary>
+		/// <param name="element"></param>
+		/// <param name="methodName"></param>
+		/// <param name="args"></param>
+		// TODO: Should be specific to WinForms?
+		protected virtual ScriptEventResult OnScriptCall(SciterElement element, string methodName, SciterValue[] args)
+		{
+			return ScriptEventResult.Failed();
+		}
 
 		/// <summary>
 		/// 
@@ -152,7 +164,7 @@ namespace SciterCore
 		/// <param name="eventName"><para>name of custom event (when <paramref name="eventType"/> == <see cref="SciterBehaviors.BEHAVIOR_EVENTS.CUSTOM"/>)</para></param>
 		/// <returns></returns>
 		protected virtual bool OnEvent(SciterElement sourceElement, SciterElement targetElement,
-			SciterBehaviors.BEHAVIOR_EVENTS eventType, IntPtr reason, SciterValue data, string eventName)
+			BehaviorEvents eventType, IntPtr reason, SciterValue data, string eventName)
 		{
 			return false;
 		}
@@ -288,7 +300,7 @@ namespace SciterCore
 						
 						//
 						return OnEvent(sourceElement: source, targetElement: target, 
-							eventType: @params.cmd, reason: @params.reason, 
+							eventType: (BehaviorEvents)(int)@params.cmd, reason: @params.reason, 
 							data: new SciterValue(@params.data), eventName: @params.name);
 					}
 
@@ -329,14 +341,18 @@ namespace SciterCore
 						SciterBehaviors.SCRIPTING_METHOD_PARAMS p = Marshal.PtrToStructure<SciterBehaviors.SCRIPTING_METHOD_PARAMS>(prms);
 						SciterBehaviors.SCRIPTING_METHOD_PARAMS_WRAPPER pw = new SciterBehaviors.SCRIPTING_METHOD_PARAMS_WRAPPER(p);
 						
+						var scriptResult = OnScriptCall(source, pw.name, pw.args);
+
+						//TODO: Clean this up!
+						if (scriptResult.IsSuccessful)
+							return scriptResult.IsSuccessful;
+						
 						var methodInfo = GetType().GetMethod(pw.name) ?? GetType().GetMethods().SingleOrDefault(s => s.GetCustomAttributes<SciterFunctionNameAttribute>().Any(a => a.FunctionName.Equals(pw.name)));
 
 						if (methodInfo == null)
-						{
 							return false;
-						}
 
-						var scriptResult = OnScriptCall(source, methodInfo, pw.args);
+						scriptResult = OnScriptCall(source, methodInfo, pw.args);
 						
 						if (scriptResult.IsSuccessful)
 						{

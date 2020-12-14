@@ -18,7 +18,7 @@ namespace SciterCore
 			alert.MessageText = text;
 			alert.RunModal();
 #elif GTKMONO
-			throw new Exception("MessageBox.Show not implemented in GTK");
+			//throw new Exception("MessageBox.Show not implemented in GTK");
 #endif
 		}
 

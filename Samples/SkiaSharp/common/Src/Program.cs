@@ -10,17 +10,18 @@ namespace SciterTest.Graphics
         [STAThread]
         static void Main(string[] args)
         {
-#if WINDOWS
-            // Sciter needs this for drag'n'drop support
-            SciterPlatform.EnableDragAndDrop();
-#endif
 
-			Console.WriteLine("Sciter: " + Sciter.Version());
+	        // Platform specific (required for GTK)
+	        SciterPlatform.Initialize();
+	        // Sciter needs this for drag 'n drop support
+	        SciterPlatform.EnableDragAndDrop();
+
+            Console.WriteLine($@"Sciter: {Sciter.Api.SciterVersion()}");
 
 			// Create the window
 			var window = new SciterWindow()
 				.CreateMainWindow(1500, 800)
-				.CenterTopLevelWindow()
+				.CenterWindow()
 				.SetTitle("SciterCore::Framework::Graphics::SkiaSharp");
 #if WINDOWS
 			window.SetIcon(Properties.Resources.IconMain);
@@ -39,7 +40,8 @@ namespace SciterTest.Graphics
 			// Show window and Run message loop
 			window.Show();
             */
-			PInvokeUtils.RunMsgLoop();
+            
+            SciterPlatform.RunMessageLoop();
 
 			GC.Collect();
 			GC.WaitForPendingFinalizers();

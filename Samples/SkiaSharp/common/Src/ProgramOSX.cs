@@ -35,12 +35,11 @@ namespace SciterTest.Graphics
 		public override void DidFinishLaunching(NSNotification notification)
 		{
 			//Mono.Setup();
-
-			Console.WriteLine("Sciter: " + Sciter.Version());
+			Console.WriteLine($@"Sciter: {Sciter.Api.SciterVersion()}");
 
 			// Create the window
 			var window = new SciterWindow().CreateMainWindow(800, 600)
-				.CenterTopLevelWindow()
+				.CenterWindow()
 				.SetTitle("SciterTest.Graphics");
 
 			// Prepares SciterHost and then load the page

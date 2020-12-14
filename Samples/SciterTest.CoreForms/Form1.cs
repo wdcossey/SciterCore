@@ -20,7 +20,7 @@ namespace SciterTest.CoreForms
             e.Html =
                 "<body>" +
                 "<code>Add an event handler to the <b>HandleCreated</b> event for any needed initialization (e.g.: load the HTML)</code><br /><br />" +
-                "<code>In the handler, use the <b>SciterWnd</b> property of this control to access the SciterWindow instance.</code>" +
+                $"<code>In the handler, use the <b>{nameof(sciterControl1.SciterWindow)}</b> property of this control to access the SciterWindow instance.</code>" +
                 "</body>";
         }
 

@@ -53,7 +53,7 @@ namespace SciterTest.NetCore.Behaviors
             return base.OnMethodCall(element, methodId);
         }
 
-        protected override bool OnEvent(SciterElement sourceElement, SciterElement targetElement, SciterBehaviors.BEHAVIOR_EVENTS type,
+        protected override bool OnEvent(SciterElement sourceElement, SciterElement targetElement, BehaviorEvents type,
             IntPtr reason,
             SciterValue data, string eventName)
         {

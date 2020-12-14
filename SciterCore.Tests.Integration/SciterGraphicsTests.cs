@@ -16,7 +16,7 @@ namespace SciterCore.Tests.Integration
             _sciterWindow = 
                 new SciterWindow()
                     .CreateMainWindow(320, 240)
-                    //.CenterTopLevelWindow()
+                    //.CenterWindow()
                     .SetTitle(nameof(SciterGraphicsTests));
             
             var pageData = "<html><head><style>" +
@@ -50,15 +50,6 @@ namespace SciterCore.Tests.Integration
             protected override bool OnDraw(SciterElement se, DrawArgs args)
             {
                 return _drawCallback.Invoke(se, args);
-            }
-        }
-        
-        private void TranslateAndDispatch()
-        {
-            while(PInvokeWindows.GetMessage(lpMsg: out var msg, hWnd: IntPtr.Zero, wMsgFilterMin: 0, wMsgFilterMax: 0) != 0)
-            {
-                PInvokeWindows.TranslateMessage(ref msg);
-                PInvokeWindows.DispatchMessage(ref msg);
             }
         }
         
@@ -130,7 +121,7 @@ namespace SciterCore.Tests.Integration
                 .SetStyleValue("background", $"rgb({random.Next(byte.MinValue, byte.MaxValue)}, {random.Next(byte.MinValue, byte.MaxValue)}, {random.Next(byte.MinValue, byte.MaxValue)})")
                 .SetStyleValue("behavior", behaviorName);
 
-            TranslateAndDispatch();
+            SciterPlatform.RunMessageLoop();
             
             //Assert.NotNull(_sciterGraphics);
         }
@@ -188,7 +179,7 @@ namespace SciterCore.Tests.Integration
                 .SetStyleValue("background", $"rgb({backgroundColor}, {backgroundColor}, {backgroundColor})")
                 .SetStyleValue("behavior", "draw-polygon");
 
-            TranslateAndDispatch();
+            SciterPlatform.RunMessageLoop();
             
             //Assert.NotNull(_sciterGraphics);
         }
@@ -265,7 +256,7 @@ namespace SciterCore.Tests.Integration
                 .SetStyleValue("background", $"rgb({backgroundColor}, {backgroundColor}, {backgroundColor})")
                 .SetStyleValue("behavior", "draw-polyline");
 
-            TranslateAndDispatch();
+            SciterPlatform.RunMessageLoop();
             
             //Assert.NotNull(_sciterGraphics);
         }
@@ -344,7 +335,7 @@ namespace SciterCore.Tests.Integration
                 .SetStyleValue("background", $"rgb({backgroundColor}, {backgroundColor}, {backgroundColor})")
                 .SetStyleValue("behavior", "draw-ellipse");
 
-            TranslateAndDispatch();
+            SciterPlatform.RunMessageLoop();
             
             //Assert.NotNull(_sciterGraphics);
         }
@@ -396,7 +387,7 @@ namespace SciterCore.Tests.Integration
                 .SetStyleValue("background", $"rgb({backgroundColor}, {backgroundColor}, {backgroundColor})")
                 .SetStyleValue("behavior", "draw-ellipse");
 
-            TranslateAndDispatch();
+            SciterPlatform.RunMessageLoop();
             
             //Assert.NotNull(_sciterGraphics);
         }
@@ -447,7 +438,7 @@ namespace SciterCore.Tests.Integration
                 .SetStyleValue("background", $"black")
                 .SetStyleValue("behavior", "draw-ellipse");
 
-            TranslateAndDispatch();
+            SciterPlatform.RunMessageLoop();
             
             //Assert.NotNull(_sciterGraphics);
         }

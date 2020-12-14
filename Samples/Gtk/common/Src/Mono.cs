@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace SciterTest.Gtk
 {
-	public class Mono
+	internal class Mono
 	{
 		static Mono()
 		{
@@ -17,7 +17,7 @@ namespace SciterTest.Gtk
 		}
 	}
 
-	public class AssertListener : TraceListener
+	internal class AssertListener : TraceListener
 	{
 		public override void Fail(string message, string detailMessage)
 		{

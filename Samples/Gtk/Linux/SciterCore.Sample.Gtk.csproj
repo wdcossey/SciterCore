@@ -63,7 +63,7 @@
     </ProjectReference>
   </ItemGroup>
     <ItemGroup>
-    <PackageReference Include="SciterCore.PackFolder" Version="0.1.257" />
+    <PackageReference Include="SciterCore.PackFolder" Version="0.1.293" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

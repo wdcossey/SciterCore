@@ -1,209 +1,165 @@
-﻿// Copyright 2016 Ramon F. Mendes
-//
-// This file is part of SciterSharp.
-// 
-// SciterSharp is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-// 
-// SciterSharp is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// 
-// You should have received a copy of the GNU General Public License
-// along with SciterSharp.  If not, see <http://www.gnu.org/licenses/>.
-
-using System;
+﻿using System;
+using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 
 namespace SciterCore.Interop
 {
-	public static class SciterRequest
+	public static partial class SciterRequest
 	{
-		public enum REQUEST_RESULT
+		internal static class UnsafeNativeMethods
 		{
-			REQUEST_PANIC = -1, // e.g. not enough memory
-			REQUEST_OK = 0,
-			REQUEST_BAD_PARAM = 1,  // bad parameter
-			REQUEST_FAILURE = 2,    // operation failed, e.g. index out of bounds
-			REQUEST_NOTSUPPORTED = 3 // the platform does not support requested feature
-		}
+			public static ISciterRequestApi GetApiInterface(ISciterApi sciterApi)
+			{
+				var sciterRequestApi = sciterApi.GetSciterRequestAPI();
+				
+				return new NativeSciterRequestApiWrapper<SciterRequestApi>(sciterRequestApi);
+			}
 
-		public enum REQUEST_RQ_TYPE : uint
-		{
-			RRT_GET = 1,
-			RRT_POST = 2,
-			RRT_PUT = 3,
-			RRT_DELETE = 4,
-			RRT_FORCE_DWORD = 0xffffffff
-		}
+			private sealed class NativeSciterRequestApiWrapper<TStruct> : ISciterRequestApi
+				where TStruct : struct
+			{
+				private IntPtr _apiPtr;
 
-		public enum SciterResourceType : uint
-		{
-			RT_DATA_HTML = 0,
-			RT_DATA_IMAGE = 1,
-			RT_DATA_STYLE = 2,
-			RT_DATA_CURSOR = 3,
-			RT_DATA_SCRIPT = 4,
-			RT_DATA_RAW = 5,
-			RT_DATA_FONT,
-			RT_DATA_SOUND,    // wav bytes
-			RT_DATA_FORCE_DWORD = 0xffffffff
-		}
+#pragma warning disable 649
+				
+				private readonly SciterRequestApiDelegates.FPTR_RequestUse						_requestUse;
+				private readonly SciterRequestApiDelegates.FPTR_RequestUnUse					_requestUnUse;
+				private readonly SciterRequestApiDelegates.FPTR_RequestUrl						_requestUrl;
+				private readonly SciterRequestApiDelegates.FPTR_RequestContentUrl				_requestContentUrl;
+				private readonly SciterRequestApiDelegates.FPTR_RequestGetRequestType			_requestGetRequestType;
+				private readonly SciterRequestApiDelegates.FPTR_RequestGetRequestedDataType		_requestGetRequestedDataType;
+				private readonly SciterRequestApiDelegates.FPTR_RequestGetReceivedDataType		_requestGetReceivedDataType;
+				private readonly SciterRequestApiDelegates.FPTR_RequestGetNumberOfParameters	_requestGetNumberOfParameters;
+				private readonly SciterRequestApiDelegates.FPTR_RequestGetNthParameterName		_requestGetNthParameterName;
+				private readonly SciterRequestApiDelegates.FPTR_RequestGetNthParameterValue		_requestGetNthParameterValue;
+				private readonly SciterRequestApiDelegates.FPTR_RequestGetTimes					_requestGetTimes;
+				private readonly SciterRequestApiDelegates.FPTR_RequestGetNumberOfRqHeaders		_requestGetNumberOfRqHeaders;
+				private readonly SciterRequestApiDelegates.FPTR_RequestGetNthRqHeaderName		_requestGetNthRqHeaderName;
+				private readonly SciterRequestApiDelegates.FPTR_RequestGetNthRqHeaderValue		_requestGetNthRqHeaderValue;
+				private readonly SciterRequestApiDelegates.FPTR_RequestGetNumberOfRspHeaders	_requestGetNumberOfRspHeaders;
+				private readonly SciterRequestApiDelegates.FPTR_RequestGetNthRspHeaderName		_requestGetNthRspHeaderName;
+				private readonly SciterRequestApiDelegates.FPTR_RequestGetNthRspHeaderValue		_requestGetNthRspHeaderValue;
+				private readonly SciterRequestApiDelegates.FPTR_RequestGetCompletionStatus		_requestGetCompletionStatus;
+				private readonly SciterRequestApiDelegates.FPTR_RequestGetProxyHost				_requestGetProxyHost;
+				private readonly SciterRequestApiDelegates.FPTR_RequestGetProxyPort				_requestGetProxyPort;
+				private readonly SciterRequestApiDelegates.FPTR_RequestSetSucceeded				_requestSetSucceeded;
+				private readonly SciterRequestApiDelegates.FPTR_RequestSetFailed				_requestSetFailed;
+				private readonly SciterRequestApiDelegates.FPTR_RequestAppendDataChunk			_requestAppendDataChunk;
+				private readonly SciterRequestApiDelegates.FPTR_RequestSetRqHeader				_requestSetRqHeader;
+				private readonly SciterRequestApiDelegates.FPTR_RequestSetRspHeader				_requestSetRspHeader;
+				
+				private readonly SciterRequestApiDelegates.FPTR_RequestSetReceivedDataType		_requestSetReceivedDataType;
+				private readonly SciterRequestApiDelegates.FPTR_RequestSetReceivedDataEncoding	_requestSetReceivedDataEncoding;
+				
+				private readonly SciterRequestApiDelegates.FPTR_RequestGetData					_requestGetData;
 
-		public enum REQUEST_STATE : uint
-		{
-			RS_PENDING = 0,
-			RS_SUCCESS = 1, // completed successfully
-			RS_FAILURE = 2, // completed with failure
+#pragma warning restore 649
 
-			RS_FORCE_DWORD = 0xffffffff
-		}
+				internal NativeSciterRequestApiWrapper(IntPtr apiPtr)
+				{
+					_apiPtr = apiPtr;
+					var @struct = Marshal.PtrToStructure<TStruct>(apiPtr);
 
-		[StructLayout(LayoutKind.Sequential)]
-		public struct SciterRequestApi
-		{
-			public FPTR_RequestUse						RequestUse;
-			public FPTR_RequestUnUse					RequestUnUse;
-			public FPTR_RequestUrl						RequestUrl;
-			public FPTR_RequestContentUrl				RequestContentUrl;
-			public FPTR_RequestGetRequestType			RequestGetRequestType;
-			public FPTR_RequestGetRequestedDataType	    RequestGetRequestedDataType;
-			public FPTR_RequestGetReceivedDataType		RequestGetReceivedDataType;
-			public FPTR_RequestGetNumberOfParameters	RequestGetNumberOfParameters;
-			public FPTR_RequestGetNthParameterName		RequestGetNthParameterName;
-			public FPTR_RequestGetNthParameterValue		RequestGetNthParameterValue;
-			public FPTR_RequestGetTimes					RequestGetTimes;
-			public FPTR_RequestGetNumberOfRqHeaders		RequestGetNumberOfRqHeaders;
-			public FPTR_RequestGetNthRqHeaderName		RequestGetNthRqHeaderName;
-			public FPTR_RequestGetNthRqHeaderValue		RequestGetNthRqHeaderValue;
-			public FPTR_RequestGetNumberOfRspHeaders	RequestGetNumberOfRspHeaders;
-			public FPTR_RequestGetNthRspHeaderName		RequestGetNthRspHeaderName;
-			public FPTR_RequestGetNthRspHeaderValue		RequestGetNthRspHeaderValue;
-			public FPTR_RequestGetCompletionStatus		RequestGetCompletionStatus;
-			public FPTR_RequestGetProxyHost				RequestGetProxyHost;
-			public FPTR_RequestGetProxyPort				RequestGetProxyPort;
-			public FPTR_RequestSetSucceeded				RequestSetSucceeded;
-			public FPTR_RequestSetFailed				RequestSetFailed;
-			public FPTR_RequestAppendDataChunk			RequestAppendDataChunk;
-			public FPTR_RequestSetRqHeader				RequestSetRqHeader;
-			public FPTR_RequestSetRspHeader				RequestSetRspHeader;
-			public FPTR_RequestGetData					RequestGetData;
+					var fieldInfoDictionary = GetType()
+						.GetFields(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
+						.Where(w => w.FieldType.GetCustomAttribute<SciterStructMapAttribute>() != null)
+						.ToDictionary(key => key.FieldType.GetCustomAttribute<SciterStructMapAttribute>()?.Name,
+							value => value);
 
+					var fieldInfos = @struct.GetType().GetFields();
+					foreach (var fieldInfo in fieldInfos)
+					{
+						if (!fieldInfoDictionary.ContainsKey(fieldInfo.Name))
+							continue;
+						fieldInfoDictionary[fieldInfo.Name].SetValue(this, fieldInfo.GetValue(@struct));
+					}
+				}
 
-			// a.k.a AddRef()
-			// REQUEST_RESULT SCFN(RequestUse)( HREQUEST rq );
-			public delegate REQUEST_RESULT FPTR_RequestUse(IntPtr rq);
+				public REQUEST_RESULT RequestUse(IntPtr rq) =>
+					_requestUse(rq);
 
-			// a.k.a Release()
-			// REQUEST_RESULT SCFN(RequestUnUse)( HREQUEST rq );
-			public delegate REQUEST_RESULT FPTR_RequestUnUse(IntPtr rq);
+				public REQUEST_RESULT RequestUnUse(IntPtr rq) =>
+					_requestUnUse(rq);
 
-			// get requested URL
-			// REQUEST_RESULT SCFN(RequestUrl)( HREQUEST rq, LPCSTR_RECEIVER* rcv, LPVOID rcv_param );
-			public delegate REQUEST_RESULT FPTR_RequestUrl(IntPtr rq, SciterXDom.LPCSTR_RECEIVER rcv, IntPtr rcv_param);
+				public REQUEST_RESULT RequestUrl(IntPtr rq, SciterXDom.LPCSTR_RECEIVER rcv, IntPtr rcvParam) =>
+					_requestUrl(rq, rcv, rcvParam);
 
-			// get real, content URL (after possible redirection)
-			// REQUEST_RESULT SCFN(RequestContentUrl)( HREQUEST rq, LPCSTR_RECEIVER* rcv, LPVOID rcv_param );
-			public delegate REQUEST_RESULT FPTR_RequestContentUrl(IntPtr rq, SciterXDom.LPCSTR_RECEIVER rcv, IntPtr rcv_param);
+				public REQUEST_RESULT RequestContentUrl(IntPtr rq, SciterXDom.LPCSTR_RECEIVER rcv, IntPtr rcvParam) =>
+					_requestContentUrl(rq, rcv, rcvParam);
 
-			// get requested data type
-			// REQUEST_RESULT SCFN(RequestGetRequestType)( HREQUEST rq, REQUEST_RQ_TYPE* pType );
-			public delegate REQUEST_RESULT FPTR_RequestGetRequestType(IntPtr rq, out REQUEST_RQ_TYPE pType);
+				public REQUEST_RESULT RequestGetRequestType(IntPtr rq, out REQUEST_RQ_TYPE pType) => 
+					_requestGetRequestType(rq, out pType);
 
-			// get requested data type
-			// REQUEST_RESULT SCFN(RequestGetRequestedDataType)( HREQUEST rq, SciterResourceType* pData );
-			public delegate REQUEST_RESULT FPTR_RequestGetRequestedDataType(IntPtr rq, out SciterResourceType pData);
+				public REQUEST_RESULT RequestGetRequestedDataType(IntPtr rq, out SciterResourceType pData) => 
+					_requestGetRequestedDataType(rq, out pData);
 
-			// get received data type, string, mime type
-			// REQUEST_RESULT SCFN(RequestGetReceivedDataType)( HREQUEST rq, LPCSTR_RECEIVER* rcv, LPVOID rcv_param );
-			public delegate REQUEST_RESULT FPTR_RequestGetReceivedDataType(IntPtr rq, SciterXDom.LPCSTR_RECEIVER rcv, IntPtr rcv_param);
+				public REQUEST_RESULT RequestGetReceivedDataType(IntPtr rq, SciterXDom.LPCSTR_RECEIVER rcv, IntPtr rcvParam) => 
+					_requestGetReceivedDataType(rq, rcv, rcvParam);
 
-			// get number of request parameters passed
-			// REQUEST_RESULT SCFN(RequestGetNumberOfParameters)( HREQUEST rq, UINT* pNumber );
-			public delegate REQUEST_RESULT FPTR_RequestGetNumberOfParameters(IntPtr rq, out uint pNumber);
+				public REQUEST_RESULT RequestGetNumberOfParameters(IntPtr rq, out uint pNumber) => 
+					_requestGetNumberOfParameters(rq, out pNumber);
 
-			// get nth request parameter name
-			// REQUEST_RESULT SCFN(RequestGetNthParameterName)( HREQUEST rq, UINT n, LPCWSTR_RECEIVER* rcv, LPVOID rcv_param  );
-			public delegate REQUEST_RESULT FPTR_RequestGetNthParameterName(IntPtr rq, uint n, SciterXDom.LPCWSTR_RECEIVER rcv, IntPtr rcv_param);
+				public REQUEST_RESULT RequestGetNthParameterName(IntPtr rq, uint n, SciterXDom.LPCWSTR_RECEIVER rcv, IntPtr rcvParam) => 
+					_requestGetNthParameterName(rq, n, rcv, rcvParam);
 
-			// get nth request parameter value
-			// REQUEST_RESULT SCFN(RequestGetNthParameterValue)( HREQUEST rq, UINT n, LPCWSTR_RECEIVER* rcv, LPVOID rcv_param  );
-			public delegate REQUEST_RESULT FPTR_RequestGetNthParameterValue(IntPtr rq, uint n, SciterXDom.LPCWSTR_RECEIVER rcv, IntPtr rcv_param);
+				public REQUEST_RESULT RequestGetNthParameterValue(IntPtr rq, uint n, SciterXDom.LPCWSTR_RECEIVER rcv, IntPtr rcvParam) => 
+					_requestGetNthParameterValue(rq, n, rcv, rcvParam);
 
-			// get request times , ended - started = milliseconds to get the requst
-			// REQUEST_RESULT SCFN(RequestGetTimes)( HREQUEST rq, UINT* pStarted, UINT* pEnded );
-			public delegate REQUEST_RESULT FPTR_RequestGetTimes(IntPtr rq, out uint pStarted, out uint pEnded);
+				public REQUEST_RESULT RequestGetTimes(IntPtr rq, out uint pStarted, out uint pEnded) => 
+					_requestGetTimes(rq, out pStarted, out pEnded);
 
-			// get number of request headers
-			// REQUEST_RESULT SCFN(RequestGetNumberOfRqHeaders)( HREQUEST rq, UINT* pNumber );
-			public delegate REQUEST_RESULT FPTR_RequestGetNumberOfRqHeaders(IntPtr rq, out uint pNumber);
+				public REQUEST_RESULT RequestGetNumberOfRqHeaders(IntPtr rq, out uint pNumber) => 
+					_requestGetNumberOfRqHeaders(rq, out pNumber);
 
-			// get nth request header name 
-			// REQUEST_RESULT SCFN(RequestGetNthRqHeaderName)( HREQUEST rq, UINT n, LPCWSTR_RECEIVER* rcv, LPVOID rcv_param );
-			public delegate REQUEST_RESULT FPTR_RequestGetNthRqHeaderName(IntPtr rq, uint n, SciterXDom.LPCWSTR_RECEIVER rcv, IntPtr rcv_param);
+				public REQUEST_RESULT RequestGetNthRqHeaderName(IntPtr rq, uint n, SciterXDom.LPCWSTR_RECEIVER rcv, IntPtr rcvParam) => 
+					_requestGetNthRqHeaderName(rq, n, rcv, rcvParam);
 
-			// get nth request header value 
-			// REQUEST_RESULT SCFN(RequestGetNthRqHeaderValue)( HREQUEST rq, UINT n, LPCWSTR_RECEIVER* rcv, LPVOID rcv_param );
-			public delegate REQUEST_RESULT FPTR_RequestGetNthRqHeaderValue(IntPtr rq, uint n, SciterXDom.LPCWSTR_RECEIVER rcv, IntPtr rcv_param);
+				public REQUEST_RESULT RequestGetNthRqHeaderValue(IntPtr rq, uint n, SciterXDom.LPCWSTR_RECEIVER rcv, IntPtr rcvParam) => 
+					_requestGetNthRqHeaderValue(rq, n, rcv, rcvParam);
 
-			// get number of response headers
-			// REQUEST_RESULT SCFN(RequestGetNumberOfRspHeaders)( HREQUEST rq, UINT* pNumber );
-			public delegate REQUEST_RESULT FPTR_RequestGetNumberOfRspHeaders(IntPtr rq, out uint pNumber);
+				public REQUEST_RESULT RequestGetNthRspHeaderName(IntPtr rq, uint n, SciterXDom.LPCWSTR_RECEIVER rcv, IntPtr rcvParam) => 
+					_requestGetNthRspHeaderName(rq, n, rcv, rcvParam);
 
-			// get nth response header name 
-			// REQUEST_RESULT SCFN(RequestGetNthRspHeaderName)( HREQUEST rq, UINT n, LPCWSTR_RECEIVER* rcv, LPVOID rcv_param );
-			public delegate REQUEST_RESULT FPTR_RequestGetNthRspHeaderName(IntPtr rq, uint n, SciterXDom.LPCWSTR_RECEIVER rcv, IntPtr rcv_param);
+				public REQUEST_RESULT RequestGetNthRspHeaderValue(IntPtr rq, uint n, SciterXDom.LPCWSTR_RECEIVER rcv, IntPtr rcvParam) => 
+					_requestGetNthRspHeaderValue(rq, n, rcv, rcvParam);
 
-			// get nth response header value 
-			// REQUEST_RESULT SCFN(RequestGetNthRspHeaderValue)( HREQUEST rq, UINT n, LPCWSTR_RECEIVER* rcv, LPVOID rcv_param );
-			public delegate REQUEST_RESULT FPTR_RequestGetNthRspHeaderValue(IntPtr rq, uint n, SciterXDom.LPCWSTR_RECEIVER rcv, IntPtr rcv_param);
+				public REQUEST_RESULT RequestGetNumberOfRspHeaders(IntPtr rq, out uint pNumber) => 
+					_requestGetNumberOfRspHeaders(rq, out pNumber);
 
-			// get completion status (CompletionStatus - http response code : 200, 404, etc.)
-			// REQUEST_RESULT SCFN(RequestGetCompletionStatus)( HREQUEST rq, REQUEST_STATE* pState, UINT* pCompletionStatus );
-			public delegate REQUEST_RESULT FPTR_RequestGetCompletionStatus(IntPtr rq, out REQUEST_STATE pState, out uint pCompletionStatus);
+				public REQUEST_RESULT RequestGetCompletionStatus(IntPtr rq, out REQUEST_STATE pState, out uint pCompletionStatus) => 
+					_requestGetCompletionStatus(rq, out pState, out pCompletionStatus);
 
-			// get proxy host
-			// REQUEST_RESULT SCFN(RequestGetProxyHost)( HREQUEST rq, LPCSTR_RECEIVER* rcv, LPVOID rcv_param );
-			public delegate REQUEST_RESULT FPTR_RequestGetProxyHost(IntPtr rq, SciterXDom.LPCSTR_RECEIVER rcv, IntPtr rcv_param);
+				public REQUEST_RESULT RequestGetProxyHost(IntPtr rq, SciterXDom.LPCSTR_RECEIVER rcv, IntPtr rcvParam) => 
+					_requestGetProxyHost(rq, rcv, rcvParam);
 
-			// get proxy port
-			// REQUEST_RESULT SCFN(RequestGetProxyPort)( HREQUEST rq, UINT* pPort );
-			public delegate REQUEST_RESULT FPTR_RequestGetProxyPort(IntPtr rq, out uint pPort);
+				public REQUEST_RESULT RequestGetProxyPort(IntPtr rq, out uint pPort) => 
+					_requestGetProxyPort(rq, out pPort);
 
-			// mark reequest as complete with status and data 
-			// REQUEST_RESULT SCFN(RequestSetSucceeded)( HREQUEST rq, UINT status, LPCBYTE dataOrNull, UINT dataLength);
-			public delegate REQUEST_RESULT FPTR_RequestSetSucceeded(IntPtr rq, uint status, byte[] dataOrNull, uint dataLength);
+				public REQUEST_RESULT RequestSetSucceeded(IntPtr rq, uint status, byte[] dataOrNull, uint dataLength) => 
+					_requestSetSucceeded(rq, status, dataOrNull, dataLength);
 
-			// mark reequest as complete with failure and optional data 
-			// REQUEST_RESULT SCFN(RequestSetFailed)( HREQUEST rq, UINT status, LPCBYTE dataOrNull, UINT dataLength );
-			public delegate REQUEST_RESULT FPTR_RequestSetFailed(IntPtr rq, uint status, byte[] dataOrNull, uint dataLength);
+				public REQUEST_RESULT RequestSetFailed(IntPtr rq, uint status, byte[] dataOrNull, uint dataLength) => 
+					_requestSetFailed(rq, status, dataOrNull, dataLength);
 
-			// append received data chunk 
-			// REQUEST_RESULT SCFN(RequestAppendDataChunk)( HREQUEST rq, LPCBYTE data, UINT dataLength );
-			public delegate REQUEST_RESULT FPTR_RequestAppendDataChunk(IntPtr rq, byte[] data, uint dataLength);
+				public REQUEST_RESULT RequestAppendDataChunk(IntPtr rq, byte[] data, uint dataLength) => 
+					_requestAppendDataChunk(rq, data, dataLength);
 
-			// set request header (single item)
-			// REQUEST_RESULT SCFN(RequestSetRqHeader)( HREQUEST rq, LPCWSTR name, LPCWSTR value );
-			public delegate REQUEST_RESULT FPTR_RequestSetRqHeader(IntPtr rq, [MarshalAs(UnmanagedType.LPWStr)]string name, [MarshalAs(UnmanagedType.LPWStr)]string value);
+				public REQUEST_RESULT RequestSetRqHeader(IntPtr rq, string name, string value) => 
+					_requestSetRqHeader(rq, name, value);
 
-			// set respone header (single item)
-			// REQUEST_RESULT SCFN(RequestSetRspHeader)( HREQUEST rq, LPCWSTR name, LPCWSTR value );
-			public delegate REQUEST_RESULT FPTR_RequestSetRspHeader(IntPtr rq, [MarshalAs(UnmanagedType.LPWStr)]string name, [MarshalAs(UnmanagedType.LPWStr)]string value);
+				public REQUEST_RESULT RequestSetRspHeader(IntPtr rq, string name, string value) => 
+					_requestSetRspHeader(rq, name, value);
 
-			// set received data type, string, mime type
-			// REQUEST_RESULT SCFN(RequestSetReceivedDataType)( HREQUEST rq, LPCSTR type );
-			public delegate REQUEST_RESULT FPTR_RequestSetReceivedDataType(IntPtr rq, [MarshalAs(UnmanagedType.LPStr)]string type);
+				public REQUEST_RESULT RequestSetReceivedDataType(IntPtr rq, string type) =>
+					_requestSetReceivedDataType(rq, type);
 
-			// set received data encoding, string
-			// REQUEST_RESULT SCFN(RequestSetReceivedDataEncoding)( HREQUEST rq, LPCSTR encoding );
-			public delegate REQUEST_RESULT FPTR_RequestSetReceivedDataEncoding(IntPtr rq, [MarshalAs(UnmanagedType.LPStr)]string encoding);
+				public REQUEST_RESULT RequestSetReceivedDataEncoding(IntPtr rq, string encoding) =>
+					_requestSetReceivedDataEncoding(rq, encoding);
 
-			// get received (so far) data
-			// REQUEST_RESULT SCFN(RequestGetData)( HREQUEST rq, LPCBYTE_RECEIVER* rcv, LPVOID rcv_param );
-			public delegate REQUEST_RESULT FPTR_RequestGetData(IntPtr rq, SciterXDom.LPCBYTE_RECEIVER rcv, IntPtr rcv_param);
+				public REQUEST_RESULT RequestGetData(IntPtr rq, SciterXDom.LPCBYTE_RECEIVER rcv, IntPtr rcvParam) => 
+					_requestGetData(rq, rcv, rcvParam);
+			}
 		}
 	}
 }

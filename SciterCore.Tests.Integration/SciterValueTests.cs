@@ -73,7 +73,7 @@ namespace SciterCore.Tests.Integration
                 return false;
             }
             
-            protected override bool OnEvent(SciterElement sourceElement, SciterElement targetElement, SciterBehaviors.BEHAVIOR_EVENTS type, IntPtr reason,
+            protected override bool OnEvent(SciterElement sourceElement, SciterElement targetElement, BehaviorEvents type, IntPtr reason,
                 SciterValue data, string eventName)
             {
                 return base.OnEvent(sourceElement, targetElement, type, reason, data, eventName);
@@ -117,7 +117,7 @@ namespace SciterCore.Tests.Integration
                 var sciterWindow = 
                     new SciterWindow()
                         .CreateMainWindow(320, 240)
-                        .CenterTopLevelWindow()
+                        .CenterWindow()
                         .SetTitle(nameof(SciterGraphicsTests));
                 
                 var host = new TestHost(sciterWindow);
@@ -159,7 +159,7 @@ namespace SciterCore.Tests.Integration
                 var sciterWindow = 
                     new SciterWindow()
                         .CreateMainWindow(320, 240)
-                        .CenterTopLevelWindow()
+                        .CenterWindow()
                         .SetTitle(nameof(SciterGraphicsTests));
                 
                 var host = new TestHost(sciterWindow);
@@ -205,7 +205,7 @@ namespace SciterCore.Tests.Integration
                 var sciterWindow = 
                     new SciterWindow()
                         .CreateMainWindow(320, 240)
-                        .CenterTopLevelWindow()
+                        .CenterWindow()
                         .SetTitle(nameof(SciterGraphicsTests));
                 
                 var host = new TestHost(sciterWindow);

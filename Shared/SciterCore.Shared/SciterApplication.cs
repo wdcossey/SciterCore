@@ -1,5 +1,5 @@
-﻿using SciterCore.Interop;
-using System;
+﻿using System;
+using SciterCore.Interop;
 
 namespace SciterCore
 {
@@ -36,7 +36,7 @@ namespace SciterCore
         {
             Host = host;
 
-            return Run(PInvokeUtils.RunMsgLoop);
+            return Run(SciterPlatform.RunMessageLoop);
 
             //return Run(() => { host.Show(); });
             //window.Show();
@@ -46,7 +46,7 @@ namespace SciterCore
 
         public int Run()
         {
-            return Run(PInvokeUtils.RunMsgLoop);
+            return Run(SciterPlatform.RunMessageLoop);
         }
         
 

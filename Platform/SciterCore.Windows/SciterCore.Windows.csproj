@@ -15,7 +15,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SciterCore</RootNamespace>
-    <AssemblyName>SciterCore.WinForms</AssemblyName>
+    <AssemblyName>SciterCore.Windows</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -63,8 +63,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="SciterCore.Binaries" Version="4.4.5.2" />
-    <PackageReference Include="SciterCore.PackFolder" Version="0.1.257" />
+    <PackageReference Include="SciterCore.Binaries" Version="(4.4.4.2,)" />
+    <PackageReference Include="SciterCore.PackFolder" Version="0.1.293" />
+    <PackageReference Include="System.Runtime.InteropServices.RuntimeInformation" Version="4.3.0" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   
@@ -73,9 +74,9 @@
     <TaskFolder>$(MSBuildThisFileDirectory)..\..\scripts\</TaskFolder>
     <PackSourceFolder>$(MSBuildThisFileDirectory)..\..\Shared\SciterCore.Shared\LibConsole</PackSourceFolder>
     <PackOutputFile>$(ProjectDir)sciter.build\LibConsole.bin</PackOutputFile>
-    <TaskAssembly Condition="$([MSBuild]::IsOsPlatform(Windows))">packfolder.exe</TaskAssembly>
-    <TaskAssembly Condition="$([MSBuild]::IsOsPlatform(OSX))">packfolder</TaskAssembly>
-    <TaskAssembly Condition="$([MSBuild]::IsOsPlatform(Linux))">packfolder</TaskAssembly>
+    <TaskAssembly Condition="$([MSBuild]::IsOsPlatform(Windows))">bin.win\packfolder.exe</TaskAssembly>
+    <TaskAssembly Condition="$([MSBuild]::IsOsPlatform(OSX))">bin.osx\packfolder</TaskAssembly>
+    <TaskAssembly Condition="$([MSBuild]::IsOsPlatform(Linux))">bin.lnx\packfolder</TaskAssembly>
   </PropertyGroup>
 
   <Target Name="SciterPreBuild" BeforeTargets="PreBuildEvent">

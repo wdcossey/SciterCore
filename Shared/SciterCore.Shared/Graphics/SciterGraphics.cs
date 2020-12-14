@@ -18,6 +18,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SciterCore.Interop;
+
 #if WINDOWS && !WPF
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -40,7 +42,7 @@ namespace SciterCore
 	
 	public sealed class SciterGraphics : IDisposable
 	{
-		private static readonly Interop.SciterGraphics.SciterGraphicsApi GraphicsApi = Interop.Sciter.GraphicsApi;
+		private static readonly ISciterGraphicsApi GraphicsApi = Interop.Sciter.GraphicsApi;
 		private readonly IntPtr _graphicsHandle;
 
 		// ReSharper disable once ConvertToAutoProperty
@@ -52,7 +54,7 @@ namespace SciterCore
 				throw new ArgumentException($"IntPtr.Zero received at {nameof(SciterGraphics)} constructor.");
 			
 			_graphicsHandle = graphicsHandle;
-			GraphicsApi.gAddRef(graphicsHandle);
+			GraphicsApi.GraphicsAddRef(graphicsHandle);
 		}
 
 		public static SciterGraphics Create(IntPtr graphicsHandle)
@@ -69,7 +71,7 @@ namespace SciterCore
 		public static bool TryCreate(SciterValue sciterValue, out SciterGraphics sciterGraphics)
 		{
 			var value = sciterValue.ToVALUE();
-			var result = GraphicsApi.vUnWrapGfx(ref value, out var graphicsHandle)
+			var result = GraphicsApi.ValueUnWrapGfx(ref value, out var graphicsHandle)
 				.IsOk();
 
 			sciterGraphics = result ? new SciterGraphics(graphicsHandle: graphicsHandle) : default;
@@ -85,7 +87,7 @@ namespace SciterCore
 
 		internal bool TryToValueInternal(out SciterValue sciterValue)
 		{
-			var result = GraphicsApi.vWrapGfx(this.Handle, out var value)
+			var result = GraphicsApi.ValueWrapGfx(this.Handle, out var value)
 				.IsOk();
 			
 			sciterValue = result ? new SciterValue(value: value) : default;
@@ -111,7 +113,7 @@ namespace SciterCore
 		internal bool TryBlendImageInternal(SciterImage img, float x = 0f, float y = 0f)
 		{
 			//float w, h, ix, iy, iw, ih, opacity;
-			return GraphicsApi.gDrawImage(this.Handle, img.Handle, x, y, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero)
+			return GraphicsApi.GraphicsDrawImage(this.Handle, img.Handle, x, y, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero)
 				.IsOk();
 		}
 
@@ -124,7 +126,7 @@ namespace SciterCore
 		
 		internal bool TryDrawRectangleInternal(float x1, float y1, float x2, float y2)
 		{
-			return GraphicsApi.gRectangle(this.Handle, x1, y1, x2, y2)
+			return GraphicsApi.GraphicsRectangle(this.Handle, x1, y1, x2, y2)
 				.IsOk();
 		}
 
@@ -135,7 +137,7 @@ namespace SciterCore
 
 		internal bool TryDrawLineInternal(float x1, float y1, float x2, float y2)
 		{
-			return GraphicsApi.gLine(this.Handle, x1, y1, x2, y2)
+			return GraphicsApi.GraphicsLine(this.Handle, x1, y1, x2, y2)
 				.IsOk();
 		}
 
@@ -151,7 +153,7 @@ namespace SciterCore
 			foreach(var point in points)
 				pointList.AddRange(point.Value);
 
-			return GraphicsApi.gPolygon(this.Handle, pointList.ToArray(), System.Convert.ToUInt32(points.Count()))
+			return GraphicsApi.GraphicsPolygon(this.Handle, pointList.ToArray(), System.Convert.ToUInt32(points.Count()))
 				.IsOk();
 		}
 
@@ -167,7 +169,7 @@ namespace SciterCore
 			foreach(var point in points)
 				pointList.AddRange(point.Value);
 			
-			return GraphicsApi.gPolyline(this.Handle, pointList.ToArray(), System.Convert.ToUInt32(points.Count))
+			return GraphicsApi.GraphicsPolyline(this.Handle, pointList.ToArray(), System.Convert.ToUInt32(points.Count))
 				.IsOk();
 		}
 
@@ -178,7 +180,7 @@ namespace SciterCore
 
 		internal bool TryDrawEllipseInternal(float x, float y, float rx, float ry)
 		{
-			return GraphicsApi.gEllipse(this.Handle, x, y, rx, ry)
+			return GraphicsApi.GraphicsEllipse(this.Handle, x, y, rx, ry)
 				.IsOk();
 		}
 		
@@ -198,7 +200,7 @@ namespace SciterCore
 		
 		internal bool TrySetLineWidthInternal(float lineWidth)
 		{
-			return GraphicsApi.gLineWidth(this.Handle, lineWidth)
+			return GraphicsApi.GraphicsLineWidth(this.Handle, lineWidth)
 				.IsOk();
 		}
 
@@ -214,7 +216,7 @@ namespace SciterCore
 		
 		internal bool TrySetLineJoinInternal(LineJoinType joinType)
 		{
-			return GraphicsApi.gLineJoin(this.Handle, (Interop.SciterGraphics.SCITER_LINE_JOIN_TYPE)(int)joinType)
+			return GraphicsApi.GraphicsLineJoin(this.Handle, (Interop.SciterGraphics.SCITER_LINE_JOIN_TYPE)(int)joinType)
 				.IsOk();
 		}
 
@@ -230,7 +232,7 @@ namespace SciterCore
 		
 		internal bool TrySetLineCapInternal(LineCapType capType)
 		{
-			return GraphicsApi.gLineCap(this.Handle, (Interop.SciterGraphics.SCITER_LINE_CAP_TYPE)(int)capType)
+			return GraphicsApi.GraphicsLineCap(this.Handle, (Interop.SciterGraphics.SCITER_LINE_CAP_TYPE)(int)capType)
 				.IsOk();
 		}
 		
@@ -246,7 +248,7 @@ namespace SciterCore
 		
 		internal bool TrySetLineColorInternal(SciterColor lineColor)
 		{
-			return GraphicsApi.gLineColor(this.Handle, lineColor.Value)
+			return GraphicsApi.GraphicsLineColor(this.Handle, lineColor.Value)
 				.IsOk();
 		}
 		
@@ -262,7 +264,7 @@ namespace SciterCore
 		
 		internal bool TrySetFillColorInternal(SciterColor fillColor)
 		{
-			return GraphicsApi.gFillColor(this.Handle, fillColor.Value)
+			return GraphicsApi.GraphicsFillColor(this.Handle, fillColor.Value)
 				.IsOk();
 		}
 		
@@ -277,7 +279,7 @@ namespace SciterCore
 		
 		internal bool TryDrawPathInternal(SciterPath path, DrawPathMode pathMode)
 		{
-			return GraphicsApi.gDrawPath(this.Handle, path.Handle, (Interop.SciterGraphics.DRAW_PATH_MODE)(int)pathMode)
+			return GraphicsApi.GraphicsDrawPath(this.Handle, path.Handle, (Interop.SciterGraphics.DRAW_PATH_MODE)(int)pathMode)
 				.IsOk();
 		}
 		
@@ -292,7 +294,7 @@ namespace SciterCore
 		
 		internal bool TryRotateInternal(float radians, float cx, float cy)
 		{
-			return GraphicsApi.gRotate(this.Handle, radians, ref cx, ref cy)
+			return GraphicsApi.GraphicsRotate(this.Handle, radians, ref cx, ref cy)
 				.IsOk();
 		}
 
@@ -303,7 +305,7 @@ namespace SciterCore
 
 		internal bool TryTranslateInternal(float cx, float cy)
 		{
-			return GraphicsApi.gTranslate(this.Handle, cx, cy)
+			return GraphicsApi.GraphicsTranslate(this.Handle, cx, cy)
 				.IsOk();
 		}
 
@@ -314,7 +316,7 @@ namespace SciterCore
 
 		internal bool TryScaleInternal(float x, float y)
 		{
-			return GraphicsApi.gScale(this.Handle, x, y)
+			return GraphicsApi.GraphicsScale(this.Handle, x, y)
 				.IsOk();
 		}
 
@@ -325,7 +327,7 @@ namespace SciterCore
 
 		internal bool TrySkewInternal(float dx, float dy)
 		{
-			return GraphicsApi.gSkew(this.Handle, dx, dy)
+			return GraphicsApi.GraphicsSkew(this.Handle, dx, dy)
 				.IsOk();
 		}
 		
@@ -340,7 +342,7 @@ namespace SciterCore
 		
 		internal bool TryDrawTextInternal(SciterText text, float px, float py, uint position)
 		{
-			return GraphicsApi.gDrawText(this.Handle, text.Handle, px, py, position)
+			return GraphicsApi.GraphicsDrawText(this.Handle, text.Handle, px, py, position)
 				.IsOk();
 		}
 		
@@ -355,7 +357,7 @@ namespace SciterCore
 		
 		internal bool TryPushClipBoxInternal(float x1, float y1, float x2, float y2, float opacity = 1)
 		{
-			return GraphicsApi.gPushClipBox(this.Handle, x1, y1, x2, y2, opacity)
+			return GraphicsApi.GraphicsPushClipBox(this.Handle, x1, y1, x2, y2, opacity)
 				.IsOk();
 		}
 
@@ -366,7 +368,7 @@ namespace SciterCore
 
 		internal bool TryPushClipPathInternal(SciterPath path, float opacity = 1)
 		{
-			return GraphicsApi.gPushClipPath(this.Handle, path.Handle, opacity)
+			return GraphicsApi.GraphicsPushClipPath(this.Handle, path.Handle, opacity)
 				.IsOk();
 		}
 
@@ -377,7 +379,7 @@ namespace SciterCore
 
 		internal bool TryPopClipInternal()
 		{
-			return GraphicsApi.gPopClip(this.Handle)
+			return GraphicsApi.GraphicsPopClip(this.Handle)
 				.IsOk();
 		}
 		
@@ -392,7 +394,7 @@ namespace SciterCore
 		
 		internal bool TrySaveStateInternal()
 		{
-			return GraphicsApi.gStateSave(this.Handle)
+			return GraphicsApi.GraphicsStateSave(this.Handle)
 				.IsOk();
 		}
 
@@ -403,7 +405,7 @@ namespace SciterCore
 
 		internal bool TryRestoreStateInternal()
 		{
-			return GraphicsApi.gStateRestore(this.Handle)
+			return GraphicsApi.GraphicsStateRestore(this.Handle)
 				.IsOk();
 		}
 		
@@ -418,7 +420,7 @@ namespace SciterCore
 			if (_disposedValue) 
 				return;
 			
-			GraphicsApi.gRelease(this.Handle);
+			GraphicsApi.GraphicsRelease(this.Handle);
 			_disposedValue = true;
 		}
 

@@ -50,8 +50,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="SciterCore.Binaries" Version="4.4.5.2" />
-    <PackageReference Include="SciterCore.PackFolder" Version="0.1.257" />
+    <PackageReference Include="SciterCore.Binaries" Version="(4.4.4.2,)" />
+    <PackageReference Include="SciterCore.PackFolder" Version="0.1.293" />
+    <PackageReference Include="System.Runtime.InteropServices.RuntimeInformation" Version="4.3.0" />
   </ItemGroup>
   <Import Project="$(SolutionDir)Shared\SciterCore.Shared\SciterCore.Shared.projitems" Label="Shared" Condition="Exists('$(SolutionDir)Shared\SciterCore.Shared\SciterCore.Shared.projitems')" />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
@@ -61,9 +62,9 @@
     <TaskFolder>$(MSBuildThisFileDirectory)..\..\scripts\</TaskFolder>
     <PackSourceFolder>$(MSBuildThisFileDirectory)..\..\Shared\SciterCore.Shared\LibConsole</PackSourceFolder>
     <PackOutputFile>$(ProjectDir)sciter.build\LibConsole.bin</PackOutputFile>
-    <TaskAssembly Condition="$([MSBuild]::IsOsPlatform(Windows))">packfolder.exe</TaskAssembly>
-    <TaskAssembly Condition="$([MSBuild]::IsOsPlatform(OSX))">packfolder</TaskAssembly>
-    <TaskAssembly Condition="$([MSBuild]::IsOsPlatform(Linux))">packfolder</TaskAssembly>
+    <TaskAssembly Condition="$([MSBuild]::IsOsPlatform(Windows))">bin.win\packfolder.exe</TaskAssembly>
+    <TaskAssembly Condition="$([MSBuild]::IsOsPlatform(OSX))">bin.osx\packfolder</TaskAssembly>
+    <TaskAssembly Condition="$([MSBuild]::IsOsPlatform(Linux))">bin.lnx\packfolder</TaskAssembly>
   </PropertyGroup>
 
   <Target Name="SciterPreBuild" BeforeTargets="PreBuildEvent">

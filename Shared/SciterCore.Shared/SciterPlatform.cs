@@ -13,19 +13,7 @@ namespace SciterCore
         /// <para>Clipboard, Drag and Drop, Object linking and embedding (OLE), In-place activation</para>
         /// <para>https://docs.microsoft.com/en-us/windows/win32/api/ole2/nf-ole2-oleinitialize</para>
         /// </summary>
-#if WINDOWS && !NETCORE
-        public static void EnableDragAndDrop()
-        {
-            var oleThread = new Thread(() =>
-            {
-                var oleResult = PInvokeWindows.OleInitialize(IntPtr.Zero);
-                Debug.Assert(oleResult == 0);
-            });
-            oleThread.SetApartmentState(ApartmentState.STA);
-            oleThread.Start();
-            oleThread.Join();
-        }
-#elif NETCORE
+        //TODO: Better implementation
         public static void EnableDragAndDrop()
         {
             if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) 
@@ -40,11 +28,37 @@ namespace SciterCore
             oleThread.Start();
             oleThread.Join();
         }
-#else
-        public static void EnableDragAndDrop()
+
+        //TODO: Better implementation
+        public static void Initialize()
         {
-            //Not supported
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                PInvokeGtk.gtk_init(IntPtr.Zero, IntPtr.Zero);
+
+            //Everything else is not supported
         }
-#endif 
+
+        //TODO: Better implementation
+        public static void RunMessageLoop()
+        {
+            RunMessageLoop(IntPtr.Zero);
+        }
+
+        //TODO: Better implementation
+        public static void RunMessageLoop(IntPtr handle)
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                while (PInvokeWindows.GetMessage(out var msg, handle, 0, 0) != 0)
+                {
+                    PInvokeWindows.TranslateMessage(ref msg);
+                    PInvokeWindows.DispatchMessage(ref msg);
+                }
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                PInvokeGtk.gtk_main();
+            
+            //Everything else is not supported
+        }
     }
 }

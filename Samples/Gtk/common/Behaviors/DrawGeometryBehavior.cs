@@ -34,6 +34,15 @@ namespace SciterTest.Gtk.Behaviors
 		                    PolygonPoint.Create(15.0f, 14.0f),
 		                    PolygonPoint.Create(17.0f, 49.0f),
 	                    })
+						.SetLineWidth(2)
+						
+						.SetLineColor(SciterColor.IndianRed)
+						.SetFillColor(SciterColor.CornflowerBlue)
+						.DrawRectangle(25, 125, 75, 175)
+						.SetLineColor(SciterColor.Goldenrod)
+						.DrawLine(50,125, 50, 175)
+						.DrawLine(25,150, 75, 150)
+						
 	                    .SetLineWidth(0)
 	                    .SetLineColor(127, 78, 194, .75f)
 	                    .SetFillColor(SciterColor.Create(0, 255, 255, .75f))
@@ -42,6 +51,7 @@ namespace SciterTest.Gtk.Behaviors
 	                    .DrawEllipse(225, 100, 50, 50)
 	                    .SetFillColor(255, 0, 0, 127)
 	                    .DrawEllipse(175, 100, 50, 50)
+						
 						.RestoreState();
 				}
 
