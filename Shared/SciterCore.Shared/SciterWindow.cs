@@ -383,7 +383,8 @@ namespace SciterCore
 
 #if WINDOWS || NETCORE
 	        //TODO: Check why SciterLoadFile() behaves differently in Windows with AbsoluteUri (file:///)
-	        absoluteUri = absoluteUri.Replace(":///", "://");
+			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+				absoluteUri = absoluteUri.Replace(":///", "://");
 #endif
 	        return Api.SciterLoadFile(hwnd: Handle, filename: absoluteUri);
         }
