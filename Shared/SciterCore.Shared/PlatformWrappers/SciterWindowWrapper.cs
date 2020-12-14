@@ -8,19 +8,21 @@ namespace SciterCore.PlatformWrappers
     {
         internal static class NativeMethodWrapper
         {
+            private static ISciterWindowWrapper _platformWrapper;
+            
             public static ISciterWindowWrapper GetInterface()
             {
-                //var sciterApiPtr = SciterAPI();
+                if (_platformWrapper != null)
+                    return _platformWrapper;
                 
-                //TODO: this should not new up every call.
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                    return new WindowsWrapper();
+                    return _platformWrapper = new WindowsWrapper();
 
                 //if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-                //    return new NativeWrapper<Sciter.MacOsSciterApi>();
-//
-                //if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                //    return new NativeWrapper<Sciter.LinuxSciterApi>();
+                //    return _platformWrapper = new MacOSWrapper>();
+
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                    return _platformWrapper = new LinuxWrapper();
 
                 throw new PlatformNotSupportedException();
             }
