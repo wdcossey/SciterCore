@@ -222,7 +222,71 @@ namespace SciterCore.Interop
 			#endregion
 
 			public readonly SciterApiDelegates.SciterProcX SciterProcX;
+			
+			// Sciter 4.4.3.24
+			
+			public readonly SciterApiDelegates.SciterAtomValue SciterAtomValue;
+            public readonly SciterApiDelegates.SciterAtomNameCB SciterAtomNameCB;
+            public readonly SciterApiDelegates.SciterSetGlobalAsset SciterSetGlobalAsset;
+            
+            
+            // Sciter 4.4.4.7
+            public readonly SciterApiDelegates.SciterGetElementAsset SciterGetElementAsset;
+            public readonly SciterApiDelegates.SciterSetVariable SciterSetVariable;
+            public readonly SciterApiDelegates.SciterGetVariable SciterGetVariable;
+            
+            // Sciter 4.4.5.4
+            //public readonly SciterApiDelegates.SciterElementUnwrap	SciterElementUnwrap;
+            //public readonly SciterApiDelegates.SciterElementWrap SciterElementWrap;
+            //public readonly SciterApiDelegates.SciterNodeUnwrap SciterNodeUnwrap;
+            //public readonly SciterApiDelegates.SciterNodeWrap SciterNodeWrap;
 
+            // Sciter 4.4.5.4
+            // UINT   SCFN(SciterElementUnwrap)(const VALUE* pval, HELEMENT* ppElement);
+	        // UINT   SCFN(SciterElementWrap)(VALUE* pval, HELEMENT pElement);
+	        //     
+	        // UINT   SCFN(SciterNodeUnwrap)(const VALUE* pval, HNODE* ppNode);
+	        // UINT   SCFN(SciterNodeWrap)(VALUE* pval, HNODE pNode);
+	        
+            //4.4.4.6
+            /*
+	            UINT64 SCFN(SciterAtomValue)(const char* name); //
+	            BOOL   SCFN(SciterAtomNameCB)(UINT64 atomv, LPCSTR_RECEIVER* rcv, LPVOID rcv_param);
+	            BOOL   SCFN(SciterSetGlobalAsset)(som_asset_t* pass);
+
+	            BOOL   SCFN(SciterSetVariable)(HWINDOW hwndOrNull, LPCWSTR path, const VALUE* pval_to_set);
+	            BOOL   SCFN(SciterGetVariable)(HWINDOW hwndOrNull, LPCWSTR path, VALUE* pval_to_get);
+             */
+				
+            /* 4.4.4.7
+	            UINT64 SCFN(SciterAtomValue)(const char* name); //
+	            BOOL   SCFN(SciterAtomNameCB)(UINT64 atomv, LPCSTR_RECEIVER* rcv, LPVOID rcv_param);
+	            BOOL   SCFN(SciterSetGlobalAsset)(som_asset_t* pass);
+
+	            SCDOM_RESULT SCFN(SciterGetElementAsset)(HELEMENT el, UINT64 nameAtom, som_asset_t** ppass);
+
+	            BOOL   SCFN(SciterSetVariable)(HWINDOW hwndOrNull, LPCWSTR path, const VALUE* pval_to_set);
+	            BOOL   SCFN(SciterGetVariable)(HWINDOW hwndOrNull, LPCWSTR path, VALUE* pval_to_get);
+             */
+				
+            //4.4.5.4
+            /*
+	            UINT64 SCFN(SciterAtomValue)(const char* name); //
+	            BOOL   SCFN(SciterAtomNameCB)(UINT64 atomv, LPCSTR_RECEIVER* rcv, LPVOID rcv_param);
+	            BOOL   SCFN(SciterSetGlobalAsset)(som_asset_t* pass);
+	            
+	            SCDOM_RESULT SCFN(SciterGetElementAsset)(HELEMENT el, UINT64 nameAtom, som_asset_t** ppass);
+	            
+	            UINT   SCFN(SciterSetVariable)(HWINDOW hwndOrNull, LPCWSTR path, const VALUE* pvalToSet);
+	            UINT   SCFN(SciterGetVariable)(HWINDOW hwndOrNull, LPCWSTR path, VALUE* pvalToGet);
+	            
+	            UINT   SCFN(SciterElementUnwrap)(const VALUE* pval, HELEMENT* ppElement);
+	            UINT   SCFN(SciterElementWrap)(VALUE* pval, HELEMENT pElement);
+	            
+	            UINT   SCFN(SciterNodeUnwrap)(const VALUE* pval, HNODE* ppNode);
+	            UINT   SCFN(SciterNodeWrap)(VALUE* pval, HNODE pNode);
+             */
+            
 #pragma warning restore 649
 		}
 	}

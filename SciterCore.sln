@@ -8,7 +8,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.gitignore = .gitignore
 		OmniCode-Settings.json = OmniCode-Settings.json
 		README.md = README.md
-		SciterCore\SciterSharpOSX.nuspec = SciterCore\SciterSharpOSX.nuspec
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SciterCore.Framework.Tests.Unit", "SciterCore.Framework.Tests.Unit\SciterCore.Framework.Tests.Unit.csproj", "{2ED64300-CB6A-4CB3-B687-D2795395FC44}"

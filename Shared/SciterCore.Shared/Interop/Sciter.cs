@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Reflection;
 using SciterCore.Interop;
+using SciterTest.CoreForms.Extensions;
 
 // ReSharper disable MemberCanBePrivate.Global
 
@@ -406,6 +407,32 @@ namespace SciterCore.Interop
 				#endregion
 
 				private readonly SciterApiDelegates.SciterProcX _sciterProcX = null; 
+				
+				#region Sciter 4.4.3.24
+				
+				private readonly SciterApiDelegates.SciterAtomValue _sciterAtomValue = null;
+				private readonly SciterApiDelegates.SciterAtomNameCB _sciterAtomNameCB = null;
+				private readonly SciterApiDelegates.SciterSetGlobalAsset _sciterSetGlobalAsset = null; 
+				
+				#endregion
+
+				#region Sciter 4.4.4.7
+
+				private readonly SciterApiDelegates.SciterGetElementAsset _sciterGetElementAsset = null;
+				private readonly SciterApiDelegates.SciterSetVariable _sciterSetVariable = null;
+				private readonly SciterApiDelegates.SciterGetVariable _sciterGetVariable = null;
+
+				#endregion
+
+				#region Sciter 4.4.5.4
+
+				private readonly SciterApiDelegates.SciterElementUnwrap _sciterElementUnwrap = null;
+				private readonly SciterApiDelegates.SciterElementWrap _sciterElementWrap = null;
+
+				private readonly SciterApiDelegates.SciterNodeUnwrap _sciterNodeUnwrap = null;
+				private readonly SciterApiDelegates.SciterNodeWrap _sciterNodeWrap = null;
+
+				#endregion
 				
 #pragma warning restore 649
 
@@ -944,9 +971,12 @@ namespace SciterCore.Interop
 				public bool SciterCloseArchive(IntPtr harc) => 
 					_sciterCloseArchive(harc);
 
-				public SciterXDom.SCDOM_RESULT SciterFireEvent(ref SciterBehaviors.BEHAVIOR_EVENT_PARAMS evt, bool post, out bool handled) => 
-					_sciterFireEvent(ref evt, post, out handled);
-
+				public SciterXDom.SCDOM_RESULT SciterFireEvent(SciterBehaviorArgs evt, bool post, out bool handled)
+				{
+					var @event = evt.FromEventArgs();
+					return _sciterFireEvent(ref @event, post, out handled);
+				}
+				
 				public IntPtr SciterGetCallbackParam(IntPtr hwnd) => 
 					_sciterGetCallbackParam(hwnd);
 
@@ -970,6 +1000,42 @@ namespace SciterCore.Interop
 
 				public bool SciterProcX(IntPtr hwnd, IntPtr pMsg) => 
 					_sciterProcX(hwnd, pMsg);
+
+				public ulong SciterAtomValue(string name) => 
+					_sciterAtomValue(name);
+
+				public bool SciterAtomNameCB(ulong atomv, IntPtr rxc, IntPtr rcvParam) => 
+					_sciterAtomNameCB(atomv, rxc, rcvParam);
+
+				public bool SciterSetGlobalAsset(IntPtr pass) => 
+					_sciterSetGlobalAsset(pass);
+
+				public SciterXDom.SCDOM_RESULT SciterGetElementAsset(IntPtr el, ulong nameAtom, out IntPtr ppass) =>
+					_sciterGetElementAsset(el, nameAtom, out ppass);
+
+				public bool SciterSetVariable(IntPtr hwndOrNull, string path, ref SciterValue.VALUE pvalToSet) =>
+					_sciterSetVariable(hwndOrNull, path, ref pvalToSet);
+
+				//public uint SciterSetVariable(IntPtr hwndOrNull, string path, ref SciterValue.VALUE pvalToSet) =>
+				//	_sciterSetVariable(hwndOrNull, path, ref pvalToSet);
+
+				public bool SciterGetVariable(IntPtr hwndOrNull, string path, ref SciterValue.VALUE pvalToGet) =>
+					_sciterGetVariable(hwndOrNull, path, ref pvalToGet);
+
+				//public uint SciterGetVariable(IntPtr hwndOrNull, string path, ref SciterValue.VALUE pvalToGet) =>
+				//	_sciterGetVariable(hwndOrNull, path, ref pvalToGet);
+
+				public uint SciterElementUnwrap(ref SciterValue.VALUE pval, out IntPtr ppElement) =>
+					_sciterElementUnwrap(ref pval, out ppElement);
+
+				public uint SciterElementWrap(ref SciterValue.VALUE pval, IntPtr ppElement) =>
+					_sciterElementWrap(ref pval, ppElement);
+
+				public uint SciterNodeUnwrap(ref SciterValue.VALUE pval, out IntPtr ppNode) =>
+					_sciterNodeUnwrap(ref pval, out ppNode);
+
+				public uint SciterNodeWrap(ref SciterValue.VALUE pval, IntPtr ppNode) =>
+					_sciterNodeWrap(ref pval, ppNode);
 
 				#endregion
 			}

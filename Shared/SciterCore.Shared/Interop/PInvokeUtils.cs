@@ -6,21 +6,6 @@ namespace SciterCore.Interop
 {
 	public static class PInvokeUtils
 	{
-		public static void RunMsgLoop()
-		{
-#if WINDOWS || NETCORE
-			while (PInvokeWindows.GetMessage(out var msg, IntPtr.Zero, 0, 0) != 0)
-			{
-				PInvokeWindows.TranslateMessage(ref msg);
-				PInvokeWindows.DispatchMessage(ref msg);
-			}
-#elif GTKMONO
-			PInvokeGtk.gtk_main();
-#elif OSX
-            throw new Exception("Do not call PInvokeUtils.RunMsgLoop() on OSX.");
-#endif
-		}
-
 		// PInvoke marshaling utils ===============================================================
 		public static IntPtr NativeUtf16FromString(string managedString, int minlen)
 		{

@@ -1601,6 +1601,110 @@ namespace SciterCore.Interop
 			/// <returns>TRUE if handled</returns>
 			[SciterStructMap(nameof(WindowsSciterApi.SciterProcX))]
 			public delegate bool SciterProcX(IntPtr hwnd, IntPtr pMsg);
+			
+			#region Sciter 4.4.3.24
+			
+			/// <summary>
+			/// UINT64 SCFN(SciterAtomValue)(const char* name);
+			/// </summary>
+			/// <param name="name"></param>
+			[SciterStructMap(nameof(WindowsSciterApi.SciterAtomValue))]
+			public delegate ulong SciterAtomValue(string name);
+
+			/// <summary>
+			/// BOOL SCFN(SciterAtomNameCB)(UINT64 atomv, LPCSTR_RECEIVER* rcv, LPVOID rcv_param);
+			/// </summary>
+			/// <param name="atomv"></param>
+			/// <param name="rxc"></param>
+			/// <param name="rcvParam"></param>
+			[SciterStructMap(nameof(WindowsSciterApi.SciterAtomNameCB))]
+			public delegate bool SciterAtomNameCB(ulong atomv, IntPtr rxc, IntPtr rcvParam);
+
+			/// <summary>
+			/// BOOL SCFN(SciterSetGlobalAsset)(som_asset_t* pass);
+			/// </summary>
+			/// <param name="pass"></param>
+			[SciterStructMap(nameof(WindowsSciterApi.SciterSetGlobalAsset))]
+			public delegate bool SciterSetGlobalAsset(IntPtr pass);
+			
+			#endregion
+
+			#region Sciter 4.4.4.7
+			
+			/// <summary>
+			/// SCDOM_RESULT SCFN(SciterGetElementAsset)(HELEMENT el, UINT64 nameAtom, som_asset_t** ppass);
+			/// </summary>
+			/// <param name="el"></param>
+			/// <param name="nameAtom"></param>
+			/// <param name="ppass"></param>
+			[SciterStructMap(nameof(WindowsSciterApi.SciterGetElementAsset))]
+			public delegate SciterXDom.SCDOM_RESULT SciterGetElementAsset(IntPtr el, ulong nameAtom, out IntPtr ppass);
+			
+			
+			/// <summary>
+			/// UINT SCFN(SciterSetVariable)(HWINDOW hwndOrNull, LPCWSTR path, const VALUE* pvalToSet); (>= 4.4.5.4)
+			/// BOOL SCFN(SciterSetVariable)(HWINDOW hwndOrNull, LPCWSTR path, const VALUE* pval_to_set); (>= 4.4.4.6)
+			/// </summary>
+			/// <param name="hwndOrNull"></param>
+			/// <param name="path"></param>
+			/// <param name="pvalToSet"></param>
+			[SciterStructMap(nameof(WindowsSciterApi.SciterSetVariable))]
+			//public delegate uint SciterSetVariable(IntPtr hwndOrNull, [MarshalAs(UnmanagedType.LPWStr)] string path, ref SciterValue.VALUE pvalToSet);
+			public delegate bool SciterSetVariable(IntPtr hwndOrNull, [MarshalAs(UnmanagedType.LPWStr)] string path, ref SciterValue.VALUE pvalToSet);
+
+			/// <summary>
+			/// UINT SCFN(SciterGetVariable)(HWINDOW hwndOrNull, LPCWSTR path, VALUE* pvalToGet); (>= 4.4.5.4)
+			/// BOOL SCFN(SciterGetVariable)(HWINDOW hwndOrNull, LPCWSTR path, VALUE* pval_to_get); (4.4.4.6)
+			/// </summary>
+			/// <param name="hwndOrNull"></param>
+			/// <param name="path"></param>
+			/// <param name="pvalToGet"></param>
+			[SciterStructMap(nameof(WindowsSciterApi.SciterGetVariable))]
+			//public delegate uint SciterGetVariable(IntPtr hwndOrNull, [MarshalAs(UnmanagedType.LPWStr)] string path, ref SciterValue.VALUE pvalToGet);
+			public delegate bool SciterGetVariable(IntPtr hwndOrNull, [MarshalAs(UnmanagedType.LPWStr)] string path, ref SciterValue.VALUE pvalToGet);
+
+			#endregion
+
+			#region Sciter 4.4.5.4
+
+			/// <summary>
+			/// UINT SCFN(SciterElementUnwrap)(const VALUE* pval, HELEMENT* ppElement);
+			/// </summary>
+			/// <param name="pval"></param>
+			/// <param name="ppElement"></param>
+			//[SciterStructMap(nameof(WindowsSciterApi.SciterElementUnwrap))]
+			public delegate uint SciterElementUnwrap(ref SciterValue.VALUE pval, out IntPtr ppElement);
+
+
+			/// <summary>
+			/// UINT SCFN(SciterElementWrap)(VALUE* pval, HELEMENT pElement)
+			/// </summary>
+			/// <param name="pval"></param>
+			/// <param name="ppElement"></param>
+			//[SciterStructMap(nameof(WindowsSciterApi.SciterElementWrap))]
+			public delegate uint SciterElementWrap(ref SciterValue.VALUE pval, IntPtr ppElement);
+
+
+			/// <summary>
+			/// UINT SCFN(SciterNodeUnwrap)(const VALUE* pval, HNODE* ppNode);
+			/// </summary>
+			/// <param name="pval"></param>
+			/// <param name="ppNode"></param>
+			//[SciterStructMap(nameof(WindowsSciterApi.SciterNodeUnwrap))]
+			public delegate uint SciterNodeUnwrap(ref SciterValue.VALUE pval, out IntPtr ppNode);
+
+
+			/// <summary>
+			/// UINT SCFN(SciterNodeWrap)(VALUE* pval, HNODE pNode);
+			/// </summary>
+			/// <param name="pval"></param>
+			/// <param name="ppNode"></param>
+			//[SciterStructMap(nameof(WindowsSciterApi.SciterNodeWrap))]
+			public delegate uint SciterNodeWrap(ref SciterValue.VALUE pval, IntPtr ppNode);
+
+			
+			#endregion
+			
 		}
 	}
 }

@@ -789,12 +789,12 @@ namespace SciterCore
             return element?.TryPostEventInternal(eventCode: eventCode, reason: reason, source: source) == true;
         }
         
-        public static void FireEvent(this SciterElement element, SciterBehaviors.BEHAVIOR_EVENT_PARAMS @params, bool post = true)
+        public static void FireEvent(this SciterElement element, SciterBehaviorArgs @params, bool post = true)
         {
             element?.FireEventInternal(@params: @params, post: post);
         }
 		
-        public static bool TryFireEvent(this SciterElement element, SciterBehaviors.BEHAVIOR_EVENT_PARAMS @params, out bool handled, bool post = true)
+        public static bool TryFireEvent(this SciterElement element, SciterBehaviorArgs @params, out bool handled, bool post = true)
         {
             handled = default;
             return element?.TryFireEventInternal(@params: @params, out handled, post: post) == true;

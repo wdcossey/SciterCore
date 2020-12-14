@@ -36,6 +36,9 @@ namespace SciterCore
 		private static readonly ISciterApi Api = Sciter.Api;
 		private readonly IntPtr _elementHandle;
 
+		/// <summary>
+		/// Sciter Element Handle
+		/// </summary>
 		public IntPtr Handle => _elementHandle;
 
 		public SciterElement(IntPtr elementHandle)
@@ -830,14 +833,14 @@ namespace SciterCore
 				.IsOk();
 		}
 
-		internal void FireEventInternal(SciterBehaviors.BEHAVIOR_EVENT_PARAMS @params, bool post = true)
+		internal void FireEventInternal(SciterBehaviorArgs @params, bool post = true)
 		{
 			TryFireEventInternal(@params: @params, handled: out _, post: post);
 		}
 
-		internal bool TryFireEventInternal(SciterBehaviors.BEHAVIOR_EVENT_PARAMS @params, out bool handled, bool post = true)
+		internal bool TryFireEventInternal(SciterBehaviorArgs @params, out bool handled, bool post = true)
 		{
-			return Api.SciterFireEvent(ref @params, post, out handled).IsOk();
+			return Api.SciterFireEvent(@params, post, out handled).IsOk();
 		}
 		
 		#endregion

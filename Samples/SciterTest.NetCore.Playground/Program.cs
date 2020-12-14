@@ -11,7 +11,9 @@ namespace SciterTest.NetCore
         [STAThread]
         static void Main(string[] args)
         {
-            // Sciter needs this for drag'n'drop support
+            // Platform specific (required for GTK)
+            SciterPlatform.Initialize();
+            // Sciter needs this for drag 'n drop support
             SciterPlatform.EnableDragAndDrop();
 
             var configuration = new ConfigurationBuilder()

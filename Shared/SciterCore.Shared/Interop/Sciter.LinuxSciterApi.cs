@@ -196,6 +196,22 @@ namespace SciterCore.Interop
 
             public readonly SciterApiDelegates.SciterProcX SciterProcX;
 
+            // Sciter 4.4.3.24
+			
+            public readonly SciterApiDelegates.SciterAtomValue SciterAtomValue;
+            public readonly SciterApiDelegates.SciterAtomNameCB SciterAtomNameCB;
+            public readonly SciterApiDelegates.SciterSetGlobalAsset SciterSetGlobalAsset;
+            
+            // Sciter 4.4.4.7
+            public readonly SciterApiDelegates.SciterGetElementAsset SciterGetElementAsset;
+            public readonly SciterApiDelegates.SciterSetVariable SciterSetVariable;
+            public readonly SciterApiDelegates.SciterGetVariable SciterGetVariable;
+            
+            // Sciter 4.4.5.4
+            //public readonly SciterApiDelegates.SciterElementUnwrap	SciterElementUnwrap;
+            //public readonly SciterApiDelegates.SciterElementWrap SciterElementWrap;
+            //public readonly SciterApiDelegates.SciterNodeUnwrap SciterNodeUnwrap;
+            //public readonly SciterApiDelegates.SciterNodeWrap SciterNodeWrap;
 #pragma warning restore 649
         }
     }

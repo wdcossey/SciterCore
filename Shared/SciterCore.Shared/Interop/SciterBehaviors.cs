@@ -379,7 +379,7 @@ namespace SciterCore.Interop
 			CONTENT_REMOVED = 0x02,
 		}
 
-		public enum BEHAVIOR_EVENTS : uint
+		internal enum BEHAVIOR_EVENTS : uint
 		{
 			BUTTON_CLICK = 0,				// click on button
 			BUTTON_PRESS = 1,				// mouse down or key down in button
@@ -521,7 +521,7 @@ namespace SciterCore.Interop
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct BEHAVIOR_EVENT_PARAMS
+		internal struct BEHAVIOR_EVENT_PARAMS
 		{
 			/// <summary>
 			/// BEHAVIOR_EVENTS

@@ -268,7 +268,7 @@ namespace SciterCore.PlatformWrappers
 			public void ShowModal(IntPtr handle)
 			{
 				Show(handle);
-				PInvokeUtils.RunMsgLoop();
+				SciterPlatform.RunMessageLoop(handle);
 			}
 
 			/// <summary>

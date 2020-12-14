@@ -9,7 +9,9 @@ namespace SciterTest.Idioms
 		[STAThread]
 		static void Main(string[] args)
 		{
-			// Sciter needs this for drag'n'drop support
+			// Platform specific (required for GTK)
+			SciterPlatform.Initialize();
+			// Sciter needs this for drag 'n drop support
 			SciterPlatform.EnableDragAndDrop();
 			
 			// Create the window
@@ -26,7 +28,7 @@ namespace SciterTest.Idioms
 
 			// Show window and Run message loop
 			window.Show();
-			PInvokeUtils.RunMsgLoop();
+			SciterPlatform.RunMessageLoop();
 		}
 	}
 }

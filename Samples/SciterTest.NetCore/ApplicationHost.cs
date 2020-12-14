@@ -31,7 +31,7 @@ namespace SciterTest.NetCore
 #if DEBUG
 			host.Window.OnWindowShow += (sender, args) =>
 			{
-				host.ConnectToInspector();
+				
 			};
 #endif
 		}
@@ -239,9 +239,12 @@ namespace SciterTest.NetCore
 		}
 
 		protected override bool OnEvent(SciterElement sourceElement, SciterElement targetElement,
-			SciterBehaviors.BEHAVIOR_EVENTS type, IntPtr reason, SciterValue data, string eventName)
+			BehaviorEvents type, IntPtr reason, SciterValue data, string eventName)
 		{
-			_logger?.LogDebug($"{nameof(OnEvent)}: {nameof(type)}: {type}");
+			if (type == BehaviorEvents.DocumentReady) 
+				this.Host.ConnectToInspector();
+
+			_logger?.LogDebug($"{nameof(OnEvent)}: {nameof(type)}: {type}; {nameof(eventName)}: {eventName}; {nameof(data)}: {data.AsString()}");
 			return base.OnEvent(sourceElement, targetElement, type, reason, data, eventName);
 		}
 
@@ -250,8 +253,6 @@ namespace SciterTest.NetCore
 			_logger?.LogDebug($"{nameof(OnDataArrived)}: {nameof(prms)}: {prms.uri}");
 			return base.OnDataArrived(element, prms);
 		}
-
-		// (Hint: to overload C# methods of SciterEventHandler base class, type 'override', press space, and VS/Xamarin will suggest the methods you can override)
 	}
 
 	// This base class overrides OnLoadData and does the resource loading strategy

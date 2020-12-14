@@ -30,7 +30,20 @@ namespace SciterTest.NetCore
 			host.Window.OnWindowShow += (sender, args) =>
 			{
 				var treeElement = wnd.RootElement.SelectFirst("widget#tree");
+				
 				treeElement.AttachEventHandler<VirtualTreeBehavior>();
+				
+				var button = wnd.RootElement.SelectFirst("#new-dialog");
+				
+				button.FireEvent(new SciterBehaviorArgs()
+				{
+					Command = BehaviorEvents.ButtonClick,
+					Target = button,
+					Source = button,
+					Name = "Hello",
+					Data = SciterValue.Create("World!"),
+					
+				});
 				
 				host.ConnectToInspector();
 			};
@@ -84,9 +97,9 @@ namespace SciterTest.NetCore
 		}
 
 		protected override bool OnEvent(SciterElement sourceElement, SciterElement targetElement,
-			SciterBehaviors.BEHAVIOR_EVENTS type, IntPtr reason, SciterValue data, string eventName)
+			BehaviorEvents type, IntPtr reason, SciterValue data, string eventName)
 		{
-			//_logger?.LogDebug($"{nameof(OnEvent)}: {nameof(type)}: {type}");
+			_logger?.LogDebug($"{nameof(OnEvent)}: {nameof(type)}: {type}; {nameof(eventName)}: {eventName}; {nameof(data)}: {data.AsString()}");
 			return base.OnEvent(sourceElement, targetElement, type, reason, data, eventName);
 		}
 

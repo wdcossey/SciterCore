@@ -164,7 +164,7 @@ namespace SciterCore
 		/// <param name="eventName"><para>name of custom event (when <paramref name="eventType"/> == <see cref="SciterBehaviors.BEHAVIOR_EVENTS.CUSTOM"/>)</para></param>
 		/// <returns></returns>
 		protected virtual bool OnEvent(SciterElement sourceElement, SciterElement targetElement,
-			SciterBehaviors.BEHAVIOR_EVENTS eventType, IntPtr reason, SciterValue data, string eventName)
+			BehaviorEvents eventType, IntPtr reason, SciterValue data, string eventName)
 		{
 			return false;
 		}
@@ -300,7 +300,7 @@ namespace SciterCore
 						
 						//
 						return OnEvent(sourceElement: source, targetElement: target, 
-							eventType: @params.cmd, reason: @params.reason, 
+							eventType: (BehaviorEvents)(int)@params.cmd, reason: @params.reason, 
 							data: new SciterValue(@params.data), eventName: @params.name);
 					}
 

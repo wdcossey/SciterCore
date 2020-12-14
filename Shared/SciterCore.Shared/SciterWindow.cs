@@ -56,6 +56,10 @@ namespace SciterCore
 
 		private IntPtr _handle;
 
+		/// <summary>
+		/// Typically this is the Sciter Handle.<br/>
+		/// Depending on the platform, this does not always coincide with the <see cref="WindowHandle"/>
+		/// </summary>
 		public IntPtr Handle
 		{
 			get => _handle;
@@ -64,6 +68,10 @@ namespace SciterCore
 		
 		private IntPtr _windowHandle;
 		
+		/// <summary>
+		/// Typically this is the (platform) Window Handle.<br/>
+		/// Depending on the platform, this may coincide with the <see cref="Handle"/>
+		/// </summary>
 		public IntPtr WindowHandle
 		{
 			get => _windowHandle;
@@ -100,20 +108,24 @@ namespace SciterCore
 #endif
 		}
 
+		// TODO: Check this when running x-platform.
 		public SciterWindow(IntPtr hwnd, bool weakReference = false)
 		{
 			Handle = hwnd;
 
+#if WINDOWS || NETCORE && !GTKMONO
+			WindowHandle = Handle;
+#elif GTKMONO
+			WindowHandle = PInvokeGtk.gtk_widget_get_toplevel(Handle);
+			Debug.Assert(WindowHandle != IntPtr.Zero);
+#elif OSX && XAMARIN
+			//
+#endif
+			
 			if (!weakReference)
 			{
 #if WINDOWS || NETCORE
-				WindowHandle = Handle;
 				WindowDelegateRegistry.Set(this, InternalProcessSciterWindowMessage);
-#endif
-
-#if GTKMONO
-				WindowHandle = PInvokeGtk.gtk_widget_get_toplevel(Handle);
-				Debug.Assert(WindowHandle != IntPtr.Zero);
 #elif OSX && XAMARIN
 				_nsview = new OSXView(Handle);
 #endif
@@ -420,13 +432,8 @@ namespace SciterCore
 
 		public EventHandler OnWindowShow;
 
-		public void ShowModal()
-		{
+		public void ShowModal() =>
 			WindowWrapper.ShowModal(WindowHandle);
-			//Show();
-			//PInvokeUtils.RunMsgLoop();
-		}
-
 
 		/// <summary>
 		/// Close the window. Posts WM_CLOSE message on Windows.

@@ -16,12 +16,12 @@ namespace SciterTest.Gtk
 		{
 			MessageBox.Show (IntPtr.Zero, "ola", "mnundo");
 
-#if WINDOWS
-			// Sciter needs this for drag'n'drop support
+			// Platform specific (required for GTK)
+			SciterPlatform.Initialize();
+			// Sciter needs this for drag 'n drop support
 			SciterPlatform.EnableDragAndDrop();
-#endif
+
 #if GTKMONO
-			PInvokeGtk.gtk_init(IntPtr.Zero, IntPtr.Zero);
 			Mono.Setup();
 #endif
 
@@ -37,7 +37,7 @@ namespace SciterTest.Gtk
 			AppHost = new Host(AppWindow);
 
 			// Run message loop
-			PInvokeUtils.RunMsgLoop();
+			SciterPlatform.RunMessageLoop();
 		}
 	}
 }

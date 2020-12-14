@@ -37,7 +37,9 @@ namespace SciterTest.Core
 			Console.WriteLine($@"Sciter: {Sciter.Api.SciterVersion()}");
 			Console.WriteLine("Bitness: " + IntPtr.Size);
 
-			// Sciter needs this for drag'n'drop support
+			// Platform specific (required for GTK)
+			SciterPlatform.Initialize();
+			// Sciter needs this for drag 'n drop support
 			SciterPlatform.EnableDragAndDrop();
 			
 			// Create the window
@@ -61,7 +63,7 @@ namespace SciterTest.Core
 
 			// Show window and Run message loop
 			AppWindow.Show();
-			PInvokeUtils.RunMsgLoop();
+			SciterPlatform.RunMessageLoop();
 		}
 	}
 }

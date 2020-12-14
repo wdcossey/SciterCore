@@ -53,15 +53,5 @@ namespace SciterCore.Tests.Unit.Graphics
             
         }
 
-        private void TranslateAndDispatch()
-        {
-            while(PInvokeWindows.GetMessage(lpMsg: out var msg, hWnd: IntPtr.Zero, wMsgFilterMin: 0, wMsgFilterMax: 0) != 0)
-            {
-                PInvokeWindows.TranslateMessage(ref msg);
-                PInvokeWindows.DispatchMessage(ref msg);
-            }
-        }
-
-        
     }
 }

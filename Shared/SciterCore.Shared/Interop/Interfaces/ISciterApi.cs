@@ -318,7 +318,7 @@ namespace SciterCore.Interop
 
 		#endregion
 
-		SciterXDom.SCDOM_RESULT SciterFireEvent(ref SciterBehaviors.BEHAVIOR_EVENT_PARAMS evt, bool post,
+		SciterXDom.SCDOM_RESULT SciterFireEvent(SciterBehaviorArgs evt, bool post,
 			out bool handled);
 
 		IntPtr SciterGetCallbackParam(IntPtr hwnd);
@@ -335,5 +335,33 @@ namespace SciterCore.Interop
 		#endregion
 
 		bool SciterProcX(IntPtr hwnd, IntPtr pMsg);
+
+		#region Sciter 4.4.3.24
+
+		ulong SciterAtomValue(string name);
+
+		bool SciterAtomNameCB(ulong atomv, IntPtr rxc, IntPtr rcvParam);
+
+		bool SciterSetGlobalAsset(IntPtr pass);
+
+		#endregion
+		
+		#region Sciter 4.4.4.7
+		
+		SciterXDom.SCDOM_RESULT SciterGetElementAsset(IntPtr el, ulong nameAtom, out IntPtr ppass);
+		bool SciterGetVariable(IntPtr hwndOrNull, string path, ref SciterValue.VALUE pvalToGet);
+		bool SciterSetVariable(IntPtr hwndOrNull, string path, ref SciterValue.VALUE pvalToSet);
+		
+		#endregion
+
+		#region Sciter 4.4.5.4
+		//uint SciterSetVariable(IntPtr hwndOrNull, string path, ref SciterValue.VALUE pvalToSet);
+		//uint SciterGetVariable(IntPtr hwndOrNull, string path, ref SciterValue.VALUE pvalToGet);
+		uint SciterElementUnwrap(ref SciterValue.VALUE pval, out IntPtr ppElement);
+		uint SciterElementWrap(ref SciterValue.VALUE pval, IntPtr ppElement);
+		uint SciterNodeUnwrap(ref SciterValue.VALUE pval, out IntPtr ppNode);
+		uint SciterNodeWrap(ref SciterValue.VALUE pval, IntPtr ppNode);
+
+		#endregion
 	}
 }
