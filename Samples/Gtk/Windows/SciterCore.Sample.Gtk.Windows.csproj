@@ -105,19 +105,19 @@
     <None Include="wwwroot\**" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Platform\SciterCore.WinForms\SciterCore.WinForms.csproj">
-      <Project>{18b2e4e7-cb77-44c3-865b-be05620aba4d}</Project>
-      <Name>SciterCore.WinForms</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Resources\IconMain.ico" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="SciterCore.PackFolder" Version="0.1.257" />
+    <PackageReference Include="SciterCore.PackFolder" Version="0.1.293" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Platform\SciterCore.Windows\SciterCore.Windows.csproj">
+      <Project>{18b2e4e7-cb77-44c3-865b-be05620aba4d}</Project>
+      <Name>SciterCore.Windows</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

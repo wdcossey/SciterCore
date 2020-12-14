@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using SciterCore;
 using SciterCore.Interop;
 using SciterCore.WinForms;
+using SciterValue = SciterCore.SciterValue;
 
 namespace SciterTest.WinForms
 {
@@ -15,6 +17,35 @@ namespace SciterTest.WinForms
 			sciterControl1.HandleCreated += SciterControl1_HandleCreated;
 			
 			sciterHost.GetArchiveItem += SciterHostOnGetArchiveItem;
+			sciterHost.OnScriptCall += SciterHostOnOnScriptCall;
+		}
+
+		private void SciterHostOnOnScriptCall(object sender, ScriptCallEventArgs e)
+		{
+			e.Owner = this;
+		}
+		
+		public Task GetRuntimeInfo(SciterElement element, SciterValue onCompleted, SciterValue onError)
+		{
+		    try
+		    {
+		        var value = SciterValue.Create(
+		            new {
+		                FrameworkDescription = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription,
+		                ProcessArchitecture = System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture.ToString(),
+		                OSArchitecture = System.Runtime.InteropServices.RuntimeInformation.OSArchitecture.ToString(),
+		                OSDescription = System.Runtime.InteropServices.RuntimeInformation.OSDescription,
+		                SystemVersion = System.Runtime.InteropServices.RuntimeEnvironment.GetSystemVersion()
+		            });
+			
+		        onCompleted.Invoke(value);
+		    }
+		    catch (Exception e)
+		    {
+		        onError.Invoke(SciterValue.MakeError(e.Message));
+		    }
+		
+		    return Task.CompletedTask;
 		}
 
 		private void SciterHostOnGetArchiveItem(object sender, GetArchiveItemEventArgs e)
@@ -26,17 +57,10 @@ namespace SciterTest.WinForms
 					break;
 			}
 		}
-
-		//private SciterWindow AppWnd;
-		//private Host AppHost = new Host();
-
+		
 		private void SciterControl1_HandleCreated(object sender, EventArgs e)
 		{
-			//var vm = sciterControl1.SciterWnd.VM;
 			
-			//var vm = Sciter.Api.SciterGetVM(sciterControl1.SciterWnd.Handle);
-			//AppWnd = new SciterWindow(sciterControl1.SciterWnd.Handle);
-			//AppHost.Setup(AppWnd);
 		}
 
 		private void sciterControl1_LoadHtml(object sender, SciterCore.WinForms.LoadHtmlEventArgs e)

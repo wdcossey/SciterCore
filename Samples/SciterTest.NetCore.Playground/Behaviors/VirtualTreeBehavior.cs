@@ -13,7 +13,7 @@ namespace SciterTest.NetCore.Behaviors
     {
         private SciterValue _dataSource;
 
-        protected override bool OnEvent(SciterElement sourceElement, SciterElement targetElement, SciterBehaviors.BEHAVIOR_EVENTS type, IntPtr reason,
+        protected override bool OnEvent(SciterElement sourceElement, SciterElement targetElement, BehaviorEvents type, IntPtr reason,
             SciterValue data, string eventName)
         {
             return base.OnEvent(sourceElement, targetElement, type, reason, data, eventName);
@@ -67,19 +67,19 @@ namespace SciterTest.NetCore.Behaviors
             return EventGroups.HandleAll;
         }
 
-        protected override bool OnEvent(SciterElement sourceElement, SciterElement targetElement, SciterBehaviors.BEHAVIOR_EVENTS type, IntPtr reason,
+        protected override bool OnEvent(SciterElement sourceElement, SciterElement targetElement, BehaviorEvents type, IntPtr reason,
             SciterValue data, string eventName)
         {
             switch (type)
             {
                 
-                case SciterBehaviors.BEHAVIOR_EVENTS.ELEMENT_EXPANDED:
+                case BehaviorEvents.ElementExpanded:
                     expandOption(targetElement);
                     targetElement.CallMethod("optionExpanded", targetElement.Value);
                     return true;
                     break;
                 
-                case SciterBehaviors.BEHAVIOR_EVENTS.ELEMENT_COLLAPSED:
+                case BehaviorEvents.ElementCollapsed:
 
                     collapseOption(targetElement);
                     targetElement.CallMethod("optionCollapsed", targetElement.Value);

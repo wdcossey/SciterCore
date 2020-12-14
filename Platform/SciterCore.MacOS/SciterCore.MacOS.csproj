@@ -7,7 +7,7 @@
     <ProjectTypeGuids>{A3F8F2AB-B479-4A4A-A458-A89E7DC349F1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <RootNamespace>SciterCore</RootNamespace>
-    <AssemblyName>SciterCore.Mac</AssemblyName>
+    <AssemblyName>SciterCore.MacOS</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <TargetFrameworkIdentifier>Xamarin.Mac</TargetFrameworkIdentifier>
     <MonoMacResourcePrefix>Resources</MonoMacResourcePrefix>
@@ -65,8 +65,8 @@
     <Reference Include="Xamarin.Mac" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="SciterCore.Binaries" Version="4.4.5.2" />
-    <PackageReference Include="SciterCore.PackFolder" Version="0.1.257" />
+    <PackageReference Include="SciterCore.Binaries" Version="(4.4.4.2,)" />
+    <PackageReference Include="SciterCore.PackFolder" Version="0.1.293" />
   </ItemGroup>
   <Import Project="$(SolutionDir)Shared\SciterCore.Shared\SciterCore.Shared.projitems" Label="Shared" Condition="Exists('$(SolutionDir)Shared\SciterCore.Shared\SciterCore.Shared.projitems')" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets" />
@@ -76,9 +76,9 @@
     <TaskFolder>$(MSBuildThisFileDirectory)..\..\scripts\</TaskFolder>
     <PackSourceFolder>$(MSBuildThisFileDirectory)..\..\Shared\SciterCore.Shared\LibConsole</PackSourceFolder>
     <PackOutputFile>$(ProjectDir)sciter.build\LibConsole.bin</PackOutputFile>
-    <TaskAssembly Condition="$([MSBuild]::IsOsPlatform(Windows))">packfolder.exe</TaskAssembly>
-    <TaskAssembly Condition="$([MSBuild]::IsOsPlatform(OSX))">packfolder</TaskAssembly>
-    <TaskAssembly Condition="$([MSBuild]::IsOsPlatform(Linux))">packfolder</TaskAssembly>
+    <TaskAssembly Condition="$([MSBuild]::IsOsPlatform(Windows))">bin.win\packfolder.exe</TaskAssembly>
+    <TaskAssembly Condition="$([MSBuild]::IsOsPlatform(OSX))">bin.osx\packfolder</TaskAssembly>
+    <TaskAssembly Condition="$([MSBuild]::IsOsPlatform(Linux))">bin.lnx\packfolder</TaskAssembly>
   </PropertyGroup>
 
   <Target Name="SciterPreBuild" BeforeTargets="PreBuildEvent">

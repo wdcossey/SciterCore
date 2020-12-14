@@ -1,7 +1,6 @@
 using SciterCore;
 using SciterCore.Interop;
 using System;
-using System.Diagnostics;
 
 namespace SciterTest.Idioms
 {
@@ -10,13 +9,15 @@ namespace SciterTest.Idioms
 		[STAThread]
 		static void Main(string[] args)
 		{
-			// Sciter needs this for drag'n'drop support
+			// Platform specific (required for GTK)
+			SciterPlatform.Initialize();
+			// Sciter needs this for drag 'n drop support
 			SciterPlatform.EnableDragAndDrop();
 			
 			// Create the window
 			var window = new SciterWindow()
 				.CreateMainWindow(1500, 800)
-				.CenterTopLevelWindow()
+				.CenterWindow()
 				.SetTitle("SciterTest.Idioms")
 				.SetIcon(Properties.Resources.IconMain);
 
@@ -27,7 +28,7 @@ namespace SciterTest.Idioms
 
 			// Show window and Run message loop
 			window.Show();
-			PInvokeUtils.RunMsgLoop();
+			SciterPlatform.RunMessageLoop();
 		}
 	}
 }

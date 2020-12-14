@@ -26,7 +26,7 @@ namespace SciterCore
 {
 	public class SciterArchive : IDisposable
 	{
-        private static readonly Sciter.SciterApi Api = Sciter.Api;
+        private static readonly ISciterApi Api = Sciter.Api;
 		private IntPtr _handle;
 		private GCHandle _pinnedArray;
 

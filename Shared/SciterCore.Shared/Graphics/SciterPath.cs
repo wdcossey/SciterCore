@@ -1,4 +1,5 @@
 ﻿using System;
+using SciterCore.Interop;
 
 // ReSharper disable ArrangeThisQualifier
 // ReSharper disable ConvertToAutoProperty
@@ -7,7 +8,7 @@ namespace SciterCore
 {
     public sealed class SciterPath : IDisposable
 	{
-		private static readonly Interop.SciterGraphics.SciterGraphicsApi GraphicsApi = Interop.Sciter.GraphicsApi;
+		private static readonly ISciterGraphicsApi GraphicsApi = Interop.Sciter.GraphicsApi;
 
 		private readonly IntPtr _pathHandle;
 		
@@ -39,7 +40,7 @@ namespace SciterCore
 
 		private static bool TryCreatePrivate(out SciterPath sciterPath, bool ignoreResult)
 		{
-			var result= GraphicsApi.pathCreate(out var pathHandle)
+			var result= GraphicsApi.PathCreate(out var pathHandle)
 				.IsOk();
 			
 			sciterPath = (result || ignoreResult) ? new SciterPath(pathHandle: pathHandle) : default;
@@ -65,7 +66,7 @@ namespace SciterCore
 		private static bool TryCreatePrivate(out SciterPath sciterPath, SciterValue sciterValue, bool ignoreResult)
 		{
 			var value = sciterValue.ToVALUE();
-			var result= GraphicsApi.vUnWrapPath(ref value, out var pathHandle)
+			var result= GraphicsApi.ValueUnWrapPath(ref value, out var pathHandle)
 				.IsOk();
 
 			sciterPath = (result || ignoreResult) ? new SciterPath(pathHandle: pathHandle) : default;
@@ -90,7 +91,7 @@ namespace SciterCore
 		
 		private bool TryToValuePrivate(out SciterValue sciterValue, bool ignoreResult)
 		{
-			var result= GraphicsApi.vWrapPath(this.Handle, out var value)
+			var result= GraphicsApi.ValueWrapPath(this.Handle, out var value)
 				.IsOk();
 
 			sciterValue =  (result || ignoreResult) ? new SciterValue(value) : default;
@@ -106,7 +107,7 @@ namespace SciterCore
 
 		internal bool TryMoveToInternal(float x, float y, bool relative = false)
 		{
-			return GraphicsApi.pathMoveTo(this.Handle, x, y, relative)
+			return GraphicsApi.PathMoveTo(this.Handle, x, y, relative)
 				.IsOk();
 		}
 
@@ -117,7 +118,7 @@ namespace SciterCore
 
 		internal bool TryLineToInternal(float x, float y, bool relative = false)
 		{
-			return GraphicsApi.pathLineTo(this.Handle, x, y, relative)
+			return GraphicsApi.PathLineTo(this.Handle, x, y, relative)
 				.IsOk();
 		}
 
@@ -128,7 +129,7 @@ namespace SciterCore
 
 		internal bool TryArcToInternal(float x, float y, float angle, float rx, float ry, bool isLargeArc, bool clockwise, bool relative = false)
 		{
-			return GraphicsApi.pathArcTo(this.Handle, x, y, angle, rx, ry, isLargeArc, clockwise, relative)
+			return GraphicsApi.PathArcTo(this.Handle, x, y, angle, rx, ry, isLargeArc, clockwise, relative)
 				.IsOk();
 		}
 
@@ -139,7 +140,7 @@ namespace SciterCore
 
 		internal bool TryQuadraticCurveToInternal(float xc, float yc, float x, float y, bool relative = false)
 		{
-			return GraphicsApi.pathQuadraticCurveTo(this.Handle, xc, yc, x, y, relative)
+			return GraphicsApi.PathQuadraticCurveTo(this.Handle, xc, yc, x, y, relative)
 				.IsOk();
 		}
 
@@ -150,7 +151,7 @@ namespace SciterCore
 
 		internal bool TryBezierCurveToInternal(float xc1, float yc1, float xc2, float yc2, float x, float y, bool relative = false)
 		{
-			return GraphicsApi.pathBezierCurveTo(this.Handle, xc1, yc1, xc2, yc2, x, y, relative)
+			return GraphicsApi.PathBezierCurveTo(this.Handle, xc1, yc1, xc2, yc2, x, y, relative)
 				.IsOk();
 		}
 
@@ -161,7 +162,7 @@ namespace SciterCore
 
 		internal bool TryClosePathInternal()
 		{
-			return GraphicsApi.pathClosePath(this.Handle)
+			return GraphicsApi.PathClosePath(this.Handle)
 				.IsOk();
 		}
 
@@ -178,7 +179,7 @@ namespace SciterCore
 					// TODO: dispose managed state (managed objects).
 				}
 
-				GraphicsApi.pathRelease(this.Handle);
+				GraphicsApi.PathRelease(this.Handle);
 				_disposedValue = true;
 			}
 		}

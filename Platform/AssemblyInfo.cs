@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 	[assembly: AssemblyProduct("SciterCore.Gtk")]
 #elif OSX
 	[assembly: AssemblyTitle("SciterCore")]
-	[assembly: AssemblyProduct("SciterCore.Mac")]
+	[assembly: AssemblyProduct("SciterCore.MacOS")]
 #endif
 
 [assembly: AssemblyDescription("C# bindings for the Sciter engine")]

@@ -1,86 +1,64 @@
-﻿// Copyright 2016 Ramon F. Mendes
-//
-// This file is part of SciterSharp.
-// 
-// SciterSharp is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-// 
-// SciterSharp is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// 
-// You should have received a copy of the GNU General Public License
-// along with SciterSharp.  If not, see <http://www.gnu.org/licenses/>.
-
+﻿// ReSharper disable RedundantUsingDirective
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
-
-#if NETCOREAPP3_1
 using System.Reflection;
-#endif
+using SciterCore.Interop;
+using SciterTest.CoreForms.Extensions;
 
 // ReSharper disable MemberCanBePrivate.Global
 
 namespace SciterCore.Interop
 {
-	public static class Sciter
+	public static partial class Sciter
 	{
-		public static SciterApi Api => GetSciterApi();
+		private static readonly object SciterApiLock = new object();
+		private static readonly object SciterGraphicsApiLock = new object();
+		private static readonly object SciterRequestApiLock = new object();
+		private static readonly object SciterScriptApiLock = new object();
+		
+		// TODO: Rename to SciterApi
+		public static ISciterApi Api => GetSciterApi();
 
-		public static SciterGraphics.SciterGraphicsApi GraphicsApi => GetGraphicsApi();
+		public static ISciterGraphicsApi GraphicsApi => GetGraphicsApi();
 
-		public static SciterRequest.SciterRequestApi RequestApi => GetRequestApi();
+		public static ISciterRequestApi RequestApi => GetRequestApi();
+		
+        private static ISciterApi _sciterApi = null;
+		private static ISciterGraphicsApi _sciterGraphicsApi = null;
+		private static ISciterRequestApi _sciterRequestApiInstance = null;
 
-		public static TIScript.SCITER_TI_SCRIPT_API ScriptApi => GetScriptApi();
-
-        public static Version Version()
-		{
-			var api = Api;
-			uint major = api.SciterVersion(true);
-			uint minor = api.SciterVersion(false);
-
-			return new Version(
-				(int)((major >> 16) & 0xffff),
-				(int)(major & 0xffff),
-				(int)((minor >> 16) & 0xffff),
-				(int)(minor & 0xffff)
-                );
-		}
-
-
-		private static SciterApi? _sciterApi = null;
-		private static SciterGraphics.SciterGraphicsApi? _sciterGraphicsApi = null;
-		private static SciterRequest.SciterRequestApi? _sciterRequestApiInstance = null;
-		private static TIScript.SCITER_TI_SCRIPT_API? _sciterScriptApi = null;
-
-		const string SciterWindowsLibrary = "sciter.dll";
-		const string SciterUnixLibrary = "libsciter-gtk.so";
-		const string SciterMacOSLibrary = "sciter-osx-64.dylib";
+		// ReSharper disable InconsistentNaming
+		private const string SciterWindowsLibrary = "sciter.dll";
+		private const string SciterUnixLibrary = "libsciter-gtk.so";
+		private const string SciterMacOSLibrary = "sciter-osx-64.dylib";
+		// ReSharper enable InconsistentNaming
 		
 #if NETCOREAPP3_1
-		//Name is purely to avoid collision
-		const string SciterPlatformLibrary = "sciter_1913ebe4-1c89-43ee-a659-949ef4e9a108_import";
+		
+		/// <summary>
+		/// Name is purely to avoid collision
+		/// </summary>
+		private const string SciterPlatformLibrary = "sciter_1913ebe4-1c89-43ee-a659-949ef4e9a108_import";
 
 		private static IntPtr ImportResolver(string libraryName, Assembly assembly, DllImportSearchPath? searchPath)
 		{
 			var libHandle = IntPtr.Zero;
 			if (libraryName != SciterPlatformLibrary) 
 				return libHandle;
-			
-			var fileName = Environment.OSVersion.Platform switch
-			{
-				PlatformID.Win32NT => SciterWindowsLibrary,
-				PlatformID.Unix => SciterUnixLibrary,
-				PlatformID.MacOSX => SciterMacOSLibrary,
-				_ => throw new ArgumentOutOfRangeException()
-			};
 
-			var libName = fileName;
+			string libName;
+				
+			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+				libName = SciterWindowsLibrary;
+			else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+				libName = SciterMacOSLibrary;
+			else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+				libName = SciterUnixLibrary;
+			else
+				throw new PlatformNotSupportedException();
 
 			NativeLibrary.TryLoad(libName, assembly, DllImportSearchPath.System32, out libHandle);
 
@@ -99,710 +77,968 @@ namespace SciterCore.Interop
 #endif
 		private static extern IntPtr SciterAPI();
 
-		private static SciterApi GetSciterApi()
+		private static ISciterApi GetSciterApi()
 		{
-			if(_sciterApi == null)
+			lock (SciterApiLock)
 			{
-				int apiStructSize = Marshal.SizeOf(typeof(SciterApi));
+				if (_sciterApi != null)
+					return _sciterApi;
+
+				//var apiStructSize = Marshal.SizeOf(typeof(SciterApi));
+
 #if NETCOREAPP3_1
 				NativeLibrary.SetDllImportResolver(typeof(Sciter).Assembly, ImportResolver);
 #elif WINDOWS || NETCORE
 
-				var codeBasePath = new Uri(typeof(SciterApi).Assembly.CodeBase).LocalPath;
-                var codeBaseDirectory = Path.GetDirectoryName(codeBasePath);
-                var is64 = Environment.Is64BitProcess;
-                var bitDirectory = is64 ? "x64" : "x86";
-                var libName = Path.Combine(codeBaseDirectory, bitDirectory, SciterWindowsLibrary);
-                
-                PInvokeWindows.LoadLibrary(libName);
+				var codeBasePath = new Uri(typeof(SciterApiDelegates).Assembly.CodeBase).LocalPath;
+				var codeBaseDirectory = Path.GetDirectoryName(codeBasePath);
+				var is64 = Environment.Is64BitProcess;
+				var bitDirectory = is64 ? "x64" : "x86";
+				var libName = Path.Combine(codeBaseDirectory, bitDirectory, SciterWindowsLibrary);
+            	    
+				PInvokeWindows.LoadLibrary(libName);
 #elif GTKMONO
 				if(IntPtr.Size != 8)
 					throw new Exception("SciterSharp GTK/Mono only supports 64bits builds");
-
-				Debug.Assert(apiStructSize == 1304);
+	
+				//Debug.Assert(apiStructSize == 1304);
 #elif OSX
 				Debug.Assert(IntPtr.Size == 8);
 				//Debug.Assert(apiStructSize == 648 * 2);
 #endif
 				var apiPtr = SciterAPI();
 
-				_sciterApi = Marshal.PtrToStructure<SciterApi>(ptr: apiPtr);
+				_sciterApi = UnsafeNativeMethods.GetApiInterface();
 
 				if (_sciterApi == null)
-					throw new InvalidOperationException();
-				
-				// from time to time, Sciter changes its ABI
-				// here we test the minimum Sciter version this library is compatible with
-				uint major = _sciterApi.Value.SciterVersion(true);
-				uint minor = _sciterApi.Value.SciterVersion(false);
-				Debug.Assert(major >= 0x00040000);
-				Debug.Assert(_sciterApi.Value.version>=0);
-			}
+					throw new NullReferenceException($"{nameof(ISciterApi)} cannot be null");
 
-			return _sciterApi.Value;
+				// from time to time, Sciter changes its API
+				// here we test the minimum Sciter version this library is compatible with
+				var major = _sciterApi.SciterVersion(true);
+				var minor = _sciterApi.SciterVersion(false);
+				Debug.Assert(major >= 0x00040000);
+				Debug.Assert(_sciterApi.Version >= 0);
+
+				return _sciterApi;
+			}
 		}
 
-		private static SciterGraphics.SciterGraphicsApi GetGraphicsApi()
+		private static ISciterGraphicsApi GetGraphicsApi()
 		{
-			if(_sciterGraphicsApi == null)
+			lock (SciterGraphicsApiLock)
 			{
-				uint major = Api.SciterVersion(true);
-				uint minor = Api.SciterVersion(false);
+				if (_sciterGraphicsApi != null)
+					return _sciterGraphicsApi;
+			
+				var major = Api.SciterVersion(true);
+				var minor = Api.SciterVersion(false);
 				Debug.Assert(major >= 0x00040000);
 
-				int apiStructSize = Marshal.SizeOf(t: typeof(SciterGraphics.SciterGraphicsApi));
-				
+				var apiStructSize = Marshal.SizeOf(t: typeof(SciterGraphics.SciterGraphicsApi));
+			
 				if(IntPtr.Size == 8)
 					Debug.Assert(apiStructSize == 276 * 2);
 				else
 					Debug.Assert(apiStructSize == 276);
 
-				IntPtr apiPtr = Api.GetSciterGraphicsAPI();
-				_sciterGraphicsApi = (SciterGraphics.SciterGraphicsApi)Marshal.PtrToStructure(ptr: apiPtr, structureType: typeof(SciterGraphics.SciterGraphicsApi));
+				_sciterGraphicsApi = SciterGraphics.UnsafeNativeMethods.GetApiInterface(Api);
+
+				if (_sciterGraphicsApi == null)
+					throw new NullReferenceException($"{nameof(_sciterGraphicsApi)} cannot be null");
+			
+				return _sciterGraphicsApi;
 			}
-			return _sciterGraphicsApi.Value;
 		}
 
-		private static SciterRequest.SciterRequestApi GetRequestApi()
+		private static ISciterRequestApi GetRequestApi()
 		{
-			if(_sciterRequestApiInstance == null)
+			lock (SciterRequestApiLock)
 			{
-				int apiStructSize = Marshal.SizeOf(t: typeof(SciterRequest.SciterRequestApi));
+				if (_sciterRequestApiInstance != null)
+					return _sciterRequestApiInstance;
 				
-				if(IntPtr.Size == 8)
-					Debug.Assert(apiStructSize == 104*2);
+				var apiStructSize = Marshal.SizeOf(t: typeof(SciterRequest.SciterRequestApi));
+				
+				if (IntPtr.Size == 8)
+					Debug.Assert(apiStructSize == 112 * 2);
 				else
-					Debug.Assert(apiStructSize == 104);
-
-				IntPtr apiPtr = Api.GetSciterRequestAPI();
-				_sciterRequestApiInstance = (SciterRequest.SciterRequestApi)Marshal.PtrToStructure(ptr: apiPtr, structureType: typeof(SciterRequest.SciterRequestApi));
+					Debug.Assert(apiStructSize == 112);
+				
+				_sciterRequestApiInstance = SciterRequest.UnsafeNativeMethods.GetApiInterface(Api);
+				
+				if (_sciterRequestApiInstance == null)
+					throw new NullReferenceException($"{nameof(_sciterRequestApiInstance)} cannot be null");
+				
+				return _sciterRequestApiInstance;
 			}
-			return _sciterRequestApiInstance.Value;
 		}
 
-		private static TIScript.SCITER_TI_SCRIPT_API GetScriptApi()
+		internal static class UnsafeNativeMethods
 		{
-			if(_sciterScriptApi == null)
+			public static ISciterApi GetApiInterface()
 			{
-				int apiStructSize = Marshal.SizeOf(typeof(TIScript.SCITER_TI_SCRIPT_API));
-				if(IntPtr.Size == 8)
-					Debug.Assert(apiStructSize == 616);
-				else
-					Debug.Assert(apiStructSize == 308);
+				var sciterApiPtr = SciterAPI();
+				
+				if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+					return new NativeSciterApiWrapper<WindowsSciterApi>(sciterApiPtr);
 
-				IntPtr apiPtr = Api.TIScriptAPI();
-                _sciterScriptApi = (TIScript.SCITER_TI_SCRIPT_API)Marshal.PtrToStructure(ptr: apiPtr, structureType: typeof(TIScript.SCITER_TI_SCRIPT_API));
+				if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+					return new NativeSciterApiWrapper<MacOsSciterApi>(sciterApiPtr);
+
+				if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+					return new NativeSciterApiWrapper<LinuxSciterApi>(sciterApiPtr);
+				
+				throw new PlatformNotSupportedException();
 			}
-			return _sciterScriptApi.Value;
-		}
-
-		[StructLayout(LayoutKind.Sequential)]
-		public struct SciterApi
-		{
-			public readonly int version;
-			public readonly SCITER_CLASS_NAME SciterClassName;
-			public readonly SCITER_VERSION SciterVersion;
-			public readonly SCITER_DATA_READY SciterDataReady;
-			public readonly SCITER_DATA_READY_ASYNC SciterDataReadyAsync;
-#if WINDOWS || NETCORE
-			public readonly SCITER_PROC SciterProc;
-			public readonly SCITER_PROC_ND SciterProcND;
-#endif
-			public readonly SCITER_LOAD_FILE SciterLoadFile;
-			public readonly SCITER_LOAD_HTML SciterLoadHtml;
-			public readonly SCITER_SET_CALLBACK SciterSetCallback;
-			public readonly SCITER_SET_MASTER_CSS SciterSetMasterCSS;
-			public readonly SCITER_APPEND_MASTER_CSS SciterAppendMasterCSS;
-			public readonly SCITER_SET_CSS SciterSetCSS;
-			public readonly SCITER_SET_MEDIA_TYPE SciterSetMediaType;
-			public readonly SCITER_SET_MEDIA_VARS SciterSetMediaVars;
-			public readonly SCITER_GET_MIN_WIDTH SciterGetMinWidth;
-			public readonly SCITER_GET_MIN_HEIGHT SciterGetMinHeight;
-			public readonly SCITER_CALL SciterCall;
-			public readonly SCITER_EVAL SciterEval;
-			public readonly SCITER_UPDATE_WINDOW SciterUpdateWindow;
-#if WINDOWS || NETCORE
-			public readonly SCITER_TRANSLATE_MESSAGE SciterTranslateMessage;
-#endif
-			public readonly SCITER_SET_OPTION SciterSetOption;
-			public readonly SCITER_GET_PPI SciterGetPPI;
-			public readonly SCITER_GET_VIEW_EXPANDO SciterGetViewExpando;
-#if WINDOWS || NETCORE
-			public readonly SCITER_RENDER_D2D SciterRenderD2D;
-			public readonly SCITER_D2D_FACTORY SciterD2DFactory;
-			public readonly SCITER_DW_FACTORY SciterDWFactory;
-#endif
-			public readonly SCITER_GRAPHICS_CAPS SciterGraphicsCaps;
-			public readonly SCITER_SET_HOME_URL SciterSetHomeURL;
-#if OSX
-			public readonly SCITER_CREATE_NS_VIEW SciterCreateNSView;
-#endif
-#if GTKMONO
-			public readonly SCITER_CREATE_WIDGET SciterCreateWidget;
-#endif
-			public readonly SCITER_CREATE_WINDOW SciterCreateWindow;
-  
-            public readonly SCITER_SETUP_DEBUG_OUTPUT SciterSetupDebugOutput;
-
-			// DOM Element API 
-			public readonly SCITER_USE_ELEMENT Sciter_UseElement;
-			public readonly SCITER_UNUSE_ELEMENT Sciter_UnuseElement;
-			public readonly SCITER_GET_ROOT_ELEMENT SciterGetRootElement;
-			public readonly SCITER_GET_FOCUS_ELEMENT SciterGetFocusElement;
-			public readonly SCITER_FIND_ELEMENT SciterFindElement;
-			public readonly SCITER_GET_CHILDREN_COUNT SciterGetChildrenCount;
-			public readonly SCITER_GET_NTH_CHILD SciterGetNthChild;
-			public readonly SCITER_GET_PARENT_ELEMENT SciterGetParentElement;
-			public readonly SCITER_GET_ELEMENT_HTML_CB SciterGetElementHtmlCB;
-			public readonly SCITER_GET_ELEMENT_TEXT_CB SciterGetElementTextCB;
-			public readonly SCITER_SET_ELEMENT_TEXT SciterSetElementText;
-			public readonly SCITER_GET_ATTRIBUTE_COUNT SciterGetAttributeCount;
-			public readonly SCITER_GET_NTH_ATTRIBUTE_NAME_CB SciterGetNthAttributeNameCB;
-			public readonly SCITER_GET_NTH_ATTRIBUTE_VALUE_CB SciterGetNthAttributeValueCB;
-			public readonly SCITER_GET_ATTRIBUTE_BY_NAME_CB SciterGetAttributeByNameCB;
-			public readonly SCITER_SET_ATTRIBUTE_BY_NAME SciterSetAttributeByName;
-			public readonly SCITER_CLEAR_ATTRIBUTES SciterClearAttributes;
-			public readonly SCITER_GET_ELEMENT_INDEX SciterGetElementIndex;
-			public readonly SCITER_GET_ELEMENT_TYPE SciterGetElementType;
-			public readonly SCITER_GET_ELEMENT_TYPE_CB SciterGetElementTypeCB;
-			public readonly SCITER_GET_STYLE_ATTRIBUTE_CB SciterGetStyleAttributeCB;
-			public readonly SCITER_SET_STYLE_ATTRIBUTE SciterSetStyleAttribute;
-			public readonly SCITER_GET_ELEMENT_LOCATION SciterGetElementLocation;
-			public readonly SCITER_SCROLL_TO_VIEW SciterScrollToView;
-			public readonly SCITER_UPDATE_ELEMENT SciterUpdateElement;
-			public readonly SCITER_REFRESH_ELEMENT_AREA SciterRefreshElementArea;
-			public readonly SCITER_SET_CAPTURE SciterSetCapture;
-			public readonly SCITER_RELEASE_CAPTURE SciterReleaseCapture;
-			public readonly SCITER_GET_ELEMENT_HWND SciterGetElementHwnd;
-			public readonly SCITER_COMBINE_URL SciterCombineURL;
-			public readonly SCITER_SELECT_ELEMENTS SciterSelectElements;
-			public readonly SCITER_SELECT_ELEMENTS_W SciterSelectElementsW;
-			public readonly SCITER_SELECT_PARENT SciterSelectParent;
-			public readonly SCITER_SELECT_PARENT_W SciterSelectParentW;
-			public readonly SCITER_SET_ELEMENT_HTML SciterSetElementHtml;
-			public readonly SCITER_GET_ELEMENT_UID SciterGetElementUID;
-			public readonly SCITER_GET_ELEMENT_BY_UID SciterGetElementByUID;
-			public readonly SCITER_SHOW_POPUP SciterShowPopup;
-			public readonly SCITER_SHOW_POPUP_AT SciterShowPopupAt;
-			public readonly SCITER_HIDE_POPUP SciterHidePopup;
-			public readonly SCITER_GET_ELEMENT_STATE SciterGetElementState;
-			public readonly SCITER_SET_ELEMENT_STATE SciterSetElementState;
-			public readonly SCITER_CREATE_ELEMENT SciterCreateElement;
-			public readonly SCITER_CLONE_ELEMENT SciterCloneElement;
-			public readonly SCITER_INSERT_ELEMENT SciterInsertElement;
-			public readonly SCITER_DETACH_ELEMENT SciterDetachElement;
-			public readonly SCITER_DELETE_ELEMENT SciterDeleteElement;
-			public readonly SCITER_SET_TIMER SciterSetTimer;
-			public readonly SCITER_DETACH_EVENT_HANDLER SciterDetachEventHandler;
-			public readonly SCITER_ATTACH_EVENT_HANDLER SciterAttachEventHandler;
-			public readonly SCITER_WINDOW_ATTACH_EVENT_HANDLER SciterWindowAttachEventHandler;
-			public readonly SCITER_WINDOW_DETACH_EVENT_HANDLER SciterWindowDetachEventHandler;
-			public readonly SCITER_SEND_EVENT SciterSendEvent;
-			public readonly SCITER_POST_EVENT SciterPostEvent;
-			public readonly SCITER_CALL_BEHAVIOR_METHOD SciterCallBehaviorMethod;
-			public readonly SCITER_REQUEST_ELEMENT_DATA SciterRequestElementData;
-			public readonly SCITER_HTTP_REQUEST SciterHttpRequest;
-			public readonly SCITER_GET_SCROLL_INFO SciterGetScrollInfo;
-			public readonly SCITER_SET_SCROLL_POS SciterSetScrollPos;
-			public readonly SCITER_GET_ELEMENT_INTRINSIC_WIDTHS SciterGetElementIntrinsicWidths;
-			public readonly SCITER_GET_ELEMENT_INTRINSIC_HEIGHT SciterGetElementIntrinsicHeight;
-			public readonly SCITER_IS_ELEMENT_VISIBLE SciterIsElementVisible;
-			public readonly SCITER_IS_ELEMENT_ENABLED SciterIsElementEnabled;
-			public readonly SCITER_SORT_ELEMENTS SciterSortElements;
-			public readonly SCITER_SWAP_ELEMENTS SciterSwapElements;
-			public readonly SCITER_TRAVERSE_UI_EVENT SciterTraverseUIEvent;
-			public readonly SCITER_CALL_SCRIPTING_METHOD SciterCallScriptingMethod;
-			public readonly SCITER_CALL_SCRIPTING_FUNCTION SciterCallScriptingFunction;
-			public readonly SCITER_EVAL_ELEMENT_SCRIPT SciterEvalElementScript;
-			public readonly SCITER_ATTACH_HWND_TO_ELEMENT SciterAttachHwndToElement;
-			public readonly SCITER_CONTROL_GET_TYPE SciterControlGetType;
-			public readonly SCITER_GET_VALUE SciterGetValue;
-			public readonly SCITER_SET_VALUE SciterSetValue;
-			public readonly SCITER_GET_EXPANDO SciterGetExpando;
-			public readonly SCITER_GET_OBJECT SciterGetObject;
-			public readonly SCITER_GET_ELEMENT_NAMESPACE SciterGetElementNamespace;
-			public readonly SCITER_GET_HIGHLIGHTED_ELEMENT SciterGetHighlightedElement;
-			public readonly SCITER_SET_HIGHLIGHTED_ELEMENT SciterSetHighlightedElement;
-
-			// DOM Node API 
-			public readonly SCITER_NODE_ADD_REF SciterNodeAddRef;
-			public readonly SCITER_NODE_RELEASE SciterNodeRelease;
-			public readonly SCITER_NODE_CAST_FROM_ELEMENT SciterNodeCastFromElement;
-			public readonly SCITER_NODE_CAST_TO_ELEMENT SciterNodeCastToElement;
-			public readonly SCITER_NODE_FIRST_CHILD SciterNodeFirstChild;
-			public readonly SCITER_NODE_LAST_CHILD SciterNodeLastChild;
-			public readonly SCITER_NODE_NEXT_SIBLING SciterNodeNextSibling;
-			public readonly SCITER_NODE_PREV_SIBLING SciterNodePrevSibling;
-			public readonly SCITER_NODE_PARENT SciterNodeParent;
-			public readonly SCITER_NODE_NTH_CHILD SciterNodeNthChild;
-			public readonly SCITER_NODE_CHILDREN_COUNT SciterNodeChildrenCount;
-			public readonly SCITER_NODE_TYPE SciterNodeType;
-			public readonly SCITER_NODE_GET_TEXT SciterNodeGetText;
-			public readonly SCITER_NODE_SET_TEXT SciterNodeSetText;
-			public readonly SCITER_NODE_INSERT SciterNodeInsert;
-			public readonly SCITER_NODE_REMOVE SciterNodeRemove;
-			public readonly SCITER_CREATE_TEXT_NODE SciterCreateTextNode;
-			public readonly SCITER_CREATE_COMMENT_NODE SciterCreateCommentNode;
-
-			// Value API 
-			public readonly VALUE_INIT ValueInit;
-			public readonly VALUE_CLEAR ValueClear;
-			public readonly VALUE_COMPARE ValueCompare;
-			public readonly VALUE_COPY ValueCopy;
-			public readonly VALUE_ISOLATE ValueIsolate;
-			public readonly VALUE_TYPE ValueType;
-			public readonly VALUE_STRING_DATA ValueStringData;
-			public readonly VALUE_STRING_DATA_SET ValueStringDataSet;
-			public readonly VALUE_INT_DATA ValueIntData;
-			public readonly VALUE_INT_DATA_SET ValueIntDataSet;
-			public readonly VALUE_INT_64DATA ValueInt64Data;
-			public readonly VALUE_INT_64DATA_SET ValueInt64DataSet;
-			public readonly VALUE_FLOAT_DATA ValueFloatData;
-			public readonly VALUE_FLOAT_DATA_SET ValueFloatDataSet;
-			public readonly VALUE_BINARY_DATA ValueBinaryData;
-			public readonly VALUE_BINARY_DATA_SET ValueBinaryDataSet;
-			public readonly VALUE_ELEMENTS_COUNT ValueElementsCount;
-			public readonly VALUE_NTH_ELEMENT_VALUE ValueNthElementValue;
-			public readonly VALUE_NTH_ELEMENT_VALUE_SET ValueNthElementValueSet;
-			public readonly VALUE_NTH_ELEMENT_KEY ValueNthElementKey;
-			public readonly VALUE_ENUM_ELEMENTS ValueEnumElements;
-			public readonly VALUE_SET_VALUE_TO_KEY ValueSetValueToKey;
-			public readonly VALUE_GET_VALUE_OF_KEY ValueGetValueOfKey;
-			public readonly VALUE_TO_STRING ValueToString;
-			public readonly VALUE_FROM_STRING ValueFromString;
-			public readonly VALUE_INVOKE ValueInvoke;
-			public readonly VALUE_NATIVE_FUNCTOR_SET ValueNativeFunctorSet;
-			public readonly VALUE_IS_NATIVE_FUNCTOR ValueIsNativeFunctor;
-
-			// tiscript VM API
-			public readonly TI_SCRIPT_API TIScriptAPI;
 			
-			[Obsolete("Deprecated in v4.4.3.24", true)]
-			public readonly SCITER_GET_VM SciterGetVM;
 
-			public readonly SCITER_v2V Sciter_v2V;
-			public readonly SCITER_V2v Sciter_V2v;
+			private sealed class NativeSciterApiWrapper<TStruct> : ISciterApi
+				where TStruct : struct
+			{
+				private IntPtr _apiPtr;
+				
+#pragma warning disable 649
+				private readonly int _version;
+				private readonly SciterApiDelegates.SciterClassName _sciterClassName = null;
+				private readonly SciterApiDelegates.SciterVersion _sciterVersion = null;
+				private readonly SciterApiDelegates.SciterDataReady _sciterDataReady = null;
+				private readonly SciterApiDelegates.SciterDataReadyAsync _sciterDataReadyAsync = null;
+				private readonly SciterApiDelegates.SciterProc _sciterProc = null;
+				private readonly SciterApiDelegates.SciterProcNd _sciterProcND = null;
+				private readonly SciterApiDelegates.SciterLoadFile _sciterLoadFile = null;
+				private readonly SciterApiDelegates.SciterLoadHtml _sciterLoadHtml = null;
+				private readonly SciterApiDelegates.SciterSetCallback _sciterSetCallback = null;
+				private readonly SciterApiDelegates.SciterSetMasterCss _sciterSetMasterCSS = null;
+				private readonly SciterApiDelegates.SciterAppendMasterCss _sciterAppendMasterCSS = null;
+				private readonly SciterApiDelegates.SciterSetCss _sciterSetCSS = null;
+				private readonly SciterApiDelegates.SciterSetMediaType _sciterSetMediaType = null;
+				private readonly SciterApiDelegates.SciterSetMediaVars _sciterSetMediaVars = null;
+				private readonly SciterApiDelegates.SciterGetMinWidth _sciterGetMinWidth = null;
+				private readonly SciterApiDelegates.SciterGetMinHeight _sciterGetMinHeight = null;
+				private readonly SciterApiDelegates.SciterCall _sciterCall = null;
+				private readonly SciterApiDelegates.SciterEval _sciterEval = null;
+				private readonly SciterApiDelegates.SciterUpdateWindow _sciterUpdateWindow = null;
+				
+				private readonly SciterApiDelegates.SciterTranslateMessage _sciterTranslateMessage = null;
+				private readonly SciterApiDelegates.SciterSetOption _sciterSetOption = null;
+				private readonly SciterApiDelegates.SciterGetPpi _sciterGetPPI = null;
+				private readonly SciterApiDelegates.SciterGetViewExpando _sciterGetViewExpando = null;
+				private readonly SciterApiDelegates.SciterRenderD2D _sciterRenderD2D = null;
+				private readonly SciterApiDelegates.SciterD2DFactory _sciterD2DFactory = null;
+				private readonly SciterApiDelegates.SciterDwFactory _sciterDWFactory = null;
+				private readonly SciterApiDelegates.SciterGraphicsCaps _sciterGraphicsCaps = null;
+				private readonly SciterApiDelegates.SciterSetHomeUrl _sciterSetHomeURL = null;
+				private readonly SciterApiDelegates.SciterCreateNsView _sciterCreateNSView = null;
+				private readonly SciterApiDelegates.SciterCreateWidget _sciterCreateWidget = null;
+
+				private readonly SciterApiDelegates.SciterCreateWindow _sciterCreateWindow = null;
+				private readonly SciterApiDelegates.SciterSetupDebugOutput _sciterSetupDebugOutput = null;
+				
+				#region DOM Element API
+				
+				private readonly SciterApiDelegates.SciterUseElement _sciter_UseElement = null;
+				private readonly SciterApiDelegates.SciterUnuseElement _sciter_UnuseElement = null;
+				private readonly SciterApiDelegates.SciterGetRootElement _sciterGetRootElement = null;
+				private readonly SciterApiDelegates.SciterGetFocusElement _sciterGetFocusElement = null;
+				private readonly SciterApiDelegates.SciterFindElement _sciterFindElement = null;
+				private readonly SciterApiDelegates.SciterGetChildrenCount _sciterGetChildrenCount = null;
+				private readonly SciterApiDelegates.SciterGetNthChild _sciterGetNthChild = null;
+				private readonly SciterApiDelegates.SciterGetParentElement _sciterGetParentElement = null;
+				private readonly SciterApiDelegates.SciterGetElementHtmlCb _sciterGetElementHtmlCB = null;
+				private readonly SciterApiDelegates.SciterGetElementTextCb _sciterGetElementTextCB = null;
+				private readonly SciterApiDelegates.SciterSetElementText _sciterSetElementText = null;
+				private readonly SciterApiDelegates.SciterGetAttributeCount _sciterGetAttributeCount = null;
+				private readonly SciterApiDelegates.SciterGetNthAttributeNameCb _sciterGetNthAttributeNameCB = null;
+				private readonly SciterApiDelegates.SciterGetNthAttributeValueCb _sciterGetNthAttributeValueCB = null;
+				private readonly SciterApiDelegates.SciterGetAttributeByNameCb _sciterGetAttributeByNameCB = null;
+				private readonly SciterApiDelegates.SciterSetAttributeByName _sciterSetAttributeByName = null;
+				private readonly SciterApiDelegates.SciterClearAttributes _sciterClearAttributes = null;
+				private readonly SciterApiDelegates.SciterGetElementIndex _sciterGetElementIndex = null;
+				private readonly SciterApiDelegates.SciterGetElementType _sciterGetElementType = null;
+				private readonly SciterApiDelegates.SciterGetElementTypeCb _sciterGetElementTypeCB = null;
+				private readonly SciterApiDelegates.SciterGetStyleAttributeCb _sciterGetStyleAttributeCB = null;
+				private readonly SciterApiDelegates.SciterSetStyleAttribute _sciterSetStyleAttribute = null;
+				private readonly SciterApiDelegates.SciterGetElementLocation _sciterGetElementLocation = null;
+				private readonly SciterApiDelegates.SciterScrollToView _sciterScrollToView = null;
+				private readonly SciterApiDelegates.SciterUpdateElement _sciterUpdateElement = null;
+				private readonly SciterApiDelegates.SciterRefreshElementArea _sciterRefreshElementArea = null;
+				private readonly SciterApiDelegates.SciterSetCapture _sciterSetCapture = null;
+				private readonly SciterApiDelegates.SciterReleaseCapture _sciterReleaseCapture = null;
+				private readonly SciterApiDelegates.SciterGetElementHwnd _sciterGetElementHwnd = null;
+				private readonly SciterApiDelegates.SciterCombineUrl _sciterCombineURL = null;
+				private readonly SciterApiDelegates.SciterSelectElements _sciterSelectElements = null;
+				private readonly SciterApiDelegates.SciterSelectElementsW _sciterSelectElementsW = null;
+				private readonly SciterApiDelegates.SciterSelectParent _sciterSelectParent = null;
+				private readonly SciterApiDelegates.SciterSelectParentW _sciterSelectParentW = null;
+				private readonly SciterApiDelegates.SciterSetElementHtml _sciterSetElementHtml = null;
+				private readonly SciterApiDelegates.SciterGetElementUid _sciterGetElementUID = null;
+				private readonly SciterApiDelegates.SciterGetElementByUid _sciterGetElementByUID = null;
+				private readonly SciterApiDelegates.SciterShowPopup _sciterShowPopup = null;
+				private readonly SciterApiDelegates.SciterShowPopupAt _sciterShowPopupAt = null;
+				private readonly SciterApiDelegates.SciterHidePopup _sciterHidePopup = null;
+				private readonly SciterApiDelegates.SciterGetElementState _sciterGetElementState = null;
+				private readonly SciterApiDelegates.SciterSetElementState _sciterSetElementState = null;
+				private readonly SciterApiDelegates.SciterCreateElement _sciterCreateElement = null;
+				private readonly SciterApiDelegates.SciterCloneElement _sciterCloneElement = null;
+				private readonly SciterApiDelegates.SciterInsertElement _sciterInsertElement = null;
+				private readonly SciterApiDelegates.SciterDetachElement _sciterDetachElement = null;
+				private readonly SciterApiDelegates.SciterDeleteElement _sciterDeleteElement = null;
+				private readonly SciterApiDelegates.SciterSetTimer _sciterSetTimer = null;
+				private readonly SciterApiDelegates.SciterDetachEventHandler _sciterDetachEventHandler = null;
+				private readonly SciterApiDelegates.SciterAttachEventHandler _sciterAttachEventHandler = null;
+				private readonly SciterApiDelegates.SciterWindowAttachEventHandler _sciterWindowAttachEventHandler = null;
+				private readonly SciterApiDelegates.SciterWindowDetachEventHandler _sciterWindowDetachEventHandler = null;
+				private readonly SciterApiDelegates.SciterSendEvent _sciterSendEvent = null;
+				private readonly SciterApiDelegates.SciterPostEvent _sciterPostEvent = null;
+				private readonly SciterApiDelegates.SciterCallBehaviorMethod _sciterCallBehaviorMethod = null;
+				private readonly SciterApiDelegates.SciterRequestElementData _sciterRequestElementData = null;
+				private readonly SciterApiDelegates.SciterHttpRequest _sciterHttpRequest = null;
+				private readonly SciterApiDelegates.SciterGetScrollInfo _sciterGetScrollInfo = null;
+				private readonly SciterApiDelegates.SciterSetScrollPos _sciterSetScrollPos = null;
+				private readonly SciterApiDelegates.SciterGetElementIntrinsicWidths _sciterGetElementIntrinsicWidths = null;
+				private readonly SciterApiDelegates.SciterGetElementIntrinsicHeight _sciterGetElementIntrinsicHeight = null;
+				private readonly SciterApiDelegates.SciterIsElementVisible _sciterIsElementVisible = null;
+				private readonly SciterApiDelegates.SciterIsElementEnabled _sciterIsElementEnabled = null;
+				private readonly SciterApiDelegates.SciterSortElements _sciterSortElements = null;
+				private readonly SciterApiDelegates.SciterSwapElements _sciterSwapElements = null;
+				private readonly SciterApiDelegates.SciterTraverseUiEvent _sciterTraverseUIEvent = null;
+				private readonly SciterApiDelegates.SciterCallScriptingMethod _sciterCallScriptingMethod = null;
+				private readonly SciterApiDelegates.SciterCallScriptingFunction _sciterCallScriptingFunction = null;
+				private readonly SciterApiDelegates.SciterEvalElementScript _sciterEvalElementScript = null;
+				private readonly SciterApiDelegates.SciterAttachHwndToElement _sciterAttachHwndToElement = null;
+				private readonly SciterApiDelegates.SciterControlGetType _sciterControlGetType = null;
+				private readonly SciterApiDelegates.SciterGetValue _sciterGetValue = null;
+				private readonly SciterApiDelegates.SciterSetValue _sciterSetValue = null;
+				private readonly SciterApiDelegates.SciterGetExpando _sciterGetExpando = null;
+				private readonly SciterApiDelegates.SciterGetObject _sciterGetObject = null;
+				private readonly SciterApiDelegates.SciterGetElementNamespace _sciterGetElementNamespace = null;
+				private readonly SciterApiDelegates.SciterGetHighlightedElement _sciterGetHighlightedElement = null;
+				private readonly SciterApiDelegates.SciterSetHighlightedElement _sciterSetHighlightedElement = null;
+				
+				#endregion
 			
-			public readonly SCITER_OPEN_ARCHIVE SciterOpenArchive;
-			public readonly SCITER_GET_ARCHIVE_ITEM SciterGetArchiveItem;
-			public readonly SCITER_CLOSE_ARCHIVE SciterCloseArchive;
-
-			public readonly SCITER_FIRE_EVENT SciterFireEvent;
-
-			public readonly SCITER_GET_CALLBACK_PARAM SciterGetCallbackParam;
-			public readonly SCITER_POST_CALLBACK SciterPostCallback;
-			public readonly GET_SCITER_GRAPHICS_API GetSciterGraphicsAPI;
-			public readonly GET_SCITER_REQUEST_API GetSciterRequestAPI;
-
-#if WINDOWS || NETCORE
-			public readonly SCITER_CREATE_ON_DIRECT_X_WINDOW SciterCreateOnDirectXWindow;
-			public readonly SCITER_RENDER_ON_DIRECT_X_WINDOW SciterRenderOnDirectXWindow;
-			public readonly SCITER_RENDER_ON_DIRECT_X_TEXTURE SciterRenderOnDirectXTexture;
-#endif
-
-			public readonly SCITER_PROC_X SciterProcX;
-
-
-
-			// JUST FOR NOTE, IF NECESSARY TO DECORATED THE CallingConvention OR CharSet OF THE FPTR's use:
-			//[UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Unicode)]
-
-			// LPCWSTR	function() SciterClassName;
-            public delegate IntPtr SCITER_CLASS_NAME();// use Marshal.PtrToStringUni(returned IntPtr) to get the actual string
-            
-			// UINT	function(BOOL major) SciterVersion;
-            public delegate uint SCITER_VERSION(bool major);
-            
-			// BOOL	function(HWINDOW hwnd, LPCWSTR uri, LPCBYTE data, UINT dataLength) SciterDataReady;
-            public delegate bool SCITER_DATA_READY(IntPtr hwnd, [MarshalAs(UnmanagedType.LPWStr)]string uri, byte[] data, uint dataLength);
-
-			// BOOL	function(HWINDOW hwnd, LPCWSTR uri, LPCBYTE data, UINT dataLength, LPVOID requestId) SciterDataReadyAsync;
-			public delegate bool SCITER_DATA_READY_ASYNC(IntPtr hwnd, string uri, byte[] data, uint dataLength, IntPtr requestId);
-
-#if WINDOWS || NETCORE
-			// LRESULT	function(HWINDOW hwnd, UINT msg, WPARAM wParam, LPARAM lParam) SciterProc;
-			public delegate IntPtr SCITER_PROC(IntPtr hwnd, uint msg, IntPtr wParam, IntPtr lParam);
-			// LRESULT	function(HWINDOW hwnd, UINT msg, WPARAM wParam, LPARAM lParam, BOOL* pbHandled) SciterProcND;
-			public delegate IntPtr SCITER_PROC_ND(IntPtr hwnd, uint msg, IntPtr wParam, IntPtr lParam, ref bool pbHandled);
-#endif
-			// BOOL	function(HWINDOW hWndSciter, LPCWSTR filename) SciterLoadFile;
-			public delegate bool SCITER_LOAD_FILE(IntPtr hwnd, [MarshalAs(UnmanagedType.LPWStr)] string filename);
-			// BOOL function(HWINDOW hWndSciter, LPCBYTE html, UINT htmlSize, LPCWSTR baseUrl) SciterLoadHtml;
-			public delegate bool SCITER_LOAD_HTML(IntPtr hwnd, byte[] html, uint htmlSize, string baseUrl);
-			// VOID	function(HWINDOW hWndSciter, LPSciterHostCallback cb, LPVOID cbParam) SciterSetCallback;
-			public delegate void SCITER_SET_CALLBACK(IntPtr hwnd, MulticastDelegate cb, IntPtr param);// TODO
-			// BOOL	function(LPCBYTE utf8, UINT numBytes) SciterSetMasterCSS;
-			public delegate bool SCITER_SET_MASTER_CSS(byte[] utf8, uint numBytes);
-			// BOOL	function(LPCBYTE utf8, UINT numBytes) SciterAppendMasterCSS;
-			public delegate bool SCITER_APPEND_MASTER_CSS(byte[] utf8, uint numBytes);
-			// BOOL	function(HWINDOW hWndSciter, LPCBYTE utf8, UINT numBytes, LPCWSTR baseUrl, LPCWSTR mediaType) SciterSetCSS;
-			public delegate bool SCITER_SET_CSS(IntPtr hwnd, byte[] utf8, uint numBytes, [MarshalAs(UnmanagedType.LPWStr)]string baseUrl, [MarshalAs(UnmanagedType.LPWStr)]string mediaType);
-			// BOOL	function(HWINDOW hWndSciter, LPCWSTR mediaType) SciterSetMediaType;
-			public delegate bool SCITER_SET_MEDIA_TYPE(IntPtr hwnd, [MarshalAs(UnmanagedType.LPWStr)]string mediaType);
-			// BOOL	function(HWINDOW hWndSciter, const SCITER_VALUE *mediaVars) SciterSetMediaVars;
-			public delegate bool SCITER_SET_MEDIA_VARS(IntPtr hwnd, ref SciterValue.VALUE mediaVars);
-			// UINT	function(HWINDOW hWndSciter) SciterGetMinWidth;
-			public delegate uint SCITER_GET_MIN_WIDTH(IntPtr hwnd);
-			// UINT	function(HWINDOW hWndSciter, UINT width) SciterGetMinHeight;
-			public delegate uint SCITER_GET_MIN_HEIGHT(IntPtr hwnd, uint width);
-			//BOOL	function(HWINDOW hWnd, LPCSTR functionName, UINT argc, const SCITER_VALUE* argv, SCITER_VALUE* retval) SciterCall;
-			public delegate bool SCITER_CALL(IntPtr hwnd, [MarshalAs(UnmanagedType.LPStr)]string functionName, uint argc, SciterValue.VALUE[] argv, out SciterValue.VALUE retval);
-			// BOOL	function(HWINDOW hwnd, LPCWSTR script, UINT scriptLength, SCITER_VALUE* pretval) SciterEval;
-			public delegate bool SCITER_EVAL(IntPtr hwnd, [MarshalAs(UnmanagedType.LPWStr)]string script, uint scriptLength, out SciterValue.VALUE pretval);
-			// VOID	function(HWINDOW hwnd) SciterUpdateWindow;
-			public delegate bool SCITER_UPDATE_WINDOW(IntPtr hwnd);
-#if WINDOWS || NETCORE
-			// BOOL	function(MSG* lpMsg) SciterTranslateMessage;
-			public delegate bool SCITER_TRANSLATE_MESSAGE(IntPtr lpMsg);// TODO: MSG
-#endif
-			// BOOL	function(HWINDOW hWnd, UINT option, UINT_PTR value ) SciterSetOption;
-			public delegate bool SCITER_SET_OPTION(IntPtr hwnd, SciterXDef.SCITER_RT_OPTIONS option, IntPtr value);
-			// VOID	function(HWINDOW hWndSciter, UINT* px, UINT* py) SciterGetPPI;
-			public delegate void SCITER_GET_PPI(IntPtr hwnd, ref uint px, ref uint py);
-			// BOOL	function(HWINDOW hwnd, VALUE* pval ) SciterGetViewExpando;
-			public delegate bool SCITER_GET_VIEW_EXPANDO(IntPtr hwnd, out SciterValue.VALUE pval);
-#if WINDOWS || NETCORE
-			// BOOL	function(HWINDOW hWndSciter, ID2D1RenderTarget* prt) SciterRenderD2D;
-			public delegate bool SCITER_RENDER_D2D(IntPtr hwnd, IntPtr prt);// TODO
-			// BOOL	function(ID2D1Factory ** ppf) SciterD2DFactory;
-			public delegate bool SCITER_D2D_FACTORY(IntPtr ppf);// TODO
-			// BOOL	function(IDWriteFactory ** ppf) SciterDWFactory;
-			public delegate bool SCITER_DW_FACTORY(IntPtr ppf);// TODO
-#endif
-			// BOOL	function(LPUINT pcaps) SciterGraphicsCaps;
-			public delegate bool SCITER_GRAPHICS_CAPS(ref uint pcaps);
-			// BOOL	function(HWINDOW hWndSciter, LPCWSTR baseUrl) SciterSetHomeURL;
-			public delegate bool SCITER_SET_HOME_URL(IntPtr hwnd, string baseUrl);
-#if OSX
-			// HWINDOW function( LPRECT frame ) SciterCreateNSView;// returns NSView*
-			public delegate IntPtr SCITER_CREATE_NS_VIEW(ref PInvokeUtils.RECT frame);
-#endif
-#if GTKMONO
-			// HWINDOW SCFN( SciterCreateWidget )( LPRECT frame ); // returns GtkWidget
-			public delegate IntPtr SCITER_CREATE_WIDGET(ref PInvokeUtils.RECT frame);
-#endif
-			// HWINDOW	function(UINT creationFlags, LPRECT frame, SciterWindowDelegate* delegt, LPVOID delegateParam, HWINDOW parent) SciterCreateWindow;
-			public delegate IntPtr SCITER_CREATE_WINDOW(SciterXDef.SCITER_CREATE_WINDOW_FLAGS creationFlags, ref PInvokeUtils.RECT frame, MulticastDelegate delegt, IntPtr delegateParam, IntPtr parent);
-			//VOID	function(
-			//  HWINDOW               hwndOrNull,// HWINDOW or null if this is global output handler
-			//  LPVOID                param,     // param to be passed "as is" to the pfOutput
-			//  DEBUG_OUTPUT_PROC     pfOutput   // output function, output stream alike thing.
-			//  ) SciterSetupDebugOutput;
-			public delegate void SCITER_SETUP_DEBUG_OUTPUT(IntPtr hwndOrNull, IntPtr param, SciterXDef.DEBUG_OUTPUT_PROC pfOutput);
-
-			//|
-			//| DOM Element API
-			//|
-
-			// SCDOM_RESULT function(HELEMENT he) Sciter_UseElement;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_USE_ELEMENT(IntPtr he);
-			// SCDOM_RESULT function(HELEMENT he) Sciter_UnuseElement;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_UNUSE_ELEMENT(IntPtr he);
-			//SCDOM_RESULT function(HWINDOW hwnd, HELEMENT *phe) SciterGetRootElement;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_GET_ROOT_ELEMENT(IntPtr hwnd, out IntPtr phe);
-			//SCDOM_RESULT function(HWINDOW hwnd, HELEMENT *phe) SciterGetFocusElement;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_GET_FOCUS_ELEMENT(IntPtr hwnd, out IntPtr phe);
-			//SCDOM_RESULT function(HWINDOW hwnd, POINT pt, HELEMENT* phe) SciterFindElement;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_FIND_ELEMENT(IntPtr hwnd, PInvokeUtils.POINT pt, out IntPtr phe);
-			//SCDOM_RESULT function(HELEMENT he, UINT* count) SciterGetChildrenCount;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_GET_CHILDREN_COUNT(IntPtr he, out uint count);
-			//SCDOM_RESULT function(HELEMENT he, UINT n, HELEMENT* phe) SciterGetNthChild;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_GET_NTH_CHILD(IntPtr he, uint n, out IntPtr phe);
-			//SCDOM_RESULT function(HELEMENT he, HELEMENT* p_parent_he) SciterGetParentElement;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_GET_PARENT_ELEMENT(IntPtr he, out IntPtr pParentHe);
-			//SCDOM_RESULT function(HELEMENT he, BOOL outer, LPCBYTE_RECEIVER rcv, LPVOID rcv_param) SciterGetElementHtmlCB;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_GET_ELEMENT_HTML_CB(IntPtr he, bool outer, SciterXDom.LPCBYTE_RECEIVER rcv, IntPtr rcvParam);
-			//SCDOM_RESULT function(HELEMENT he, LPCWSTR_RECEIVER rcv, LPVOID rcv_param) SciterGetElementTextCB;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_GET_ELEMENT_TEXT_CB(IntPtr he, SciterXDom.LPCWSTR_RECEIVER rcv, IntPtr rcvParam);
-			//SCDOM_RESULT function(HELEMENT he, LPCWSTR utf16, UINT length) SciterSetElementText;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_SET_ELEMENT_TEXT(IntPtr he, [MarshalAs(UnmanagedType.LPWStr)]string utf16, uint length);
-			//SCDOM_RESULT function(HELEMENT he, LPUINT p_count) SciterGetAttributeCount;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_GET_ATTRIBUTE_COUNT(IntPtr he, out uint pCount);
-			//SCDOM_RESULT function(HELEMENT he, UINT n, LPCSTR_RECEIVER rcv, LPVOID rcv_param) SciterGetNthAttributeNameCB;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_GET_NTH_ATTRIBUTE_NAME_CB(IntPtr he, uint n, SciterXDom.LPCSTR_RECEIVER rcv, IntPtr rcvParam);
-			//SCDOM_RESULT function(HELEMENT he, UINT n, LPCWSTR_RECEIVER rcv, LPVOID rcv_param) SciterGetNthAttributeValueCB;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_GET_NTH_ATTRIBUTE_VALUE_CB(IntPtr he, uint n, SciterXDom.LPCWSTR_RECEIVER rcv, IntPtr rcvParam);
-			//SCDOM_RESULT function(HELEMENT he, LPCSTR name, LPCWSTR_RECEIVER rcv, LPVOID rcv_param) SciterGetAttributeByNameCB;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_GET_ATTRIBUTE_BY_NAME_CB(IntPtr he, [MarshalAs(UnmanagedType.LPStr)]string name, SciterXDom.LPCWSTR_RECEIVER rcv, IntPtr rcvParam);
-			//SCDOM_RESULT function(HELEMENT he, LPCSTR name, LPCWSTR value) SciterSetAttributeByName;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_SET_ATTRIBUTE_BY_NAME(IntPtr he, [MarshalAs(UnmanagedType.LPStr)]string name, [MarshalAs(UnmanagedType.LPWStr)]string value);
-			//SCDOM_RESULT function(HELEMENT he) SciterClearAttributes;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_CLEAR_ATTRIBUTES(IntPtr he);
-			//SCDOM_RESULT function(HELEMENT he, LPUINT p_index) SciterGetElementIndex;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_GET_ELEMENT_INDEX(IntPtr he, out uint pIndex);
-			//SCDOM_RESULT function(HELEMENT he, LPCSTR* p_type) SciterGetElementType;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_GET_ELEMENT_TYPE(IntPtr he, out IntPtr pType);
-			//SCDOM_RESULT function(HELEMENT he, LPCSTR_RECEIVER rcv, LPVOID rcv_param) SciterGetElementTypeCB;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_GET_ELEMENT_TYPE_CB(IntPtr he, SciterXDom.LPCSTR_RECEIVER rcv, IntPtr rcvParam);
-			//SCDOM_RESULT function(HELEMENT he, LPCSTR name, LPCWSTR_RECEIVER rcv, LPVOID rcv_param) SciterGetStyleAttributeCB;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_GET_STYLE_ATTRIBUTE_CB(IntPtr he, [MarshalAs(UnmanagedType.LPStr)]string name, SciterXDom.LPCWSTR_RECEIVER rcv, IntPtr rcvParam);
-			//SCDOM_RESULT function(HELEMENT he, LPCSTR name, LPCWSTR value) SciterSetStyleAttribute;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_SET_STYLE_ATTRIBUTE(IntPtr he, [MarshalAs(UnmanagedType.LPStr)]string name, [MarshalAs(UnmanagedType.LPWStr)]string value);
-			//SCDOM_RESULT function(HELEMENT he, LPRECT p_location, UINT areas /*ELEMENT_AREAS*/) SciterGetElementLocation;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_GET_ELEMENT_LOCATION(IntPtr he, out PInvokeUtils.RECT pLocation, SciterXDom.ELEMENT_AREAS areas);
-			//SCDOM_RESULT function(HELEMENT he, UINT SciterScrollFlags) SciterScrollToView;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_SCROLL_TO_VIEW(IntPtr he, uint sciterScrollFlags);
-			//SCDOM_RESULT function(HELEMENT he, BOOL andForceRender) SciterUpdateElement;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_UPDATE_ELEMENT(IntPtr he, bool andForceRender);
-			//SCDOM_RESULT function(HELEMENT he, RECT rc) SciterRefreshElementArea;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_REFRESH_ELEMENT_AREA(IntPtr he, PInvokeUtils.RECT rc);
-			//SCDOM_RESULT function(HELEMENT he) SciterSetCapture;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_SET_CAPTURE(IntPtr he);
-			//SCDOM_RESULT function(HELEMENT he) SciterReleaseCapture;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_RELEASE_CAPTURE(IntPtr he);
-			//SCDOM_RESULT function(HELEMENT he, HWINDOW* p_hwnd, BOOL rootWindow) SciterGetElementHwnd;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_GET_ELEMENT_HWND(IntPtr he, out IntPtr pHwnd, bool rootWindow);
-			//SCDOM_RESULT function(HELEMENT he, LPWSTR szUrlBuffer, UINT UrlBufferSize) SciterCombineURL;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_COMBINE_URL(IntPtr he, /*[MarshalAs(UnmanagedType.LPWStr)]*/IntPtr szUrlBuffer, uint urlBufferSize);
-			//SCDOM_RESULT function(HELEMENT  he, LPCSTR    CSS_selectors, SciterElementCallback callback, LPVOID param) SciterSelectElements;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_SELECT_ELEMENTS(IntPtr he, [MarshalAs(UnmanagedType.LPStr)]string cssSelectors, SciterXDom.SCITER_ELEMENT_CALLBACK callback, IntPtr param);
-			//SCDOM_RESULT function(HELEMENT  he, LPCWSTR   CSS_selectors, SciterElementCallback callback, LPVOID param) SciterSelectElementsW;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_SELECT_ELEMENTS_W(IntPtr he, [MarshalAs(UnmanagedType.LPWStr)]string cssSelectors, SciterXDom.SCITER_ELEMENT_CALLBACK callback, IntPtr param);
-			//SCDOM_RESULT function(HELEMENT  he, LPCSTR    selector, UINT      depth, HELEMENT* heFound) SciterSelectParent;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_SELECT_PARENT(IntPtr he, [MarshalAs(UnmanagedType.LPStr)]string selector, uint depth, out IntPtr heFound);
-			//SCDOM_RESULT function(HELEMENT  he, LPCWSTR   selector, UINT      depth, HELEMENT* heFound) SciterSelectParentW;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_SELECT_PARENT_W(IntPtr he, [MarshalAs(UnmanagedType.LPWStr)]string selector, uint depth, out IntPtr heFound);
-			//SCDOM_RESULT function(HELEMENT he, const BYTE* html, UINT htmlLength, UINT where) SciterSetElementHtml;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_SET_ELEMENT_HTML(IntPtr he, byte[] html, uint htmlLength, SciterXDom.SET_ELEMENT_HTML where);
-			//SCDOM_RESULT function(HELEMENT he, UINT* puid) SciterGetElementUID;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_GET_ELEMENT_UID(IntPtr he, out uint puid);
-			//SCDOM_RESULT function(HWINDOW hwnd, UINT uid, HELEMENT* phe) SciterGetElementByUID;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_GET_ELEMENT_BY_UID(IntPtr hwnd, uint uid, out IntPtr phe);
-			//SCDOM_RESULT function(HELEMENT hePopup, HELEMENT heAnchor, UINT placement) SciterShowPopup;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_SHOW_POPUP(IntPtr he, IntPtr heAnchor, uint placement);
-			//SCDOM_RESULT function(HELEMENT hePopup, POINT pos, UINT placement) SciterShowPopupAt;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_SHOW_POPUP_AT(IntPtr he, PInvokeUtils.POINT pos, uint placement);
-			//SCDOM_RESULT function(HELEMENT he) SciterHidePopup;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_HIDE_POPUP(IntPtr he);
-			//SCDOM_RESULT function( HELEMENT he, UINT* pstateBits) SciterGetElementState;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_GET_ELEMENT_STATE(IntPtr he, out uint pstateBits);
-			//SCDOM_RESULT function( HELEMENT he, UINT stateBitsToSet, UINT stateBitsToClear, BOOL updateView) SciterSetElementState;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_SET_ELEMENT_STATE(IntPtr he, uint stateBitsToSet, uint stateBitsToClear, bool updateView);
-			//SCDOM_RESULT function( LPCSTR tagname, LPCWSTR textOrNull, /*out*/ HELEMENT *phe ) SciterCreateElement;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_CREATE_ELEMENT([MarshalAs(UnmanagedType.LPStr)]string tagname, [MarshalAs(UnmanagedType.LPWStr)]string textOrNull, out IntPtr phe);
-			//SCDOM_RESULT function( HELEMENT he, /*out*/ HELEMENT *phe ) SciterCloneElement;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_CLONE_ELEMENT(IntPtr he, out IntPtr phe);
-			//SCDOM_RESULT function( HELEMENT he, HELEMENT hparent, UINT index ) SciterInsertElement;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_INSERT_ELEMENT(IntPtr he, IntPtr hparent, uint index);
-			//SCDOM_RESULT function( HELEMENT he ) SciterDetachElement;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_DETACH_ELEMENT(IntPtr he);
-			//SCDOM_RESULT function(HELEMENT he) SciterDeleteElement;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_DELETE_ELEMENT(IntPtr he);
-			//SCDOM_RESULT function( HELEMENT he, UINT milliseconds, UINT_PTR timer_id ) SciterSetTimer;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_SET_TIMER(IntPtr he, uint milliseconds, IntPtr timerId);
-			//SCDOM_RESULT function( HELEMENT he, LPELEMENT_EVENT_PROC pep, LPVOID tag ) SciterDetachEventHandler;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_DETACH_EVENT_HANDLER(IntPtr he, MulticastDelegate pep, IntPtr tag);
-			//SCDOM_RESULT function( HELEMENT he, LPELEMENT_EVENT_PROC pep, LPVOID tag ) SciterAttachEventHandler;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_ATTACH_EVENT_HANDLER(IntPtr he, MulticastDelegate pep, IntPtr tag);
-			//SCDOM_RESULT function( HWINDOW hwndLayout, LPELEMENT_EVENT_PROC pep, LPVOID tag, UINT subscription ) SciterWindowAttachEventHandler;
+				#region DOM Node API 
+				
+				private readonly SciterApiDelegates.SciterNodeAddRef _sciterNodeAddRef = null;
+				private readonly SciterApiDelegates.SciterNodeRelease _sciterNodeRelease = null;
+				private readonly SciterApiDelegates.SciterNodeCastFromElement _sciterNodeCastFromElement = null;
+				private readonly SciterApiDelegates.SciterNodeCastToElement _sciterNodeCastToElement = null;
+				private readonly SciterApiDelegates.SciterNodeFirstChild _sciterNodeFirstChild = null;
+				private readonly SciterApiDelegates.SciterNodeLastChild _sciterNodeLastChild = null;
+				private readonly SciterApiDelegates.SciterNodeNextSibling _sciterNodeNextSibling = null;
+				private readonly SciterApiDelegates.SciterNodePrevSibling _sciterNodePrevSibling = null;
+				private readonly SciterApiDelegates.SciterNodeParent _sciterNodeParent = null;
+				private readonly SciterApiDelegates.SciterNodeNthChild _sciterNodeNthChild = null;
+				private readonly SciterApiDelegates.SciterNodeChildrenCount _sciterNodeChildrenCount = null;
+				private readonly SciterApiDelegates.SciterNodeType _sciterNodeType = null;
+				private readonly SciterApiDelegates.SciterNodeGetText _sciterNodeGetText = null;
+				private readonly SciterApiDelegates.SciterNodeSetText _sciterNodeSetText = null;
+				private readonly SciterApiDelegates.SciterNodeInsert _sciterNodeInsert = null;
+				private readonly SciterApiDelegates.SciterNodeRemove _sciterNodeRemove = null;
+				private readonly SciterApiDelegates.SciterCreateTextNode _sciterCreateTextNode = null;
+				private readonly SciterApiDelegates.SciterCreateCommentNode _sciterCreateCommentNode = null;
+				
+				#endregion
+	
+				#region Value API 
+				
+				private readonly SciterApiDelegates.ValueInit _valueInit = null;
+				private readonly SciterApiDelegates.ValueClear _valueClear = null;
+				private readonly SciterApiDelegates.ValueCompare _valueCompare = null;
+				private readonly SciterApiDelegates.ValueCopy _valueCopy = null;
+				private readonly SciterApiDelegates.ValueIsolate _valueIsolate = null;
+				private readonly SciterApiDelegates.ValueType _valueType = null;
+				private readonly SciterApiDelegates.ValueStringData _valueStringData = null;
+				private readonly SciterApiDelegates.ValueStringDataSet _valueStringDataSet = null;
+				private readonly SciterApiDelegates.ValueIntData _valueIntData = null;
+				private readonly SciterApiDelegates.ValueIntDataSet _valueIntDataSet = null;
+				private readonly SciterApiDelegates.ValueInt64Data _valueInt64Data = null;
+				private readonly SciterApiDelegates.ValueInt64DataSet _valueInt64DataSet = null;
+				private readonly SciterApiDelegates.ValueFloatData _valueFloatData = null;
+				private readonly SciterApiDelegates.ValueFloatDataSet _valueFloatDataSet = null;
+				private readonly SciterApiDelegates.ValueBinaryData _valueBinaryData = null;
+				private readonly SciterApiDelegates.ValueBinaryDataSet _valueBinaryDataSet = null;
+				private readonly SciterApiDelegates.ValueElementsCount _valueElementsCount = null;
+				private readonly SciterApiDelegates.ValueNthElementValue _valueNthElementValue = null;
+				private readonly SciterApiDelegates.ValueNthElementValueSet _valueNthElementValueSet = null;
+				private readonly SciterApiDelegates.ValueNthElementKey _valueNthElementKey = null;
+				private readonly SciterApiDelegates.ValueEnumElements _valueEnumElements = null;
+				private readonly SciterApiDelegates.ValueSetValueToKey _valueSetValueToKey = null;
+				private readonly SciterApiDelegates.ValueGetValueOfKey _valueGetValueOfKey = null;
+				private readonly SciterApiDelegates.ValueToString _valueToString = null;
+				private readonly SciterApiDelegates.ValueFromString _valueFromString = null;
+				private readonly SciterApiDelegates.ValueInvoke _valueInvoke = null;
+				private readonly SciterApiDelegates.ValueNativeFunctorSet _valueNativeFunctorSet = null;
+				private readonly SciterApiDelegates.ValueIsNativeFunctor _valueIsNativeFunctor = null;
+				
+				#endregion
+				
+				#region Used to be script VM API (Deprecated in v4.4.3.24)
+				
+				private readonly SciterApiDelegates.Reserved1 _reserved1 = null;
+				private readonly SciterApiDelegates.Reserved2 _reserved2 = null;
+				private readonly SciterApiDelegates.Reserved3 _reserved3 = null;
+				private readonly SciterApiDelegates.Reserved4 _reserved4 = null;
+				
+				#endregion
 			
-			public delegate SciterXDom.SCDOM_RESULT SCITER_WINDOW_ATTACH_EVENT_HANDLER(IntPtr hwndLayout, MulticastDelegate pep, IntPtr tag, uint subscription);
-			//SCDOM_RESULT function( HWINDOW hwndLayout, LPELEMENT_EVENT_PROC pep, LPVOID tag ) SciterWindowDetachEventHandler;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_WINDOW_DETACH_EVENT_HANDLER(IntPtr hwndLayout, MulticastDelegate pep, IntPtr tag);
-			//SCDOM_RESULT function( HELEMENT he, UINT appEventCode, HELEMENT heSource, UINT_PTR reason, /*out*/ BOOL* handled) SciterSendEvent;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_SEND_EVENT(IntPtr he, uint appEventCode, IntPtr heSource, IntPtr reason, out bool handled);
-			//SCDOM_RESULT function( HELEMENT he, UINT appEventCode, HELEMENT heSource, UINT_PTR reason) SciterPostEvent;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_POST_EVENT(IntPtr he, uint appEventCode, IntPtr heSource, IntPtr reason);
-			//SCDOM_RESULT function(HELEMENT he, METHOD_PARAMS* params) SciterCallBehaviorMethod;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_CALL_BEHAVIOR_METHOD(IntPtr he, ref SciterXDom.METHOD_PARAMS param);
-			//SCDOM_RESULT function( HELEMENT he, LPCWSTR url, UINT dataType, HELEMENT initiator ) SciterRequestElementData;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_REQUEST_ELEMENT_DATA(IntPtr he, [MarshalAs(UnmanagedType.LPWStr)]string url, uint dataType, IntPtr initiator);
-			//SCDOM_RESULT function( HELEMENT he,						// element to deliver data 
-			//							LPCWSTR         url,			// url 
-			//							UINT            dataType,		// data type, see SciterResourceType.
-			//							UINT            requestType,	// one of REQUEST_TYPE values
-			//							REQUEST_PARAM*  requestParams,	// parameters
-			//							UINT            nParams			// number of parameters 
-			//							) SciterHttpRequest;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_HTTP_REQUEST(IntPtr he, [MarshalAs(UnmanagedType.LPWStr)]string url, uint dataType, uint requestType, ref SciterXDom.REQUEST_PARAM requestParams, uint nParams);
-			//SCDOM_RESULT function( HELEMENT he, LPPOINT scrollPos, LPRECT viewRect, LPSIZE contentSize ) SciterGetScrollInfo;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_GET_SCROLL_INFO(IntPtr he, out PInvokeUtils.POINT scrollPos, out PInvokeUtils.RECT viewRect, out PInvokeUtils.SIZE contentSize);
-			//SCDOM_RESULT function( HELEMENT he, POINT scrollPos, BOOL smooth ) SciterSetScrollPos;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_SET_SCROLL_POS(IntPtr he, PInvokeUtils.POINT scrollPos, bool smooth);
-			//SCDOM_RESULT function( HELEMENT he, INT* pMinWidth, INT* pMaxWidth ) SciterGetElementIntrinsicWidths;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_GET_ELEMENT_INTRINSIC_WIDTHS(IntPtr he, out int pMinWidth, out int pMaxWidth);
-			//SCDOM_RESULT function( HELEMENT he, INT forWidth, INT* pHeight ) SciterGetElementIntrinsicHeight;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_GET_ELEMENT_INTRINSIC_HEIGHT(IntPtr he, int forWidth, out int pHeight);
-			//SCDOM_RESULT function( HELEMENT he, BOOL* pVisible) SciterIsElementVisible;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_IS_ELEMENT_VISIBLE(IntPtr he, out bool pVisible);
-			//SCDOM_RESULT function( HELEMENT he, BOOL* pEnabled ) SciterIsElementEnabled;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_IS_ELEMENT_ENABLED(IntPtr he, out bool pEnabled);
-			//SCDOM_RESULT function( HELEMENT he, UINT firstIndex, UINT lastIndex, ELEMENT_COMPARATOR* cmpFunc, LPVOID cmpFuncParam ) SciterSortElements;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_SORT_ELEMENTS(IntPtr he, uint firstIndex, uint lastIndex, SciterXDom.ELEMENT_COMPARATOR cmpFunc, IntPtr cmpFuncParam);
-			//SCDOM_RESULT function( HELEMENT he1, HELEMENT he2 ) SciterSwapElements;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_SWAP_ELEMENTS(IntPtr he, IntPtr he2);
-			//SCDOM_RESULT function( UINT evt, LPVOID eventCtlStruct, BOOL* bOutProcessed ) SciterTraverseUIEvent;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_TRAVERSE_UI_EVENT(IntPtr he, IntPtr eventCtlStruct, out bool bOutProcessed);
-			//SCDOM_RESULT function( HELEMENT he, LPCSTR name, const VALUE* argv, UINT argc, VALUE* retval ) SciterCallScriptingMethod;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_CALL_SCRIPTING_METHOD(IntPtr he, [MarshalAs(UnmanagedType.LPStr)]string name, SciterValue.VALUE[] argv, uint argc, out SciterValue.VALUE retval);
-			//SCDOM_RESULT function( HELEMENT he, LPCSTR name, const VALUE* argv, UINT argc, VALUE* retval ) SciterCallScriptingFunction;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_CALL_SCRIPTING_FUNCTION(IntPtr he, [MarshalAs(UnmanagedType.LPStr)]string name, SciterValue.VALUE[] argv, uint argc, out SciterValue.VALUE retval);
-			//SCDOM_RESULT function( HELEMENT he, LPCWSTR script, UINT scriptLength, VALUE* retval ) SciterEvalElementScript;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_EVAL_ELEMENT_SCRIPT(IntPtr he, [MarshalAs(UnmanagedType.LPWStr)]string script, uint scriptLength, out SciterValue.VALUE retval);
-			//SCDOM_RESULT function( HELEMENT he, HWINDOW hwnd) SciterAttachHwndToElement;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_ATTACH_HWND_TO_ELEMENT(IntPtr he, IntPtr hwnd);
-			//SCDOM_RESULT function( HELEMENT he, /*CTL_TYPE*/ UINT *pType ) SciterControlGetType;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_CONTROL_GET_TYPE(IntPtr he, out uint pType);
-			//SCDOM_RESULT function( HELEMENT he, VALUE* pval ) SciterGetValue;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_GET_VALUE(IntPtr he, out SciterValue.VALUE pval);
-			//SCDOM_RESULT function( HELEMENT he, const VALUE* pval ) SciterSetValue;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_SET_VALUE(IntPtr he, ref SciterValue.VALUE pval);
-			//SCDOM_RESULT function( HELEMENT he, VALUE* pval, BOOL forceCreation ) SciterGetExpando;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_GET_EXPANDO(IntPtr he, out SciterValue.VALUE pval, bool forceCreation);
-			//SCDOM_RESULT function( HELEMENT he, tiscript_value* pval, BOOL forceCreation ) SciterGetObject;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_GET_OBJECT(IntPtr he, out TIScript.tiscript_value pval, bool forceCreation);
-			//SCDOM_RESULT function( HELEMENT he, tiscript_value* pval) SciterGetElementNamespace;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_GET_ELEMENT_NAMESPACE(IntPtr he, out TIScript.tiscript_value pval);
-			//SCDOM_RESULT function( HWINDOW hwnd, HELEMENT* phe) SciterGetHighlightedElement;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_GET_HIGHLIGHTED_ELEMENT(IntPtr hwnd, out IntPtr phe);
-			//SCDOM_RESULT function( HWINDOW hwnd, HELEMENT he) SciterSetHighlightedElement;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_SET_HIGHLIGHTED_ELEMENT(IntPtr hwnd, IntPtr he);
+				#region Archive
+				
+				private readonly SciterApiDelegates.SciterOpenArchive _sciterOpenArchive = null;
+				private readonly SciterApiDelegates.SciterGetArchiveItem _sciterGetArchiveItem = null;
+				private readonly SciterApiDelegates.SciterCloseArchive _sciterCloseArchive = null;
+				
+				#endregion
 
-			//|
-			//| DOM Node API
-			//|
+				private readonly SciterApiDelegates.SciterFireEvent _sciterFireEvent = null;
 
-			//SCDOM_RESULT function(HNODE hn) SciterNodeAddRef;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_NODE_ADD_REF(IntPtr hn);
-			//SCDOM_RESULT function(HNODE hn) SciterNodeRelease;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_NODE_RELEASE(IntPtr hn);
-			//SCDOM_RESULT function(HELEMENT he, HNODE* phn) SciterNodeCastFromElement;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_NODE_CAST_FROM_ELEMENT(IntPtr he, out IntPtr phn);
-			//SCDOM_RESULT function(HNODE hn, HELEMENT* he) SciterNodeCastToElement;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_NODE_CAST_TO_ELEMENT(IntPtr hn, out IntPtr he);
-			//SCDOM_RESULT function(HNODE hn, HNODE* phn) SciterNodeFirstChild;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_NODE_FIRST_CHILD(IntPtr hn, out IntPtr phn);
-			//SCDOM_RESULT function(HNODE hn, HNODE* phn) SciterNodeLastChild;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_NODE_LAST_CHILD(IntPtr hn, out IntPtr phn);
-			//SCDOM_RESULT function(HNODE hn, HNODE* phn) SciterNodeNextSibling;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_NODE_NEXT_SIBLING(IntPtr hn, out IntPtr phn);
-			//SCDOM_RESULT function(HNODE hn, HNODE* phn) SciterNodePrevSibling;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_NODE_PREV_SIBLING(IntPtr hn, out IntPtr phn);
-			//SCDOM_RESULT function(HNODE hnode, HELEMENT* pheParent) SciterNodeParent;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_NODE_PARENT(IntPtr hn, out IntPtr pheParent);
-			//SCDOM_RESULT function(HNODE hnode, UINT n, HNODE* phn) SciterNodeNthChild;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_NODE_NTH_CHILD(IntPtr hn, uint n, out IntPtr phn);
-			//SCDOM_RESULT function(HNODE hnode, UINT* pn) SciterNodeChildrenCount;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_NODE_CHILDREN_COUNT(IntPtr hn, out uint pn);
-			//SCDOM_RESULT function(HNODE hnode, UINT* pNodeType /*NODE_TYPE*/) SciterNodeType;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_NODE_TYPE(IntPtr hn, out SciterXDom.NODE_TYPE pn);
-			//SCDOM_RESULT function(HNODE hnode, LPCWSTR_RECEIVER rcv, LPVOID rcv_param) SciterNodeGetText;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_NODE_GET_TEXT(IntPtr hn, SciterXDom.LPCWSTR_RECEIVER rcv, IntPtr rcvParam);
-			//SCDOM_RESULT function(HNODE hnode, LPCWSTR text, UINT textLength) SciterNodeSetText;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_NODE_SET_TEXT(IntPtr hn, [MarshalAs(UnmanagedType.LPWStr)]string text, uint textLength);
-			//SCDOM_RESULT function(HNODE hnode, UINT where /*NODE_INS_TARGET*/, HNODE what) SciterNodeInsert;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_NODE_INSERT(IntPtr hn, uint where, IntPtr what);
-			//SCDOM_RESULT function(HNODE hnode, BOOL finalize) SciterNodeRemove;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_NODE_REMOVE(IntPtr hn, bool finalize);
-			//SCDOM_RESULT function(LPCWSTR text, UINT textLength, HNODE* phnode) SciterCreateTextNode;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_CREATE_TEXT_NODE([MarshalAs(UnmanagedType.LPWStr)]string text, uint textLength, out IntPtr phnode);
-			//SCDOM_RESULT function(LPCWSTR text, UINT textLength, HNODE* phnode) SciterCreateCommentNode;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_CREATE_COMMENT_NODE([MarshalAs(UnmanagedType.LPWStr)]string text, uint textLength, out IntPtr phnode);
+				private readonly SciterApiDelegates.SciterGetCallbackParam _sciterGetCallbackParam = null;
+				private readonly SciterApiDelegates.SciterPostCallback _sciterPostCallback = null;
+				private readonly SciterApiDelegates.GetSciterGraphicsApi _getSciterGraphicsAPI = null;
+				private readonly SciterApiDelegates.GetSciterRequestApi _getSciterRequestAPI = null;
 
-			//|
-			//| Value API
-			//|
-			// UINT function( VALUE* pval ) ValueInit;
-			public delegate SciterValue.VALUE_RESULT VALUE_INIT(out SciterValue.VALUE pval);
-			// UINT function( VALUE* pval ) ValueClear;
-			public delegate SciterValue.VALUE_RESULT VALUE_CLEAR(out SciterValue.VALUE pval);
-			// UINT function( const VALUE* pval1, const VALUE* pval2 ) ValueCompare;
-			public delegate SciterValue.VALUE_RESULT VALUE_COMPARE(ref SciterValue.VALUE pval, ref IntPtr pval2);
-			// UINT function( VALUE* pdst, const VALUE* psrc ) ValueCopy;
-			public delegate SciterValue.VALUE_RESULT VALUE_COPY(out SciterValue.VALUE pdst, ref SciterValue.VALUE psrc);
-			// UINT function( VALUE* pdst ) ValueIsolate;
-			public delegate SciterValue.VALUE_RESULT VALUE_ISOLATE(ref SciterValue.VALUE pdst);
-			// UINT function( const VALUE* pval, UINT* pType, UINT* pUnits ) ValueType;
-			public delegate SciterValue.VALUE_RESULT VALUE_TYPE(ref SciterValue.VALUE pval, out uint pType, out uint pUnits);
-			// UINT function( const VALUE* pval, LPCWSTR* pChars, UINT* pNumChars ) ValueStringData;
-			public delegate SciterValue.VALUE_RESULT VALUE_STRING_DATA(ref SciterValue.VALUE pval, out IntPtr pChars, out uint pNumChars);
-			// UINT function( VALUE* pval, LPCWSTR chars, UINT numChars, UINT units ) ValueStringDataSet;
-			public delegate SciterValue.VALUE_RESULT VALUE_STRING_DATA_SET(ref SciterValue.VALUE pval, [MarshalAs(UnmanagedType.LPWStr)]string chars, uint numChars, uint units);
-			// UINT function( const VALUE* pval, INT* pData ) ValueIntData;
-			public delegate SciterValue.VALUE_RESULT VALUE_INT_DATA(ref SciterValue.VALUE pval, out int pData);
-			// UINT function( VALUE* pval, INT data, UINT type, UINT units ) ValueIntDataSet;
-			public delegate SciterValue.VALUE_RESULT VALUE_INT_DATA_SET(ref SciterValue.VALUE pval, int data, uint type, uint units);
-			// UINT function( const VALUE* pval, INT64* pData ) ValueInt64Data;
-			public delegate SciterValue.VALUE_RESULT VALUE_INT_64DATA(ref SciterValue.VALUE pval, out long pData);
-			// UINT function( VALUE* pval, INT64 data, UINT type, UINT units ) ValueInt64DataSet;
-			public delegate SciterValue.VALUE_RESULT VALUE_INT_64DATA_SET(ref SciterValue.VALUE pval, long data, uint type, uint units);
-			// UINT function( const VALUE* pval, FLOAT_VALUE* pData ) ValueFloatData;
-			public delegate SciterValue.VALUE_RESULT VALUE_FLOAT_DATA(ref SciterValue.VALUE pval, out double pData);
-			// UINT function( VALUE* pval, FLOAT_VALUE data, UINT type, UINT units ) ValueFloatDataSet;
-			public delegate SciterValue.VALUE_RESULT VALUE_FLOAT_DATA_SET(ref SciterValue.VALUE pval, double data, uint type, uint units);
-			// UINT function( const VALUE* pval, LPCBYTE* pBytes, UINT* pnBytes ) ValueBinaryData;
-			public delegate SciterValue.VALUE_RESULT VALUE_BINARY_DATA(ref SciterValue.VALUE pval, out IntPtr pBytes, out uint pnBytes);
-			// UINT function( VALUE* pval, LPCBYTE pBytes, UINT nBytes, UINT type, UINT units ) ValueBinaryDataSet;
-			public delegate SciterValue.VALUE_RESULT VALUE_BINARY_DATA_SET(ref SciterValue.VALUE pval, [MarshalAs(UnmanagedType.LPArray)]byte[] pBytes, uint nBytes, uint type, uint units);
-			// UINT function( const VALUE* pval, INT* pn) ValueElementsCount;
-			public delegate SciterValue.VALUE_RESULT VALUE_ELEMENTS_COUNT(ref SciterValue.VALUE pval, out int pn);
-			// UINT function( const VALUE* pval, INT n, VALUE* pretval) ValueNthElementValue;
-			public delegate SciterValue.VALUE_RESULT VALUE_NTH_ELEMENT_VALUE(ref SciterValue.VALUE pval, int n, out SciterValue.VALUE pretval);
-			// UINT function( VALUE* pval, INT n, const VALUE* pval_to_set) ValueNthElementValueSet;
-			public delegate SciterValue.VALUE_RESULT VALUE_NTH_ELEMENT_VALUE_SET(ref SciterValue.VALUE pval, int n, ref SciterValue.VALUE pvalToSet);
-			// UINT function( const VALUE* pval, INT n, VALUE* pretval) ValueNthElementKey;
-			public delegate SciterValue.VALUE_RESULT VALUE_NTH_ELEMENT_KEY(ref SciterValue.VALUE pval, int n, out SciterValue.VALUE pretval);
-			// UINT function( VALUE* pval, KeyValueCallback* penum, LPVOID param) ValueEnumElements;
-			public delegate SciterValue.VALUE_RESULT VALUE_ENUM_ELEMENTS(ref SciterValue.VALUE pval, SciterValue.KEY_VALUE_CALLBACK penum, IntPtr param);
-			// UINT function( VALUE* pval, const VALUE* pkey, const VALUE* pval_to_set) ValueSetValueToKey;
-			public delegate SciterValue.VALUE_RESULT VALUE_SET_VALUE_TO_KEY(ref SciterValue.VALUE pval, ref SciterValue.VALUE pkey, ref SciterValue.VALUE pvalToSet);
-			// UINT function( const VALUE* pval, const VALUE* pkey, VALUE* pretval) ValueGetValueOfKey;
-			public delegate SciterValue.VALUE_RESULT VALUE_GET_VALUE_OF_KEY(ref SciterValue.VALUE pval, ref SciterValue.VALUE pkey, out SciterValue.VALUE pretval);
-			// UINT function( VALUE* pval, /*VALUE_STRING_CVT_TYPE*/ UINT how ) ValueToString;
-			public delegate SciterValue.VALUE_RESULT VALUE_TO_STRING(ref SciterValue.VALUE pval, SciterValue.VALUE_STRING_CVT_TYPE how);
-			// UINT function( VALUE* pval, LPCWSTR str, UINT strLength, /*VALUE_STRING_CVT_TYPE*/ UINT how ) ValueFromString;
-			public delegate SciterValue.VALUE_RESULT VALUE_FROM_STRING(ref SciterValue.VALUE pval, [MarshalAs(UnmanagedType.LPWStr)]string str, uint strLength, uint how);
-			// UINT function( VALUE* pval, VALUE* pthis, UINT argc, const VALUE* argv, VALUE* pretval, LPCWSTR url) ValueInvoke;
-			public delegate SciterValue.VALUE_RESULT VALUE_INVOKE(ref SciterValue.VALUE pval, ref SciterValue.VALUE pthis, uint argc, SciterValue.VALUE[] argv, out SciterValue.VALUE pretval, [MarshalAs(UnmanagedType.LPWStr)]string url);
-			// UINT function( VALUE* pval, NATIVE_FUNCTOR_INVOKE*  pinvoke, NATIVE_FUNCTOR_RELEASE* prelease, VOID* tag) ValueNativeFunctorSet;
-			public delegate SciterValue.VALUE_RESULT VALUE_NATIVE_FUNCTOR_SET(ref SciterValue.VALUE pval, SciterValue.NATIVE_FUNCTOR_INVOKE pinvoke, SciterValue.NATIVE_FUNCTOR_RELEASE prelease, IntPtr tag);
-			// BOOL function( const VALUE* pval) ValueIsNativeFunctor;
-			public delegate SciterValue.VALUE_RESULT VALUE_IS_NATIVE_FUNCTOR(ref SciterValue.VALUE pval);
+				#region DirectX
+				
+				private readonly SciterApiDelegates.SciterCreateOnDirectXWindow _sciterCreateOnDirectXWindow = null;
+				private readonly SciterApiDelegates.SciterRenderOnDirectXWindow _sciterRenderOnDirectXWindow = null;
+				private readonly SciterApiDelegates.SciterRenderOnDirectXTexture _sciterRenderOnDirectXTexture = null;
+				
+				#endregion
 
-			// tiscript VM API
-			// tiscript_native_interface* function() TIScriptAPI;
-			public delegate IntPtr TI_SCRIPT_API();
-			
-			// HVM function(HWINDOW hwnd) SciterGetVM;
-			public delegate IntPtr SCITER_GET_VM(IntPtr hwnd);
+				private readonly SciterApiDelegates.SciterProcX _sciterProcX = null; 
+				
+				#region Sciter 4.4.3.24
+				
+				private readonly SciterApiDelegates.SciterAtomValue _sciterAtomValue = null;
+				private readonly SciterApiDelegates.SciterAtomNameCB _sciterAtomNameCB = null;
+				private readonly SciterApiDelegates.SciterSetGlobalAsset _sciterSetGlobalAsset = null; 
+				
+				#endregion
 
-			// BOOL function(HVM vm, tiscript_value script_value, VALUE* value, BOOL isolate) Sciter_v2V;
-			public delegate bool SCITER_v2V(IntPtr vm, TIScript.tiscript_value scriptValue, ref SciterValue.VALUE value, bool isolate);
-			// BOOL function(HVM vm, const VALUE* valuev, tiscript_value* script_value) Sciter_V2v;
-			public delegate bool SCITER_V2v(IntPtr vm, ref SciterValue.VALUE value, ref TIScript.tiscript_value scriptValue);
+				#region Sciter 4.4.4.7
 
-			// HSARCHIVE function(LPCBYTE archiveData, UINT archiveDataLength) SciterOpenArchive;
-			public delegate IntPtr SCITER_OPEN_ARCHIVE(IntPtr archiveData, uint archiveDataLength);// archiveData must point to a pinned byte[] array!
-			// BOOL function(HSARCHIVE harc, LPCWSTR path, LPCBYTE* pdata, UINT* pdataLength) SciterGetArchiveItem;
-			public delegate bool SCITER_GET_ARCHIVE_ITEM(IntPtr harc, [MarshalAs(UnmanagedType.LPWStr)]string path, out IntPtr pdata, out uint pdataLength);
-			// BOOL function(HSARCHIVE harc) SciterCloseArchive;
-			public delegate bool SCITER_CLOSE_ARCHIVE(IntPtr harc);
+				private readonly SciterApiDelegates.SciterGetElementAsset _sciterGetElementAsset = null;
+				private readonly SciterApiDelegates.SciterSetVariable _sciterSetVariable = null;
+				private readonly SciterApiDelegates.SciterGetVariable _sciterGetVariable = null;
 
-			// SCDOM_RESULT function( const BEHAVIOR_EVENT_PARAMS* evt, BOOL post, BOOL *handled ) SciterFireEvent;
-			public delegate SciterXDom.SCDOM_RESULT SCITER_FIRE_EVENT(ref SciterBehaviors.BEHAVIOR_EVENT_PARAMS evt, bool post, out bool handled);
+				#endregion
 
-			// LPVOID function(HWINDOW hwnd) SciterGetCallbackParam;
-			public delegate IntPtr SCITER_GET_CALLBACK_PARAM(IntPtr hwnd);
-			// UINT_PTR function(HWINDOW hwnd, UINT_PTR wparam, UINT_PTR lparam, UINT timeoutms) SciterPostCallback;// if timeoutms>0 then it is a send, not a post
-			public delegate IntPtr SCITER_POST_CALLBACK(IntPtr hwnd, IntPtr wparam, IntPtr lparam, uint timeoutms);
+				#region Sciter 4.4.5.4
 
-			// LPSciterGraphicsAPI function() GetSciterGraphicsAPI;
-			public delegate IntPtr GET_SCITER_GRAPHICS_API();
+				private readonly SciterApiDelegates.SciterElementUnwrap _sciterElementUnwrap = null;
+				private readonly SciterApiDelegates.SciterElementWrap _sciterElementWrap = null;
 
-			// LPSciterRequestAPI SCFN(GetSciterRequestAPI )();
-			public delegate IntPtr GET_SCITER_REQUEST_API();
+				private readonly SciterApiDelegates.SciterNodeUnwrap _sciterNodeUnwrap = null;
+				private readonly SciterApiDelegates.SciterNodeWrap _sciterNodeWrap = null;
 
-#if WINDOWS || NETCORE
-			// BOOL SCFN(SciterCreateOnDirectXWindow ) (HWINDOW hwnd, IDXGISwapChain* pSwapChain);
-			public delegate bool SCITER_CREATE_ON_DIRECT_X_WINDOW(IntPtr hwnd, IntPtr pSwapChain);
-			// BOOL SCFN(SciterRenderOnDirectXWindow ) (HWINDOW hwnd, HELEMENT elementToRenderOrNull, BOOL frontLayer);
-			public delegate bool SCITER_RENDER_ON_DIRECT_X_WINDOW(IntPtr hwnd, IntPtr elementToRenderOrNull, bool frontLayer);
-			// BOOL SCFN(SciterRenderOnDirectXTexture ) (HWINDOW hwnd, HELEMENT elementToRenderOrNull, IDXGISurface* surface);
-			public delegate bool SCITER_RENDER_ON_DIRECT_X_TEXTURE(IntPtr hwnd, IntPtr elementToRenderOrNull, IntPtr surface);
-#endif
+				#endregion
+				
+#pragma warning restore 649
 
-			// BOOL SCFN(SciterProcX)(HWINDOW hwnd, SCITER_X_MSG* pMsg ); // returns TRUE if handled
-			public delegate bool SCITER_PROC_X(IntPtr hwnd, IntPtr pMsg);
+				internal NativeSciterApiWrapper(IntPtr apiPtr)
+				{
+					_apiPtr = apiPtr;
+					
+					var @struct = Marshal.PtrToStructure<TStruct>(apiPtr);
+
+					var fieldInfoDictionary = GetType()
+						.GetFields(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
+						.Where(w => w.FieldType.GetCustomAttribute<SciterStructMapAttribute>() != null)
+						.ToDictionary(key => key.FieldType.GetCustomAttribute<SciterStructMapAttribute>()?.Name,
+							value => value);
+
+					var fieldInfos = @struct.GetType().GetFields();
+					foreach (var fieldInfo in fieldInfos)
+					{
+						if (!fieldInfoDictionary.ContainsKey(fieldInfo.Name))
+							continue;
+						fieldInfoDictionary[fieldInfo.Name].SetValue(this, fieldInfo.GetValue(@struct));
+					}
+				}
+
+				public string SciterClassName() =>
+					Marshal.PtrToStringUni(_sciterClassName());
+
+				// ReSharper disable once ConvertToAutoProperty
+				public int Version => _version;
+
+				public uint SciterVersion(bool major) =>
+					_sciterVersion(major);
+
+				public Version SciterVersion()
+				{
+					var major = _sciterVersion(true);
+					var minor = _sciterVersion(false);
+
+					return new Version(
+						(int) ((major >> 16) & 0xffff),
+						(int) (major & 0xffff),
+						(int) ((minor >> 16) & 0xffff),
+						(int) (minor & 0xffff)
+					);
+				}
+				
+				public bool SciterDataReady(IntPtr hwnd, string uri, byte[] data, uint dataLength) =>
+					_sciterDataReady(hwnd: hwnd, uri: uri, data: data, dataLength: dataLength);
+
+				public bool SciterDataReadyAsync(IntPtr hwnd, string uri, byte[] data, uint dataLength,
+					IntPtr requestId) =>
+					_sciterDataReadyAsync(hwnd: hwnd, uri: uri, data: data, dataLength: dataLength,
+						requestId: requestId);
+
+				public IntPtr SciterProc(IntPtr hwnd, uint msg, IntPtr wParam, IntPtr lParam) =>
+					_sciterProc(hwnd: hwnd, msg: msg, wParam: wParam, lParam: lParam);
+
+				public IntPtr SciterProcND(IntPtr hwnd, uint msg, IntPtr wParam, IntPtr lParam, ref bool pbHandled) =>
+					_sciterProcND(hwnd: hwnd, msg: msg, wParam: wParam, lParam: lParam, pbHandled: ref pbHandled);
+
+				public bool SciterLoadFile(IntPtr hwnd, string filename) =>
+					_sciterLoadFile(hwnd: hwnd, filename: filename);
+
+				public bool SciterLoadHtml(IntPtr hwnd, byte[] html, uint htmlSize, string baseUrl) =>
+					_sciterLoadHtml(hwnd: hwnd, html: html, htmlSize: htmlSize, baseUrl: baseUrl);
+
+				public void SciterSetCallback(IntPtr hwnd, MulticastDelegate cb, IntPtr param) =>
+					_sciterSetCallback(hwnd: hwnd, cb: cb, param: param);
+
+				public bool SciterSetMasterCSS(byte[] utf8, uint numBytes) =>
+					_sciterSetMasterCSS(utf8, numBytes);
+
+				public bool SciterAppendMasterCSS(byte[] utf8, uint numBytes) =>
+					_sciterAppendMasterCSS(utf8, numBytes);
+
+				public bool SciterSetCSS(IntPtr hwnd, byte[] utf8, uint numBytes, string baseUrl, string mediaType) =>
+					_sciterSetCSS(hwnd, utf8, numBytes, baseUrl, mediaType);
+
+				public bool SciterSetMediaType(IntPtr hwnd, string mediaType) =>
+					_sciterSetMediaType(hwnd: hwnd, mediaType: mediaType);
+
+				public bool SciterSetMediaVars(IntPtr hwnd, ref SciterValue.VALUE mediaVars) =>
+					_sciterSetMediaVars(hwnd: hwnd, mediaVars: ref mediaVars);
+
+				public uint SciterGetMinWidth(IntPtr hwnd) =>
+					_sciterGetMinWidth(hwnd: hwnd);
+
+				public uint SciterGetMinHeight(IntPtr hwnd, uint width) =>
+					_sciterGetMinHeight(hwnd: hwnd, width: width);
+
+				public bool SciterCall(IntPtr hwnd, string functionName, uint argc, SciterValue.VALUE[] argv, out SciterValue.VALUE retval) =>
+					_sciterCall(hwnd: hwnd, functionName: functionName, argc: argc, argv: argv, retval: out retval);
+
+				public bool SciterEval(IntPtr hwnd, string script, uint scriptLength, out SciterValue.VALUE pretval) =>
+					_sciterEval(hwnd: hwnd, script: script, scriptLength: scriptLength, pretval: out pretval);
+
+				public bool SciterUpdateWindow(IntPtr hwnd) =>
+					_sciterUpdateWindow(hwnd: hwnd);
+
+				public bool SciterTranslateMessage(IntPtr lpMsg) =>
+					_sciterTranslateMessage(lpMsg: lpMsg);
+
+				public bool SciterSetOption(IntPtr hwnd, SciterXDef.SCITER_RT_OPTIONS option, IntPtr value) =>
+					_sciterSetOption(hwnd: hwnd, option: option, value: value);
+
+				public void SciterGetPPI(IntPtr hwnd, ref uint px, ref uint py) =>
+					_sciterGetPPI(hwnd: hwnd, px: ref px, py: ref py);
+
+				public bool SciterGetViewExpando(IntPtr hwnd, out SciterValue.VALUE pval) =>
+					_sciterGetViewExpando(hwnd: hwnd, pval: out pval);
+
+				public bool SciterRenderD2D(IntPtr hwnd, IntPtr prt) =>
+					_sciterRenderD2D(hwnd: hwnd, prt: prt);
+
+				public bool SciterD2DFactory(IntPtr ppf) =>
+					_sciterD2DFactory(ppf: ppf);
+
+				public bool SciterDWFactory(IntPtr ppf) =>
+					_sciterDWFactory(ppf: ppf);
+
+				public bool SciterGraphicsCaps(ref uint pcaps) =>
+					_sciterGraphicsCaps(pcaps: ref pcaps);
+
+				public bool SciterSetHomeURL(IntPtr hwnd, string baseUrl) =>
+					_sciterSetHomeURL(hwnd: hwnd, baseUrl: baseUrl);
+
+				public IntPtr SciterCreateNSView(ref PInvokeUtils.RECT frame) =>
+					_sciterCreateNSView(frame: ref frame);
+
+				public IntPtr SciterCreateWidget(ref PInvokeUtils.RECT frame) =>
+					_sciterCreateWidget(frame: ref frame);
+
+				public IntPtr SciterCreateWindow(SciterXDef.SCITER_CREATE_WINDOW_FLAGS creationFlags, ref PInvokeUtils.RECT frame, MulticastDelegate delegt,
+					IntPtr delegateParam, IntPtr parent) =>
+					_sciterCreateWindow(creationFlags: creationFlags, frame: ref frame, delegt: delegt, delegateParam: delegateParam, parent: parent);
+				
+				public void SciterSetupDebugOutput(IntPtr hwndOrNull, IntPtr param, SciterXDef.DEBUG_OUTPUT_PROC pfOutput) =>
+					_sciterSetupDebugOutput(hwndOrNull: hwndOrNull, param:  param, pfOutput: pfOutput);
+
+				#region DOM Element API
+
+				public SciterXDom.SCDOM_RESULT Sciter_UseElement(IntPtr he) => 
+					_sciter_UseElement(he);
+
+				public SciterXDom.SCDOM_RESULT Sciter_UnuseElement(IntPtr he) => 
+					_sciter_UnuseElement(he);
+
+				public SciterXDom.SCDOM_RESULT SciterGetRootElement(IntPtr hwnd, out IntPtr phe) => 
+					_sciterGetRootElement(hwnd, out phe);
+
+				public SciterXDom.SCDOM_RESULT SciterGetFocusElement(IntPtr hwnd, out IntPtr phe) => 
+					_sciterGetFocusElement(hwnd, out phe);
+
+				public SciterXDom.SCDOM_RESULT SciterFindElement(IntPtr hwnd, PInvokeUtils.POINT pt, out IntPtr phe) => 
+					_sciterFindElement(hwnd, pt, out phe);
+
+				public SciterXDom.SCDOM_RESULT SciterGetChildrenCount(IntPtr he, out uint count) => 
+					_sciterGetChildrenCount(he, out count);
+
+				public SciterXDom.SCDOM_RESULT SciterGetNthChild(IntPtr he, uint n, out IntPtr phe) => 
+					_sciterGetNthChild(he, n, out phe);
+
+				public SciterXDom.SCDOM_RESULT SciterGetParentElement(IntPtr he, out IntPtr pParentHe) => 
+					_sciterGetParentElement(he, out pParentHe);
+
+				public SciterXDom.SCDOM_RESULT SciterGetElementHtmlCB(IntPtr he, bool outer, SciterXDom.LPCBYTE_RECEIVER rcv, IntPtr rcvParam) => 
+					_sciterGetElementHtmlCB(he, outer, rcv, rcvParam);
+
+				public SciterXDom.SCDOM_RESULT SciterGetElementTextCB(IntPtr he, SciterXDom.LPCWSTR_RECEIVER rcv, IntPtr rcvParam) => 
+					_sciterGetElementTextCB(he, rcv, rcvParam);
+
+				public SciterXDom.SCDOM_RESULT SciterSetElementText(IntPtr he, string utf16, uint length) => 
+					_sciterSetElementText(he, utf16, length);
+
+				public SciterXDom.SCDOM_RESULT SciterGetAttributeCount(IntPtr he, out uint pCount) => 
+					_sciterGetAttributeCount(he, out pCount);
+
+				public SciterXDom.SCDOM_RESULT SciterGetNthAttributeNameCB(IntPtr he, uint n, SciterXDom.LPCSTR_RECEIVER rcv, IntPtr rcvParam) => 
+					_sciterGetNthAttributeNameCB(he, n, rcv, rcvParam);
+
+				public SciterXDom.SCDOM_RESULT SciterGetNthAttributeValueCB(IntPtr he, uint n, SciterXDom.LPCWSTR_RECEIVER rcv, IntPtr rcvParam) => 
+					_sciterGetNthAttributeValueCB(he, n, rcv, rcvParam);
+
+				public SciterXDom.SCDOM_RESULT SciterGetAttributeByNameCB(IntPtr he, string name, SciterXDom.LPCWSTR_RECEIVER rcv, IntPtr rcvParam) => 
+					_sciterGetAttributeByNameCB(he, name, rcv, rcvParam);
+
+				public SciterXDom.SCDOM_RESULT SciterSetAttributeByName(IntPtr he, string name, string value) => 
+					_sciterSetAttributeByName(he, name, value);
+
+				public SciterXDom.SCDOM_RESULT SciterClearAttributes(IntPtr he) => 
+					_sciterClearAttributes(he);
+
+				public SciterXDom.SCDOM_RESULT SciterGetElementIndex(IntPtr he, out uint pIndex) => 
+					_sciterGetElementIndex(he, out pIndex);
+
+				public SciterXDom.SCDOM_RESULT SciterGetElementType(IntPtr he, out IntPtr pType) => 
+					_sciterGetElementType(he, out pType);
+
+				public SciterXDom.SCDOM_RESULT SciterGetElementTypeCB(IntPtr he, SciterXDom.LPCSTR_RECEIVER rcv, IntPtr rcvParam) => 
+					_sciterGetElementTypeCB(he, rcv, rcvParam);
+
+				public SciterXDom.SCDOM_RESULT SciterGetStyleAttributeCB(IntPtr he, string name, SciterXDom.LPCWSTR_RECEIVER rcv, IntPtr rcvParam) => 
+					_sciterGetStyleAttributeCB(he, name, rcv, rcvParam);
+
+				public SciterXDom.SCDOM_RESULT SciterSetStyleAttribute(IntPtr he, string name, string value) => 
+					_sciterSetStyleAttribute(he, name, value);
+
+				public SciterXDom.SCDOM_RESULT SciterGetElementLocation(IntPtr he, out PInvokeUtils.RECT pLocation, SciterXDom.ELEMENT_AREAS areas) => 
+					_sciterGetElementLocation(he, out pLocation, areas);
+
+				public SciterXDom.SCDOM_RESULT SciterScrollToView(IntPtr he, uint sciterScrollFlags) => 
+					_sciterScrollToView(he, sciterScrollFlags);
+
+				public SciterXDom.SCDOM_RESULT SciterUpdateElement(IntPtr he, bool andForceRender) => 
+					_sciterUpdateElement(he, andForceRender);
+
+				public SciterXDom.SCDOM_RESULT SciterRefreshElementArea(IntPtr he, PInvokeUtils.RECT rc) => 
+					_sciterRefreshElementArea(he, rc);
+
+				public SciterXDom.SCDOM_RESULT SciterSetCapture(IntPtr he) => 
+					_sciterSetCapture(he);
+
+				public SciterXDom.SCDOM_RESULT SciterReleaseCapture(IntPtr he) => 
+					_sciterReleaseCapture(he);
+
+				public SciterXDom.SCDOM_RESULT SciterGetElementHwnd(IntPtr he, out IntPtr pHwnd, bool rootWindow) => 
+					_sciterGetElementHwnd(he, out pHwnd, rootWindow);
+
+				public SciterXDom.SCDOM_RESULT SciterCombineURL(IntPtr he, IntPtr szUrlBuffer, uint urlBufferSize) => 
+					_sciterCombineURL(he, szUrlBuffer, urlBufferSize);
+
+				public SciterXDom.SCDOM_RESULT SciterSelectElements(IntPtr he, string cssSelectors, SciterXDom.SCITER_ELEMENT_CALLBACK callback, IntPtr param) => 
+					_sciterSelectElements(he, cssSelectors, callback, param);
+
+				public SciterXDom.SCDOM_RESULT SciterSelectElementsW(IntPtr he, string cssSelectors, SciterXDom.SCITER_ELEMENT_CALLBACK callback, IntPtr param) => 
+					_sciterSelectElementsW(he, cssSelectors, callback, param);
+
+				public SciterXDom.SCDOM_RESULT SciterSelectParent(IntPtr he, string selector, uint depth, out IntPtr heFound) => 
+					_sciterSelectParent(he, selector, depth, out heFound);
+
+				public SciterXDom.SCDOM_RESULT SciterSelectParentW(IntPtr he, string selector, uint depth, out IntPtr heFound) => 
+					_sciterSelectParentW(he, selector, depth, out heFound);
+
+				public SciterXDom.SCDOM_RESULT SciterSetElementHtml(IntPtr he, byte[] html, uint htmlLength, SciterXDom.SET_ELEMENT_HTML where) => 
+					_sciterSetElementHtml(he, html, htmlLength, where);
+
+				public SciterXDom.SCDOM_RESULT SciterGetElementUID(IntPtr he, out uint puid) => 
+					_sciterGetElementUID(he, out puid);
+
+				public SciterXDom.SCDOM_RESULT SciterGetElementByUID(IntPtr hwnd, uint uid, out IntPtr phe) => 
+					_sciterGetElementByUID(hwnd, uid, out phe);
+
+				public SciterXDom.SCDOM_RESULT SciterShowPopup(IntPtr he, IntPtr heAnchor, uint placement) => 
+					_sciterShowPopup(he, heAnchor, placement);
+
+				public SciterXDom.SCDOM_RESULT SciterShowPopupAt(IntPtr he, PInvokeUtils.POINT pos, uint placement) => 
+					_sciterShowPopupAt(he, pos, placement);
+
+				public SciterXDom.SCDOM_RESULT SciterHidePopup(IntPtr he) => 
+					_sciterHidePopup(he);
+
+				public SciterXDom.SCDOM_RESULT SciterGetElementState(IntPtr he, out uint pstateBits) => 
+					_sciterGetElementState(he, out pstateBits);
+
+				public SciterXDom.SCDOM_RESULT SciterSetElementState(IntPtr he, uint stateBitsToSet, uint stateBitsToClear, bool updateView) => 
+					_sciterSetElementState(he, stateBitsToSet, stateBitsToClear, updateView);
+
+				public SciterXDom.SCDOM_RESULT SciterCreateElement(string tagname, string textOrNull, out IntPtr phe) => 
+					_sciterCreateElement(tagname, textOrNull, out phe);
+
+				public SciterXDom.SCDOM_RESULT SciterCloneElement(IntPtr he, out IntPtr phe) => 
+					_sciterCloneElement(he, out phe);
+
+				public SciterXDom.SCDOM_RESULT SciterInsertElement(IntPtr he, IntPtr hparent, uint index) => 
+					_sciterInsertElement(he, hparent, index);
+
+				public SciterXDom.SCDOM_RESULT SciterDetachElement(IntPtr he) => 
+					_sciterDetachElement(he);
+
+				public SciterXDom.SCDOM_RESULT SciterDeleteElement(IntPtr he) => 
+					_sciterDeleteElement(he);
+
+				public SciterXDom.SCDOM_RESULT SciterSetTimer(IntPtr he, uint milliseconds, IntPtr timerId) => 
+					_sciterSetTimer(he, milliseconds, timerId);
+
+				public SciterXDom.SCDOM_RESULT SciterDetachEventHandler(IntPtr he, MulticastDelegate pep, IntPtr tag) => 
+					_sciterDetachEventHandler(he, pep, tag);
+
+				public SciterXDom.SCDOM_RESULT SciterAttachEventHandler(IntPtr he, MulticastDelegate pep, IntPtr tag) => 
+					_sciterAttachEventHandler(he, pep, tag);
+
+				public SciterXDom.SCDOM_RESULT SciterWindowAttachEventHandler(IntPtr hwndLayout, MulticastDelegate pep, IntPtr tag, uint subscription) => 
+					_sciterWindowAttachEventHandler(hwndLayout, pep, tag, subscription);
+
+				public SciterXDom.SCDOM_RESULT SciterWindowDetachEventHandler(IntPtr hwndLayout, MulticastDelegate pep, IntPtr tag) => 
+					_sciterWindowDetachEventHandler(hwndLayout, pep, tag);
+
+				public SciterXDom.SCDOM_RESULT SciterSendEvent(IntPtr he, uint appEventCode, IntPtr heSource, IntPtr reason, out bool handled) => 
+					_sciterSendEvent(he, appEventCode, heSource, reason, out handled);
+
+				public SciterXDom.SCDOM_RESULT SciterPostEvent(IntPtr he, uint appEventCode, IntPtr heSource, IntPtr reason) => 
+					_sciterPostEvent(he, appEventCode, heSource, reason);
+
+				public SciterXDom.SCDOM_RESULT SciterCallBehaviorMethod(IntPtr he, ref SciterXDom.METHOD_PARAMS param) => 
+					_sciterCallBehaviorMethod(he, ref param);
+
+				public SciterXDom.SCDOM_RESULT SciterRequestElementData(IntPtr he, string url, uint dataType, IntPtr initiator) => 
+					_sciterRequestElementData(he, url, dataType, initiator);
+
+				public SciterXDom.SCDOM_RESULT SciterHttpRequest(IntPtr he, string url, uint dataType, uint requestType, ref SciterXDom.REQUEST_PARAM requestParams,
+					uint nParams) => 
+					_sciterHttpRequest(he, url, dataType, requestType, ref requestParams, nParams);
+
+				public SciterXDom.SCDOM_RESULT SciterGetScrollInfo(IntPtr he, out PInvokeUtils.POINT scrollPos, out PInvokeUtils.RECT viewRect, out PInvokeUtils.SIZE contentSize) => 
+					_sciterGetScrollInfo(he, out scrollPos, out viewRect, out contentSize);
+
+				public SciterXDom.SCDOM_RESULT SciterSetScrollPos(IntPtr he, PInvokeUtils.POINT scrollPos, bool smooth) => 
+					_sciterSetScrollPos(he, scrollPos, smooth);
+
+				public SciterXDom.SCDOM_RESULT SciterGetElementIntrinsicWidths(IntPtr he, out int pMinWidth, out int pMaxWidth) => 
+					_sciterGetElementIntrinsicWidths(he, out pMinWidth, out pMaxWidth);
+
+				public SciterXDom.SCDOM_RESULT SciterGetElementIntrinsicHeight(IntPtr he, int forWidth, out int pHeight) => 
+					_sciterGetElementIntrinsicHeight(he, forWidth, out pHeight);
+
+				public SciterXDom.SCDOM_RESULT SciterIsElementVisible(IntPtr he, out bool pVisible) => 
+					_sciterIsElementVisible(he, out pVisible);
+
+				public SciterXDom.SCDOM_RESULT SciterIsElementEnabled(IntPtr he, out bool pEnabled) => 
+					_sciterIsElementEnabled(he, out pEnabled);
+
+				public SciterXDom.SCDOM_RESULT SciterSortElements(IntPtr he, uint firstIndex, uint lastIndex, SciterXDom.ELEMENT_COMPARATOR cmpFunc,
+					IntPtr cmpFuncParam) => 
+					_sciterSortElements(he, firstIndex, lastIndex, cmpFunc, cmpFuncParam);
+
+				public SciterXDom.SCDOM_RESULT SciterSwapElements(IntPtr he, IntPtr he2) => 
+					_sciterSwapElements(he, he2);
+
+				public SciterXDom.SCDOM_RESULT SciterTraverseUIEvent(IntPtr he, IntPtr eventCtlStruct, out bool bOutProcessed) => 
+					_sciterTraverseUIEvent(he, eventCtlStruct, out bOutProcessed);
+
+				public SciterXDom.SCDOM_RESULT SciterCallScriptingMethod(IntPtr he, string name, SciterValue.VALUE[] argv, uint argc, out SciterValue.VALUE retval) => 
+					_sciterCallScriptingMethod(he, name, argv, argc, out retval);
+
+				public SciterXDom.SCDOM_RESULT SciterCallScriptingFunction(IntPtr he, string name, SciterValue.VALUE[] argv, uint argc, out SciterValue.VALUE retval) => 
+					_sciterCallScriptingFunction(he, name, argv, argc, out retval);
+
+				public SciterXDom.SCDOM_RESULT SciterEvalElementScript(IntPtr he, string script, uint scriptLength, out SciterValue.VALUE retval) => 
+					_sciterEvalElementScript(he, script, scriptLength, out retval);
+
+				public SciterXDom.SCDOM_RESULT SciterAttachHwndToElement(IntPtr he, IntPtr hwnd) => 
+					_sciterAttachHwndToElement(he, hwnd);
+
+				public SciterXDom.SCDOM_RESULT SciterControlGetType(IntPtr he, out uint pType) => 
+					_sciterControlGetType(he, out pType);
+
+				public SciterXDom.SCDOM_RESULT SciterGetValue(IntPtr he, out SciterValue.VALUE pval) => 
+					_sciterGetValue(he, out pval);
+
+				public SciterXDom.SCDOM_RESULT SciterSetValue(IntPtr he, ref SciterValue.VALUE pval) => 
+					_sciterSetValue(he, ref pval);
+
+				public SciterXDom.SCDOM_RESULT SciterGetExpando(IntPtr he, out SciterValue.VALUE pval, bool forceCreation) => 
+					_sciterGetExpando(he, out pval, forceCreation);
+
+				public SciterXDom.SCDOM_RESULT SciterGetObject(IntPtr he, out IntPtr pval, bool forceCreation) => 
+					_sciterGetObject(he, out pval, forceCreation);
+
+				public SciterXDom.SCDOM_RESULT SciterGetElementNamespace(IntPtr he, out IntPtr pval) => 
+					_sciterGetElementNamespace(he, out pval);
+
+				public SciterXDom.SCDOM_RESULT SciterGetHighlightedElement(IntPtr hwnd, out IntPtr phe) => 
+					_sciterGetHighlightedElement(hwnd, out phe);
+
+				public SciterXDom.SCDOM_RESULT SciterSetHighlightedElement(IntPtr hwnd, IntPtr he) => 
+					_sciterSetHighlightedElement(hwnd, he);
+
+				public SciterXDom.SCDOM_RESULT SciterNodeAddRef(IntPtr hn) => 
+					_sciterNodeAddRef(hn);
+
+				public SciterXDom.SCDOM_RESULT SciterNodeRelease(IntPtr hn) => 
+					_sciterNodeRelease(hn);
+
+				public SciterXDom.SCDOM_RESULT SciterNodeCastFromElement(IntPtr he, out IntPtr phn) => 
+					_sciterNodeCastFromElement(he, out phn);
+
+				public SciterXDom.SCDOM_RESULT SciterNodeCastToElement(IntPtr hn, out IntPtr he) => 
+					_sciterNodeCastToElement(hn, out he);
+
+				public SciterXDom.SCDOM_RESULT SciterNodeFirstChild(IntPtr hn, out IntPtr phn) => 
+					_sciterNodeFirstChild(hn, out phn);
+
+				public SciterXDom.SCDOM_RESULT SciterNodeLastChild(IntPtr hn, out IntPtr phn) => 
+					_sciterNodeLastChild(hn, out phn);
+
+				public SciterXDom.SCDOM_RESULT SciterNodeNextSibling(IntPtr hn, out IntPtr phn) => 
+					_sciterNodeNextSibling(hn, out phn);
+
+				public SciterXDom.SCDOM_RESULT SciterNodePrevSibling(IntPtr hn, out IntPtr phn) => 
+					_sciterNodePrevSibling(hn, out phn);
+
+				public SciterXDom.SCDOM_RESULT SciterNodeParent(IntPtr hn, out IntPtr pheParent) => 
+					_sciterNodeParent(hn, out pheParent);
+
+				public SciterXDom.SCDOM_RESULT SciterNodeNthChild(IntPtr hn, uint n, out IntPtr phn) => 
+					_sciterNodeNthChild(hn, n, out phn);
+
+				public SciterXDom.SCDOM_RESULT SciterNodeChildrenCount(IntPtr hn, out uint pn) => 
+					_sciterNodeChildrenCount(hn, out pn);
+
+				public SciterXDom.SCDOM_RESULT SciterNodeType(IntPtr hn, out SciterXDom.NODE_TYPE pn) => 
+					_sciterNodeType(hn, out pn);
+
+				public SciterXDom.SCDOM_RESULT SciterNodeGetText(IntPtr hn, SciterXDom.LPCWSTR_RECEIVER rcv, IntPtr rcvParam) => 
+					_sciterNodeGetText(hn, rcv, rcvParam);
+
+				public SciterXDom.SCDOM_RESULT SciterNodeSetText(IntPtr hn, string text, uint textLength) => 
+					_sciterNodeSetText(hn, text, textLength);
+
+				public SciterXDom.SCDOM_RESULT SciterNodeInsert(IntPtr hn, uint where, IntPtr what) => 
+					_sciterNodeInsert(hn, where, what);
+
+				public SciterXDom.SCDOM_RESULT SciterNodeRemove(IntPtr hn, bool finalize) => 
+					_sciterNodeRemove(hn, finalize);
+
+				public SciterXDom.SCDOM_RESULT SciterCreateTextNode(string text, uint textLength, out IntPtr phnode) => 
+					_sciterCreateTextNode(text, textLength, out phnode);
+
+				public SciterXDom.SCDOM_RESULT SciterCreateCommentNode(string text, uint textLength, out IntPtr phnode) => 
+					_sciterCreateCommentNode(text, textLength, out phnode);
+
+				public SciterValue.VALUE_RESULT ValueInit(out SciterValue.VALUE pval) => 
+					_valueInit(out pval);
+
+				public SciterValue.VALUE_RESULT ValueClear(out SciterValue.VALUE pval) => 
+					_valueClear(out pval);
+
+				public SciterValue.VALUE_RESULT ValueCompare(ref SciterValue.VALUE pval, ref IntPtr pval2) => 
+					_valueCompare(ref pval, ref pval2);
+
+				public SciterValue.VALUE_RESULT ValueCopy(out SciterValue.VALUE pdst, ref SciterValue.VALUE psrc) => 
+					_valueCopy(out pdst, ref psrc);
+
+				public SciterValue.VALUE_RESULT ValueIsolate(ref SciterValue.VALUE pdst) => 
+					_valueIsolate(ref pdst);
+
+				public SciterValue.VALUE_RESULT ValueType(ref SciterValue.VALUE pval, out uint pType, out uint pUnits) => 
+					_valueType(ref pval, out pType, out pUnits);
+
+				public SciterValue.VALUE_RESULT ValueStringData(ref SciterValue.VALUE pval, out IntPtr pChars, out uint pNumChars) => 
+					_valueStringData(ref pval, out pChars, out pNumChars);
+
+				public SciterValue.VALUE_RESULT ValueStringDataSet(ref SciterValue.VALUE pval, string chars, uint numChars, uint units) => 
+					_valueStringDataSet(ref pval, chars, numChars, units);
+
+				public SciterValue.VALUE_RESULT ValueIntData(ref SciterValue.VALUE pval, out int pData) => 
+					_valueIntData(ref pval, out pData);
+
+				public SciterValue.VALUE_RESULT ValueIntDataSet(ref SciterValue.VALUE pval, int data, uint type, uint units) => 
+					_valueIntDataSet(ref pval, data, type, units);
+
+				public SciterValue.VALUE_RESULT ValueInt64Data(ref SciterValue.VALUE pval, out long pData) => 
+					_valueInt64Data(ref pval, out pData);
+
+				public SciterValue.VALUE_RESULT ValueInt64DataSet(ref SciterValue.VALUE pval, long data, uint type, uint units) => 
+					_valueInt64DataSet(ref pval, data, type, units);
+
+				public SciterValue.VALUE_RESULT ValueFloatData(ref SciterValue.VALUE pval, out double pData) => 
+					_valueFloatData(ref pval, out pData);
+
+				public SciterValue.VALUE_RESULT ValueFloatDataSet(ref SciterValue.VALUE pval, double data, uint type, uint units) => 
+					_valueFloatDataSet(ref pval, data, type, units);
+
+				public SciterValue.VALUE_RESULT ValueBinaryData(ref SciterValue.VALUE pval, out IntPtr pBytes, out uint pnBytes) => 
+					_valueBinaryData(ref pval, out pBytes, out pnBytes);
+
+				public SciterValue.VALUE_RESULT ValueBinaryDataSet(ref SciterValue.VALUE pval, byte[] pBytes, uint nBytes, uint type, uint units) => 
+					_valueBinaryDataSet(ref pval, pBytes, nBytes, type, units);
+
+				public SciterValue.VALUE_RESULT ValueElementsCount(ref SciterValue.VALUE pval, out int pn) => 
+					_valueElementsCount(ref pval, out pn);
+
+				public SciterValue.VALUE_RESULT ValueNthElementValue(ref SciterValue.VALUE pval, int n, out SciterValue.VALUE pretval) => 
+					_valueNthElementValue(ref pval, n, out pretval);
+
+				public SciterValue.VALUE_RESULT ValueNthElementValueSet(ref SciterValue.VALUE pval, int n, ref SciterValue.VALUE pvalToSet) => 
+					_valueNthElementValueSet(ref pval, n, ref pvalToSet);
+
+				public SciterValue.VALUE_RESULT ValueNthElementKey(ref SciterValue.VALUE pval, int n, out SciterValue.VALUE pretval) => 
+					_valueNthElementKey(ref pval, n, out pretval);
+
+				public SciterValue.VALUE_RESULT ValueEnumElements(ref SciterValue.VALUE pval, SciterValue.KEY_VALUE_CALLBACK penum, IntPtr param) => 
+					_valueEnumElements(ref pval, penum, param);
+
+				public SciterValue.VALUE_RESULT ValueSetValueToKey(ref SciterValue.VALUE pval, ref SciterValue.VALUE pkey, ref SciterValue.VALUE pvalToSet) => 
+					_valueSetValueToKey(ref pval, ref pkey, ref pvalToSet);
+
+				public SciterValue.VALUE_RESULT ValueGetValueOfKey(ref SciterValue.VALUE pval, ref SciterValue.VALUE pkey, out SciterValue.VALUE pretval) => 
+					_valueGetValueOfKey(ref pval, ref pkey, out pretval);
+
+				public SciterValue.VALUE_RESULT ValueToString(ref SciterValue.VALUE pval, SciterValue.VALUE_STRING_CVT_TYPE how) => 
+					_valueToString(ref pval, how);
+
+				public SciterValue.VALUE_RESULT ValueFromString(ref SciterValue.VALUE pval, string str, uint strLength, uint how) => 
+					_valueFromString(ref pval, str, strLength, how);
+
+				public SciterValue.VALUE_RESULT ValueInvoke(ref SciterValue.VALUE pval, ref SciterValue.VALUE pthis, uint argc, SciterValue.VALUE[] argv, out SciterValue.VALUE pretval, string url) => 
+					_valueInvoke(ref pval, ref pthis, argc, argv, out pretval, url);
+
+				public SciterValue.VALUE_RESULT ValueNativeFunctorSet(ref SciterValue.VALUE pval,
+					SciterValue.NATIVE_FUNCTOR_INVOKE pinvoke, SciterValue.NATIVE_FUNCTOR_RELEASE prelease,
+					IntPtr tag) =>
+					_valueNativeFunctorSet(ref pval, pinvoke, prelease, tag);
+
+				public SciterValue.VALUE_RESULT ValueIsNativeFunctor(ref SciterValue.VALUE pval) => 
+					_valueIsNativeFunctor(ref pval);
+
+				public void Reserved1() => 
+					_reserved1();
+				
+				public void Reserved2() => 
+					_reserved2();
+				
+				public void Reserved3() =>
+					_reserved3();
+				
+				public void Reserved4() =>
+					_reserved4();
+				
+				public IntPtr SciterOpenArchive(IntPtr archiveData, uint archiveDataLength) => 
+					_sciterOpenArchive(archiveData, archiveDataLength);
+
+				public bool SciterGetArchiveItem(IntPtr harc, string path, out IntPtr pdata, out uint pdataLength) => 
+					_sciterGetArchiveItem(harc, path, out pdata, out pdataLength);
+
+				public bool SciterCloseArchive(IntPtr harc) => 
+					_sciterCloseArchive(harc);
+
+				public SciterXDom.SCDOM_RESULT SciterFireEvent(SciterBehaviorArgs evt, bool post, out bool handled)
+				{
+					var @event = evt.FromEventArgs();
+					return _sciterFireEvent(ref @event, post, out handled);
+				}
+				
+				public IntPtr SciterGetCallbackParam(IntPtr hwnd) => 
+					_sciterGetCallbackParam(hwnd);
+
+				public IntPtr SciterPostCallback(IntPtr hwnd, IntPtr wparam, IntPtr lparam, uint timeoutms) => 
+					_sciterPostCallback(hwnd, wparam, lparam, timeoutms);
+
+				public IntPtr GetSciterGraphicsAPI() => 
+					_getSciterGraphicsAPI();
+
+				public IntPtr GetSciterRequestAPI() => 
+					_getSciterRequestAPI();
+
+				public bool SciterCreateOnDirectXWindow(IntPtr hwnd, IntPtr pSwapChain) => 
+					_sciterCreateOnDirectXWindow(hwnd, pSwapChain);
+
+				public bool SciterRenderOnDirectXWindow(IntPtr hwnd, IntPtr elementToRenderOrNull, bool frontLayer) => 
+					_sciterRenderOnDirectXWindow(hwnd, elementToRenderOrNull, frontLayer);
+
+				public bool SciterRenderOnDirectXTexture(IntPtr hwnd, IntPtr elementToRenderOrNull, IntPtr surface) => 
+					_sciterRenderOnDirectXTexture(hwnd, elementToRenderOrNull, surface);
+
+				public bool SciterProcX(IntPtr hwnd, IntPtr pMsg) => 
+					_sciterProcX(hwnd, pMsg);
+
+				public ulong SciterAtomValue(string name) => 
+					_sciterAtomValue(name);
+
+				public bool SciterAtomNameCB(ulong atomv, IntPtr rxc, IntPtr rcvParam) => 
+					_sciterAtomNameCB(atomv, rxc, rcvParam);
+
+				public bool SciterSetGlobalAsset(IntPtr pass) => 
+					_sciterSetGlobalAsset(pass);
+
+				public SciterXDom.SCDOM_RESULT SciterGetElementAsset(IntPtr el, ulong nameAtom, out IntPtr ppass) =>
+					_sciterGetElementAsset(el, nameAtom, out ppass);
+
+				public bool SciterSetVariable(IntPtr hwndOrNull, string path, ref SciterValue.VALUE pvalToSet) =>
+					_sciterSetVariable(hwndOrNull, path, ref pvalToSet);
+
+				//public uint SciterSetVariable(IntPtr hwndOrNull, string path, ref SciterValue.VALUE pvalToSet) =>
+				//	_sciterSetVariable(hwndOrNull, path, ref pvalToSet);
+
+				public bool SciterGetVariable(IntPtr hwndOrNull, string path, ref SciterValue.VALUE pvalToGet) =>
+					_sciterGetVariable(hwndOrNull, path, ref pvalToGet);
+
+				//public uint SciterGetVariable(IntPtr hwndOrNull, string path, ref SciterValue.VALUE pvalToGet) =>
+				//	_sciterGetVariable(hwndOrNull, path, ref pvalToGet);
+
+				public uint SciterElementUnwrap(ref SciterValue.VALUE pval, out IntPtr ppElement) =>
+					_sciterElementUnwrap(ref pval, out ppElement);
+
+				public uint SciterElementWrap(ref SciterValue.VALUE pval, IntPtr ppElement) =>
+					_sciterElementWrap(ref pval, ppElement);
+
+				public uint SciterNodeUnwrap(ref SciterValue.VALUE pval, out IntPtr ppNode) =>
+					_sciterNodeUnwrap(ref pval, out ppNode);
+
+				public uint SciterNodeWrap(ref SciterValue.VALUE pval, IntPtr ppNode) =>
+					_sciterNodeWrap(ref pval, ppNode);
+
+				#endregion
+			}
 		}
 	}
 }

@@ -34,16 +34,18 @@ namespace SciterTest.Core
 
 			var ss = SciterValue.Create(new { aa = list });
 
-			Console.WriteLine("Sciter: " + Sciter.Version());
+			Console.WriteLine($@"Sciter: {Sciter.Api.SciterVersion()}");
 			Console.WriteLine("Bitness: " + IntPtr.Size);
 
-			// Sciter needs this for drag'n'drop support
+			// Platform specific (required for GTK)
+			SciterPlatform.Initialize();
+			// Sciter needs this for drag 'n drop support
 			SciterPlatform.EnableDragAndDrop();
 			
 			// Create the window
 			AppWindow = new SciterWindow()
 				.CreateMainWindow(800, 600)
-                .CenterTopLevelWindow()
+                .CenterWindow()
                 .SetTitle("SciterTest.Core")
                 .SetIcon(Properties.Resources.IconMain);
 			
@@ -61,7 +63,7 @@ namespace SciterTest.Core
 
 			// Show window and Run message loop
 			AppWindow.Show();
-			PInvokeUtils.RunMsgLoop();
+			SciterPlatform.RunMessageLoop();
 		}
 	}
 }

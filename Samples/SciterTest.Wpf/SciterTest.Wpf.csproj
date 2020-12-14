@@ -104,9 +104,14 @@
     <Content Include="wwwroot\index.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="wwwroot\ms-net-wpf.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="SciterCore.Binaries" Version="4.4.5.2" />
+    <PackageReference Include="SciterCore.Binaries" Version="4.4.5.8" />
+    <PackageReference Include="SciterCore.PackFolder" Version="0.1.293" />
+    <PackageReference Include="System.Runtime.InteropServices.RuntimeInformation" Version="4.3.0" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)Shared\SciterCore.Shared\SciterCore.Shared.projitems" Label="Shared" />

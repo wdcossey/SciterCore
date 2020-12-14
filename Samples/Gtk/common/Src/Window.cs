@@ -7,8 +7,8 @@ namespace SciterTest.Gtk
 		public Window()
 		{
 			CreateMainWindow(800, 600)
-                .CenterTopLevelWindow()
-                .SetTitle("SciterTest.Gtk");
+                .CenterWindow()
+                .SetTitle("SciterCore::Gtk");
 #if WINDOWS
 			SetIcon(Properties.Resources.IconMain);
 #endif

@@ -101,7 +101,7 @@ namespace SciterTest.NetCore
 		}
 
 		protected override bool OnEvent(SciterElement sourceElement, SciterElement targetElement,
-			SciterBehaviors.BEHAVIOR_EVENTS type, IntPtr reason, SciterValue data, string eventName)
+			BehaviorEvents type, IntPtr reason, SciterValue data, string eventName)
 		{
 			//_logger?.LogDebug($"{nameof(OnEvent)}: {nameof(type)}: {type}");
 			return base.OnEvent(sourceElement, targetElement, type, reason, data, eventName);

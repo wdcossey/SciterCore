@@ -26,7 +26,7 @@ namespace SciterCore.WinForms
 
         //private TextureBrush _brush;
 
-        public SciterWindow SciterWnd { get; private set; }
+        public SciterWindow SciterWindow { get; private set; }
 
 		public SciterControl()
 		{
@@ -84,12 +84,12 @@ namespace SciterCore.WinForms
 				return;
 			}
 
-			SciterWnd = new SciterWindow()
+			SciterWindow = SciterWindow
 				.CreateChildWindow(Handle);
 			
-			this.WindowCreated?.Invoke(this, new WindowCreatedEventArgs(SciterWnd));
+			this.WindowCreated?.Invoke(this, new WindowCreatedEventArgs(SciterWindow));
 			
-			if (SciterWnd != null && SciterWnd?.Handle != IntPtr.Zero)
+			if (SciterWindow != null && SciterWindow?.Handle != IntPtr.Zero)
 			{
 				//var loadHtmlEventArgs = new LoadHtmlEventArgs()
 				//{
@@ -100,14 +100,7 @@ namespace SciterCore.WinForms
 				//
 				//SciterWnd.LoadHtml(loadHtmlEventArgs?.Html ?? this.Html ?? DEFAULT_HTML);
 				
-				Task.Run(async () =>
-				{
-					await Task.Delay(50);
-					SciterWnd?.Show(this.Visible);
-					//await Task.Delay(550);
-					//SendKeys.SendWait("^(+(I))");
-				});
-				
+				SciterWindow?.Show(this.Visible);
 			}
 
 			base.OnHandleCreated(e);
@@ -125,10 +118,10 @@ namespace SciterCore.WinForms
 
 		protected override void OnClientSizeChanged(EventArgs e)
 		{
-			if(SciterWnd != null && SciterWnd?.Handle != IntPtr.Zero)
+			if(SciterWindow != null && SciterWindow?.Handle != IntPtr.Zero)
             {
                 var sz = this.Size;
-                PInvokeWindows.MoveWindow(hWnd: SciterWnd.Handle, X: this.Left, Y: this.Top, nWidth: sz.Width, nHeight: sz.Height, bRepaint: true);
+                PInvokeWindows.MoveWindow(hWnd: SciterWindow.Handle, X: this.Left, Y: this.Top, nWidth: sz.Width, nHeight: sz.Height, bRepaint: true);
             }
 			base.OnClientSizeChanged(e);
 		}

@@ -65,16 +65,16 @@ namespace SciterCore.Tests.Unit
 			var gapi = Sciter.GraphicsApi;
 
 			IntPtr himg;
-			var a = gapi.imageCreate(out himg, 400, 400, true);
+			var a = gapi.ImageCreate(out himg, 400, 400, true);
 
 			IntPtr hgfx;
-			gapi.gCreate(himg, out hgfx);
+			gapi.GraphicsCreate(himg, out hgfx);
 
 			IntPtr hpath;
-			gapi.pathCreate(out hpath);
+			gapi.PathCreate(out hpath);
 
-			var b = gapi.gPushClipPath(hgfx, hpath, 0.5f);
-			var c = gapi.gPopClip(hgfx);
+			var b = gapi.GraphicsPushClipPath(hgfx, hpath, 0.5f);
+			var c = gapi.GraphicsPopClip(hgfx);
 
 			// RGBA
 			var actual = SciterColor.Create(1, 2, 3, 4);
