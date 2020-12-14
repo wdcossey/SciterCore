@@ -9,22 +9,44 @@
 | SciterCore.Gtk        | [![Nuget](https://img.shields.io/nuget/v/SciterCore.Gtk)](https://www.nuget.org/packages/SciterCore.Gtk/)               | |
 | SciterCore.Mac        | [![Nuget](https://img.shields.io/nuget/v/SciterCore.Mac)](https://www.nuget.org/packages/SciterCore.Mac/)               | |
 
+## Status
+
+| Operating System      | Version(s)                  | Status      | Comments |
+| ----------------------|-----------------------------|-------------|-----------------------------------------------------------------------------------------|
+| Windows               | Windows 10 Pro v19042.685   | Working     |                                                                                         |
+| Windows               | Windows 8.x                 | Untested    |                                                                                         |
+| Windows               | Windows 7                   | Untested    |                                                                                         |
+| Linux                 | Ubuntu 20.04 (Hyper-V)      | Working     | Run `sudo chmod +x packfolder` in `scripts/bin.lnx` to build `SciterCore.NetStd.csproj` |
+| Linux                 | Other                       | Untested    | As long as you have `libgtk-3.so.0` it's possible.                                      |
+| MacOS                 | MacOS Catalina              | In-Progress |                                                                                         |
+| MacOS                 | MacOS Big Sur               | Untested    |                                                                                         |
+
+All local builds (across platforms) are done using `JetBrains Rider`.
+
+The changes are going to be frequent while I add stop-gaps between adding/enhancing functionality, expect things to break!!!
+
+Join in, start building, testing, help the project find and fix bugs, add/suggest new functionality.
+
 ## About this project
 
 SciterCore is based off the work done by [Ramon F. Mendes](https://github.com/ramon-mendes) on [SciterSharp](https://github.com/ramon-mendes/SciterSharp)
 
+** `SciterCore` is `NOT` backwards compatible with `SciterSharp`, you can't simply change the packages and hope things will work, changes will need to be made.
+
 1. **Why SciterCore if SciterSharp exists?**
 
     SciterCore aims to bring Sciter to .Net Core developers, the end goal of this project is to build Sciter applications using .Net Core w/o the need for Xamarin/Mono.
+  
+    While I will do my best to add support for WinForms, WPF, Xamarin, etc. these are not high priority, the goal is .Net Core (and .Net 5+).
 
     I have spent many hours cleaning up and tuning the project, modifying the code to make it simpler to use as well as adding support for newer versions of Sciter.
+    
+2. **Can I build production .Net Core applications in the current state of the project?**
 
-2. **Can I build .Net Core applications in the current state of the project?**
-
-    Whilst it's possible to build .Net Core applications for Windows and MacOS, it's not recommended in its current state.
+    Whilst it's possible to build .Net Core applications for Windows, Linux and MacOS, it's not recommended in its current state.
     
 3. **When can I build .Net Core applications using this project?**
-
+    
     I'm busy working on a custom version of [LibUI](https://github.com/andlabs/libui) to make this a reality.
 
 ## Cross-platform Sciter bindings for .NET
@@ -48,16 +70,16 @@ The source can be found [here](https://github.com/wdcossey/SciterCore.PackFolder
 The source can be found [here](https://github.com/wdcossey/SciterCore.Binaries)
 
 #### SciterCore.NetStd
-Windows/MacOS/Linux (via .Net Standard 2.0)
+Windows/MacOS/Linux (via .Net Core 3.1)
 
-#### SciterCore.WinForms
-Windows, WinForms and WPF (via .Net Framework 4.6.1)
+#### SciterCore.Windows
+Windows, WinForms and WPF support (via .Net Framework 4.6.1)
 
 #### SciterCore.Gtk
-Linux/Gtk (via MonoDevelop)
+Linux/Gtk support (via MonoDevelop)
 
 #### SciterCore.Mac
-MacOS (via Xamarin.Mac)
+MacOS support (via Xamarin.Mac)
 
 ## Available Samples
 
@@ -75,6 +97,10 @@ MacOS (via Xamarin.Mac)
 
 ## Screenshots
 
+Windows 10 (.Net Core 3.1.x)
+
 ![https://github.com/wdcossey/SciterCore/](https://github.com/wdcossey/SciterCore/raw/master/Assets/preview/scitercore_preview_001.png)
 
-![https://github.com/wdcossey/SciterCore/](https://github.com/wdcossey/SciterCore/raw/master/Assets/preview/scitercore_preview_002.png)
+Ubuntu 20.04 (.Net Core 3.1.x)
+
+![https://github.com/wdcossey/SciterCore/](https://github.com/wdcossey/SciterCore/raw/master/Assets/preview/scitercore_preview_ubuntu_001.png)
