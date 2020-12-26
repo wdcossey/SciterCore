@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Globalization;
 using NUnit.Framework;
 
 namespace SciterCore.Tests.Unit.Graphics
@@ -176,11 +177,11 @@ namespace SciterCore.Tests.Unit.Graphics
         [TestCase(0, 0, 0, 0, "00000000")]
         [TestCase(255, 255, 255, 255, "FFFFFFFF")]
         [TestCase( 127, 127, 127, 127, "7F7F7F7F")]
-        [TestCase( 255, 0, 0, 127, "7F0000FF")]
+        [TestCase( 255, 0, 0, 127, "7FFF0000")]
         public void SciterColor_ToString(byte r, byte g, byte b, byte a, string expected)
         {
             var actual = SciterColor.Create(r, g, b, a);
-            Assert.AreEqual(actual.ToString(), actual.ToString(null));
+            Assert.AreEqual(actual.ToString(CultureInfo.InvariantCulture), actual.ToString(null));
             Assert.AreEqual(expected, actual.ToString(null));
         }
         
