@@ -20,14 +20,13 @@ namespace SciterTest.Graphics.Behaviors
 						.SetLineColor(SciterColor.Create(0, 255, 255, .75f))
 						.SetFillColor(SciterColor.Create(127, 78, 194, .75f))
 						.SetLineWidth(4)
-						.DrawPolygon(() => new List<PolygonPoint>
-						{
+						.DrawPolygon(
 							PolygonPoint.Create(51.0f, 58.0f),
 							PolygonPoint.Create(70.0f, 28.0f),
 							PolygonPoint.Create(48.0f, 1.0f),
 							PolygonPoint.Create(15.0f, 14.0f),
-							PolygonPoint.Create(17.0f, 49.0f),
-						})
+							PolygonPoint.Create(17.0f, 49.0f)
+						)
 						.DrawEllipse(200, 50, 50, 50)
 						.RestoreState();
 				}

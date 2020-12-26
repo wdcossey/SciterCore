@@ -1032,7 +1032,24 @@ namespace SciterCore
 		}
 		
 		#endregion
+
+		#region Timer
 		
+		internal void SetTimerInternal(int milliseconds, IntPtr timerId)
+		{
+			TrySetTimerInternal(milliseconds: milliseconds, timerId: timerId);
+		}
+		
+		internal bool TrySetTimerInternal(int milliseconds, IntPtr timerId)
+		{
+			return Api.SciterSetTimer(this.Handle, System.Convert.ToUInt32(milliseconds), timerId)
+				.IsOk();
+		}
+		
+		
+
+		#endregion
+
 		#region IDisposable
 		
 		private bool _disposedValue = false; // To detect redundant calls

@@ -134,6 +134,29 @@ namespace SciterCore
         {
 	        return sciterValue.TryAsDoubleInternal(out value, @default: @default);
         }
+		
+		/// <summary>
+		/// Reads the <see cref="SciterValue"/> as a <see cref="Single"/>
+		/// </summary>
+		/// <param name="sciterValue"></param>
+		/// <param name="default">Default value to return on error</param>
+		/// <returns></returns>
+		public static float AsFloat(this SciterValue sciterValue, float @default = default(float))
+        {
+	        return sciterValue.AsFloatInternal(@default: @default);
+        }
+		
+		/// <summary>
+		/// Reads the <see cref="SciterValue"/> as a <see cref="Single"/>
+		/// </summary>
+		/// <param name="sciterValue"></param>
+		/// <param name="value">The output value</param>
+		/// <param name="default">Default value to return on error</param>
+		/// <returns></returns>
+		public static bool TryAsFloat(this SciterValue sciterValue, out float value, float @default = default(float))
+        {
+	        return sciterValue.TryAsFloatInternal(out value, @default: @default);
+        }
 
 		/// <summary>
 		/// Reads the <see cref="SciterValue"/> as a <see cref="String"/>

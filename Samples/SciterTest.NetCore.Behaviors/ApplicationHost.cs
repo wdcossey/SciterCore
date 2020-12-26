@@ -23,8 +23,12 @@ namespace SciterTest.NetCore
 			var host = this;
 			host
 				.AttachEventHandler(hostEventHandler)
-				.RegisterBehaviorHandler<DragDropBehavior>();
-			
+				.RegisterBehaviorHandler<SciterClockBehavior>()
+				.RegisterBehaviorHandler<CustomDrawBehavior>()
+				.RegisterBehaviorHandler<CustomExchangeBehavior>()
+				.RegisterBehaviorHandler<CustomFocusBehavior>()
+				.RegisterBehaviorHandler<CustomMouseBehavior>();
+
 			host.LoadPage("index.html",
 				onFailed: (sciterHost, window) => throw new InvalidOperationException("Unable to load the requested page."));
 
@@ -48,6 +52,30 @@ namespace SciterTest.NetCore
 		public HostEventHandler(ILogger<HostEventHandler> logger)
 		{
 			_logger = logger;
+		}
+		/// A dynamic script call handler. Any call in TIScript to function 'view.Host_HelloSciter()' with invoke this method
+		/// Notice that signature of these handlers is always the same
+		/// (Hint: install OmniCode snippets which adds the 'ssh' snippet to C# editor so you can easily declare 'Siter Handler' methods)
+		/// (see: https://github.com/MISoftware/OmniCode-Snippets)
+		public Task HelloSciterCore(SciterElement element, SciterValue onCompleted)
+		{
+			var stackTrace = new StackTrace(true);
+			var stackFrame = stackTrace.GetFrame(0);
+				
+			var value = SciterValue.Create(System.Text.Json.JsonSerializer.Serialize(new
+			{
+				MethodName = stackFrame?.GetMethod()?.Name,
+				FileUri = new Uri(stackFrame?.GetFileName() ?? "file://<unknown>")?.AbsoluteUri,
+				FileName = Path.GetFileName(stackFrame?.GetFileName()),
+				LineNumber = stackFrame?.GetFileLineNumber(),
+				ColumnNumber = stackFrame?.GetFileColumnNumber()
+			}, options: new JsonSerializerOptions() { WriteIndented = true }));
+			
+			//value = SciterValue.Create($"<h2>Hello Sciter from C# in .Net Core!</h2><code>Method: {stackFrame?.GetMethod()?.Name}<br/>File: <a href=\"{new Uri(stackFrame?.GetFileName())?.AbsoluteUri}\">{Path.GetFileName(stackFrame?.GetFileName())}</a><br/>Line: {stackFrame?.GetFileLineNumber()}<br/>Column: {stackFrame?.GetFileColumnNumber()}</code>");
+
+			onCompleted.Invoke(value);
+			
+			return Task.CompletedTask;
 		}
 		
 		public Task StackTrace(SciterElement element, SciterValue onCompleted)
@@ -164,14 +192,6 @@ namespace SciterTest.NetCore
             _logger.LogInformation($"{nameof(AsynchronousFunction)} was executed!");
 		}
 
-		[SciterFunctionName("eval")]
-		public SciterValue EvaluateScript(SciterValue input)
-		{
-			var result = this.Host.EvalScript($"{input.AsString()}");
-
-			return result;
-		}
-		
 		protected override EventGroups SubscriptionsRequest(SciterElement element)
 		{
 			return EventGroups.HandleAll;

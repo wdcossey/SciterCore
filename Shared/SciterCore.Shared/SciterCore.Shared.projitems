@@ -74,6 +74,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\PolygonPoint.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\PolylinePoint.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\SciterColor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\SciterColorStop.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\SciterGraphics.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\SciterImage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\SciterPath.cs" />

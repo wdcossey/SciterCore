@@ -85,7 +85,8 @@ MacOS support (via Xamarin.Mac)
 
 | Project                           | Description                                               | Platform(s)                 |
 | --------------------------------- | :-------------------------------------------------------- | --------------------------- |
-| SciterTest.NetCore                | Demo using `.Net Core 3.1`                                | `MacOS`, `Windows`          |
+| SciterTest.NetCore                | Demo using `.Net Core 3.1`                                | `MacOS`, `Windows`, `Linux` |
+| SciterTest.NetCore.Behaviors      | Behaviors Demo using `.Net Core 3.1`                      | `MacOS`, `Windows`, `Linux` |
 | SciterTest.CoreForms              | Demo using `.Net Core 3.1` and `WinForms`                 | `Windows`                   |
 | SciterCore.Sample.SkiaSharp.***   | Demo using [SkiaSharp](https://github.com/mono/SkiaSharp) | `MacOS`, `Windows`          |
 | SciterCore.Sample.Gtk.***         | Demo using `GTK`, migrated from `SciterSharp`             | `MacOS`, `Windows`, `Linux` |
@@ -100,6 +101,8 @@ MacOS support (via Xamarin.Mac)
 Windows 10 (.Net Core 3.1.x)
 
 ![https://github.com/wdcossey/SciterCore/](https://github.com/wdcossey/SciterCore/raw/master/Assets/preview/scitercore_preview_001.png)
+
+![https://github.com/wdcossey/SciterCore/](https://github.com/wdcossey/SciterCore/raw/master/Assets/preview/clock_behaviors.gif)
 
 Ubuntu 20.04 (.Net Core 3.1.x)
 

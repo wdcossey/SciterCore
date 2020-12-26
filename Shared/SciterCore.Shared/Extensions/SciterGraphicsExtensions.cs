@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 // ReSharper disable UnusedMethodReturnValue.Global
 // ReSharper disable ArgumentsStyleNamedExpression
@@ -65,26 +66,42 @@ namespace SciterCore
             return graphics?.TryDrawLineInternal(x1: x1, y1: y1, x2: x2, y2: y2) == true;
         }
 
-        public static SciterGraphics DrawPolygon(this SciterGraphics graphics, IList<PolygonPoint> points)
+        public static SciterGraphics DrawPolygon(this SciterGraphics graphics, IEnumerable<PolygonPoint> points)
         {
+            if (points?.Any() != true)
+                throw new ArgumentNullException(nameof(points), @"Cannot be null.");
+            
             graphics?.DrawPolygonInternal(points: points);
             return graphics;
         }
+        
+        public static SciterGraphics DrawPolygon(this SciterGraphics graphics, params PolygonPoint[] points)
+        {
+            return graphics?.DrawPolygon(points: points?.AsEnumerable());
+        }
 
-        public static SciterGraphics DrawPolygon(this SciterGraphics graphics, Func<IList<PolygonPoint>> pointsFunc)
+        public static SciterGraphics DrawPolygon(this SciterGraphics graphics, Func<SciterGraphics, IEnumerable<PolygonPoint>> pointsFunc)
         {
             if (pointsFunc == null)
                 throw new ArgumentNullException(nameof(pointsFunc), @"Cannot be null.");
             
-            return graphics?.DrawPolygon(points: pointsFunc.Invoke());
+            return graphics?.DrawPolygon(points: pointsFunc.Invoke(graphics)?.ToArray());
         }
 
-        public static bool TryDrawPolygon(this SciterGraphics graphics, IList<PolygonPoint> points)
+        public static SciterGraphics DrawPolygon(this SciterGraphics graphics, Func<IEnumerable<PolygonPoint>> pointsFunc)
+        {
+            if (pointsFunc == null)
+                throw new ArgumentNullException(nameof(pointsFunc), @"Cannot be null.");
+            
+            return graphics?.DrawPolygon(points: pointsFunc.Invoke()?.ToArray());
+        }
+
+        public static bool TryDrawPolygon(this SciterGraphics graphics, IEnumerable<PolygonPoint> points)
         {
             return graphics?.TryDrawPolygonInternal(points: points) == true;
         }
 
-        public static bool TryDrawPolygon(this SciterGraphics graphics, Func<IList<PolygonPoint>> pointsFunc)
+        public static bool TryDrawPolygon(this SciterGraphics graphics, Func<IEnumerable<PolygonPoint>> pointsFunc)
         {
             if (pointsFunc == null)
                 throw new ArgumentNullException(nameof(pointsFunc), @"Cannot be null.");
@@ -92,13 +109,22 @@ namespace SciterCore
             return graphics?.TryDrawPolygon(points: pointsFunc.Invoke()) == true;
         }
 
-        public static SciterGraphics DrawPolyline(this SciterGraphics graphics, IList<PolylinePoint> points)
+        
+        public static SciterGraphics DrawPolyline(this SciterGraphics graphics, IEnumerable<PolylinePoint> points)
         {
+            if (points?.Any() != true)
+                throw new ArgumentNullException(nameof(points), @"Cannot be null.");
+            
             graphics?.DrawPolylineInternal(points: points);
             return graphics;
         }
+        
+        public static SciterGraphics DrawPolyline(this SciterGraphics graphics, PolylinePoint[] points)
+        {
+            return graphics?.DrawPolyline(points: points?.AsEnumerable());
+        }
 
-        public static SciterGraphics DrawPolyline(this SciterGraphics graphics, Func<IList<PolylinePoint>> pointsFunc)
+        public static SciterGraphics DrawPolyline(this SciterGraphics graphics, Func<IEnumerable<PolylinePoint>> pointsFunc)
         {
             if (pointsFunc == null)
                 throw new ArgumentNullException(nameof(pointsFunc), @"Cannot be null.");
@@ -107,12 +133,12 @@ namespace SciterCore
             return graphics;
         }
 
-        public static bool TryDrawPolyline(this SciterGraphics graphics, IList<PolylinePoint> points)
+        public static bool TryDrawPolyline(this SciterGraphics graphics, IEnumerable<PolylinePoint> points)
         {
             return graphics?.TryDrawPolylineInternal(points: points) == true;
         }
 
-        public static bool TryDrawPolyline(this SciterGraphics graphics, Func<IList<PolylinePoint>> pointsFunc)
+        public static bool TryDrawPolyline(this SciterGraphics graphics, Func<IEnumerable<PolylinePoint>> pointsFunc)
         {
             if (pointsFunc == null)
                 throw new ArgumentNullException(nameof(pointsFunc), @"Cannot be null.");
@@ -211,6 +237,32 @@ namespace SciterCore
         {
             return graphics?.TrySetLineColor(lineColor: new SciterColor(r: r, g: g, b: b, alpha: alpha)) == true;
         }
+        
+        public static SciterGraphics SetLineGradientLinear(this SciterGraphics graphics, float x1, float y1, float x2, float y2,
+            params SciterColorStop[] stops)
+        {
+            graphics?.SetLineGradientLinearInternal(x1: x1, y1: y1, x2: x2, y2: y2, stops: stops);
+            return graphics;
+        }
+        
+        public static bool TrySetLineGradientLinear(this SciterGraphics graphics, float x1, float y1, float x2, float y2,
+            params SciterColorStop[] stops)
+        {
+            return graphics?.TrySetLineGradientLinearInternal(x1: x1, y1: y1, x2: x2, y2: y2, stops: stops) == true;
+        }
+        
+        public static SciterGraphics SetFillGradientLinear(this SciterGraphics graphics, float x1, float y1, float x2, float y2,
+            params SciterColorStop[] stops)
+        {
+            graphics?.SetFillGradientLinearInternal(x1: x1, y1: y1, x2: x2, y2: y2, stops: stops);
+            return graphics;
+        }
+        
+        public static bool TrySetFillGradientLinear(this SciterGraphics graphics, float x1, float y1, float x2, float y2,
+            params SciterColorStop[] stops)
+        {
+            return graphics?.TrySetFillGradientLinearInternal(x1: x1, y1: y1, x2: x2, y2: y2, stops: stops) == true;
+        }
 
         public static SciterGraphics SetFillColor(this SciterGraphics graphics, SciterColor fillColor)
         {
@@ -272,13 +324,13 @@ namespace SciterCore
         
         #region Affine tranformations
         
-        public static SciterGraphics Rotate(this SciterGraphics graphics, float radians, float cx, float cy)
+        public static SciterGraphics Rotate(this SciterGraphics graphics, float radians, float cx = 0f, float cy = 0f)
         {
             graphics?.RotateInternal(radians: radians, cx: cx, cy: cy);
             return graphics;
         }
 		
-        public static bool TryRotate(this SciterGraphics graphics, float radians, float cx, float cy)
+        public static bool TryRotate(this SciterGraphics graphics, float radians, float cx = 0f, float cy = 0f)
         {
             return graphics?.TryRotateInternal(radians: radians, cx: cx, cy: cy) == true; 
         }
@@ -392,6 +444,12 @@ namespace SciterCore
         public static bool TryRestoreState(this SciterGraphics graphics)
         {
             return graphics?.TryRestoreStateInternal() == true;
+        }
+
+        public static SciterGraphics Using(this SciterGraphics graphics, Action<SciterGraphics> action)
+        {
+            action?.Invoke(graphics);
+            return graphics;
         }
         
         #endregion State

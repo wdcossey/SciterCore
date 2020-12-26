@@ -273,10 +273,6 @@
 			
 			$(#stContent).attributes["state"] = "visible";
 		});
-
-		view.HelloSciterCore(function(value) {
-		   	$(#helloSciter).html = "<pre><code>" + value + "</code><pre>";
-		});
 		
 		view.GetRuntimeInfo(
 			function(value) {
@@ -313,6 +309,16 @@
 		var revision_minor = Sciter.REVISION & 0xFFFF;
 		$(#sciterversion).text = String.printf("%d.%d.%d.%d (%d)", version_major, version_minor, revision_major, revision_minor, Sciter.BUILD);
 		
+		$(#user).text = Sciter.userName();
+		$(#machine).text = Sciter.machineName();
+		$(#domain).text = Sciter.machineName(true);
+		//$(#home).text = System.home();
+		$(#language).text = System.language;
+		$(#country).text = System.country;
+		$(#os-type).text = System.HANDHELD_OS? "handheld":"desktop";
+		$(#os-version).text = System.OS;
+		$(#gfx-backend).text = view.backendName;
+  
 		//$$(a).on("click", function(evt) {
 		//	Sciter.launch(this.@#href);
 		//	return true;
@@ -366,6 +372,9 @@
 			view.CancelCallMeBack();
         }
         
+        event click $(#eval) {
+			$(#evalResult).text = view.eval($(#evalInput).text);
+        }
         
 		//$(#icons8).on("click", function(evt) {
 		//	Sciter.launch("https://icons8.com/");
@@ -393,7 +402,28 @@
 		<section>
 
 			<div style="margin: 20dip">
-				<div #helloSciter />
+
+				<card>
+					<cardheader>
+						<div>Hello C#!</div>
+						<div>Greetings from SciterCore running in .Net Core.</div>
+					</cardheader>
+
+					<cardcontent state="visible">
+						<div>OS type:</div>	   <div style="font-weight: bold;" #os-type></div>
+						<div>OS version:</div> <div style="font-weight: bold;" #os-version></div>
+						<div>GFX backend:</div><div style="font-weight: bold;" #gfx-backend></div>
+						<div>User:</div>		   <div style="font-weight: bold;" #user></div>
+						<div>Machine:</div>	   <div style="font-weight: bold;" #machine></div>
+						<div>Domain:</div>	   <div style="font-weight: bold;" #domain></div>
+						<!--<div>home:</div>	     <div style="font-weight: bold;" #home></div>-->
+						<div>Country:</div>	   <div style="font-weight: bold;" #country></div>
+						<div>Language:</div>	 <div style="font-weight: bold;" #language></div>
+					</cardcontent>
+
+				</card>
+				
+				
 
 				<card>
 					<cardheader>
@@ -466,6 +496,19 @@
 					
 					<cardcontent #exContent>
 						<div><span>Hello:</span>&nbsp;<span style="font-weight: bold;">Sciter</span></div>
+					</cardcontent>
+				</card>
+				
+				<card>
+										
+					<cardcontent state="visible">
+						<div><input #evalInput type="text"></div>
+						<div><input #evalResult type="text"></div>
+
+						<cardfooter>
+							<hr style="width: 1*; margin: -8dip -16dip 8dip -16dip; border-color: #0004"/>
+							<button#eval .action-button>Evaluate</button>
+						</cardfooter>
 					</cardcontent>
 				</card>
 				

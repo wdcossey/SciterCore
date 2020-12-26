@@ -45,6 +45,13 @@ namespace SciterTest.NetCore
 					
 				});
 				
+				//var window2 = DevZH.UI.Window.AttachWindow(host.Window.WindowHandle);
+				//var window3 = DevZH.UI.Window.AttachWindow(host.Window.WindowHandle);
+
+				//window2.Title = window2.Title += "::libui";
+				//var t = window2.Title;
+				//var t3 = window3.Title;
+				
 				host.ConnectToInspector();
 			};
 #endif

@@ -1,0 +1,391 @@
+<html window-blurbehind="none" theme="dark">
+<head>
+	<style>
+		html {
+			background-color: #1e2835;
+			color: rgba(160,180,200,.85);
+			border-color: #e6e6e6;
+		}
+		
+		body {
+			overflow: hidden;
+		}
+
+		code {
+			color: rgba(160,180,200,.85);
+			opacity: .6;
+		}
+		
+		a {
+			color: #53a6fa !important;
+			text-decoration: none;
+			cursor: pointer;
+			outline: 0;
+		}
+		a:hover {
+			color: #53a6fa !important;
+		}
+		
+		h1 { 
+			color: blue; 
+			font-size: 30px; 
+		}
+		
+		h2 {
+			color: rgb(160,180,200);
+
+		}
+		
+		h3 {
+			color: rgb(160,180,200);
+
+		}
+
+		@const TOOLBAR_HEIGHT: 96dip;
+		@const FOOTER_HEIGHT: 32dip;
+		
+		body { margin: 0; }
+
+		main {
+			flow:stack;
+			size:*;
+		}
+
+		toolbar {
+			height: @TOOLBAR_HEIGHT;
+			z-index:1;
+			background-color: rgba(36, 49, 64, 0.55);
+			box-shadow: 0 0 12dip 12dip rgba(0, 0, 0, 0.25);
+			backdrop-filter: blur(10dip);
+		}
+
+		section {
+			size:*;
+			overflow:auto;
+			margin: @TOOLBAR_HEIGHT 0 @FOOTER_HEIGHT 0;
+			clip-box: margin-box;
+			border-spacing:20dip;
+			overflow: scroll-indicator;
+		}
+
+		footer {
+			overflow:auto;
+			position: fixed;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			height: @FOOTER_HEIGHT;
+			background-color: rgba(36, 49, 64, 0.55);
+			box-shadow: 0 0 12dip 12dip rgba(0, 0, 0, 0.25);
+			backdrop-filter: blur(10dip);
+		}
+		
+		card {
+			display: block;
+			padding: 16dip;
+			width: 1*; 
+			margin-bottom: 16dip;
+			border-radius: 2dip;
+			color: white;
+			background-color: rgba(36, 49, 64, 1);
+			box-shadow: rgba(0, 0, 0, 0.133) 0px 1.6px 3.6px 0px, rgba(0, 0, 0, 0.11) 0px 0.3px 0.9px 0px;
+			/*behavior: card-drop-behavior;*/
+		}
+		
+		card:hover {
+			box-shadow: rgba(0, 0, 0, 0.266) 0px 3.2px 7.2px 0px, rgba(0, 0, 0, 0.22) 0px 0.6px 1.8px 0px;
+		}
+		
+		card > cardcontent
+		{
+			display: block;
+			visibility: collapse;
+			width: 1*;
+			opacity: 0;
+			transition: height cubic-in-out 0.4s 0.4s, opacity cubic-in-out 0.4s 0.4s;
+			flow:row(div,div);
+		}
+		
+		card > cardcontent div:nth-child(odd)
+		{
+			width:max-content;
+			margin-right: 4dip;
+		}
+		
+		card > cardcontent div:nth-child(even)
+		{
+			width:1*;
+		}
+
+		card > cardcontent[state="visible"]
+		{
+			height:max-content;
+			opacity: 1;
+			visibility: visible;
+		}
+
+		card > cardcontent.has-exception
+		{
+			background-color: #1e2835;
+			padding: 8dip;
+			border-radius: 2dip;
+			box-shadow: inset 0 1px 4px 0 rgba(0,0,0,.14);
+			behavior:htmlarea;
+		}
+
+		card > cardcontent.has-exception span
+		{
+			color: crimson;
+		}
+		
+		cardheader {
+			display:inline-block; 
+			width: 1*;
+			margin-bottom: 16dip;
+		}
+		
+		cardheader > div {
+			vertical-align: center; 
+			font-family: Roboto,Helvetica Neue,sans-serif;
+		}
+		
+		cardheader > div:nth-child(1) {
+			font-size: 20dip;
+			font-weight: 500;
+		}
+		
+		cardheader > div:nth-child(2) {
+			font-size: 14dip;
+			font-weight: 400;
+			opacity: 0.6
+		}
+
+		cardfooter {
+			display:inline-block;
+			width: 1*;
+			margin-top: 16dip;
+		}
+
+		
+		.drawLine {
+			margin: 1em;
+			border: solid 1px rgba(0, 0, 0, 0.25);
+			size: 200px;
+			behavior: draw-line;
+			box-shadow: inset 0 1px 4px 0 rgba(0,0,0,.14);
+			background-color: #1e2835;
+		}
+
+		
+		.sciterClock {
+			margin: 1em;
+			border: solid 1px rgba(0, 0, 0, 0.25);
+			size: 200px;
+			behavior: sciter-clock-behavior;
+			box-shadow: inset 0 1px 4px 0 rgba(0,0,0,.14);
+			/*background-color: #1e2835;*/
+		}
+		
+		.sciterClock[face="swiss"] {
+			background-color: white;
+		}
+		
+		.sciterClock[face="circles"] {
+			background-color: #141414;
+		}
+		
+		.dropExchange {
+			overflow: scroll-indicator;
+			margin: 1em;
+			border: solid 1px rgba(0, 0, 0, 0.25);
+			size: 200px;
+			behavior: custom-exchange;
+			box-shadow: inset 0 1px 4px 0 rgba(0,0,0,.14);
+			background-color: #1e2835;
+		}
+
+		.dropExchange[active="true"] {
+			background-color: #0a3860;
+		}
+
+		.dropExchange > text {
+			margin: 1em;
+			color: rgb(160,180,200);
+		}
+
+		.focusBehavior {
+			behavior: focus-behavior;
+			margin: 1em;
+			size: 100px;
+			border: solid 1px rgba(0, 0, 0, 0.25);
+			box-shadow: inset 0 1px 4px 0 rgba(0,0,0,0.14);
+		}
+
+		.focusBehavior > div {
+			margin: * 1em;
+		}
+		
+		.mouseBehavior {
+			behavior: mouse-behavior;
+			margin: 1em;
+			size: 100px;
+			border: solid 1px rgba(0, 0, 0, 0.25);
+			box-shadow: inset 0 1px 4px 0 rgba(0,0,0,1.0);
+		}
+		
+	</style>
+	
+	<script type="text/tiscript"></script>
+	
+	<script type="text/tiscript">
+		var version_major = Sciter.VERSION >> 16;
+		var version_minor = Sciter.VERSION & 0xFFFF;
+		var revision_major = Sciter.REVISION >> 16;
+		var revision_minor = Sciter.REVISION & 0xFFFF;
+		$(#sciterversion).text = String.printf("%d.%d.%d.%d (%d)", version_major, version_minor, revision_major, revision_minor, Sciter.BUILD);
+		
+		for(var (i,child) in $$(a) ) {
+			child.on("click", function(evt) {
+				Sciter.launch(this.@#href);
+				return true;
+			});
+		}
+		
+		function self.ready() {
+      
+        var clock = $(clock);
+        var path, pathOutline;
+        var w,h;
+        var cycles = 0;
+        
+
+        clock.paintBackground = function(gfx) {
+          if( path ) 
+          {
+            gfx.noStroke()
+               .fillLinearGradient(0,0,0,h,color(0x1e,0x28,0x35),color(0x0a,0x38,0x60))
+               .drawPath(pathOutline)
+               .noFill();
+
+            gfx.strokeColor( color(0x53,0xa6,0xfa) )
+               .strokeWidth( 2dip )
+               .drawPath(path);
+               
+
+          }
+        }
+        
+        clock.animate( function() {
+          (w,h) = clock.box(#dimension);
+          var t = Date.ticks() / 1000.0;
+          // getting paths from native code
+          path        = clock.nativeGetPath(0,0,w,h,t, false);
+          pathOutline = clock.nativeGetPath(0,0,w,h,t, true);
+          clock.refresh();
+          if(++cycles > 100) {
+            cycles = 0;
+            gc(); // force gc to collect paths 
+          }
+          return true; // animate endlessly
+        });
+
+      }
+
+	</script>
+	
+</head>
+
+<body>
+
+	<main>
+		<toolbar>
+			<div style="width: 1*; display: inline-block; white-space: nowrap;">
+				<img src="logo.png"
+					 alt="Sciter Logo"
+					 height="96dip" />
+
+				<img style="float: right; margin-right: 10dip;"
+					 src="icons8-visual-studio-code-2019.svg"
+					 alt="icons8 - Visual Studio Code"
+					 height="96dip" />
+			</div>
+		</toolbar>
+		<section>
+
+			<div style="margin: 20dip">
+				<div #helloSciter />
+
+				
+				<card>
+					<cardheader>
+						<div>Draw &amp; Timer Behaviors</div>
+					</cardheader>
+
+					<cardcontent style="flow: horizontal" state="visible">
+						<clock style="width: 1*;" .sciterClock face="default"  />
+						<div style="width: 1*;" .sciterClock face="swiss"  />
+						<div style="width: 1*;" .sciterClock face="circles"  />
+					</cardcontent>
+
+				</card>
+				
+				<card>
+					<cardheader>
+						<div>Draw Behavior</div>
+						<div>Draw line using <strong>SetLineColor</strong> and <strong>SetLineGradientLinear</strong>.</div>
+					</cardheader>
+
+					<cardcontent style="flow: horizontal" state="visible">
+						<div style="width: 1*" .drawLine />
+						<div style="width: 1*" .drawLine fill="linear-gradient"  />
+						<div style="width: 1*" .drawLine fill="alt-linear-gradient"  />
+					</cardcontent>
+					
+				</card>
+
+				<card>
+					<cardheader>
+						<div>Exchange Behavior</div>
+						<div>Drag 'n Drop using an exchange behavior</div>
+					</cardheader>
+
+					<cardcontent state="visible">
+						<div style="width: 1*" .dropExchange></div>
+					</cardcontent>
+					
+				</card>
+
+				<card>
+					<cardheader>
+						<div>Focus Behavior</div>
+					</cardheader>
+
+					<cardcontent style="flow: horizontal" state="visible">
+						<div style="width: 1*;" .focusBehavior />
+						<div style="width: 1*;" .focusBehavior />
+						<div style="width: 1*;" .focusBehavior />
+					</cardcontent>
+					
+				</card>
+				
+				<dl></dl>
+				
+			</div>
+		</section>
+		
+		<footer>
+			<div style=" flow:horizontal; border-spacing:*;height:*; overflow-x: hidden; overflow-y: hidden">
+				<div style="margin-top:*; margin-bottom:*; margin-left: 8dip; display: inline-block; white-space: nowrap; overflow-x: fragments ">
+					<a href="https://github.com/wdcossey/SciterCore" >SciterCore</a> | <a href="https://github.com/ramon-mendes/SciterSharp" >SciterSharp</a>
+				</div>
+				
+				<div style="margin: * 8dip;display: inline-block; white-space: nowrap; overflow-x: fragments">
+					<a href="https://sciter.com/" style="display: inline-block; white-space: nowrap;">Sciter</a>
+					<span #sciterversion style="margin:0 auto; display: inline-block; white-space: nowrap;">Version</span> | <a href="https://icons8.com/" >Icons8</a>
+				</div>
+
+			</div>
+		</footer>
+	</main>
+</body>
+</html>

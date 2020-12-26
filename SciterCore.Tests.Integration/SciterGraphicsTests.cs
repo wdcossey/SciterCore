@@ -84,7 +84,7 @@ namespace SciterCore.Tests.Integration
                 
                 using(var graphics = SciterGraphics.Create(args.Handle))
                 {
-                    for (var i = 0; i < 1000; i++)
+                    for (var i = 0; i < byte.MaxValue; i++)
                     {
                         graphics.SaveState()
                             .Translate(args.Area.Left, args.Area.Top)
@@ -101,6 +101,30 @@ namespace SciterCore.Tests.Integration
                             .SetLineWidth(random.Next(2, 10))
                             .SetLineCap(lineCap)
                             .SetLineJoin(lineJoin)
+                            .DrawLine(random.Next(byte.MinValue, args.Area.Width),
+                                random.Next(byte.MinValue, args.Area.Height),
+                                random.Next(byte.MinValue, args.Area.Width),
+                                random.Next(byte.MinValue, args.Area.Height))
+                            .SetLineGradientLinear(
+                                0f, 
+                                0f, 
+                                args.Area.Width / 2, 
+                                args.Area.Height,
+                                SciterColorStop.Create(0f, 
+                                    (byte)random.Next(byte.MinValue, byte.MaxValue),
+                                    (byte)random.Next(byte.MinValue, byte.MaxValue), 
+                                    (byte)random.Next(byte.MinValue, byte.MaxValue),
+                                    (byte)random.Next(byte.MinValue, byte.MaxValue)), 
+                                SciterColorStop.Create(.5f,
+                                    (byte)random.Next(byte.MinValue, byte.MaxValue),
+                                    (byte)random.Next(byte.MinValue, byte.MaxValue), 
+                                    (byte)random.Next(byte.MinValue, byte.MaxValue),
+                                    (byte)random.Next(byte.MinValue, byte.MaxValue)), 
+                                SciterColorStop.Create(1f,
+                                    (byte)random.Next(byte.MinValue, byte.MaxValue),
+                                    (byte)random.Next(byte.MinValue, byte.MaxValue), 
+                                    (byte)random.Next(byte.MinValue, byte.MaxValue),
+                                    (byte)random.Next(byte.MinValue, byte.MaxValue)))
                             .DrawLine(random.Next(byte.MinValue, args.Area.Width),
                                 random.Next(byte.MinValue, args.Area.Height),
                                 random.Next(byte.MinValue, args.Area.Width),
@@ -125,9 +149,7 @@ namespace SciterCore.Tests.Integration
             
             //Assert.NotNull(_sciterGraphics);
         }
-        
-        
-        
+
         [Test]
         public void Polygon()
         {
@@ -141,7 +163,7 @@ namespace SciterCore.Tests.Integration
                 
                 using(var graphics = SciterGraphics.Create(prms.Handle))
                 {
-                    for (int i = 0; i < 1000; i++)
+                    for (int i = 0; i < byte.MaxValue; i++)
                     {
                         graphics.SaveState()
                             .Translate(prms.Area.Left, prms.Area.Top)
@@ -150,7 +172,7 @@ namespace SciterCore.Tests.Integration
                                 (byte)random.Next(byte.MinValue, byte.MaxValue), 
                                 (byte)random.Next(byte.MinValue, byte.MaxValue),
                                 (byte)random.Next(byte.MinValue, byte.MaxValue))
-                            .DrawPolygon(() =>
+                            .DrawPolygon((g) =>
                             {
                                 var result = new List<PolygonPoint>();
                                 for (var j = 0; j < random.Next(3, 12); j++)
@@ -215,7 +237,7 @@ namespace SciterCore.Tests.Integration
                 
                 using(var graphics = SciterGraphics.Create(prms.Handle))
                 {
-                    for (int i = 0; i < 1000; i++)
+                    for (int i = 0; i < byte.MaxValue; i++)
                     {
                         graphics.SaveState()
                             .Translate(prms.Area.Left, prms.Area.Top)
@@ -274,7 +296,7 @@ namespace SciterCore.Tests.Integration
                     case DrawEvent.Content:
                         using(var graphics = SciterGraphics.Create(prms.Handle))
                         {
-                            for (int i = 0; i < 1000; i++)
+                            for (int i = 0; i < byte.MaxValue; i++)
                             {
                                 var color = SciterColor.Create(
                                     (byte)random.Next(byte.MinValue, byte.MaxValue),
@@ -353,7 +375,7 @@ namespace SciterCore.Tests.Integration
                 
                 using(var graphics = SciterGraphics.Create(prms.Handle))
                 {
-                    for (int i = 0; i < 1000; i++)
+                    for (int i = 0; i < byte.MaxValue; i++)
                     {
                         graphics.SaveState()
                             .Translate(prms.Area.Left, prms.Area.Top)
@@ -405,7 +427,7 @@ namespace SciterCore.Tests.Integration
                 
                 using(var graphics = SciterGraphics.Create(prms.Handle))
                 {
-                    for (var i = 0; i < 1000; i++)
+                    for (var i = 0; i < byte.MaxValue; i++)
                     {
                         graphics.SaveState()
                             .Translate(prms.Area.Left, prms.Area.Top)

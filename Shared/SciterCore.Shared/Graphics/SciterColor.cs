@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using SciterCore.Interop;
 
 // ReSharper disable MemberCanBePrivate.Global
@@ -46,6 +47,47 @@ namespace SciterCore
             return new SciterColor(value: value);
         }
         
+        public static SciterColor Parse(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value) || value.Length < 3)
+                return Transparent;
+
+            var hexValue = value;
+
+            if (hexValue[0] == '#')
+                hexValue = hexValue.Substring(1);
+
+            var r = (byte) 0;
+            var g = (byte) 0;
+            var b = (byte) 0;
+            var a = byte.MaxValue;
+            
+            switch (hexValue.Length)
+            {
+                case 3:
+                case 4:
+                    r = byte.Parse($"{hexValue.Substring(0, 1)}{hexValue.Substring(0, 1)}", System.Globalization.NumberStyles.HexNumber);
+                    g = byte.Parse($"{hexValue.Substring(1, 1)}{hexValue.Substring(1, 1)}", System.Globalization.NumberStyles.HexNumber);
+                    b = byte.Parse($"{hexValue.Substring(2, 1)}{hexValue.Substring(2, 1)}", System.Globalization.NumberStyles.HexNumber);
+                    
+                    if (hexValue.Length == 4)
+                        a = byte.Parse($"{hexValue.Substring(3, 1)}{hexValue.Substring(3, 1)}", System.Globalization.NumberStyles.HexNumber);
+                    break;
+                
+                case 6:
+                case 8:
+                    r = byte.Parse(hexValue.Substring(0, 2), System.Globalization.NumberStyles.HexNumber);
+                    g = byte.Parse(hexValue.Substring(2, 2), System.Globalization.NumberStyles.HexNumber);
+                    b = byte.Parse(hexValue.Substring(4, 2), System.Globalization.NumberStyles.HexNumber);
+                    
+                    if (hexValue.Length == 8)
+                        a = byte.Parse(hexValue.Substring(6, 2), System.Globalization.NumberStyles.HexNumber);
+                    break;
+            }
+
+            return new SciterColor(r, g, b, a);
+        }
+        
         public static SciterColor Create(byte r, byte g, byte b)
         {
             return new SciterColor(r, g, b);
@@ -80,6 +122,16 @@ namespace SciterCore
         public static SciterColor Create(Color color)
         {
             return new SciterColor(color.R, color.G, color.B, color.A);
+        }
+        
+        public SciterColor WithAlpha(byte alpha)
+        {
+            return new SciterColor(this.R, this.G, this.B, alpha);
+        }
+        
+        public SciterColor WithAlpha(float alpha)
+        {
+            return new SciterColor(this.R, this.G, this.B, alpha);
         }
 
         // ReSharper disable once InconsistentNaming
@@ -116,7 +168,17 @@ namespace SciterCore
         
         public override string ToString()
         {
-            return $"{Value:X8}";
+            return $"{A:X2}{R:X2}{G:X2}{B:X2}";
+        }
+        
+        public string ToHtmlColor()
+        {
+            return $"#{ToString()}".ToLowerInvariant();
+        }
+        
+        public string ToShortHtmlColor()
+        {
+            return $"#{ToString().Substring(2)}".ToLowerInvariant();
         }
 
         #region Known Colors
