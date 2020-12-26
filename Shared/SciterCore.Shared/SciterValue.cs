@@ -951,6 +951,31 @@ namespace SciterCore
 	        value = result ? pData : @default;
 	        return result;
         }
+		
+		/// <summary>
+		/// Reads the <see cref="SciterValue"/> as a <see cref="Single"/>
+		/// </summary>
+		/// <param name="default">Default value to return on error</param>
+		/// <returns></returns>
+		internal float AsFloatInternal(float @default = default(float))
+        {
+	        TryAsFloatInternal(value: out var result, @default: @default);
+	        return result;
+        }
+		
+		/// <summary>
+		/// Reads the <see cref="SciterValue"/> as a <see cref="Single"/>
+		/// </summary>
+		/// <param name="value">The output value</param>
+		/// <param name="default">Default value to return on error</param>
+		/// <returns></returns>
+		internal bool TryAsFloatInternal(out float value, float @default = default(float))
+        {
+	        var result = Api.ValueFloatData(ref _data, out var pData)
+	            .IsOk();
+	        value = result ? (float)pData : @default;
+	        return result;
+        }
 
 		/// <summary>
 		/// Reads the <see cref="SciterValue"/> as a <see cref="String"/>

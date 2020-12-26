@@ -141,35 +141,31 @@ namespace SciterCore
 				.IsOk();
 		}
 
-		internal void DrawPolygonInternal(IList<PolygonPoint> points)
+		internal void DrawPolygonInternal(IEnumerable<PolygonPoint> points)
 		{
 			TryDrawPolygonInternal(points: points);
 		}
 
-		internal bool TryDrawPolygonInternal(IList<PolygonPoint> points)
+		internal bool TryDrawPolygonInternal(IEnumerable<PolygonPoint> points)
 		{
-			var pointList = new List<float>();
+			var polygonPoints = points as PolygonPoint[] ?? points.ToArray();
+			var polyPointArray = polygonPoints.SelectMany(s => s.Value).ToArray();
 			
-			foreach(var point in points)
-				pointList.AddRange(point.Value);
-
-			return GraphicsApi.GraphicsPolygon(this.Handle, pointList.ToArray(), System.Convert.ToUInt32(points.Count()))
+			return GraphicsApi.GraphicsPolygon(this.Handle, polyPointArray, System.Convert.ToUInt32(polygonPoints.Count()))
 				.IsOk();
 		}
 
-		internal void DrawPolylineInternal(IList<PolylinePoint> points)
+		internal void DrawPolylineInternal(IEnumerable<PolylinePoint> points)
 		{
 			TryDrawPolylineInternal(points: points);
 		}
 
-		internal bool TryDrawPolylineInternal(IList<PolylinePoint> points)
+		internal bool TryDrawPolylineInternal(IEnumerable<PolylinePoint> points)
 		{
-			var pointList = new List<float>();
+			var polylinePoints = points as PolylinePoint[] ?? points.ToArray();
+			var polylineArray = polylinePoints.SelectMany(s => s.Value).ToArray();
 			
-			foreach(var point in points)
-				pointList.AddRange(point.Value);
-			
-			return GraphicsApi.GraphicsPolyline(this.Handle, pointList.ToArray(), System.Convert.ToUInt32(points.Count))
+			return GraphicsApi.GraphicsPolyline(this.Handle, polylineArray, System.Convert.ToUInt32(polylinePoints.Length))
 				.IsOk();
 		}
 
@@ -251,7 +247,43 @@ namespace SciterCore
 			return GraphicsApi.GraphicsLineColor(this.Handle, lineColor.Value)
 				.IsOk();
 		}
-		
+
+		internal void SetLineGradientLinearInternal(float x1, float y1, float x2, float y2,
+			params SciterColorStop[] stops)
+		{
+			TrySetLineGradientLinearInternal(x1: x1, y1: y1, x2: x2, y2: y2, stops: stops);
+		}
+
+		internal bool TrySetLineGradientLinearInternal(float x1, float y1, float x2, float y2,
+			params SciterColorStop[] stops)
+		{
+			return GraphicsApi.GraphicsLineGradientLinear(hgfx: this.Handle, x1: x1, y1: y1, x2: x2, y2: y2, stops: stops.Select(s =>
+					new Interop.SciterGraphics.COLOR_STOP()
+					{
+						color = s.Color.Value,
+						offset = s.Offset
+					}).ToArray(), (uint) (stops.Length))
+				.IsOk();
+		}
+
+		internal void SetFillGradientLinearInternal(float x1, float y1, float x2, float y2,
+			params SciterColorStop[] stops)
+		{
+			TrySetFillGradientLinearInternal(x1: x1, y1: y1, x2: x2, y2: y2, stops: stops);
+		}
+
+		internal bool TrySetFillGradientLinearInternal(float x1, float y1, float x2, float y2,
+			params SciterColorStop[] stops)
+		{
+			return GraphicsApi.GraphicsFillGradientLinear(hgfx: this.Handle, x1: x1, y1: y1, x2: x2, y2: y2, stops: stops.Select(s =>
+					new Interop.SciterGraphics.COLOR_STOP()
+					{
+						color = s.Color.Value,
+						offset = s.Offset
+					}).ToArray(), (uint) (stops.Length))
+				.IsOk();
+		}
+
 		public SciterColor FillColor
 		{
 			set => SetFillColorInternal(value);
@@ -287,12 +319,12 @@ namespace SciterCore
 
 		#region Affine tranformations
 		
-		internal void RotateInternal(float radians, float cx, float cy)
+		internal void RotateInternal(float radians, float cx = 0f, float cy = 0f)
 		{
 			TryRotateInternal(radians: radians, cx: cx, cy: cy);
 		}
 		
-		internal bool TryRotateInternal(float radians, float cx, float cy)
+		internal bool TryRotateInternal(float radians, float cx = 0f, float cy = 0f)
 		{
 			return GraphicsApi.GraphicsRotate(this.Handle, radians, ref cx, ref cy)
 				.IsOk();

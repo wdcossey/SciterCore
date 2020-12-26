@@ -109,7 +109,7 @@ namespace SciterCore
 		/// </summary>
 		Change = 0x17,
 
-		// "grey" event codes  - notfications from behaviors from this SDK
+		// "grey" event codes  - notifications from behaviors from this SDK
 
 		/// <summary>
 		/// Hyperlink click

@@ -1084,5 +1084,85 @@ namespace SciterCore
         }
         
         #endregion
+        
+        #region Set|Start|Stop Timer
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="element"></param>
+        /// <param name="milliseconds">Stop the timer using 0.</param>
+        /// <param name="timerId"></param>
+        /// <returns></returns>
+        public static SciterElement SetTimer(this SciterElement element, int milliseconds, IntPtr timerId)
+        {
+            element?.SetTimerInternal(milliseconds: milliseconds, timerId: timerId);
+            return element;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="element"></param>
+        /// <param name="milliseconds">Stop the timer using 0.</param>
+        /// <param name="timerId"></param>
+        /// <returns></returns>
+        public static bool TrySetTimer(this SciterElement element, int milliseconds, IntPtr timerId)
+        {
+            return element?.TrySetTimerInternal(milliseconds: milliseconds, timerId: timerId) == true;
+        }
+        
+        public static SciterElement SetTimer(this SciterElement element, int milliseconds)
+        {
+            element?.SetTimer(milliseconds: milliseconds, timerId: element.Handle);
+            return element;
+        }
+
+        public static bool TrySetTimer(this SciterElement element, int milliseconds)
+        {
+            return element?.TrySetTimer(milliseconds: milliseconds, timerId: element.Handle) == true;
+        }
+        
+        public static SciterElement StartTimer(this SciterElement element, int milliseconds, IntPtr timerId)
+        {
+            return element?.SetTimer(milliseconds: milliseconds, timerId: timerId);
+        }
+        
+        public static bool TryStartTimer(this SciterElement element, int milliseconds, IntPtr timerId)
+        {
+            return element?.TrySetTimer(milliseconds: milliseconds, timerId: timerId) == true;
+        }
+        
+        public static SciterElement StartTimer(this SciterElement element, int milliseconds)
+        {
+            return element?.SetTimer(milliseconds: milliseconds);
+        }
+        
+        public static bool TryStartTimer(this SciterElement element, int milliseconds)
+        {
+            return element?.TrySetTimer(milliseconds: milliseconds) == true;
+        }
+
+        public static SciterElement StopTimer(this SciterElement element, IntPtr timerId)
+        {
+            return element?.SetTimer(milliseconds: 0, timerId: timerId);
+        }
+
+        public static bool TryStopTimer(this SciterElement element, IntPtr timerId)
+        {
+            return element?.TrySetTimer(milliseconds: 0, timerId: timerId) == true;
+        }
+        
+        public static SciterElement StopTimer(this SciterElement element)
+        {
+            return element?.SetTimer(milliseconds: 0);
+        }
+
+        public static bool TryStopTimer(this SciterElement element)
+        {
+            return element?.TrySetTimer(milliseconds: 0) == true;
+        }
+        
+        #endregion
     }
 }

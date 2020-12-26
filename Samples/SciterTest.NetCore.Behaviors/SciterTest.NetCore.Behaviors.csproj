@@ -6,6 +6,7 @@
     <RuntimeIdentifiers>win-x86;win-x64</RuntimeIdentifiers>
     <SciterCorePackDirectory>wwwroot</SciterCorePackDirectory>
     <SciterCorePackCopyToOutput Condition=" '$(Configuration)' == 'Debug' ">true</SciterCorePackCopyToOutput>
+    <RootNamespace>SciterTest.NetCore</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -33,7 +34,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\RiderProjects\libui\DevZH.UI\src\DevZH.UI\DevZH.UI.csproj" />
     <ProjectReference Include="..\..\Platform\SciterCore.NetStd\SciterCore.NetStd.csproj" />
   </ItemGroup>
 

@@ -12,12 +12,12 @@ namespace SciterCore.Interop
 		[StructLayout(LayoutKind.Sequential)]
 		public struct COLOR_STOP
 		{
-			uint color;
+			public uint color;
 			
 			/// <summary>
 			/// 0.0 ... 1.0
 			/// </summary>
-			float offset;
+			public float offset;
 		}
 
 		public enum GRAPHIN_RESULT
