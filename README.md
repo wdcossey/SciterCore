@@ -12,17 +12,19 @@
 
 ## Status
 
-| Operating System      | Version(s)                  | Status      | Comments |
-| ----------------------|-----------------------------|-------------|-----------------------------------------------------------------------------------------|
-| Windows               | Windows 10 Pro v19042.685   | Working     |                                                                                         |
-| Windows               | Windows 8.x                 | Untested    |                                                                                         |
-| Windows               | Windows 7                   | Untested    |                                                                                         |
-| Linux                 | Ubuntu 20.04 (Hyper-V)      | Working     | Run `sudo chmod +x packfolder` in `scripts/bin.lnx` to build `SciterCore.NetStd.csproj` |
-| Linux                 | Other                       | Untested    | As long as you have `libgtk-3.so.0` it's possible.                                      |
-| MacOS                 | MacOS Catalina              | In-Progress |                                                                                         |
-| MacOS                 | MacOS Big Sur               | Untested    |                                                                                         |
+| Operating System      | Version(s)                  | .Net             | Status      | Comments |
+| ----------------------|-----------------------------|------------------|-------------|-----------------------------------------------------------------------------------------|
+| Windows               | Windows 10 Pro v19042.685   | .Net Core 3.1.10 | Working     |                                                                                         |
+| Windows               | Windows 8.x                 | N/A              | Untested    |                                                                                         |
+| Windows               | Windows 7                   | N/A              | Untested    |                                                                                         |
+| Linux                 | Ubuntu 20.04 (Hyper-V)      | .Net Core 3.1.10 | Working     | Run `sudo chmod +x packfolder` in `scripts/bin.lnx` to build `SciterCore.NetStd.csproj` |
+| Linux                 | Fedora 33 (proxmox)         | .Net Core 3.1.10 | Working     | Run `sudo chmod +x packfolder` in `scripts/bin.lnx` to build `SciterCore.NetStd.csproj` |
+| Linux                 | Manjaro XFCE (proxmox)      | .Net Core 3.1.10 | Working     | Run `sudo chmod +x packfolder` in `scripts/bin.lnx` to build `SciterCore.NetStd.csproj` |
+| Linux                 | Other                       | N/A              | Untested    | As long as you have `libgtk-3.so.0` it's possible.                                      |
+| MacOS                 | MacOS Catalina              | N/A              | In-Progress |                                                                                         |
+| MacOS                 | MacOS Big Sur               | N/A              | Untested    |                                                                                         |
 
-All local builds (across platforms) are done using `JetBrains Rider`.
+All builds are done using `JetBrains Rider` and/or (vanilla) `dotnet` CLI.
 
 The changes are going to be frequent while I add stop-gaps between adding/enhancing functionality, expect things to break!!!
 
