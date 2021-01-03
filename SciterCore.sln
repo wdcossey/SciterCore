@@ -80,8 +80,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SciterCore.Tests.Unit", "Sc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SciterTest.NetCore.Behaviors", "Samples\SciterTest.NetCore.Behaviors\SciterTest.NetCore.Behaviors.csproj", "{12C6932E-2934-4F51-9218-5D399384AC59}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevZH.UI", "..\..\..\RiderProjects\libui\DevZH.UI\src\DevZH.UI\DevZH.UI.csproj", "{61D0FA28-E624-4EC9-BFE3-290E2C08C26C}"
-EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Shared\SciterCore.Shared.WinForms\SciterCore.Shared.WinForms.projitems*{18b2e4e7-cb77-44c3-865b-be05620aba4d}*SharedItemsImports = 4
@@ -522,26 +520,6 @@ Global
 		{12C6932E-2934-4F51-9218-5D399384AC59}.Release|x64.Build.0 = Release|Any CPU
 		{12C6932E-2934-4F51-9218-5D399384AC59}.Release|x86.ActiveCfg = Release|Any CPU
 		{12C6932E-2934-4F51-9218-5D399384AC59}.Release|x86.Build.0 = Release|Any CPU
-		{61D0FA28-E624-4EC9-BFE3-290E2C08C26C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{61D0FA28-E624-4EC9-BFE3-290E2C08C26C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{61D0FA28-E624-4EC9-BFE3-290E2C08C26C}.Debug|ARM.ActiveCfg = Debug|Any CPU
-		{61D0FA28-E624-4EC9-BFE3-290E2C08C26C}.Debug|ARM.Build.0 = Debug|Any CPU
-		{61D0FA28-E624-4EC9-BFE3-290E2C08C26C}.Debug|ARM64.ActiveCfg = Debug|Any CPU
-		{61D0FA28-E624-4EC9-BFE3-290E2C08C26C}.Debug|ARM64.Build.0 = Debug|Any CPU
-		{61D0FA28-E624-4EC9-BFE3-290E2C08C26C}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{61D0FA28-E624-4EC9-BFE3-290E2C08C26C}.Debug|x64.Build.0 = Debug|Any CPU
-		{61D0FA28-E624-4EC9-BFE3-290E2C08C26C}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{61D0FA28-E624-4EC9-BFE3-290E2C08C26C}.Debug|x86.Build.0 = Debug|Any CPU
-		{61D0FA28-E624-4EC9-BFE3-290E2C08C26C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{61D0FA28-E624-4EC9-BFE3-290E2C08C26C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{61D0FA28-E624-4EC9-BFE3-290E2C08C26C}.Release|ARM.ActiveCfg = Release|Any CPU
-		{61D0FA28-E624-4EC9-BFE3-290E2C08C26C}.Release|ARM.Build.0 = Release|Any CPU
-		{61D0FA28-E624-4EC9-BFE3-290E2C08C26C}.Release|ARM64.ActiveCfg = Release|Any CPU
-		{61D0FA28-E624-4EC9-BFE3-290E2C08C26C}.Release|ARM64.Build.0 = Release|Any CPU
-		{61D0FA28-E624-4EC9-BFE3-290E2C08C26C}.Release|x64.ActiveCfg = Release|Any CPU
-		{61D0FA28-E624-4EC9-BFE3-290E2C08C26C}.Release|x64.Build.0 = Release|Any CPU
-		{61D0FA28-E624-4EC9-BFE3-290E2C08C26C}.Release|x86.ActiveCfg = Release|Any CPU
-		{61D0FA28-E624-4EC9-BFE3-290E2C08C26C}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -77,15 +77,12 @@ namespace SciterTest.NetCore.Behaviors
                     expandOption(targetElement);
                     targetElement.CallMethod("optionExpanded", targetElement.Value);
                     return true;
-                    break;
-                
+
                 case BehaviorEvents.ElementCollapsed:
 
                     collapseOption(targetElement);
                     targetElement.CallMethod("optionCollapsed", targetElement.Value);
                     return true;
-                    break;
-
             }
             
             return base.OnEvent(sourceElement, targetElement, type, reason, data, eventName);

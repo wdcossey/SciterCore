@@ -23,36 +23,36 @@ namespace SciterCore.Interop
 
 #pragma warning disable 649
 				
-				private readonly SciterRequestApiDelegates.FPTR_RequestUse						_requestUse;
-				private readonly SciterRequestApiDelegates.FPTR_RequestUnUse					_requestUnUse;
-				private readonly SciterRequestApiDelegates.FPTR_RequestUrl						_requestUrl;
-				private readonly SciterRequestApiDelegates.FPTR_RequestContentUrl				_requestContentUrl;
-				private readonly SciterRequestApiDelegates.FPTR_RequestGetRequestType			_requestGetRequestType;
-				private readonly SciterRequestApiDelegates.FPTR_RequestGetRequestedDataType		_requestGetRequestedDataType;
-				private readonly SciterRequestApiDelegates.FPTR_RequestGetReceivedDataType		_requestGetReceivedDataType;
-				private readonly SciterRequestApiDelegates.FPTR_RequestGetNumberOfParameters	_requestGetNumberOfParameters;
-				private readonly SciterRequestApiDelegates.FPTR_RequestGetNthParameterName		_requestGetNthParameterName;
-				private readonly SciterRequestApiDelegates.FPTR_RequestGetNthParameterValue		_requestGetNthParameterValue;
-				private readonly SciterRequestApiDelegates.FPTR_RequestGetTimes					_requestGetTimes;
-				private readonly SciterRequestApiDelegates.FPTR_RequestGetNumberOfRqHeaders		_requestGetNumberOfRqHeaders;
-				private readonly SciterRequestApiDelegates.FPTR_RequestGetNthRqHeaderName		_requestGetNthRqHeaderName;
-				private readonly SciterRequestApiDelegates.FPTR_RequestGetNthRqHeaderValue		_requestGetNthRqHeaderValue;
-				private readonly SciterRequestApiDelegates.FPTR_RequestGetNumberOfRspHeaders	_requestGetNumberOfRspHeaders;
-				private readonly SciterRequestApiDelegates.FPTR_RequestGetNthRspHeaderName		_requestGetNthRspHeaderName;
-				private readonly SciterRequestApiDelegates.FPTR_RequestGetNthRspHeaderValue		_requestGetNthRspHeaderValue;
-				private readonly SciterRequestApiDelegates.FPTR_RequestGetCompletionStatus		_requestGetCompletionStatus;
-				private readonly SciterRequestApiDelegates.FPTR_RequestGetProxyHost				_requestGetProxyHost;
-				private readonly SciterRequestApiDelegates.FPTR_RequestGetProxyPort				_requestGetProxyPort;
-				private readonly SciterRequestApiDelegates.FPTR_RequestSetSucceeded				_requestSetSucceeded;
-				private readonly SciterRequestApiDelegates.FPTR_RequestSetFailed				_requestSetFailed;
-				private readonly SciterRequestApiDelegates.FPTR_RequestAppendDataChunk			_requestAppendDataChunk;
-				private readonly SciterRequestApiDelegates.FPTR_RequestSetRqHeader				_requestSetRqHeader;
-				private readonly SciterRequestApiDelegates.FPTR_RequestSetRspHeader				_requestSetRspHeader;
+				private readonly SciterRequestApiDelegates.RequestUse						_requestUse;
+				private readonly SciterRequestApiDelegates.RequestUnUse						_requestUnUse;
+				private readonly SciterRequestApiDelegates.RequestUrl						_requestUrl;
+				private readonly SciterRequestApiDelegates.RequestContentUrl				_requestContentUrl;
+				private readonly SciterRequestApiDelegates.RequestGetRequestType			_requestGetRequestType;
+				private readonly SciterRequestApiDelegates.RequestGetRequestedDataType		_requestGetRequestedDataType;
+				private readonly SciterRequestApiDelegates.RequestGetReceivedDataType		_requestGetReceivedDataType;
+				private readonly SciterRequestApiDelegates.RequestGetNumberOfParameters		_requestGetNumberOfParameters;
+				private readonly SciterRequestApiDelegates.RequestGetNthParameterName		_requestGetNthParameterName;
+				private readonly SciterRequestApiDelegates.RequestGetNthParameterValue		_requestGetNthParameterValue;
+				private readonly SciterRequestApiDelegates.RequestGetTimes					_requestGetTimes;
+				private readonly SciterRequestApiDelegates.RequestGetNumberOfRqHeaders		_requestGetNumberOfRqHeaders;
+				private readonly SciterRequestApiDelegates.RequestGetNthRqHeaderName		_requestGetNthRqHeaderName;
+				private readonly SciterRequestApiDelegates.RequestGetNthRqHeaderValue		_requestGetNthRqHeaderValue;
+				private readonly SciterRequestApiDelegates.RequestGetNumberOfRspHeaders		_requestGetNumberOfRspHeaders;
+				private readonly SciterRequestApiDelegates.RequestGetNthRspHeaderName		_requestGetNthRspHeaderName;
+				private readonly SciterRequestApiDelegates.RequestGetNthRspHeaderValue		_requestGetNthRspHeaderValue;
+				private readonly SciterRequestApiDelegates.RequestGetCompletionStatus		_requestGetCompletionStatus;
+				private readonly SciterRequestApiDelegates.RequestGetProxyHost				_requestGetProxyHost;
+				private readonly SciterRequestApiDelegates.RequestGetProxyPort				_requestGetProxyPort;
+				private readonly SciterRequestApiDelegates.RequestSetSucceeded				_requestSetSucceeded;
+				private readonly SciterRequestApiDelegates.RequestSetFailed					_requestSetFailed;
+				private readonly SciterRequestApiDelegates.RequestAppendDataChunk			_requestAppendDataChunk;
+				private readonly SciterRequestApiDelegates.RequestSetRqHeader				_requestSetRqHeader;
+				private readonly SciterRequestApiDelegates.RequestSetRspHeader				_requestSetRspHeader;
 				
-				private readonly SciterRequestApiDelegates.FPTR_RequestSetReceivedDataType		_requestSetReceivedDataType;
-				private readonly SciterRequestApiDelegates.FPTR_RequestSetReceivedDataEncoding	_requestSetReceivedDataEncoding;
+				private readonly SciterRequestApiDelegates.RequestSetReceivedDataType		_requestSetReceivedDataType;
+				private readonly SciterRequestApiDelegates.RequestSetReceivedDataEncoding	_requestSetReceivedDataEncoding;
 				
-				private readonly SciterRequestApiDelegates.FPTR_RequestGetData					_requestGetData;
+				private readonly SciterRequestApiDelegates.RequestGetData					_requestGetData;
 
 #pragma warning restore 649
 
@@ -62,7 +62,7 @@ namespace SciterCore.Interop
 					var @struct = Marshal.PtrToStructure<TStruct>(apiPtr);
 
 					var fieldInfoDictionary = GetType()
-						.GetFields(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
+						.GetFields(BindingFlags.Instance | BindingFlags.NonPublic)
 						.Where(w => w.FieldType.GetCustomAttribute<SciterStructMapAttribute>() != null)
 						.ToDictionary(key => key.FieldType.GetCustomAttribute<SciterStructMapAttribute>()?.Name,
 							value => value);

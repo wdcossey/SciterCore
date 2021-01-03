@@ -143,7 +143,7 @@ namespace SciterCore
 			Debug.Assert(WindowHandle != IntPtr.Zero);
 			var vm = Sciter.Api.SciterGetVM(WindowHandle);
 
-			return Sciter.ScriptApi.get_value_by_path(vm, out ret, path);
+			return Sciter.ScriptApi.GetValueByPath(vm, out ret, path);
 		}*/
 
 		/// <summary>

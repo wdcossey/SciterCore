@@ -9,6 +9,7 @@
     <Import_RootNamespace>SciterCore</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Attributes\SciterApiAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Attributes\SciterFunctionNameAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Attributes\SciterCallbackWrapperAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Convert\SciterPropertyName.cs" />
@@ -37,6 +38,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Enums\MouseEvents.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\NodeType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\ImageEncoding.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Enums\SciterOSPlatform.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\SciterResourceType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\ScrollbarPart.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\ScrollEvents.cs" />
@@ -86,26 +88,31 @@
     <Compile Include="$(MSBuildThisFileDirectory)HostCallbackRegistry.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)InternalsVisibility.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\Interfaces\ISciterRequestApi.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interop\Interfaces\ISciterScriptApi.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\PInvokeGtk.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\PInvokeWindows.Entities.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interop\Sciter.DynamicSciterApi.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interop\Sciter.SciterVersionApi.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\SciterGraphics.Entities.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\SciterGraphics.SciterGraphicsApi.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\SciterRequest.Delegates.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\SciterRequest.Entities.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\SciterRequest.SciterRequestApi.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interop\SciterScript.Delegates.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interop\SciterScript.Entities.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\SciterStructMapAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\Interfaces\ISciterApi.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\Interfaces\ISciterGraphicsApi.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\PInvokeUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\PInvokeWindows.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\Sciter.Delegates.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Interop\Sciter.LinuxSciterApi.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Interop\Sciter.MacOsSciterApi.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Interop\Sciter.WindowsSciterApi.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\SciterBehaviors.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\SciterGraphics.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\Sciter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\SciterGraphics.Delegates.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interop\SciterScript.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interop\SciterScript.SciterScriptApi.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interop\SciterScript.ScriptValue.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\SciterXDef.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\SciterXDom.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\SciterXMsg.cs" />

@@ -31,13 +31,13 @@ namespace SciterCore
 	public abstract class SciterEventHandler
 	{
 		
-#if DEBUG
-		
-		private volatile bool _isAttached = false;
-
 		protected SciterElement Element { get; set; } = null;
 		
 		protected SciterHost Host { get; private set;  } = null;
+		
+#if DEBUG
+		
+		private volatile bool _isAttached = false;
 		
 		~SciterEventHandler()
 		{
@@ -376,8 +376,13 @@ namespace SciterCore
 						var args = Marshal.PtrToStructure<SciterBehaviors.GESTURE_PARAMS>(prms).ToEventArgs();
 						return OnGesture(element: source, args: args);
 					}
-
-				//case SciterBehaviors.EVENT_GROUPS.HANDLE_TISCRIPT_METHOD_CALL: //Obsolete
+				
+#pragma warning disable 618
+				case SciterBehaviors.EVENT_GROUPS.HANDLE_TISCRIPT_METHOD_CALL:
+					//Obsolete
+					return false;
+#pragma warning restore 618
+				
 				default:
 					Debug.Assert(false);
 					return false;

@@ -355,3 +355,7 @@ MigrationBackup/
 # Ignore SciterCore.PackFolder output
 **/.sciter/*.bin
 **/sciter.build/*.bin
+
+
+# Ignore MacOS rubbish
+**/.DS_Store

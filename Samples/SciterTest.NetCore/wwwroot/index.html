@@ -236,44 +236,93 @@
 			background: #fff2;
 		}
 		
+		tools {
+			z-index: 9999;
+			opacity: 0.75;
+			background-color: #222f;
+			overflow: none;
+			position: fixed;
+			border-radius: 0 0 4dip 4dip;
+			height: max-content;
+			width: max-content;
+			padding: 4dp;
+			top: -42dip;
+			left: *;
+			right: *;
+			float: vertical;
+			transition: opacity 0.4s, top 0.4s;
+		}
+
+		tools:hover
+		{
+			opacity: 1;
+			top: 0dip;
+		}
+		
+		tools > button {
+			cursor: pointer;
+			opacity: 0.75;
+			border-radius: 0 0 2dip 2dip;
+			border: solid 1dip #777f;
+			height: max-content;
+			width: max-content;
+			background: #777f;
+			margin: 0 4dip;
+			padding: 2dip;
+			transition: border-color 0.4s;
+		}
+		
+		tools > button:hover {
+			border-color: #aaaf;
+		}
+		
+		tools > button > img {
+			height: 32dip;
+			width: 32dip;
+		}
 	</style>
 	
 	<script type="text/tiscript"></script>
 	
 	<script type="text/tiscript">
-	
+
 		//Synchronous
 		view.SynchronousFunction();
-		
+
 		console.log(view.SynchronousArgumentFunction(1,2,3,4,5));
-	
+
 		console.log(view.SynchronousArgumentsFunction(1,2,3,4,5));
-		
+
 		//Asynchronous
 		view.AsynchronousFunction();
-		
+
 		function callmeFromCSharp(uri)
 		{
 			Sciter.launch(uri);
 		}
-		
+
+		function testing()
+		{
+			console.log("testing...");
+		}
+
 		view.StackTrace(function(value) {
 			$(#stMethodName).text = value.MethodName;
 			$(#stFileUri).text = value.FileName;
 			$(#stFileUri).attributes["href"] = value.FileUri;
 			$(#stLineNumber).text = value.LineNumber;
 			$(#stColumnNumber).text = value.ColumnNumber;
-			
+
 			var args = [];
-			
+
 			for(var (index, val) in value.Parameters)
 				args.push("<b>" + val.Type + "</b> <i>" + val.Name + "</i>");
-				
+
 			$(#stParameters).html += "(" + args.join(", ") + ")";
-			
+
 			$(#stContent).attributes["state"] = "visible";
 		});
-		
+
 		view.GetRuntimeInfo(
 			function(value) {
 				$(#frameworkDescription).text = value.FrameworkDescription;
@@ -284,10 +333,10 @@
 				$(#osContent).attributes["state"] = "visible";
 			},
 			function() {
-				
+
 			}
 		);
-		
+
 		view.ThrowException(100, 0,
 			function(value, ex) {
 				if (ex)
@@ -308,7 +357,7 @@
 		var revision_major = Sciter.REVISION >> 16;
 		var revision_minor = Sciter.REVISION & 0xFFFF;
 		$(#sciterversion).text = String.printf("%d.%d.%d.%d (%d)", version_major, version_minor, revision_major, revision_minor, Sciter.BUILD);
-		
+
 		$(#user).text = Sciter.userName();
 		$(#machine).text = Sciter.machineName();
 		$(#domain).text = Sciter.machineName(true);
@@ -318,38 +367,38 @@
 		$(#os-type).text = System.HANDHELD_OS? "handheld":"desktop";
 		$(#os-version).text = System.OS;
 		$(#gfx-backend).text = view.backendName;
-  
+
 		//$$(a).on("click", function(evt) {
 		//	Sciter.launch(this.@#href);
 		//	return true;
 		//});
-		
+
 		for(var (i,child) in $$(a) ) {
 			child.on("click", function(evt) {
 				Sciter.launch(this.@#href);
 				return true;
 			});
 		}
-			
-		function self.ready() {
-		}   
-    
-    	event click $(#start) {
-          self.postEvent("waiting","Waiting for something..."); // start waiting with the message
-          self.timer(10s, function() {
-             self.postEvent("waiting",false); // done waiting
-          });
-        }  
-    
-    	event click $(#start) {
 
-    		$(#cancel).enabled = true;
-    		$(#start).enabled = false;
-    		
-    		$(#callbackState).style["color"] = undefined;
-    		$(#callbackProgressContainer).show();
-    		$(#callbackProgress).value = 0;
-    		
+		function self.ready() {
+		}
+
+		event click $(#start) {
+		  self.postEvent("waiting","Waiting for something..."); // start waiting with the message
+		  self.timer(10s, function() {
+			 self.postEvent("waiting",false); // done waiting
+		  });
+		}
+
+		event click $(#start) {
+
+			$(#cancel).enabled = true;
+			$(#start).enabled = false;
+
+			$(#callbackState).style["color"] = undefined;
+			$(#callbackProgressContainer).show();
+			$(#callbackProgress).value = 0;
+
 			view.CallMeBack(100,
 				function(val, progress) {
 					$(#callbackState).text = "Busy";
@@ -366,16 +415,21 @@
 					$(#cancel).enabled = false;
 				}
 			);
-        }
-    
-    	event click $(#cancel) {
+		}
+
+		event click $(#cancel) {
 			view.CancelCallMeBack();
-        }
-        
-        event click $(#eval) {
+		}
+
+		event click $(#eval) {
 			$(#evalResult).text = view.eval($(#evalInput).text);
-        }
-        
+		}
+
+
+		event click $(#btnInspector) {
+			view.connectToInspector();
+		}
+
 		//$(#icons8).on("click", function(evt) {
 		//	Sciter.launch("https://icons8.com/");
 		//	return true;
@@ -499,11 +553,11 @@
 					</cardcontent>
 				</card>
 				
-				<card>
+				<card style="visibility: collapse" >
 										
-					<cardcontent state="visible">
-						<div><input #evalInput type="text"></div>
-						<div><input #evalResult type="text"></div>
+					<cardcontent state="visible" style="flow: vertical">
+						<div style="width: 1*"><input #evalInput type="text" ></div>
+						<div><textarea #evalResult type="text" style="color: black; width: 1*"></textarea></div>
 
 						<cardfooter>
 							<hr style="width: 1*; margin: -8dip -16dip 8dip -16dip; border-color: #0004"/>
@@ -533,5 +587,14 @@
 			</div>
 		</footer>
 	</main>
+
+	<tools>
+		<button #btnInspector>
+			<img src="icons8-color-programming-coding-inspect_code.svg">
+		</button>
+		<div style="height: 8dip"/>
+	</tools>
+	
+	
 </body>
 </html>

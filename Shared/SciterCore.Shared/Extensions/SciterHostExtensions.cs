@@ -90,7 +90,7 @@ namespace SciterCore
         }
         
         /// <summary>
-        /// Detaches the event-handler previously attached with AttachEvh()
+        /// 
         /// </summary>
         public static SciterValue CallFunction(this SciterHost host, string functionName, params SciterValue[] args)
         {
@@ -98,7 +98,7 @@ namespace SciterCore
         }
         
         /// <summary>
-        /// Detaches the event-handler previously attached with AttachEvh()
+        /// 
         /// </summary>
         public static bool TryCallFunction(this SciterHost host, out SciterValue value, string functionName, params SciterValue[] args)
         {
@@ -107,7 +107,7 @@ namespace SciterCore
         }
         
         /// <summary>
-        /// Detaches the event-handler previously attached with AttachEvh()
+        /// 
         /// </summary>
         public static SciterValue EvalScript(this SciterHost host, string script)
         {
@@ -115,7 +115,7 @@ namespace SciterCore
         }
         
         /// <summary>
-        /// Detaches the event-handler previously attached with AttachEvh()
+        /// 
         /// </summary>
         public static bool TryEvalScript(this SciterHost host, out SciterValue value, string script)
         {

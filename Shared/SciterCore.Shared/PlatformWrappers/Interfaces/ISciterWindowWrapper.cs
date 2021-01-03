@@ -3,7 +3,7 @@ using SciterCore.Interop;
 
 namespace SciterCore.PlatformWrappers
 {
-    internal interface ISciterWindowWrapper
+    public interface ISciterWindowWrapper
     {
         //SciterWindow(IntPtr hwnd, bool weakReference = false)
 
