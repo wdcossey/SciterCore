@@ -5,6 +5,8 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Reflection;
+using System.Reflection.Emit;
+using SciterCore.Attributes;
 using SciterCore.Interop;
 using SciterTest.CoreForms.Extensions;
 
@@ -26,10 +28,14 @@ namespace SciterCore.Interop
 
 		public static ISciterRequestApi RequestApi => GetRequestApi();
 		
+		[Obsolete("Removed in Sciter v4.4.3.24", false)]
+        public static ISciterScriptApi ScriptApi => GetScriptApi();
+		
         private static ISciterApi _sciterApi = null;
 		private static ISciterGraphicsApi _sciterGraphicsApi = null;
 		private static ISciterRequestApi _sciterRequestApiInstance = null;
-
+		private static ISciterScriptApi _sciterScriptApi = null;
+	
 		// ReSharper disable InconsistentNaming
 		private const string SciterWindowsLibrary = "sciter.dll";
 		private const string SciterUnixLibrary = "libsciter-gtk.so";
@@ -173,6 +179,29 @@ namespace SciterCore.Interop
 				return _sciterRequestApiInstance;
 			}
 		}
+		
+		private static ISciterScriptApi GetScriptApi()
+        {
+	        lock (SciterRequestApiLock)
+	        {
+		        if (_sciterScriptApi != null)
+			        return _sciterScriptApi;
+				
+		        var apiStructSize = Marshal.SizeOf(t: typeof(SciterScript.SciterScriptApi));
+				
+		        if (IntPtr.Size == 8)
+			        Debug.Assert(apiStructSize == 616);
+		        else
+			        Debug.Assert(apiStructSize == 308);
+				
+		        _sciterScriptApi = SciterScript.UnsafeNativeMethods.GetApiInterface(Api);
+				
+		        if (_sciterScriptApi == null)
+			        throw new NullReferenceException($"{nameof(_sciterScriptApi)} cannot be null");
+				
+		        return _sciterScriptApi;
+	        }
+        }
 
 		internal static class UnsafeNativeMethods
 		{
@@ -180,21 +209,82 @@ namespace SciterCore.Interop
 			{
 				var sciterApiPtr = SciterAPI();
 				
+				var versionApi = Marshal.PtrToStructure<SciterVersionApi>(sciterApiPtr);
+				var major = versionApi.SciterVersion(true);
+				var minor = versionApi.SciterVersion(false);
+
+				var version = new Version(
+					(int) ((major >> 16) & 0xffff),
+					(int) (major & 0xffff),
+					(int) ((minor >> 16) & 0xffff),
+					(int) (minor & 0xffff));
+				
+				// Create assembly and module
+				var assemblyName = new AssemblyName(Guid.NewGuid().ToString());
+				var assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.Run);
+				var moduleBuilder = assemblyBuilder.DefineDynamicModule(assemblyName.ToString());
+
+				// Open a new Type for definition
+				var typeBuilder = moduleBuilder.DefineType("DynamicSciterApi",
+					TypeAttributes.NotPublic |
+					TypeAttributes.Sealed |
+					TypeAttributes.SequentialLayout |
+					TypeAttributes.Serializable |
+					TypeAttributes.AnsiClass,
+					typeof(ValueType));
+				
+				var fieldInfoDictionary = typeof(Sciter.DynamicSciterApi)
+					.GetFields(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public)
+					.AsQueryable();
+
+				fieldInfoDictionary = fieldInfoDictionary
+					.Where(w => 
+						w.GetCustomAttribute<SciterApiOSPlatformAttribute>() == null || 
+						w.GetCustomAttribute<SciterApiOSPlatformAttribute>().Platform == SciterOSPlatform.Windows);
+
+				fieldInfoDictionary = fieldInfoDictionary
+					.Where(w => 
+						w.GetCustomAttribute<SciterApiMinVersionAttribute>() == null || 
+						(w.GetCustomAttribute<SciterApiMinVersionAttribute>().Version.CompareTo(version) <= 0));
+
+				fieldInfoDictionary = fieldInfoDictionary
+					.Where(w => 
+						w.GetCustomAttribute<SciterApiMaxVersionAttribute>() == null || 
+						(w.GetCustomAttribute<SciterApiMaxVersionAttribute>().Version.CompareTo(version) >= 0));
+				
+					
+				//.ToDictionary(key => key.FieldType.GetCustomAttribute<SciterApiOSPlatformAttribute>()?.Name,
+				//    value => value);
+
+				foreach (var fieldInfo in fieldInfoDictionary)
+					typeBuilder.DefineField(fieldInfo.Name, fieldInfo.FieldType, FieldAttributes.Public);
+
+				var type = typeBuilder.CreateTypeInfo();
+				//bool isVal = type.IsValueType; // true
+
+				//dynamic x = Activator.CreateInstance(type);
+				//var y = x.m_number;
+
+				//var xx = Marshal.PtrToStructure<WindowsSciterApi>(sciterApiPtr);
+				
 				if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-					return new NativeSciterApiWrapper<WindowsSciterApi>(sciterApiPtr);
+					return new NativeSciterApiWrapper(type, sciterApiPtr);
+					//return new NativeSciterApiWrapper(typeof(WindowsSciterApi), sciterApiPtr);
+				
+				//	return new NativeSciterApiWrapper<WindowsSciterApi>(sciterApiPtr);
 
-				if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-					return new NativeSciterApiWrapper<MacOsSciterApi>(sciterApiPtr);
-
-				if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-					return new NativeSciterApiWrapper<LinuxSciterApi>(sciterApiPtr);
+				//if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+				//	return new NativeSciterApiWrapper<MacOsSciterApi>(sciterApiPtr);
+//
+				//if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+				//	return new NativeSciterApiWrapper<LinuxSciterApi>(sciterApiPtr);
+				
 				
 				throw new PlatformNotSupportedException();
 			}
 			
 
-			private sealed class NativeSciterApiWrapper<TStruct> : ISciterApi
-				where TStruct : struct
+			private sealed class NativeSciterApiWrapper : ISciterApi
 			{
 				private IntPtr _apiPtr;
 				
@@ -374,13 +464,22 @@ namespace SciterCore.Interop
 				
 				#endregion
 				
-				#region Used to be script VM API (Deprecated in v4.4.3.24)
+				#region pre v4.4.3.24
+
+				private readonly SciterApiDelegates.GetTIScriptApi _getTIScriptApi = null;
+				private readonly SciterApiDelegates.SciterGetVM _sciterGetVM = null;
+				private readonly SciterApiDelegates.Sciter_v2V _sciter_v2V = null;
+				private readonly SciterApiDelegates.Sciter_V2v _sciter_V2v = null;
+
+				#endregion
 				
+				#region post v4.4.3.24
+
 				private readonly SciterApiDelegates.Reserved1 _reserved1 = null;
 				private readonly SciterApiDelegates.Reserved2 _reserved2 = null;
 				private readonly SciterApiDelegates.Reserved3 _reserved3 = null;
 				private readonly SciterApiDelegates.Reserved4 _reserved4 = null;
-				
+
 				#endregion
 			
 				#region Archive
@@ -408,24 +507,37 @@ namespace SciterCore.Interop
 
 				private readonly SciterApiDelegates.SciterProcX _sciterProcX = null; 
 				
-				#region Sciter 4.4.3.24
+				#region Sciter 4.4.3.14
 				
 				private readonly SciterApiDelegates.SciterAtomValue _sciterAtomValue = null;
 				private readonly SciterApiDelegates.SciterAtomNameCB _sciterAtomNameCB = null;
+				
+				#endregion
+				
+				#region Sciter 4.4.3.16
+				
 				private readonly SciterApiDelegates.SciterSetGlobalAsset _sciterSetGlobalAsset = null; 
 				
 				#endregion
-
+				
+				#region Sciter 4.4.4.6
+				
+				private readonly SciterApiDelegates.SciterSetVariable4446 _sciterSetVariable4446 = null;
+				private readonly SciterApiDelegates.SciterGetVariable4446 _sciterGetVariable4446 = null;
+				
+				#endregion
+				
 				#region Sciter 4.4.4.7
 
 				private readonly SciterApiDelegates.SciterGetElementAsset _sciterGetElementAsset = null;
-				private readonly SciterApiDelegates.SciterSetVariable _sciterSetVariable = null;
-				private readonly SciterApiDelegates.SciterGetVariable _sciterGetVariable = null;
-
+				
 				#endregion
 
 				#region Sciter 4.4.5.4
 
+				private readonly SciterApiDelegates.SciterSetVariable _sciterSetVariable = null;
+				private readonly SciterApiDelegates.SciterGetVariable _sciterGetVariable = null;
+				
 				private readonly SciterApiDelegates.SciterElementUnwrap _sciterElementUnwrap = null;
 				private readonly SciterApiDelegates.SciterElementWrap _sciterElementWrap = null;
 
@@ -436,11 +548,11 @@ namespace SciterCore.Interop
 				
 #pragma warning restore 649
 
-				internal NativeSciterApiWrapper(IntPtr apiPtr)
+				internal NativeSciterApiWrapper(Type type, IntPtr apiPtr)
 				{
 					_apiPtr = apiPtr;
 					
-					var @struct = Marshal.PtrToStructure<TStruct>(apiPtr);
+					var @struct = Marshal.PtrToStructure(apiPtr, type);
 
 					var fieldInfoDictionary = GetType()
 						.GetFields(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
@@ -559,17 +671,33 @@ namespace SciterCore.Interop
 				public bool SciterSetHomeURL(IntPtr hwnd, string baseUrl) =>
 					_sciterSetHomeURL(hwnd: hwnd, baseUrl: baseUrl);
 
-				public IntPtr SciterCreateNSView(ref PInvokeUtils.RECT frame) =>
-					_sciterCreateNSView(frame: ref frame);
+				public IntPtr SciterCreateNSView(ref PInvokeUtils.RECT frame)
+                {
+					if (!RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+						throw new PlatformNotSupportedException($"{nameof(SciterCreateNSView)} is reserved for use on {nameof(OSPlatform.OSX)}");
 
-				public IntPtr SciterCreateWidget(ref PInvokeUtils.RECT frame) =>
-					_sciterCreateWidget(frame: ref frame);
+                    return _sciterCreateNSView(frame: ref frame);
+				}
 
-				public IntPtr SciterCreateWindow(SciterXDef.SCITER_CREATE_WINDOW_FLAGS creationFlags, ref PInvokeUtils.RECT frame, MulticastDelegate delegt,
-					IntPtr delegateParam, IntPtr parent) =>
-					_sciterCreateWindow(creationFlags: creationFlags, frame: ref frame, delegt: delegt, delegateParam: delegateParam, parent: parent);
-				
-				public void SciterSetupDebugOutput(IntPtr hwndOrNull, IntPtr param, SciterXDef.DEBUG_OUTPUT_PROC pfOutput) =>
+                public IntPtr SciterCreateWidget(ref PInvokeUtils.RECT frame)
+                {
+                    if (!RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                        throw new PlatformNotSupportedException($"{nameof(SciterCreateWidget)} is reserved for use on {nameof(OSPlatform.Linux)}");
+
+					return _sciterCreateWidget(frame: ref frame);
+                }
+
+                public IntPtr SciterCreateWindow(SciterXDef.SCITER_CREATE_WINDOW_FLAGS creationFlags,
+                    ref PInvokeUtils.RECT frame, MulticastDelegate delegt,
+                    IntPtr delegateParam, IntPtr parent)
+                {
+                    if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                        throw new PlatformNotSupportedException($"{nameof(SciterCreateWidget)} is for use on {nameof(OSPlatform.Windows)}");
+
+					return _sciterCreateWindow(creationFlags: creationFlags, frame: ref frame, delegt: delegt, delegateParam: delegateParam, parent: parent);
+				}
+
+                public void SciterSetupDebugOutput(IntPtr hwndOrNull, IntPtr param, SciterXDef.DEBUG_OUTPUT_PROC pfOutput) =>
 					_sciterSetupDebugOutput(hwndOrNull: hwndOrNull, param:  param, pfOutput: pfOutput);
 
 				#region DOM Element API
@@ -950,18 +1078,40 @@ namespace SciterCore.Interop
 				public SciterValue.VALUE_RESULT ValueIsNativeFunctor(ref SciterValue.VALUE pval) => 
 					_valueIsNativeFunctor(ref pval);
 
+
+                #region pre v4.4.3.24
+
+				public IntPtr GetTIScriptApi() => 
+					_getTIScriptApi();
+
+				public IntPtr SciterGetVM(IntPtr hwnd) =>
+					_sciterGetVM(hwnd);
+
+				public bool Sciter_v2V(IntPtr vm, SciterScript.ScriptValue scriptValue, ref SciterValue.VALUE value,
+					bool isolate) =>
+					_sciter_v2V(vm, scriptValue, ref value, isolate);
+
+				public bool Sciter_V2v(IntPtr vm, ref SciterValue.VALUE value,
+					ref SciterScript.ScriptValue scriptValue) =>
+					_sciter_V2v(vm, ref value, ref scriptValue);
+
+				#endregion
+
+                #region post v4.4.3.24
 				public void Reserved1() => 
 					_reserved1();
-				
+
 				public void Reserved2() => 
 					_reserved2();
-				
+
 				public void Reserved3() =>
 					_reserved3();
-				
+
 				public void Reserved4() =>
 					_reserved4();
-				
+
+                #endregion
+
 				public IntPtr SciterOpenArchive(IntPtr archiveData, uint archiveDataLength) => 
 					_sciterOpenArchive(archiveData, archiveDataLength);
 
@@ -1013,17 +1163,29 @@ namespace SciterCore.Interop
 				public SciterXDom.SCDOM_RESULT SciterGetElementAsset(IntPtr el, ulong nameAtom, out IntPtr ppass) =>
 					_sciterGetElementAsset(el, nameAtom, out ppass);
 
-				public bool SciterSetVariable(IntPtr hwndOrNull, string path, ref SciterValue.VALUE pvalToSet) =>
-					_sciterSetVariable(hwndOrNull, path, ref pvalToSet);
+				//public bool SciterSetVariable(IntPtr hwndOrNull, string path, ref SciterValue.VALUE pvalToSet) =>
+				//	_sciterSetVariable4446(hwndOrNull, path, ref pvalToSet);
 
-				//public uint SciterSetVariable(IntPtr hwndOrNull, string path, ref SciterValue.VALUE pvalToSet) =>
-				//	_sciterSetVariable(hwndOrNull, path, ref pvalToSet);
+				public uint SciterSetVariable(IntPtr hwndOrNull, string path, ref SciterValue.VALUE pvalToSet)
+				{
+					return _sciterSetVariable?.Invoke(hwndOrNull, path, ref pvalToSet) ??
+					       (_sciterSetVariable4446 != null
+						       ? System.Convert.ToUInt32(_sciterSetVariable4446(hwndOrNull, path, ref pvalToSet))
+						       : 0u);
+				}
 
-				public bool SciterGetVariable(IntPtr hwndOrNull, string path, ref SciterValue.VALUE pvalToGet) =>
-					_sciterGetVariable(hwndOrNull, path, ref pvalToGet);
+				//public bool SciterGetVariable(IntPtr hwndOrNull, string path, ref SciterValue.VALUE pvalToGet) =>
+				//	_sciterGetVariable4446(hwndOrNull, path, ref pvalToGet);
 
-				//public uint SciterGetVariable(IntPtr hwndOrNull, string path, ref SciterValue.VALUE pvalToGet) =>
-				//	_sciterGetVariable(hwndOrNull, path, ref pvalToGet);
+				public uint SciterGetVariable(IntPtr hwndOrNull, string path, out SciterValue.VALUE pvalToGet)
+				{
+					pvalToGet = new SciterValue.VALUE();
+					
+					return _sciterGetVariable?.Invoke(hwndOrNull, path, out pvalToGet) ??
+					       (_sciterGetVariable4446 != null
+						       ? System.Convert.ToUInt32(_sciterGetVariable4446(hwndOrNull, path, out pvalToGet))
+						       : 0u);
+				}
 
 				public uint SciterElementUnwrap(ref SciterValue.VALUE pval, out IntPtr ppElement) =>
 					_sciterElementUnwrap(ref pval, out ppElement);

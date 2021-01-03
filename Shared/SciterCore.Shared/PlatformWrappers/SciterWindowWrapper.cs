@@ -6,7 +6,7 @@ namespace SciterCore.PlatformWrappers
 {
     public static partial class SciterWindowWrapper
     {
-        internal static class NativeMethodWrapper
+        public static class NativeMethodWrapper
         {
             private static ISciterWindowWrapper _platformWrapper;
             

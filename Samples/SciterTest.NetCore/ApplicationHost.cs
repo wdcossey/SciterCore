@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -77,11 +78,11 @@ namespace SciterTest.NetCore
 			{
 				var value = SciterValue.Create(
 					new {
-						FrameworkDescription = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription,
-						ProcessArchitecture = System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture.ToString(),
-						OSArchitecture = System.Runtime.InteropServices.RuntimeInformation.OSArchitecture.ToString(),
-						OSDescription = System.Runtime.InteropServices.RuntimeInformation.OSDescription,
-						SystemVersion = System.Runtime.InteropServices.RuntimeEnvironment.GetSystemVersion()
+						FrameworkDescription = RuntimeInformation.FrameworkDescription,
+						ProcessArchitecture = RuntimeInformation.ProcessArchitecture.ToString(),
+						OSArchitecture = RuntimeInformation.OSArchitecture.ToString(),
+						OSDescription = RuntimeInformation.OSDescription,
+						SystemVersion = RuntimeEnvironment.GetSystemVersion()
 					});
 			
 				onCompleted.Invoke(value);
@@ -167,8 +168,7 @@ namespace SciterTest.NetCore
 		[SciterFunctionName("eval")]
 		public SciterValue EvaluateScript(SciterValue input)
 		{
-			var result = this.Host.EvalScript($"{input.AsString()}");
-
+			var result = Host.EvalScript($"{input.AsString()}");
 			return result;
 		}
 		
@@ -222,11 +222,13 @@ namespace SciterTest.NetCore
 			return base.OnScriptCall(element, method, args);
 		}
 
-		protected override bool OnEvent(SciterElement sourceElement, SciterElement targetElement,
+        protected override bool OnEvent(SciterElement sourceElement, SciterElement targetElement,
 			BehaviorEvents type, IntPtr reason, SciterValue data, string eventName)
 		{
-			if (type == BehaviorEvents.DocumentReady) 
-				this.Host.ConnectToInspector();
+			if (type == BehaviorEvents.DocumentReady)
+            {
+                //Host.ConnectToInspector();
+            }
 
 			_logger?.LogDebug($"{nameof(OnEvent)}: {nameof(type)}: {type}; {nameof(eventName)}: {eventName}; {nameof(data)}: {data.AsString()}");
 			return base.OnEvent(sourceElement, targetElement, type, reason, data, eventName);

@@ -483,6 +483,47 @@ namespace SciterCore
         #region DOM Manipulation
 
         /// <summary>
+        /// Inserts a new <see cref="SciterElement"/> with the given <paramref name="tag"/> at the desired <paramref name="index"/>.
+        /// </summary>
+        /// <param name="parent"></param>
+        /// <param name="tag"></param>
+        /// <param name="text"></param>
+        /// <param name="index"></param>
+        /// <param name="callback"></param>
+        /// <returns>The Parent <see cref="SciterElement"/> of the newly created <see cref="SciterElement"/></returns>
+        /// <exception cref="ArgumentNullException">If the <paramref name="tag"/> is null.</exception>
+        public static SciterElement InsertElement(this SciterElement parent, string tag, string text = null, int index = 0, Action<SciterElement> callback = null)
+        { 
+            parent?.TryInsertElement(tag: tag, element: out _, text: text, callback: callback);
+            return parent;
+        }
+
+        /// <summary>
+        /// Inserts a new <see cref="SciterElement"/> with the given <paramref name="tag"/> at the desired <paramref name="index"/>.
+        /// </summary>
+        /// <param name="parent"></param>
+        /// <param name="tag"></param>
+        /// <param name="element">The newly created <see cref="SciterElement"/></param>
+        /// <param name="text"></param>
+        /// <param name="index"></param>
+        /// <param name="callback"></param>
+        /// <returns>The Parent <see cref="SciterElement"/> of the newly created <see cref="SciterElement"/></returns>
+        /// <exception cref="ArgumentNullException">If the <paramref name="tag"/> is null.</exception>
+        public static bool TryInsertElement(this SciterElement parent, string tag, out SciterElement element, string text = null, int index = 0, Action<SciterElement> callback = null)
+        {
+            if (string.IsNullOrWhiteSpace(tag))
+                throw new ArgumentNullException(nameof(tag), @"Tag cannot be null or empty.");
+
+            element = null;
+            
+            var result = parent?.TryInsertElementInternal(tag: tag, element: out element, text: text) == true;
+            
+            callback?.Invoke(element);
+
+            return result;
+        }
+        
+        /// <summary>
         /// Inserts a <see cref="SciterElement"/> at the desired <paramref name="index"/>.
         /// </summary>
         /// <param name="parent"></param>

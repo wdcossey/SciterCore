@@ -292,17 +292,29 @@ namespace SciterCore.Interop
 		#endregion
 
 		#region Used to be TIScript VM API (Deprecated in v4.4.3.24)
+
+		[Obsolete("Removed in Sciter v4.4.3.24", false)]
+		IntPtr GetTIScriptApi();
+
+		[Obsolete("Removed in Sciter v4.4.3.24", false)]
+		IntPtr SciterGetVM(IntPtr hwnd);
+
+		[Obsolete("Removed in Sciter v4.4.3.24", false)]
+		bool Sciter_v2V(IntPtr vm, SciterScript.ScriptValue scriptValue, ref SciterValue.VALUE value, bool isolate);
+
+		[Obsolete("Removed in Sciter v4.4.3.24", false)]
+		bool Sciter_V2v(IntPtr vm, ref SciterValue.VALUE value, ref SciterScript.ScriptValue scriptValue);
 		
-		[Obsolete("Reserved in v4.4.3.24", true)]
+		[Obsolete("Reserved in Sciter v4.4.3.24", true)]
 		void Reserved1();
 
-		[Obsolete("Reserved in v4.4.3.24", true)]
+		[Obsolete("Reserved in Sciter v4.4.3.24", true)]
 		void Reserved2();
 
-		[Obsolete("Reserved in v4.4.3.24", true)]
+		[Obsolete("Reserved in Sciter v4.4.3.24", true)]
 		void Reserved3();
 		
-		[Obsolete("Reserved in v4.4.3.24", true)]
+		[Obsolete("Reserved in Sciter v4.4.3.24", true)]
 		void Reserved4();
 
 		#endregion
@@ -349,14 +361,14 @@ namespace SciterCore.Interop
 		#region Sciter 4.4.4.7
 		
 		SciterXDom.SCDOM_RESULT SciterGetElementAsset(IntPtr el, ulong nameAtom, out IntPtr ppass);
-		bool SciterGetVariable(IntPtr hwndOrNull, string path, ref SciterValue.VALUE pvalToGet);
-		bool SciterSetVariable(IntPtr hwndOrNull, string path, ref SciterValue.VALUE pvalToSet);
+		//bool SciterGetVariable(IntPtr hwndOrNull, string path, ref SciterValue.VALUE pvalToGet);
+		//bool SciterSetVariable(IntPtr hwndOrNull, string path, ref SciterValue.VALUE pvalToSet);
 		
 		#endregion
 
 		#region Sciter 4.4.5.4
-		//uint SciterSetVariable(IntPtr hwndOrNull, string path, ref SciterValue.VALUE pvalToSet);
-		//uint SciterGetVariable(IntPtr hwndOrNull, string path, ref SciterValue.VALUE pvalToGet);
+		uint SciterSetVariable(IntPtr hwndOrNull, string path, ref SciterValue.VALUE pvalToSet);
+		uint SciterGetVariable(IntPtr hwndOrNull, string path, out SciterValue.VALUE pvalToGet);
 		uint SciterElementUnwrap(ref SciterValue.VALUE pval, out IntPtr ppElement);
 		uint SciterElementWrap(ref SciterValue.VALUE pval, IntPtr ppElement);
 		uint SciterNodeUnwrap(ref SciterValue.VALUE pval, out IntPtr ppNode);

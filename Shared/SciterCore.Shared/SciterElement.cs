@@ -717,6 +717,18 @@ namespace SciterCore
 
 		#region DOM sub-tree manipulation
 		
+		internal bool InsertElementInternal(string tag, string text = null, int index = 0)
+		{
+			var element = Create(tag, text);
+			return InsertElementInternal(element);
+		}
+
+		internal bool TryInsertElementInternal(string tag, out SciterElement element, string text = null, int index = 0)
+		{
+			element = Create(tag, text);
+			return InsertElementInternal(element);
+		}
+		
 		internal bool InsertElementInternal(SciterElement element, int index = 0)
 		{
 			return Api.SciterInsertElement(element.Handle, this.Handle, System.Convert.ToUInt32(index))

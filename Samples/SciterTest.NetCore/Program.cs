@@ -3,7 +3,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SciterCore;
-using SciterTest.NetCore.Behaviors;
 
 
 namespace SciterTest.NetCore
