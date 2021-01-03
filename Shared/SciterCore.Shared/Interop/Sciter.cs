@@ -180,16 +180,20 @@ namespace SciterCore.Interop
 				return _sciterRequestApiInstance;
 			}
 		}
-		
+
+#pragma warning disable 618
+#pragma warning disable 612
 		private static ISciterScriptApi GetScriptApi()
         {
 	        lock (SciterRequestApiLock)
 	        {
 		        if (_sciterScriptApi != null)
 			        return _sciterScriptApi;
-				
+		        
+
 		        var apiStructSize = Marshal.SizeOf(t: typeof(SciterScript.SciterScriptApi));
-				
+
+
 		        if (IntPtr.Size == 8)
 			        Debug.Assert(apiStructSize == 616);
 		        else
@@ -203,7 +207,9 @@ namespace SciterCore.Interop
 		        return _sciterScriptApi;
 	        }
         }
-
+#pragma warning restore 612
+#pragma warning restore 618
+		
 		internal static class UnsafeNativeMethods
 		{
 			public static ISciterApi GetApiInterface()
@@ -1077,14 +1083,17 @@ namespace SciterCore.Interop
 
 
                 #region pre v4.4.3.24
-
+                
+#pragma warning disable 618
 				public IntPtr GetTIScriptApi() => 
 					_getTIScriptApi();
 
 				public IntPtr SciterGetVM(IntPtr hwnd) =>
 					_sciterGetVM(hwnd);
 
+
 				public bool Sciter_v2V(IntPtr vm, SciterScript.ScriptValue scriptValue, ref SciterValue.VALUE value,
+
 					bool isolate) =>
 					_sciter_v2V(vm, scriptValue, ref value, isolate);
 
@@ -1092,6 +1101,8 @@ namespace SciterCore.Interop
 					ref SciterScript.ScriptValue scriptValue) =>
 					_sciter_V2v(vm, ref value, ref scriptValue);
 
+#pragma warning restore 618
+				
 				#endregion
 
                 #region post v4.4.3.24

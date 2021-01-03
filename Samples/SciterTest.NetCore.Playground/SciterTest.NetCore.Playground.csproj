@@ -33,7 +33,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\RiderProjects\libui\DevZH.UI\src\DevZH.UI\DevZH.UI.csproj" />
     <ProjectReference Include="..\..\Platform\SciterCore.NetStd\SciterCore.NetStd.csproj" />
   </ItemGroup>
 

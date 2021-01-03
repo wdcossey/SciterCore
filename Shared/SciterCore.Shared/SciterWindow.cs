@@ -66,8 +66,6 @@ namespace SciterCore
 			protected set => _handle = value;
 		}
 		
-		private IntPtr _windowHandle;
-
 		/// <summary>
 		/// Typically this is the (platform) Window Handle.<br/>
 		/// Depending on the platform, this may coincide with the <see cref="Handle"/>

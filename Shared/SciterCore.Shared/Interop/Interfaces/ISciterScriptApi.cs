@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+#pragma warning disable 612
+#pragma warning disable 618
 
 // ReSharper disable InconsistentNaming
 
@@ -273,7 +275,7 @@ namespace SciterCore.Interop
 		/// defines native function that can be accessed globally
 		/// </summary>
 		/// <param name="vmPtr"></param>
-		/// <param name="pd"></param>
+		/// <param name="md"></param>
 		/// <returns></returns>
 		bool DefineGlobalFunction(IntPtr vmPtr, SciterScript.tiscript_method_def md);
 
@@ -282,7 +284,7 @@ namespace SciterCore.Interop
 		/// defines native function that can be accessed globally
 		/// </summary>
 		/// <param name="vmPtr"></param>
-		/// <param name="pd"></param>
+		/// <param name="md"></param>
 		/// <param name="zns">namespace object (or 0 if global)</param>
 		/// <returns></returns>
 		bool DefineGlobalFunction(IntPtr vmPtr, SciterScript.tiscript_method_def md, SciterScript.ScriptValue zns);

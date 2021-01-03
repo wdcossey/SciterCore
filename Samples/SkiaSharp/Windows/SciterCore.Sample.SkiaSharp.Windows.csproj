@@ -127,10 +127,6 @@
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.5.2" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Platform\SciterCore.Platform\SciterCore.Platform.csproj">
-      <Project>{39d58d8c-9a0d-4b83-8686-125a2286a93f}</Project>
-      <Name>SciterCore.Platform</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\Platform\SciterCore.Windows\SciterCore.Windows.csproj">
       <Project>{18b2e4e7-cb77-44c3-865b-be05620aba4d}</Project>
       <Name>SciterCore.Windows</Name>
