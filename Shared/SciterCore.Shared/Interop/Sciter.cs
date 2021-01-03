@@ -1,5 +1,6 @@
 ﻿// ReSharper disable RedundantUsingDirective
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -208,81 +209,77 @@ namespace SciterCore.Interop
 			public static ISciterApi GetApiInterface()
 			{
 				var sciterApiPtr = SciterAPI();
-				
-				var versionApi = Marshal.PtrToStructure<SciterVersionApi>(sciterApiPtr);
-				var major = versionApi.SciterVersion(true);
-				var minor = versionApi.SciterVersion(false);
-
-				var version = new Version(
-					(int) ((major >> 16) & 0xffff),
-					(int) (major & 0xffff),
-					(int) ((minor >> 16) & 0xffff),
-					(int) (minor & 0xffff));
-				
-				// Create assembly and module
-				var assemblyName = new AssemblyName(Guid.NewGuid().ToString());
-				var assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.Run);
-				var moduleBuilder = assemblyBuilder.DefineDynamicModule(assemblyName.ToString());
-
-				// Open a new Type for definition
-				var typeBuilder = moduleBuilder.DefineType("DynamicSciterApi",
-					TypeAttributes.NotPublic |
-					TypeAttributes.Sealed |
-					TypeAttributes.SequentialLayout |
-					TypeAttributes.Serializable |
-					TypeAttributes.AnsiClass,
-					typeof(ValueType));
-				
-				var fieldInfoDictionary = typeof(Sciter.DynamicSciterApi)
-					.GetFields(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public)
-					.AsQueryable();
-
-				fieldInfoDictionary = fieldInfoDictionary
-					.Where(w => 
-						w.GetCustomAttribute<SciterApiOSPlatformAttribute>() == null || 
-						w.GetCustomAttribute<SciterApiOSPlatformAttribute>().Platform == SciterOSPlatform.Windows);
-
-				fieldInfoDictionary = fieldInfoDictionary
-					.Where(w => 
-						w.GetCustomAttribute<SciterApiMinVersionAttribute>() == null || 
-						(w.GetCustomAttribute<SciterApiMinVersionAttribute>().Version.CompareTo(version) <= 0));
-
-				fieldInfoDictionary = fieldInfoDictionary
-					.Where(w => 
-						w.GetCustomAttribute<SciterApiMaxVersionAttribute>() == null || 
-						(w.GetCustomAttribute<SciterApiMaxVersionAttribute>().Version.CompareTo(version) >= 0));
-				
-					
-				//.ToDictionary(key => key.FieldType.GetCustomAttribute<SciterApiOSPlatformAttribute>()?.Name,
-				//    value => value);
-
-				foreach (var fieldInfo in fieldInfoDictionary)
-					typeBuilder.DefineField(fieldInfo.Name, fieldInfo.FieldType, FieldAttributes.Public);
-
-				var type = typeBuilder.CreateTypeInfo();
-				//bool isVal = type.IsValueType; // true
-
-				//dynamic x = Activator.CreateInstance(type);
-				//var y = x.m_number;
-
-				//var xx = Marshal.PtrToStructure<WindowsSciterApi>(sciterApiPtr);
-				
-				if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-					return new NativeSciterApiWrapper(type, sciterApiPtr);
-					//return new NativeSciterApiWrapper(typeof(WindowsSciterApi), sciterApiPtr);
-				
-				//	return new NativeSciterApiWrapper<WindowsSciterApi>(sciterApiPtr);
-
-				//if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-				//	return new NativeSciterApiWrapper<MacOsSciterApi>(sciterApiPtr);
-//
-				//if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-				//	return new NativeSciterApiWrapper<LinuxSciterApi>(sciterApiPtr);
-				
-				
-				throw new PlatformNotSupportedException();
+				var dynamicType = DynamicApiHelper.GetDynamicSciterApi(sciterApiPtr);
+				return new NativeSciterApiWrapper(dynamicType, sciterApiPtr);
 			}
 			
+			private static class DynamicApiHelper
+			{
+				private static IEnumerable
+					<(OSPlatform Platform, SciterOSPlatform RuntimePlatform)?> EnumeratePlatforms()
+				{
+					yield return (OSPlatform.Windows, SciterOSPlatform.Windows);
+					yield return (OSPlatform.OSX, SciterOSPlatform.MacOS);
+					yield return (OSPlatform.Linux, SciterOSPlatform.Linux);
+				}
+
+				private static SciterOSPlatform GetSciterPlatform()
+				{
+					return EnumeratePlatforms().FirstOrDefault(p
+						=> p != null && RuntimeInformation.IsOSPlatform(p.Value.Platform))?.RuntimePlatform ?? default;
+				}
+
+				public static TypeInfo GetDynamicSciterApi(IntPtr sciterApiPtr)
+				{
+					var sciterOS = GetSciterPlatform();
+					
+					var versionApi = Marshal.PtrToStructure<SciterVersionApi>(sciterApiPtr);
+					var major = versionApi.SciterVersion(true);
+					var minor = versionApi.SciterVersion(false);
+
+					var version = new Version(
+						(int) ((major >> 16) & 0xffff),
+						(int) (major & 0xffff),
+						(int) ((minor >> 16) & 0xffff),
+						(int) (minor & 0xffff));
+					
+					var assemblyName = new AssemblyName(Guid.NewGuid().ToString());
+					var assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.Run);
+					var moduleBuilder = assemblyBuilder.DefineDynamicModule(assemblyName.ToString());
+					
+					var typeBuilder = moduleBuilder.DefineType("DynamicSciterApi",
+						TypeAttributes.NotPublic |
+						TypeAttributes.Sealed |
+						TypeAttributes.SequentialLayout |
+						TypeAttributes.Serializable |
+						TypeAttributes.AnsiClass,
+						typeof(ValueType));
+				
+					var fieldInfoDictionary = typeof(DynamicSciterApi)
+						.GetFields(BindingFlags.Instance | BindingFlags.Public)
+						.AsQueryable();
+
+					fieldInfoDictionary = fieldInfoDictionary
+						.Where(w => 
+							w.GetCustomAttribute<SciterApiOSPlatformAttribute>() == null || 
+							w.GetCustomAttribute<SciterApiOSPlatformAttribute>().Platform == sciterOS);
+
+					fieldInfoDictionary = fieldInfoDictionary
+						.Where(w => 
+							w.GetCustomAttribute<SciterApiMinVersionAttribute>() == null || 
+							(w.GetCustomAttribute<SciterApiMinVersionAttribute>().Version.CompareTo(version) <= 0));
+
+					fieldInfoDictionary = fieldInfoDictionary
+						.Where(w => 
+							w.GetCustomAttribute<SciterApiMaxVersionAttribute>() == null || 
+							(w.GetCustomAttribute<SciterApiMaxVersionAttribute>().Version.CompareTo(version) >= 0));
+				
+					foreach (var fieldInfo in fieldInfoDictionary)
+						typeBuilder.DefineField(fieldInfo.Name, fieldInfo.FieldType, FieldAttributes.Public);
+
+					return typeBuilder.CreateTypeInfo();
+				}
+			}
 
 			private sealed class NativeSciterApiWrapper : ISciterApi
 			{

@@ -434,9 +434,9 @@ namespace SciterCore.Interop
 
 				#region eval
 
-				public bool Eval(IntPtr vmPtr, ScriptValue ns, IntPtr input, bool template_mode,
+				public bool Eval(IntPtr vmPtr, ScriptValue ns, IntPtr input, bool templateMode,
                     out ScriptValue retValue) => 
-				    _eval(vmPtr, ns, input, template_mode, out retValue);
+				    _eval(vmPtr, ns, input, templateMode, out retValue);
 
                 public bool EvalString(IntPtr vmPtr, IntPtr ns, string script,
                     out ScriptValue retValue, int? scriptLength = null) =>
@@ -629,21 +629,7 @@ namespace SciterCore.Interop
 	                
 	                return SetProp(vmPtr,zns, key, value);
                 }
-                
-
-
-                
-                /*
-                 
-  // defines native function that can be accessed globally
-  inline void define_global_function( HVM vm, method_def* md, value zns = 0) // in this namespace object (or 0 if global)
-  {
-    if( !zns ) zns = get_global_ns(vm);
-    set_prop(vm,zns,md->name, ni()->native_function_value(vm,md));
-  }
-
-                 */
-            }
+			}
 		}
     }
 }
