@@ -35,13 +35,18 @@ namespace SciterCore
 		private static readonly ISciterApi Api = Sciter.Api;
 
 		private IntPtr _windowHandle;
-		
+
 		private Dictionary<string, EventHandlerRegistry> _behaviorMap = new Dictionary<string, EventHandlerRegistry>();
-		
+
 		private SciterEventHandler _windowEventHandler;
 
+#if SCITER_JS
+		public static bool InjectLibConsole = false;
+#else
 		public static bool InjectLibConsole = true;
-		private static List<IntPtr> _lib_console_vms = new List<IntPtr>();
+#endif
+
+	private static List<IntPtr> _lib_console_vms = new List<IntPtr>();
 		private static SciterArchive _consoleArchive;
 
 		private class DefaultEventHandler : SciterEventHandler { }
@@ -54,11 +59,11 @@ namespace SciterCore
 
 		static SciterHost()
 		{
-			_consoleArchive = new SciterArchive("scitersharp:")
-                .Open("LibConsole");
-
+			
 			if (InjectLibConsole)
 			{
+				_consoleArchive = new SciterArchive("scitersharp:").Open("LibConsole");
+				
 				var byteArray = Encoding.UTF8.GetBytes("include \"scitersharp:console.tis\";");
 				var pinnedArray = GCHandle.Alloc(byteArray, GCHandleType.Pinned);
 				var pointer = pinnedArray.AddrOfPinnedObject();

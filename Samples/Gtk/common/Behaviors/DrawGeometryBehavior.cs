@@ -26,14 +26,13 @@ namespace SciterTest.Gtk.Behaviors
 						.SetLineColor(0, 255, 255, .75f)
 	                    .SetFillColor(127, 78, 194, .75f)
 	                    .SetLineWidth(4)
-	                    .DrawPolygon((g) => new []
-	                    {
+	                    .DrawPolygon(
 		                    PolygonPoint.Create(51.0f, 58.0f),
 		                    PolygonPoint.Create(70.0f, 28.0f),
 		                    PolygonPoint.Create(48.0f, 1.0f),
 		                    PolygonPoint.Create(15.0f, 14.0f),
-		                    PolygonPoint.Create(17.0f, 49.0f),
-	                    })
+		                    PolygonPoint.Create(17.0f, 49.0f)
+	                    )
 						.SetLineWidth(2)
 						.SetLineColor(SciterColor.IndianRed)
 						.SetFillColor(SciterColor.CornflowerBlue)
