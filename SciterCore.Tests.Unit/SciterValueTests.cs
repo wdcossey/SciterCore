@@ -73,6 +73,16 @@ namespace SciterCore.Tests.Unit
             Assert.AreEqual(input, actual.AsDouble());
         }
 
+        [TestCase(float.MinValue)]
+        [TestCase(float.MaxValue)]
+        public void Value_from_Float(float input)
+        {
+            var actual = SciterValue.Create(input);
+            
+            Assert.IsTrue(actual.IsFloat);
+            Assert.AreEqual(input, actual.AsFloat());
+        }
+
         [TestCase(-360)]
         [TestCase(0)]
         [TestCase(360)]
@@ -222,7 +232,8 @@ namespace SciterCore.Tests.Unit
                 SciterValue.Create(1d),
                 SciterValue.Create("string"),
                 SciterValue.Create(DateTime.Now),
-                SciterValue.Create(true)
+                SciterValue.Create(true),
+                SciterValue.Create(1f),
             };
             
             var actual = SciterValue.Create(input.ToArray());
@@ -235,6 +246,8 @@ namespace SciterCore.Tests.Unit
             Assert.AreEqual(input[3].AsString("exp"), actual.GetItem(3).AsString("actual"));
             Assert.AreEqual(input[4].AsDateTime(), actual.GetItem(4).AsDateTime());
             Assert.AreEqual(input[5].AsBoolean(), actual.GetItem(5).AsBoolean(true));
+            Assert.AreEqual(input[6].AsFloat(-1f), actual.GetItem(6).AsFloat());
+
         }
         
         [Test]

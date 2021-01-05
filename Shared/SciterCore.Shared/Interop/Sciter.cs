@@ -43,7 +43,7 @@ namespace SciterCore.Interop
 		private const string SciterMacOSLibrary = "sciter-osx-64.dylib";
 		// ReSharper enable InconsistentNaming
 		
-#if NETCOREAPP3_1
+#if NETCOREAPP3_1 || NET5_0
 		
 		/// <summary>
 		/// Name is purely to avoid collision
@@ -73,7 +73,7 @@ namespace SciterCore.Interop
 		}
 #endif
 			
-#if NETCOREAPP3_1
+#if NETCOREAPP3_1 || NET5_0
 		[DllImport(SciterPlatformLibrary, EntryPoint = "SciterAPI")]
 #elif WINDOWS || NETCORE
 		[DllImport(SciterWindowsLibrary, EntryPoint = "SciterAPI")]
@@ -93,7 +93,7 @@ namespace SciterCore.Interop
 
 				//var apiStructSize = Marshal.SizeOf(typeof(SciterApi));
 
-#if NETCOREAPP3_1
+#if NETCOREAPP3_1 || NET5_0
 				NativeLibrary.SetDllImportResolver(typeof(Sciter).Assembly, ImportResolver);
 #elif WINDOWS || NETCORE
 

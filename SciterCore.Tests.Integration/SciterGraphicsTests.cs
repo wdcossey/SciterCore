@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using NUnit.Framework;
 using SciterCore.Attributes;
 using SciterCore.Interop;
@@ -464,5 +465,142 @@ namespace SciterCore.Tests.Integration
             
             //Assert.NotNull(_sciterGraphics);
         }
+        
+        [TestCase("draw-lines-linear-gradient")]
+        public void Draw_line_with_linear_gradient_(string behaviorName)
+        {
+            var random = new Random();
+            
+            var host = new SciterHost(_sciterWindow);
+            host.RegisterBehaviorHandler(() => new DrawContentBehavior(_sciterWindow, (element, args) =>
+            {
+                if (args.DrawEvent != DrawEvent.Content) 
+                    return false;
+                
+                using(var graphics = SciterGraphics.Create(args.Handle))
+                {
+                    for (var i = 0; i < 10; i++)
+                    {
+                        graphics.SaveState()
+                            .Translate(args.Area.Left, args.Area.Top)
+                            .SetLineWidth(random.Next(5, 15))
+                            .SetLineGradientLinear(
+                                0f,
+                                0f,
+                                args.Area.Width,
+                                args.Area.Height,
+                                SciterColorStop.Create(0f, Color.Aqua),
+
+                                SciterColorStop.Create(.25f,
+                                    (byte) random.Next(byte.MinValue, byte.MaxValue),
+                                    (byte) random.Next(byte.MinValue, byte.MaxValue),
+                                    (byte) random.Next(byte.MinValue, byte.MaxValue),
+                                    (float) random.NextDouble()),
+                                SciterColorStop.Create(.5f,
+                                    (byte) random.Next(byte.MinValue, byte.MaxValue),
+                                    (byte) random.Next(byte.MinValue, byte.MaxValue),
+                                    (byte) random.Next(byte.MinValue, byte.MaxValue),
+                                    (byte) random.Next(byte.MinValue, byte.MaxValue)),
+                                SciterColorStop.Create(.75f,
+                                    (byte) random.Next(byte.MinValue, byte.MaxValue),
+                                    (byte) random.Next(byte.MinValue, byte.MaxValue),
+                                    (byte) random.Next(byte.MinValue, byte.MaxValue)),
+                                SciterColorStop.Create(1f, SciterColor.Lime))
+                            
+                            .DrawLine(random.Next(byte.MinValue, args.Area.Width),
+                                random.Next(byte.MinValue, args.Area.Height),
+                                random.Next(byte.MinValue, args.Area.Width),
+                                random.Next(byte.MinValue, args.Area.Height));
+                            
+                        graphics.SaveState()
+                            .Translate((args.Area.Right - args.Area.Left)  / 2f, (args.Area.Height - args.Area.Top) / 2f)
+                            
+                            .SetLineGradientLinear(
+                                0f,
+                                0f,
+                                args.Area.Width,
+                                args.Area.Height,
+                                SciterColorStop.Create(0f, Color.Orange),
+
+                                SciterColorStop.Create(.25f,
+                                    (byte) random.Next(byte.MinValue, byte.MaxValue),
+                                    (byte) random.Next(byte.MinValue, byte.MaxValue),
+                                    (byte) random.Next(byte.MinValue, byte.MaxValue),
+                                    (float) random.NextDouble()),
+                                SciterColorStop.Create(.5f,
+                                    (byte) random.Next(byte.MinValue, byte.MaxValue),
+                                    (byte) random.Next(byte.MinValue, byte.MaxValue),
+                                    (byte) random.Next(byte.MinValue, byte.MaxValue),
+                                    (byte) random.Next(byte.MinValue, byte.MaxValue)),
+                                SciterColorStop.Create(.75f,
+                                    (byte) random.Next(byte.MinValue, byte.MaxValue),
+                                    (byte) random.Next(byte.MinValue, byte.MaxValue),
+                                    (byte) random.Next(byte.MinValue, byte.MaxValue)),
+                                SciterColorStop.Create(1f, SciterColor.Indigo))
+                            
+                            .DrawEllipse(0,
+                                random.Next(0),
+                                random.Next(byte.MinValue, args.Area.Width / 2),
+                                random.Next(byte.MinValue, args.Area.Height / 2))
+                            
+                            .DrawRectangle(random.Next(byte.MinValue, args.Area.Width),
+                                random.Next(byte.MinValue, args.Area.Height),
+                                random.Next(byte.MinValue, args.Area.Width / 2),
+                                random.Next(byte.MinValue, args.Area.Height / 2))
+                            
+                            .RestoreState();
+                            
+                        graphics.SaveState()
+                            .Translate(args.Area.Left, args.Area.Top)
+                            
+                            .SetLineGradientLinear(
+                                0f,
+                                0f,
+                                args.Area.Width,
+                                args.Area.Height,
+                                SciterColorStop.Create(0f, Color.Coral),
+
+                                SciterColorStop.Create(.25f,
+                                    (byte) random.Next(byte.MinValue, byte.MaxValue),
+                                    (byte) random.Next(byte.MinValue, byte.MaxValue),
+                                    (byte) random.Next(byte.MinValue, byte.MaxValue),
+                                    (float) random.NextDouble()),
+                                SciterColorStop.Create(.5f,
+                                    (byte) random.Next(byte.MinValue, byte.MaxValue),
+                                    (byte) random.Next(byte.MinValue, byte.MaxValue),
+                                    (byte) random.Next(byte.MinValue, byte.MaxValue),
+                                    (byte) random.Next(byte.MinValue, byte.MaxValue)),
+                                SciterColorStop.Create(.75f,
+                                    (byte) random.Next(byte.MinValue, byte.MaxValue),
+                                    (byte) random.Next(byte.MinValue, byte.MaxValue),
+                                    (byte) random.Next(byte.MinValue, byte.MaxValue)),
+                                SciterColorStop.Create(1f, SciterColor.Magenta))
+                            
+                            .DrawRectangle(random.Next(byte.MinValue, args.Area.Width),
+                                random.Next(byte.MinValue, args.Area.Height),
+                                random.Next(byte.MinValue, args.Area.Width / 2),
+                                random.Next(byte.MinValue, args.Area.Height / 2))
+                            
+                            .RestoreState();
+
+                        graphics.RestoreState();
+                    }
+                }
+                
+                //element?.Window?.Close();
+                
+                return true;
+
+            }), behaviorName: behaviorName);
+            
+            _sciterWindow.Show();
+            
+            _sciterWindow.RootElement.AppendChildElement("body")
+                .SetStyleValue("background", $"rgb({random.Next(byte.MinValue, byte.MaxValue)}, {random.Next(byte.MinValue, byte.MaxValue)}, {random.Next(byte.MinValue, byte.MaxValue)})")
+                .SetStyleValue("behavior", behaviorName);
+
+            SciterPlatform.RunMessageLoop();
+        }
+
     }
 }
