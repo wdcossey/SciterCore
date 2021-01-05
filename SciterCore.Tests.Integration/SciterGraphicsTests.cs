@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Threading;
+using System.Threading.Tasks;
 using NUnit.Framework;
 using SciterCore.Attributes;
 using SciterCore.Interop;
@@ -54,6 +56,7 @@ namespace SciterCore.Tests.Integration
             }
         }
         
+        [Timeout(5000)]
         [TestCase("draw-lines", LineCapType.Round, LineJoinType.Bevel)]
         [TestCase("draw-lines", LineCapType.Round, LineJoinType.Miter)]
         [TestCase("draw-lines", LineCapType.Round, LineJoinType.Round)]
@@ -151,6 +154,7 @@ namespace SciterCore.Tests.Integration
             //Assert.NotNull(_sciterGraphics);
         }
 
+        [Timeout(2500)]
         [Test]
         public void Polygon()
         {
@@ -207,6 +211,7 @@ namespace SciterCore.Tests.Integration
             //Assert.NotNull(_sciterGraphics);
         }
         
+        [Timeout(5000)]
         [TestCase(LineCapType.Round, LineJoinType.Bevel)]
         [TestCase(LineCapType.Round, LineJoinType.Miter)]
         [TestCase(LineCapType.Round, LineJoinType.Round)]
@@ -284,6 +289,7 @@ namespace SciterCore.Tests.Integration
             //Assert.NotNull(_sciterGraphics);
         }
         
+        [Timeout(2500)]
         [Test]
         public void DrawEllipse()
         {
@@ -363,6 +369,7 @@ namespace SciterCore.Tests.Integration
             //Assert.NotNull(_sciterGraphics);
         }
         
+        [Timeout(2500)]
         [Test]
         public void DrawRectangle()
         {
@@ -415,6 +422,7 @@ namespace SciterCore.Tests.Integration
             //Assert.NotNull(_sciterGraphics);
         }
         
+        [Timeout(2500)]
         [Test]
         public void DrawLine()
         {
@@ -466,8 +474,9 @@ namespace SciterCore.Tests.Integration
             //Assert.NotNull(_sciterGraphics);
         }
         
+        [Timeout(2500)]
         [TestCase("draw-lines-linear-gradient")]
-        public void Draw_line_with_linear_gradient_(string behaviorName)
+        public void Draw_line_with_linear_gradient(string behaviorName)
         {
             var random = new Random();
             
@@ -587,7 +596,7 @@ namespace SciterCore.Tests.Integration
                     }
                 }
                 
-                //element?.Window?.Close();
+                element?.Window?.Close();
                 
                 return true;
 
