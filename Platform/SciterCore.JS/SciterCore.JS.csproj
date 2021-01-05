@@ -5,12 +5,12 @@
         <LangVersion>8</LangVersion>
         <Title>SciterCore.JS</Title>
         <Authors>William D Cossey</Authors>
-        <Description>SciterCore package for .Net applications</Description>
+        <Description>SciterCore.JS package for .Net applications</Description>
         <PackageProjectUrl>https://github.com/wdcossey/SciterCore</PackageProjectUrl>
         <PackageLicenseUrl>https://www.gnu.org/licenses/gpl-3.0.en.html</PackageLicenseUrl>
         <PackageIconUrl>https://github.com/wdcossey/SciterCore/raw/master/Assets/sciter_nuget_icon.png</PackageIconUrl>
         <RepositoryUrl>https://github.com/wdcossey/SciterCore</RepositoryUrl>
-        <PackageTags>Sciter SciterCore SciterSharp WinForms WPF Gtk Xamarin</PackageTags>
+        <PackageTags>Sciter Sciter.JS SciterCore SciterCore.JS SciterSharp WinForms WPF Gtk Xamarin</PackageTags>
         <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
         <RootNamespace>SciterCore</RootNamespace>
     </PropertyGroup>
@@ -24,7 +24,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="SciterCore.JS.Binaries" Version="4.4.5.*-*" />
+      <PackageReference Include="SciterCore.JS.Binaries" Version="(4.4.5-*,)" />
       <PackageReference Include="SciterCore.PackFolder" Version="0.1.293" />
       <PackageReference Include="System.Drawing.Common" Version="5.0.0" />
       <PackageReference Include="System.Reflection.Emit" Version="4.7.0" />

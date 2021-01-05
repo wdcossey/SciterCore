@@ -25,41 +25,14 @@
             $("#os-type").innerText = env.DEVICE;
             $("#os-version").innerText = env.OS;
             $("#gfx-backend").innerText = Window.this.graphicsBackend;
+            
+            document.$("a").on("click", function() {
+                sciter.launch(this.attributes["href"]);
+                return true;
+            });
 
-            
-            
         </script>
         
-        <script type="text/javascript" >
-            const view = Window.this;
-            const ver =  document.querySelector('#sciterversion');
-            const loginButton = document.querySelector('#button');
-            
-            const equalsButton = document.querySelector('[data-equals]');
-            equalsButton.addEventListener('click', button => {
-                equalsButton.innerHTML ="ho1";
-            });
-            
-            //ver.innerText ="hmmm";
-            loginButton.innerHTML ="click me!";
-
-            loginButton.addEventListener('click', () => {
-                loginButton.innerHTML ="ho1";
-            });
-            
-            loginButton.addEventListener('click', button => {
-                loginButton.innerHTML ="ho2";
-            });
-            
-            loginButton.addEventListener(`click`, event => {
-                ver.innerHTML ="ho";
-                //view.frame.SynchronousFunction();
-            });
-
-            function Init(version){
-                ver.innerHTML = version;
-            }
-        </script>
         
         <style>
             
@@ -363,16 +336,13 @@
 
                 </card>
                 
-                <button .primary #button id="button" >Hello</button>
-                
-                <button data-equals >=</button>
             </div>
         </section>
 
         <footer>
             <div style=" flow:horizontal; border-spacing:*;height:*; overflow-x: hidden; overflow-y: hidden">
                 <div style="margin-top:*; margin-bottom:*; margin-left: 8dip; display: inline-block; white-space: nowrap; overflow-x: fragments ">
-                    <a href="https://github.com/wdcossey/SciterCore" >SciterCore.JS</a></a>
+                    <a #sciterCore href="https://github.com/wdcossey/SciterCore" >SciterCore.JS</a>
                 </div>
 
                 <div style="margin: * 8dip;display: inline-block; white-space: nowrap; overflow-x: fragments">
