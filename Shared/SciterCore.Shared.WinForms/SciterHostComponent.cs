@@ -108,7 +108,7 @@ namespace SciterCore.WinForms
                 OnScriptCall?.Invoke(this, args);
             };
             
-            winFormsEventHandler.UpdateHost(FormsHost);
+            winFormsEventHandler.SetHost(FormsHost);
                 
             this.FormsHost?.AttachEventHandler(winFormsEventHandler);
             
@@ -140,7 +140,7 @@ namespace SciterCore.WinForms
 
     internal class SciterFormsHost : SciterHost
     {
-        protected static ISciterApi _api = Sciter.Api;
+        protected static ISciterApi _api = Sciter.SciterApi;
         private SciterArchive _archive;
 
         internal event EventHandler<InternalGetArchiveItemEventArgs> InternalGetItem;

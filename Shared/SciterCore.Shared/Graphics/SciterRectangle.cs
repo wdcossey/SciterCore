@@ -1,6 +1,6 @@
 ﻿namespace SciterCore
 {
-    public struct SciterRectangle
+    public readonly struct SciterRectangle
     {
         public SciterRectangle(int left, int top, int right, int bottom)
             : this(right: right, bottom: bottom)

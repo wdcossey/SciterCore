@@ -13,7 +13,7 @@ namespace SciterTest.Graphics
 		static void Main(string[] args)
 		{
 			// Default GFX in Sciter v4 is Skia, switch to CoreGraphics (seems more stable)
-			Sciter.Api.SciterSetOption(IntPtr.Zero, SciterXDef.SCITER_RT_OPTIONS.SCITER_SET_GFX_LAYER, new IntPtr((int) SciterXDef.GFX_LAYER.GFX_LAYER_CG));
+			Sciter.SciterApi.SciterSetOption(IntPtr.Zero, SciterXDef.SCITER_RT_OPTIONS.SCITER_SET_GFX_LAYER, new IntPtr((int) SciterXDef.GFX_LAYER.GFX_LAYER_CG));
 
 			NSApplication.Init();
 
@@ -35,7 +35,7 @@ namespace SciterTest.Graphics
 		public override void DidFinishLaunching(NSNotification notification)
 		{
 			//Mono.Setup();
-			Console.WriteLine($@"Sciter: {Sciter.Api.SciterVersion()}");
+			Console.WriteLine($@"Sciter: {Sciter.SciterApi.SciterVersion()}");
 
 			// Create the window
 			var window = new SciterWindow().CreateMainWindow(800, 600)

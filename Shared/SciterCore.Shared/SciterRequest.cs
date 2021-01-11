@@ -23,7 +23,7 @@ namespace SciterCore
 {
 	public class SciterRequest
 	{
-		private static readonly ISciterRequestApi RequestApi = Interop.Sciter.RequestApi;
+		private static readonly ISciterRequestApi RequestApi = Sciter.RequestApi;
 		private readonly IntPtr _requestHandle;
 		
 		public IntPtr Handle => _requestHandle;

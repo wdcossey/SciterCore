@@ -33,7 +33,7 @@ namespace SciterCore
 {
 	public sealed class SciterElement : IDisposable
 	{
-		private static readonly ISciterApi Api = Sciter.Api;
+		private static readonly ISciterApi SciterApi = Sciter.SciterApi;
 		private readonly IntPtr _elementHandle;
 
 		/// <summary>
@@ -46,7 +46,7 @@ namespace SciterCore
 			if(elementHandle == IntPtr.Zero)
 				throw new ArgumentException($"IntPtr.Zero received at {nameof(SciterElement)} constructor.");
 
-			Api.Sciter_UseElement(elementHandle);
+			SciterApi.Sciter_UseElement(elementHandle);
 			_elementHandle = elementHandle;
 		}
 
@@ -59,7 +59,7 @@ namespace SciterCore
 			if(elementHandle == IntPtr.Zero)
 				throw new ArgumentException("IntPtr.Zero received at SciterElement constructor");
 
-			Api.Sciter_UseElement(this.Handle);
+			SciterApi.Sciter_UseElement(this.Handle);
 			_elementHandle = elementHandle;
 		}
 		
@@ -72,7 +72,7 @@ namespace SciterCore
 		public static bool TryCreate(string tag, out SciterElement element, string text = null)
 		{
 			var result =
-				Api.SciterCreateElement(tag, text, out var elementHandle)
+				SciterApi.SciterCreateElement(tag, text, out var elementHandle)
 					.IsOk() && elementHandle != IntPtr.Zero;
 			
 			element = result ? new SciterElement(elementHandle) : null;
@@ -92,7 +92,7 @@ namespace SciterCore
 		
 		internal bool TryGetTagInternal(out string tag)
 		{
-			var result = Api.SciterGetElementType(this.Handle, out var tagPtr)
+			var result = SciterApi.SciterGetElementType(this.Handle, out var tagPtr)
 				.IsOk();
 			tag = result ? Marshal.PtrToStringAnsi(tagPtr) : default;
 			return result;
@@ -128,7 +128,7 @@ namespace SciterCore
 				return ClearTextInternal();
 
 			var data = Encoding.UTF8.GetBytes(html);
-			return Api.SciterSetElementHtml(this.Handle, data, (uint) data.Length, where)
+			return SciterApi.SciterSetElementHtml(this.Handle, data, (uint) data.Length, where)
 				.IsOk();
 		}
 		
@@ -151,7 +151,7 @@ namespace SciterCore
 		{
 			string htmlValue = default;
 
-			var domResult = Api.SciterGetElementHtmlCB(
+			var domResult = SciterApi.SciterGetElementHtmlCB(
 				this.Handle, 
 				outerHtml, 
 				(IntPtr bytes, uint numBytes, IntPtr param) =>
@@ -181,7 +181,7 @@ namespace SciterCore
 		{
 			string outText = default;
 
-			var domResult = Api.SciterGetElementTextCB(
+			var domResult = SciterApi.SciterGetElementTextCB(
 				this.Handle, 
 				(IntPtr strPtr, uint strLength, IntPtr param) =>
 					{
@@ -201,7 +201,7 @@ namespace SciterCore
 		
 		internal bool TrySetTextInternal(string text)
 		{
-			return Api.SciterSetElementText(this.Handle, text, System.Convert.ToUInt32(text?.Length ?? 0))
+			return SciterApi.SciterSetElementText(this.Handle, text, System.Convert.ToUInt32(text?.Length ?? 0))
 				.IsOk();
 		}
 		
@@ -232,7 +232,7 @@ namespace SciterCore
 
 		internal bool TryGetAttributeCountInternal(out int value)
 		{
-			var result = Api.SciterGetAttributeCount(this.Handle, out var count)
+			var result = SciterApi.SciterGetAttributeCount(this.Handle, out var count)
 				.IsOk();
 			value = result ? System.Convert.ToInt32(count) : 0;
 			return result;
@@ -248,7 +248,7 @@ namespace SciterCore
 		{
 			string outValue = default;
 			
-			var domResult = Api.SciterGetNthAttributeValueCB(this.Handle, System.Convert.ToUInt32(index), (IntPtr str, uint strLength, IntPtr param) =>
+			var domResult = SciterApi.SciterGetNthAttributeValueCB(this.Handle, System.Convert.ToUInt32(index), (IntPtr str, uint strLength, IntPtr param) =>
 			{
 				outValue = Marshal.PtrToStringUni(str, (int)strLength);
 			}, IntPtr.Zero);
@@ -268,7 +268,7 @@ namespace SciterCore
 		{
 			string outValue = default;
 			
-			var domResult = Api.SciterGetAttributeByNameCB(this.Handle, key, (IntPtr str, uint strLength, IntPtr param) =>
+			var domResult = SciterApi.SciterGetAttributeByNameCB(this.Handle, key, (IntPtr str, uint strLength, IntPtr param) =>
 			{
 				outValue = Marshal.PtrToStringUni(str, (int) strLength);
 			}, IntPtr.Zero);
@@ -288,7 +288,7 @@ namespace SciterCore
 		{
 			string outValue = default;
 			
-			var domResult = Api.SciterGetNthAttributeNameCB(this.Handle, System.Convert.ToUInt32(index), (IntPtr str, uint strLength, IntPtr param) =>
+			var domResult = SciterApi.SciterGetNthAttributeNameCB(this.Handle, System.Convert.ToUInt32(index), (IntPtr str, uint strLength, IntPtr param) =>
 			{
 				outValue = Marshal.PtrToStringAnsi(str, (int) strLength);
 			}, IntPtr.Zero);
@@ -305,13 +305,13 @@ namespace SciterCore
 
         internal bool TrySetAttributeValueInternal(string key, string value)
         {
-            return Api.SciterSetAttributeByName(this.Handle, key, value)
+            return SciterApi.SciterSetAttributeByName(this.Handle, key, value)
 	            .IsOk();
         }
 
         internal void RemoveAttributeInternal(string key)
 		{
-			Api.SciterSetAttributeByName(this.Handle, key, null);
+			SciterApi.SciterSetAttributeByName(this.Handle, key, null);
 		}
 		
         internal string GetStyleValueInternal(string key)
@@ -324,7 +324,7 @@ namespace SciterCore
 		{
 			string outStyle = default;
 			
-			var domResult = Api.SciterGetStyleAttributeCB(this.Handle, key, (IntPtr str, uint strLength, IntPtr param) =>
+			var domResult = SciterApi.SciterGetStyleAttributeCB(this.Handle, key, (IntPtr str, uint strLength, IntPtr param) =>
 			{
 				outStyle = Marshal.PtrToStringUni(str, System.Convert.ToInt32(strLength));
 			}, IntPtr.Zero);
@@ -341,7 +341,7 @@ namespace SciterCore
 		
         internal bool TrySetStyleValueInternal(string key, string value)
 		{
-			return Api.SciterSetStyleAttribute(this.Handle, key, value)
+			return SciterApi.SciterSetStyleAttribute(this.Handle, key, value)
 				.IsOk();
 		}
 		
@@ -358,7 +358,7 @@ namespace SciterCore
 
 		internal bool TryGetStateInternal(out ElementState state)
 		{
-			var result = Api.SciterGetElementState(this.Handle, out var bits)
+			var result = SciterApi.SciterGetElementState(this.Handle, out var bits)
 				.IsOk();
 			
 			state = (ElementState)(result ? (SciterXDom.ELEMENT_STATE_BITS)bits : 0);
@@ -391,7 +391,7 @@ namespace SciterCore
 
 		internal bool TrySetStateInternal(SciterXDom.ELEMENT_STATE_BITS bitsToSet, SciterXDom.ELEMENT_STATE_BITS bitsToClear = 0, bool update = true)
 		{
-			return Api.SciterSetElementState(this.Handle, (uint) bitsToSet, (uint) bitsToClear, update)
+			return SciterApi.SciterSetElementState(this.Handle, (uint) bitsToSet, (uint) bitsToClear, update)
 				.IsOk();
 		}
 		
@@ -406,7 +406,7 @@ namespace SciterCore
 		internal bool TryCombineUrlInternal(string url, out string value)
 		{
 			var buffer = PInvokeUtils.NativeUtf16FromString(url, 2048);
-			var result = Api.SciterCombineURL(this.Handle, buffer, 2048)
+			var result = SciterApi.SciterCombineURL(this.Handle, buffer, 2048)
 				.IsOk();
 			value = PInvokeUtils.StringFromNativeUtf16(buffer);
 			PInvokeUtils.NativeUtf16FromString_FreeBuffer(buffer);
@@ -432,7 +432,7 @@ namespace SciterCore
 		
 		internal bool TryGetWindowHandleInternal(bool rootWindow, out IntPtr value)
 		{
-			return Api.SciterGetElementHwnd(this.Handle, out value, rootWindow)
+			return SciterApi.SciterGetElementHwnd(this.Handle, out value, rootWindow)
 				.IsOk();
 		}
 		
@@ -443,7 +443,7 @@ namespace SciterCore
 		{
 			get
 			{
-				Api.SciterGetElementUID(this.Handle, out var uid);
+				SciterApi.SciterGetElementUID(this.Handle, out var uid);
 				return uid;
 			}
 		}
@@ -452,7 +452,7 @@ namespace SciterCore
 		{
 			get
 			{
-				Api.SciterGetElementIndex(this.Handle, out var result);
+				SciterApi.SciterGetElementIndex(this.Handle, out var result);
 				return System.Convert.ToInt32(result);
 			}
 		}
@@ -467,7 +467,7 @@ namespace SciterCore
 
 		internal bool TryGetChildCountInternal(out int value)
 		{
-			var result = Api.SciterGetChildrenCount(this.Handle, out var count)
+			var result = SciterApi.SciterGetChildrenCount(this.Handle, out var count)
 				.IsOk();
 			value = result ? System.Convert.ToInt32(count) : 0;
 			return result;
@@ -477,13 +477,13 @@ namespace SciterCore
 
 		internal bool TryDeleteInternal()
 		{
-			return Api.SciterDeleteElement(this.Handle)
+			return SciterApi.SciterDeleteElement(this.Handle)
 				.IsOk();
 		}
 
 		internal bool TryDetachInternal()
 		{
-			return Api.SciterDetachElement(this.Handle)
+			return SciterApi.SciterDetachElement(this.Handle)
 				.IsOk();
 		}
 
@@ -495,7 +495,7 @@ namespace SciterCore
 
 		internal bool TryCloneInternal(out SciterElement element)
 		{
-			var result = Api.SciterCloneElement(this.Handle, out var cloneResult)
+			var result = SciterApi.SciterCloneElement(this.Handle, out var cloneResult)
 				.IsOk();
 			element = result ? new SciterElement(cloneResult) : null;
 			return result;
@@ -509,7 +509,7 @@ namespace SciterCore
 
 		internal bool TryCastToNodeInternal(out SciterNode node)
 		{
-			var result = Api.SciterNodeCastFromElement(this.Handle, out var castResult)
+			var result = SciterApi.SciterNodeCastFromElement(this.Handle, out var castResult)
 				.IsOk();
 			node = result ? new SciterNode(castResult) : null;
 			return result;
@@ -520,7 +520,7 @@ namespace SciterCore
 		/// </summary>
 		internal bool IsEnabledInternal()
 		{
-			Api.SciterIsElementEnabled(this.Handle, out var result);
+			SciterApi.SciterIsElementEnabled(this.Handle, out var result);
 			return result;
 		}
 
@@ -529,7 +529,7 @@ namespace SciterCore
 		/// </summary>
 		internal bool IsVisibleInternal()
 		{
-			Api.SciterIsElementVisible(this.Handle, out var result);
+			SciterApi.SciterIsElementVisible(this.Handle, out var result);
 			return result;
 		}
 
@@ -612,7 +612,7 @@ namespace SciterCore
 		
 		private bool TryGetChildAtIndexInternal(uint index, out SciterElement element)
 		{
-			var result = Api.SciterGetNthChild(this.Handle, index, out var childHandle)
+			var result = SciterApi.SciterGetNthChild(this.Handle, index, out var childHandle)
 				.IsOk();
 			element = (result && childHandle != IntPtr.Zero) ? new SciterElement(childHandle) : null;
 			return (result && childHandle != IntPtr.Zero);
@@ -633,7 +633,7 @@ namespace SciterCore
 		{
 			get
 			{
-				Api.SciterGetParentElement(this.Handle, out var parentHandle);
+				SciterApi.SciterGetParentElement(this.Handle, out var parentHandle);
 				return parentHandle == IntPtr.Zero ? null : new SciterElement(parentHandle);
 			}
 		}
@@ -678,7 +678,7 @@ namespace SciterCore
 		{
 			SciterElement result = null;
 			
-			Api.SciterSelectElementsW(
+			SciterApi.SciterSelectElementsW(
 				this.Handle, 
 				selector, 
 				(IntPtr he, IntPtr param) =>
@@ -695,7 +695,7 @@ namespace SciterCore
 		{
 			var result = new List<SciterElement>();
 
-			Api.SciterSelectElementsW(
+			SciterApi.SciterSelectElementsW(
 				this.Handle, 
 				selector, 
 				(IntPtr elementHandle, IntPtr param) =>
@@ -710,7 +710,7 @@ namespace SciterCore
 
 		internal SciterElement SelectNearestParentInternal(string selector)
 		{
-			Api.SciterSelectParentW(this.Handle, selector, 0, out var heFound);
+			SciterApi.SciterSelectParentW(this.Handle, selector, 0, out var heFound);
 			return heFound == IntPtr.Zero ? null : new SciterElement(heFound);
 		}
 		#endregion
@@ -731,19 +731,19 @@ namespace SciterCore
 		
 		internal bool InsertElementInternal(SciterElement element, int index = 0)
 		{
-			return Api.SciterInsertElement(element.Handle, this.Handle, System.Convert.ToUInt32(index))
+			return SciterApi.SciterInsertElement(element.Handle, this.Handle, System.Convert.ToUInt32(index))
 				.IsOk();
 		}
 
 		internal bool AppendElementInternal(SciterElement element)
 		{
-			return Api.SciterInsertElement(element.Handle, this.Handle, int.MaxValue)
+			return SciterApi.SciterInsertElement(element.Handle, this.Handle, int.MaxValue)
 				.IsOk();
 		}
 
 		internal bool TryAppendElementInternal(SciterElement element)
 		{
-			return Api.SciterInsertElement(element.Handle, this.Handle, int.MaxValue)
+			return SciterApi.SciterInsertElement(element.Handle, this.Handle, int.MaxValue)
 				.IsOk();
 		}
 
@@ -761,13 +761,13 @@ namespace SciterCore
 
 		internal bool SwapElementsInternal(SciterElement swapElement)
 		{
-			return Api.SciterSwapElements(this.Handle, swapElement.Handle)
+			return SciterApi.SciterSwapElements(this.Handle, swapElement.Handle)
 				.IsOk();
 		}
 
 		internal bool ClearTextInternal()
 		{
-			return Api.SciterSetElementText(this.Handle, null, 0)
+			return SciterApi.SciterSetElementText(this.Handle, null, 0)
 				.IsOk();
 		}
 
@@ -781,7 +781,7 @@ namespace SciterCore
 
 		internal bool TransformHtmlInternal(byte[] bytes, SciterXDom.SET_ELEMENT_HTML replacement = SciterXDom.SET_ELEMENT_HTML.SIH_REPLACE_CONTENT)
 		{
-			return Api.SciterSetElementHtml(this.Handle, bytes, (uint) bytes.Length, replacement)
+			return SciterApi.SciterSetElementHtml(this.Handle, bytes, (uint) bytes.Length, replacement)
 				.IsOk();
 		}
 		
@@ -796,13 +796,13 @@ namespace SciterCore
 
 			var eventHandler = new EventHandlers.CustomEventHandler(this, callback);
 			
-			var result = Api.SciterAttachEventHandler(this.Handle, eventHandler.EventProc, IntPtr.Zero)
+			var result = SciterApi.SciterAttachEventHandler(this.Handle, eventHandler.EventProc, IntPtr.Zero)
 				.IsOk();
 		}
 		
 		internal bool TryAttachEventHandlerInternal(SciterEventHandler eventHandler)
 		{
-			var result = Api.SciterAttachEventHandler(this.Handle, eventHandler.EventProc, IntPtr.Zero)
+			var result = SciterApi.SciterAttachEventHandler(this.Handle, eventHandler.EventProc, IntPtr.Zero)
 				.IsOk();
 			
 			return result;
@@ -815,7 +815,7 @@ namespace SciterCore
 		
 		internal bool TryDetachEventHandlerInternal(SciterEventHandler eventHandler)
 		{
-			var result = Api.SciterDetachEventHandler(this.Handle, eventHandler.EventProc, IntPtr.Zero)
+			var result = SciterApi.SciterDetachEventHandler(this.Handle, eventHandler.EventProc, IntPtr.Zero)
 				.IsOk();
 			
 			return result;
@@ -828,7 +828,7 @@ namespace SciterCore
 
 		internal bool TrySendEventInternal(int eventCode, out bool handled, int reason = 0, SciterElement source = null)
 		{
-			var result = Api.SciterSendEvent(this.Handle, System.Convert.ToUInt32(eventCode), source == null ? IntPtr.Zero : source.Handle, new IntPtr(System.Convert.ToUInt32(reason)), out handled)
+			var result = SciterApi.SciterSendEvent(this.Handle, System.Convert.ToUInt32(eventCode), source == null ? IntPtr.Zero : source.Handle, new IntPtr(System.Convert.ToUInt32(reason)), out handled)
 				.IsOk();
 
 			return result && handled;
@@ -841,7 +841,7 @@ namespace SciterCore
 
 		internal bool TryPostEventInternal(int eventCode, int reason = 0, SciterElement source = null)
 		{
-			return Api.SciterPostEvent(this.Handle, System.Convert.ToUInt32(eventCode), source == null ? IntPtr.Zero : source.Handle, new IntPtr(System.Convert.ToUInt32(reason)))
+			return SciterApi.SciterPostEvent(this.Handle, System.Convert.ToUInt32(eventCode), source == null ? IntPtr.Zero : source.Handle, new IntPtr(System.Convert.ToUInt32(reason)))
 				.IsOk();
 		}
 
@@ -852,7 +852,7 @@ namespace SciterCore
 
 		internal bool TryFireEventInternal(SciterBehaviorArgs @params, out bool handled, bool post = true)
 		{
-			return Api.SciterFireEvent(@params, post, out handled).IsOk();
+			return SciterApi.SciterFireEvent(@params, post, out handled).IsOk();
 		}
 		
 		#endregion
@@ -866,9 +866,9 @@ namespace SciterCore
 		
 		internal bool TryGetLocationInternal(out SciterRectangle value, ElementArea area = ElementArea.RootRelative | ElementArea.ContentBox)
 		{
-			var result = Api.SciterGetElementLocation(this.Handle, out var rect, (SciterXDom.ELEMENT_AREAS)System.Convert.ToUInt32(area))
+			var result = SciterApi.SciterGetElementLocation(this.Handle, out var rect, (SciterXDom.ELEMENT_AREAS)System.Convert.ToUInt32(area))
 				.IsOk();
-			value = result ? rect.ToRectangle() : default;
+			value = result ? rect : default;
 			return result;
 		}
 
@@ -882,7 +882,7 @@ namespace SciterCore
 		
 		internal bool TryGetSizeInternal(out SciterSize value)
 		{
-			var result = Api.SciterGetElementLocation(this.Handle, out var rect, SciterXDom.ELEMENT_AREAS.ROOT_RELATIVE | SciterXDom.ELEMENT_AREAS.PADDING_BOX)
+			var result = SciterApi.SciterGetElementLocation(this.Handle, out var rect, SciterXDom.ELEMENT_AREAS.ROOT_RELATIVE | SciterXDom.ELEMENT_AREAS.PADDING_BOX)
 				.IsOk();
 			value = result ? rect.ToSize() : default;
 			return result;
@@ -895,19 +895,19 @@ namespace SciterCore
 		/// </summary>
 		public bool Test(string selector)
 		{
-			Api.SciterSelectParent(this.Handle, selector, 1, out var value);
+			SciterApi.SciterSelectParent(this.Handle, selector, 1, out var value);
 			return value != IntPtr.Zero;
 		}
 
 		internal bool TryUpdateInternal(bool forceRender = false)
 		{
-			return Api.SciterUpdateElement(this.Handle, forceRender)
+			return SciterApi.SciterUpdateElement(this.Handle, forceRender)
 				.IsOk();
 		}
 
 		internal bool TryRefreshInternal(SciterRectangle rectangle)
 		{
-			return Api.SciterRefreshElementArea(this.Handle, rectangle.ToRect())
+			return SciterApi.SciterRefreshElementArea(this.Handle, rectangle)
 				.IsOk();
 		}
 		
@@ -915,7 +915,7 @@ namespace SciterCore
 		{
 			var rectangle = GetLocationInternal(ElementArea.SelfRelative | ElementArea.ContentBox);
 			
-			return Api.SciterRefreshElementArea(this.Handle, rectangle.ToRect())
+			return SciterApi.SciterRefreshElementArea(this.Handle, rectangle)
 				.IsOk();
 		}
 
@@ -924,14 +924,14 @@ namespace SciterCore
 		{
 			get
 			{
-				Api.SciterGetValue(this.Handle, out var val);
+				SciterApi.SciterGetValue(this.Handle, out var val);
 				return new SciterValue(val);
 			}
 
 			set
 			{
 				var val = value.ToVALUE();
-				Api.SciterSetValue(this.Handle, ref val);
+				SciterApi.SciterSetValue(this.Handle, ref val);
 			}
 		}
 
@@ -939,7 +939,7 @@ namespace SciterCore
 		{
 			get
 			{
-				Api.SciterGetExpando(this.Handle, out var value, true);
+				SciterApi.SciterGetExpando(this.Handle, out var value, true);
 				return new SciterValue(value);
 			}
 		}
@@ -969,7 +969,7 @@ namespace SciterCore
 			if (string.IsNullOrWhiteSpace(method))
 				throw new ArgumentNullException(nameof(method));
 
-			var result = Api.SciterCallScriptingMethod(this.Handle, method, args.AsValueArray(), (uint) args.Length, out var returnValue)
+			var result = SciterApi.SciterCallScriptingMethod(this.Handle, method, args.AsValueArray(), (uint) args.Length, out var returnValue)
 				.IsOk();
 			value = result ? new SciterValue(returnValue) : default;
 			return result;
@@ -998,7 +998,7 @@ namespace SciterCore
 			if (string.IsNullOrWhiteSpace(function))
 				throw new ArgumentNullException(nameof(function));
 
-			var result = Api.SciterCallScriptingFunction(this.Handle, function, args.AsValueArray(), (uint) args.Length, out var returnValue)
+			var result = SciterApi.SciterCallScriptingFunction(this.Handle, function, args.AsValueArray(), (uint) args.Length, out var returnValue)
 				.IsOk();
 			value = result ? new SciterValue(returnValue) : default;
 			return result;
@@ -1027,7 +1027,7 @@ namespace SciterCore
 		/// <returns></returns>
 		internal bool TryEvaluateScriptInternal(string script, out SciterValue value)
 		{
-			var result = Api.SciterEvalElementScript(this.Handle, script, System.Convert.ToUInt32(script.Length), out var returnValue)
+			var result = SciterApi.SciterEvalElementScript(this.Handle, script, System.Convert.ToUInt32(script.Length), out var returnValue)
 				.IsOk();
 			value = result ? new SciterValue(returnValue) : default;
 			return result;
@@ -1039,7 +1039,7 @@ namespace SciterCore
 
 		internal bool TrySetHighlightInternal(bool value)
 		{
-			return Api.SciterSetHighlightedElement(GetWindowHandleInternal(), value ? this.Handle : IntPtr.Zero)
+			return SciterApi.SciterSetHighlightedElement(GetWindowHandleInternal(), value ? this.Handle : IntPtr.Zero)
 				.IsOk();
 		}
 		
@@ -1054,7 +1054,7 @@ namespace SciterCore
 		
 		internal bool TrySetTimerInternal(int milliseconds, IntPtr timerId)
 		{
-			return Api.SciterSetTimer(this.Handle, System.Convert.ToUInt32(milliseconds), timerId)
+			return SciterApi.SciterSetTimer(this.Handle, System.Convert.ToUInt32(milliseconds), timerId)
 				.IsOk();
 		}
 		
@@ -1077,7 +1077,7 @@ namespace SciterCore
 
 				// TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
 				// TODO: set large fields to null.
-				Api.Sciter_UnuseElement(this.Handle);
+				SciterApi.Sciter_UnuseElement(this.Handle);
 
 				_disposedValue = true;
 			}

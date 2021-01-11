@@ -4,7 +4,7 @@ using SciterCore.Attributes;
 
 namespace SciterCore.Extensions
 {
-    public static class BehaviourAttributeExtensions
+    internal static class BehaviourAttributeExtensions
     {
         public static string GetBehaviourName(this Type eventHandlerType, string behaviorName = null)
         {

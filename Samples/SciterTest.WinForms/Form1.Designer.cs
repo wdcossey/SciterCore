@@ -52,7 +52,7 @@
 			// 
 			// sciterArchive
 			// 
-			this.sciterArchive.BaseAddress = "archive://app/";
+			this.sciterArchive.BaseAddress = "this://app/";
 			// 
 			// Form1
 			// 

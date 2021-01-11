@@ -9,11 +9,11 @@ namespace SciterCore.PlatformWrappers
 
         IntPtr GetWindowHandle(IntPtr handle);
 
-        void CreateWindow(PInvokeUtils.RECT frame = new PInvokeUtils.RECT(),
+        void CreateWindow(SciterRectangle frame = new SciterRectangle(),
             SciterXDef.SCITER_CREATE_WINDOW_FLAGS creationFlags = SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_MAIN |
                                                                   SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_TITLEBAR |
                                                                   SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_RESIZEABLE |
-                                                                  SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_CONTROLS, IntPtr parent = new IntPtr());
+                                                                  SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_CONTROLS, IntPtr? parent = null);
         
         //SciterWindow CreateChildWindow(IntPtr hwndParent, SciterXDef.SCITER_CREATE_WINDOW_FLAGS flags = SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_CHILD)
         

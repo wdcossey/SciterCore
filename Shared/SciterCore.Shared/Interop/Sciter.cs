@@ -22,8 +22,11 @@ namespace SciterCore.Interop
 		private static readonly object SciterRequestApiLock = new object();
 		private static readonly object SciterScriptApiLock = new object();
 		
-		// TODO: Rename to SciterApi
-		public static ISciterApi Api => GetSciterApi();
+		//TODO: Remove in a future release
+		[Obsolete("Renamed to `SciterApi`", true)]
+		public static ISciterApi Api => SciterApi;
+		
+		public static ISciterApi SciterApi => GetSciterApi();
 
 		public static ISciterGraphicsApi GraphicsApi => GetGraphicsApi();
 
@@ -138,8 +141,8 @@ namespace SciterCore.Interop
 				if (_sciterGraphicsApi != null)
 					return _sciterGraphicsApi;
 			
-				var major = Api.SciterVersion(true);
-				var minor = Api.SciterVersion(false);
+				var major = SciterApi.SciterVersion(true);
+				var minor = SciterApi.SciterVersion(false);
 				Debug.Assert(major >= 0x00040000);
 
 				var apiStructSize = Marshal.SizeOf(t: typeof(SciterGraphics.SciterGraphicsApi));
@@ -149,7 +152,7 @@ namespace SciterCore.Interop
 				else
 					Debug.Assert(apiStructSize == 276);
 
-				_sciterGraphicsApi = SciterGraphics.UnsafeNativeMethods.GetApiInterface(Api);
+				_sciterGraphicsApi = SciterGraphics.UnsafeNativeMethods.GetApiInterface(SciterApi);
 
 				if (_sciterGraphicsApi == null)
 					throw new NullReferenceException($"{nameof(_sciterGraphicsApi)} cannot be null");
@@ -172,7 +175,7 @@ namespace SciterCore.Interop
 				else
 					Debug.Assert(apiStructSize == 112);
 				
-				_sciterRequestApiInstance = SciterRequest.UnsafeNativeMethods.GetApiInterface(Api);
+				_sciterRequestApiInstance = SciterRequest.UnsafeNativeMethods.GetApiInterface(SciterApi);
 				
 				if (_sciterRequestApiInstance == null)
 					throw new NullReferenceException($"{nameof(_sciterRequestApiInstance)} cannot be null");
@@ -199,7 +202,7 @@ namespace SciterCore.Interop
 		        else
 			        Debug.Assert(apiStructSize == 308);
 				
-		        _sciterScriptApi = SciterScript.UnsafeNativeMethods.GetApiInterface(Api);
+		        _sciterScriptApi = SciterScript.UnsafeNativeMethods.GetApiInterface(SciterApi);
 				
 		        if (_sciterScriptApi == null)
 			        throw new NullReferenceException($"{nameof(_sciterScriptApi)} cannot be null");
@@ -674,30 +677,36 @@ namespace SciterCore.Interop
 				public bool SciterSetHomeURL(IntPtr hwnd, string baseUrl) =>
 					_sciterSetHomeURL(hwnd: hwnd, baseUrl: baseUrl);
 
-				public IntPtr SciterCreateNSView(ref PInvokeUtils.RECT frame)
+				public IntPtr SciterCreateNSView(SciterRectangle frame)
                 {
 					if (!RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
 						throw new PlatformNotSupportedException($"{nameof(SciterCreateNSView)} is reserved for use on {nameof(OSPlatform.OSX)}");
 
-                    return _sciterCreateNSView(frame: ref frame);
+					var frameRECT = frame.ToRect();
+					
+                    return _sciterCreateNSView(frame: ref frameRECT);
 				}
 
-                public IntPtr SciterCreateWidget(ref PInvokeUtils.RECT frame)
+                public IntPtr SciterCreateWidget(SciterRectangle frame)
                 {
                     if (!RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
                         throw new PlatformNotSupportedException($"{nameof(SciterCreateWidget)} is reserved for use on {nameof(OSPlatform.Linux)}");
 
-					return _sciterCreateWidget(frame: ref frame);
+                    var frameRECT = frame.ToRect();
+                    
+					return _sciterCreateWidget(frame: ref frameRECT);
                 }
 
                 public IntPtr SciterCreateWindow(SciterXDef.SCITER_CREATE_WINDOW_FLAGS creationFlags,
-                    ref PInvokeUtils.RECT frame, MulticastDelegate delegt,
+                    SciterRectangle frame, MulticastDelegate delegt,
                     IntPtr delegateParam, IntPtr parent)
                 {
                     if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                        throw new PlatformNotSupportedException($"{nameof(SciterCreateWidget)} is for use on {nameof(OSPlatform.Windows)}");
+                        throw new PlatformNotSupportedException($"{nameof(SciterCreateWindow)} is for use on {nameof(OSPlatform.Windows)}");
 
-					return _sciterCreateWindow(creationFlags: creationFlags, frame: ref frame, delegt: delegt, delegateParam: delegateParam, parent: parent);
+                    var frameRECT = frame.ToRect();
+                    
+					return _sciterCreateWindow(creationFlags: creationFlags, frame: ref frameRECT, delegt: delegt, delegateParam: delegateParam, parent: parent);
 				}
 
                 public void SciterSetupDebugOutput(IntPtr hwndOrNull, IntPtr param, SciterXDef.DEBUG_OUTPUT_PROC pfOutput) =>
@@ -717,8 +726,8 @@ namespace SciterCore.Interop
 				public SciterXDom.SCDOM_RESULT SciterGetFocusElement(IntPtr hwnd, out IntPtr phe) => 
 					_sciterGetFocusElement(hwnd, out phe);
 
-				public SciterXDom.SCDOM_RESULT SciterFindElement(IntPtr hwnd, PInvokeUtils.POINT pt, out IntPtr phe) => 
-					_sciterFindElement(hwnd, pt, out phe);
+				public SciterXDom.SCDOM_RESULT SciterFindElement(IntPtr hwnd, SciterPoint pt, out IntPtr phe) => 
+					_sciterFindElement(hwnd, pt.ToPoint(), out phe);
 
 				public SciterXDom.SCDOM_RESULT SciterGetChildrenCount(IntPtr he, out uint count) => 
 					_sciterGetChildrenCount(he, out count);
@@ -771,17 +780,22 @@ namespace SciterCore.Interop
 				public SciterXDom.SCDOM_RESULT SciterSetStyleAttribute(IntPtr he, string name, string value) => 
 					_sciterSetStyleAttribute(he, name, value);
 
-				public SciterXDom.SCDOM_RESULT SciterGetElementLocation(IntPtr he, out PInvokeUtils.RECT pLocation, SciterXDom.ELEMENT_AREAS areas) => 
-					_sciterGetElementLocation(he, out pLocation, areas);
-
+				public SciterXDom.SCDOM_RESULT SciterGetElementLocation(IntPtr he, out SciterRectangle pLocation,
+					SciterXDom.ELEMENT_AREAS areas)
+				{ 
+					var result = _sciterGetElementLocation(he, out var rectLocation, areas);
+					pLocation = rectLocation.ToRectangle();
+					return result;
+				}
+				
 				public SciterXDom.SCDOM_RESULT SciterScrollToView(IntPtr he, uint sciterScrollFlags) => 
 					_sciterScrollToView(he, sciterScrollFlags);
 
 				public SciterXDom.SCDOM_RESULT SciterUpdateElement(IntPtr he, bool andForceRender) => 
 					_sciterUpdateElement(he, andForceRender);
 
-				public SciterXDom.SCDOM_RESULT SciterRefreshElementArea(IntPtr he, PInvokeUtils.RECT rc) => 
-					_sciterRefreshElementArea(he, rc);
+				public SciterXDom.SCDOM_RESULT SciterRefreshElementArea(IntPtr he, SciterRectangle rc) => 
+					_sciterRefreshElementArea(he, rc.ToRect());
 
 				public SciterXDom.SCDOM_RESULT SciterSetCapture(IntPtr he) => 
 					_sciterSetCapture(he);
@@ -819,8 +833,8 @@ namespace SciterCore.Interop
 				public SciterXDom.SCDOM_RESULT SciterShowPopup(IntPtr he, IntPtr heAnchor, uint placement) => 
 					_sciterShowPopup(he, heAnchor, placement);
 
-				public SciterXDom.SCDOM_RESULT SciterShowPopupAt(IntPtr he, PInvokeUtils.POINT pos, uint placement) => 
-					_sciterShowPopupAt(he, pos, placement);
+				public SciterXDom.SCDOM_RESULT SciterShowPopupAt(IntPtr he, SciterPoint pos, uint placement) => 
+					_sciterShowPopupAt(he, pos.ToPoint(), placement);
 
 				public SciterXDom.SCDOM_RESULT SciterHidePopup(IntPtr he) => 
 					_sciterHidePopup(he);
@@ -877,11 +891,18 @@ namespace SciterCore.Interop
 					uint nParams) => 
 					_sciterHttpRequest(he, url, dataType, requestType, ref requestParams, nParams);
 
-				public SciterXDom.SCDOM_RESULT SciterGetScrollInfo(IntPtr he, out PInvokeUtils.POINT scrollPos, out PInvokeUtils.RECT viewRect, out PInvokeUtils.SIZE contentSize) => 
-					_sciterGetScrollInfo(he, out scrollPos, out viewRect, out contentSize);
-
-				public SciterXDom.SCDOM_RESULT SciterSetScrollPos(IntPtr he, PInvokeUtils.POINT scrollPos, bool smooth) => 
-					_sciterSetScrollPos(he, scrollPos, smooth);
+				public SciterXDom.SCDOM_RESULT SciterGetScrollInfo(IntPtr he, out SciterPoint scrollPos,
+					out SciterRectangle viewRect, out SciterSize contentSize)
+				{
+					var result = _sciterGetScrollInfo(he, out var oPoint, out var oRect, out var oSize);
+					scrollPos = oPoint.ToPoint();
+					viewRect = oRect.ToRectangle();
+					contentSize = oSize.ToSize();
+					return result;
+				}
+				
+				public SciterXDom.SCDOM_RESULT SciterSetScrollPos(IntPtr he, SciterPoint scrollPos, bool smooth) => 
+					_sciterSetScrollPos(he, scrollPos.ToPoint(), smooth);
 
 				public SciterXDom.SCDOM_RESULT SciterGetElementIntrinsicWidths(IntPtr he, out int pMinWidth, out int pMaxWidth) => 
 					_sciterGetElementIntrinsicWidths(he, out pMinWidth, out pMaxWidth);

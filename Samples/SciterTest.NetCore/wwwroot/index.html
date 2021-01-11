@@ -239,18 +239,40 @@
 		tools {
 			z-index: 9999;
 			opacity: 0.75;
-			background-color: #222f;
+			//background-color: #222f;
 			overflow: none;
 			position: fixed;
 			border-radius: 0 0 4dip 4dip;
 			height: max-content;
 			width: max-content;
-			padding: 4dp;
-			top: -42dip;
+			//padding: 4dp;
+			top: -50dip;
 			left: *;
 			right: *;
 			float: vertical;
 			transition: opacity 0.4s, top 0.4s;
+		}
+		
+		tools > container {
+			z-index: 9998;
+		}
+
+		tools > div
+		{
+			position: relative;
+			top: 0;
+			left: 0;
+			right: 0;
+			opacity: 1;
+			max-width: 60dip;
+			//top: 0;
+			transition: opacity 0.2s, top 0.2s;
+		}
+
+		tools:hover > div
+		{
+			opacity: 0;
+			top: -8dip;
 		}
 
 		tools:hover
@@ -259,7 +281,7 @@
 			top: 0dip;
 		}
 		
-		tools > button {
+		tools button {
 			cursor: pointer;
 			opacity: 0.75;
 			border-radius: 0 0 2dip 2dip;
@@ -267,16 +289,16 @@
 			height: max-content;
 			width: max-content;
 			background: #777f;
-			margin: 0 4dip;
+			margin: 2dip;
 			padding: 2dip;
 			transition: border-color 0.4s;
 		}
 		
-		tools > button:hover {
+		tools button:hover {
 			border-color: #aaaf;
 		}
 		
-		tools > button > img {
+		tools button > img {
 			height: 32dip;
 			width: 32dip;
 		}
@@ -588,11 +610,13 @@
 		</footer>
 	</main>
 
-	<tools>
-		<button #btnInspector>
-			<img src="icons8-color-programming-coding-inspect_code.svg">
-		</button>
-		<div style="height: 8dip"/>
+	<tools style="flow: vertical">
+		<container style="z-index: 1; flow: horizontal; height: min-content; width: min-content; background-color: #000f; margin: 0 auto; padding: 4dip; border-radius: 0 0 4dip 4dip">
+			<button #btnInspector>
+				<img src="icons8-color-programming-coding-inspect_code.svg">
+			</button>
+		</container>
+		<div style="height: 8dip;background-color: #000f; margin: 0 auto; border-radius: 0 0 4dip 4dip"/>
 	</tools>
 	
 	

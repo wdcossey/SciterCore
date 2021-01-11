@@ -52,10 +52,9 @@ namespace SciterCore.Interop
 		bool SciterDWFactory(IntPtr ppf);
 		bool SciterGraphicsCaps(ref uint pcaps);
 		bool SciterSetHomeURL(IntPtr hwnd, string baseUrl);
-		IntPtr SciterCreateNSView(ref PInvokeUtils.RECT frame);
-		IntPtr SciterCreateWidget(ref PInvokeUtils.RECT frame);
-
-		IntPtr SciterCreateWindow(SciterXDef.SCITER_CREATE_WINDOW_FLAGS creationFlags, ref PInvokeUtils.RECT frame,
+		IntPtr SciterCreateNSView(SciterRectangle frame);
+		IntPtr SciterCreateWidget(SciterRectangle frame);
+		IntPtr SciterCreateWindow(SciterXDef.SCITER_CREATE_WINDOW_FLAGS creationFlags, SciterRectangle frame,
 			MulticastDelegate delegt, IntPtr delegateParam, IntPtr parent);
 
 		void SciterSetupDebugOutput(IntPtr hwndOrNull, IntPtr param, SciterXDef.DEBUG_OUTPUT_PROC pfOutput);
@@ -66,7 +65,7 @@ namespace SciterCore.Interop
 		SciterXDom.SCDOM_RESULT Sciter_UnuseElement(IntPtr he);
 		SciterXDom.SCDOM_RESULT SciterGetRootElement(IntPtr hwnd, out IntPtr phe);
 		SciterXDom.SCDOM_RESULT SciterGetFocusElement(IntPtr hwnd, out IntPtr phe);
-		SciterXDom.SCDOM_RESULT SciterFindElement(IntPtr hwnd, PInvokeUtils.POINT pt, out IntPtr phe);
+		SciterXDom.SCDOM_RESULT SciterFindElement(IntPtr hwnd, SciterPoint pt, out IntPtr phe);
 		SciterXDom.SCDOM_RESULT SciterGetChildrenCount(IntPtr he, out uint count);
 		SciterXDom.SCDOM_RESULT SciterGetNthChild(IntPtr he, uint n, out IntPtr phe);
 		SciterXDom.SCDOM_RESULT SciterGetParentElement(IntPtr he, out IntPtr pParentHe);
@@ -98,12 +97,12 @@ namespace SciterCore.Interop
 
 		SciterXDom.SCDOM_RESULT SciterSetStyleAttribute(IntPtr he, string name, string value);
 
-		SciterXDom.SCDOM_RESULT SciterGetElementLocation(IntPtr he, out PInvokeUtils.RECT pLocation,
+		SciterXDom.SCDOM_RESULT SciterGetElementLocation(IntPtr he, out SciterRectangle pLocation,
 			SciterXDom.ELEMENT_AREAS areas);
 
 		SciterXDom.SCDOM_RESULT SciterScrollToView(IntPtr he, uint sciterScrollFlags);
 		SciterXDom.SCDOM_RESULT SciterUpdateElement(IntPtr he, bool andForceRender);
-		SciterXDom.SCDOM_RESULT SciterRefreshElementArea(IntPtr he, PInvokeUtils.RECT rc);
+		SciterXDom.SCDOM_RESULT SciterRefreshElementArea(IntPtr he, SciterRectangle rc);
 		SciterXDom.SCDOM_RESULT SciterSetCapture(IntPtr he);
 		SciterXDom.SCDOM_RESULT SciterReleaseCapture(IntPtr he);
 		SciterXDom.SCDOM_RESULT SciterGetElementHwnd(IntPtr he, out IntPtr pHwnd, bool rootWindow);
@@ -124,7 +123,7 @@ namespace SciterCore.Interop
 		SciterXDom.SCDOM_RESULT SciterGetElementUID(IntPtr he, out uint puid);
 		SciterXDom.SCDOM_RESULT SciterGetElementByUID(IntPtr hwnd, uint uid, out IntPtr phe);
 		SciterXDom.SCDOM_RESULT SciterShowPopup(IntPtr he, IntPtr heAnchor, uint placement);
-		SciterXDom.SCDOM_RESULT SciterShowPopupAt(IntPtr he, PInvokeUtils.POINT pos, uint placement);
+		SciterXDom.SCDOM_RESULT SciterShowPopupAt(IntPtr he, SciterPoint pos, uint placement);
 		SciterXDom.SCDOM_RESULT SciterHidePopup(IntPtr he);
 		SciterXDom.SCDOM_RESULT SciterGetElementState(IntPtr he, out uint pstateBits);
 
@@ -155,10 +154,10 @@ namespace SciterCore.Interop
 		SciterXDom.SCDOM_RESULT SciterHttpRequest(IntPtr he, string url, uint dataType, uint requestType,
 			ref SciterXDom.REQUEST_PARAM requestParams, uint nParams);
 
-		SciterXDom.SCDOM_RESULT SciterGetScrollInfo(IntPtr he, out PInvokeUtils.POINT scrollPos,
-			out PInvokeUtils.RECT viewRect, out PInvokeUtils.SIZE contentSize);
+		SciterXDom.SCDOM_RESULT SciterGetScrollInfo(IntPtr he, out SciterPoint scrollPos,
+			out SciterRectangle viewRect, out SciterSize contentSize);
 
-		SciterXDom.SCDOM_RESULT SciterSetScrollPos(IntPtr he, PInvokeUtils.POINT scrollPos, bool smooth);
+		SciterXDom.SCDOM_RESULT SciterSetScrollPos(IntPtr he, SciterPoint scrollPos, bool smooth);
 		SciterXDom.SCDOM_RESULT SciterGetElementIntrinsicWidths(IntPtr he, out int pMinWidth, out int pMaxWidth);
 		SciterXDom.SCDOM_RESULT SciterGetElementIntrinsicHeight(IntPtr he, int forWidth, out int pHeight);
 		SciterXDom.SCDOM_RESULT SciterIsElementVisible(IntPtr he, out bool pVisible);

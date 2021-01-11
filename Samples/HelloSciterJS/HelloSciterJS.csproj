@@ -34,4 +34,6 @@
     <ItemGroup>
       <ProjectReference Include="..\..\Platform\SciterCore.JS\SciterCore.JS.csproj" />
     </ItemGroup>
+
+
 </Project>

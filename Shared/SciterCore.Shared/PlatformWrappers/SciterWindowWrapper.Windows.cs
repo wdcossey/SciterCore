@@ -9,7 +9,7 @@ namespace SciterCore.PlatformWrappers
 	{
 		internal class WindowsWrapper : ISciterWindowWrapper
 		{
-			private static readonly ISciterApi SciterApi = Sciter.Api;
+			private static readonly ISciterApi SciterApi = Sciter.SciterApi;
 			
 			//private IntPtr _handle;
 			
@@ -60,12 +60,8 @@ namespace SciterCore.PlatformWrappers
 				}
 			}*/
 
-			private const SciterXDef.SCITER_CREATE_WINDOW_FLAGS DefaultCreateFlags =
-				SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_MAIN |
-				SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_TITLEBAR |
-				SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_RESIZEABLE |
-				SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_CONTROLS |
-				SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_GLASSY;
+			private const SciterXDef.SCITER_CREATE_WINDOW_FLAGS DefaultWindowsCreateFlags =
+				DefaultCreateFlags | SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_GLASSY;
 
 			public IntPtr GetWindowHandle(IntPtr handle) => handle;
 
@@ -75,8 +71,8 @@ namespace SciterCore.PlatformWrappers
 			/// <param name="frame">Rectangle of the window</param>
 			/// <param name="creationFlags">Flags for the window creation, defaults to SW_MAIN | SW_TITLEBAR | SW_RESIZEABLE | SW_CONTROLS</param>
 			/// <param name="parent"></param>
-			public void CreateWindow(PInvokeUtils.RECT frame = new PInvokeUtils.RECT(),
-				SciterXDef.SCITER_CREATE_WINDOW_FLAGS creationFlags = DefaultCreateFlags, IntPtr parent = new IntPtr())
+			public void CreateWindow(SciterRectangle frame = new SciterRectangle(),
+				SciterXDef.SCITER_CREATE_WINDOW_FLAGS creationFlags = DefaultWindowsCreateFlags, IntPtr? parent = null)
 			{
 #if DEBUG
 				// Force Sciter SW_ENABLE_DEBUG in Debug build.
@@ -84,10 +80,10 @@ namespace SciterCore.PlatformWrappers
 #endif
 				var result = SciterApi.SciterCreateWindow(
 					creationFlags,
-					ref frame,
+					frame,
 					/*WindowDelegateRegistry.Get(this)*/null,
 					IntPtr.Zero,
-					parent
+					parent ?? IntPtr.Zero
 				);
 				
 				Debug.Assert(result != IntPtr.Zero);

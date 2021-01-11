@@ -6,6 +6,12 @@ namespace SciterCore.PlatformWrappers
 {
     public static partial class SciterWindowWrapper
     {
+        internal const SciterXDef.SCITER_CREATE_WINDOW_FLAGS DefaultCreateFlags =
+            SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_MAIN |
+            SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_TITLEBAR |
+            SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_RESIZEABLE |
+            SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_CONTROLS;
+        
         public static class NativeMethodWrapper
         {
             private static ISciterWindowWrapper _platformWrapper;

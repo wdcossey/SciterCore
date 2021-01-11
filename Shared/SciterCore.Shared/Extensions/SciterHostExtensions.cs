@@ -47,7 +47,7 @@ namespace SciterCore
         /// </summary>
         public static SciterHost AttachEventHandler<THandler>(this SciterHost host)
             where THandler: SciterEventHandler
-        {
+        { 
             return host?.AttachEventHandler(eventHandler: Activator.CreateInstance<THandler>());
         }
 

@@ -51,7 +51,7 @@ namespace SciterCore
 		, System.Windows.Forms.IWin32Window
 #endif
 	{
-		private static readonly ISciterApi Api = Sciter.Api;
+		private static readonly ISciterApi SciterApi = Sciter.SciterApi;
 		private static readonly ISciterWindowWrapper WindowWrapper = SciterWindowWrapper.NativeMethodWrapper.GetInterface();
 
 		private IntPtr _handle;
@@ -84,7 +84,7 @@ namespace SciterCore
 		public bool SetSciterOption(SciterXDef.SCITER_RT_OPTIONS option, IntPtr value)
 		{
 			Debug.Assert(Handle != IntPtr.Zero);
-			return Api.SciterSetOption(Handle, option, value);
+			return SciterApi.SciterSetOption(Handle, option, value);
 		}
 
 		public SciterWindow()
@@ -95,7 +95,7 @@ namespace SciterCore
 						SciterXDef.SCRIPT_RUNTIME_FEATURES.ALLOW_SOCKET_IO |
 						SciterXDef.SCRIPT_RUNTIME_FEATURES.ALLOW_SYSINFO;
 
-			Api.SciterSetOption(IntPtr.Zero, SciterXDef.SCITER_RT_OPTIONS.SCITER_SET_SCRIPT_RUNTIME_FEATURES, new IntPtr((int)allow));
+			SciterApi.SciterSetOption(IntPtr.Zero, SciterXDef.SCITER_RT_OPTIONS.SCITER_SET_SCRIPT_RUNTIME_FEATURES, new IntPtr((int)allow));
 
 #if WINDOWS || NETCORE
 			WindowDelegateRegistry.Set(this, InternalProcessSciterWindowMessage);
@@ -124,12 +124,13 @@ namespace SciterCore
 			SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_CONTROLS |
 			SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_GLASSY;
 
+		//
 		/// <summary>
 		/// Creates the Sciter window and returns the native handle
 		/// </summary>
 		/// <param name="frame">Rectangle of the window</param>
 		/// <param name="creationFlags">Flags for the window creation, defaults to SW_MAIN | SW_TITLEBAR | SW_RESIZEABLE | SW_CONTROLS</param>
-		public SciterWindow CreateWindow(PInvokeUtils.RECT frame = new PInvokeUtils.RECT(), SciterXDef.SCITER_CREATE_WINDOW_FLAGS creationFlags = DefaultCreateFlags, IntPtr parent = new IntPtr())
+		public SciterWindow CreateWindow(SciterRectangle frame = new SciterRectangle(), SciterXDef.SCITER_CREATE_WINDOW_FLAGS creationFlags = DefaultCreateFlags, IntPtr parent = new IntPtr())
 		{
 
 #if DEBUG
@@ -137,9 +138,9 @@ namespace SciterCore
 			creationFlags |= SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_ENABLE_DEBUG;
 #endif
 			Debug.Assert(Handle == IntPtr.Zero);
-			Handle = Api.SciterCreateWindow(
+			Handle = SciterApi.SciterCreateWindow(
 				creationFlags,
-				ref frame,
+				frame,
 				WindowDelegateRegistry.Get(this),
 				IntPtr.Zero,
 				parent
@@ -157,13 +158,13 @@ namespace SciterCore
 
 		public SciterWindow CreateMainWindow(int width, int height, SciterXDef.SCITER_CREATE_WINDOW_FLAGS creationFlags = DefaultCreateFlags)
 		{
-			var frame = new PInvokeUtils.RECT(width, height);
+			var frame = new SciterRectangle(width, height);
 			return CreateWindow(frame, creationFlags);
 		}
 
 		public SciterWindow CreateOwnedWindow(IntPtr owner, int width, int height, SciterXDef.SCITER_CREATE_WINDOW_FLAGS creationFlags = DefaultCreateFlags)
 		{
-			var frame = new PInvokeUtils.RECT(width, height);
+			var frame = new SciterRectangle(width, height);
             return CreateWindow(frame, creationFlags, owner);
 		}
 
@@ -192,11 +193,11 @@ namespace SciterCore
 			PInvokeWindows.GetClientRect(hwndParent, out var frame);
 
 #if DEBUG
-			Api.SciterSetOption(IntPtr.Zero, SciterXDef.SCITER_RT_OPTIONS.SCITER_SET_DEBUG_MODE, new IntPtr(1));
+			SciterApi.SciterSetOption(IntPtr.Zero, SciterXDef.SCITER_RT_OPTIONS.SCITER_SET_DEBUG_MODE, new IntPtr(1));
 #endif
 
 #if true
-            string wndclass = Api.SciterClassName();
+            string wndclass = SciterApi.SciterClassName();
 
             var childWindowHandle = PInvokeWindows.CreateWindowEx(
 	            (int)(PInvokeWindows.WindowStyles.WS_EX_TRANSPARENT),
@@ -366,7 +367,7 @@ namespace SciterCore
 			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
 				absoluteUri = absoluteUri.Replace(":///", "://");
 #endif
-	        return Api.SciterLoadFile(hwnd: Handle, filename: absoluteUri);
+	        return SciterApi.SciterLoadFile(hwnd: Handle, filename: absoluteUri);
         }
 
 		/// <summary>
@@ -387,7 +388,7 @@ namespace SciterCore
         internal bool TryLoadHtmlInternal(string html, string baseUrl = null)
 		{
 			var bytes = Encoding.UTF8.GetBytes(s: html);
-			return Api.SciterLoadHtml(hwnd: Handle, html: bytes, htmlSize: (uint)bytes.Length, baseUrl: baseUrl);
+			return SciterApi.SciterLoadHtml(hwnd: Handle, html: bytes, htmlSize: (uint)bytes.Length, baseUrl: baseUrl);
 		}
 
 		public SciterWindow Show(bool show = true)
@@ -510,7 +511,7 @@ namespace SciterCore
 		{
 			Debug.Assert(Handle != IntPtr.Zero);
 			
-			var result = Api.SciterGetRootElement(Handle, out var elementHandle)
+			var result = SciterApi.SciterGetRootElement(Handle, out var elementHandle)
 				.IsOk();
 
 			element = result ? new SciterElement(elementHandle) : null; // no page loaded yet?
@@ -531,13 +532,9 @@ namespace SciterCore
 		/// </summary>
 		internal bool TryGetElementAtPointInternal(out SciterElement value, int x, int y)
 		{
-			var point = new PInvokeUtils.POINT
-			{ 
-				X = x, 
-				Y = y 
-			};
+			var point = new SciterPoint(x, y);
 			
-			var result = Api.SciterFindElement(Handle, point, out var elementHandle)
+			var result = SciterApi.SciterFindElement(Handle, point, out var elementHandle)
 				.IsOk();
 
 			value = result ? new SciterElement(elementHandle) : null;
@@ -577,7 +574,7 @@ namespace SciterCore
 		/// <returns>The element, or null if it doesn't exists</returns>
 		internal bool TryGetElementByUidInternal(out SciterElement value, uint uid)
 		{
-			var result = Api.SciterGetElementByUID(Handle, uid, out var elementHandle)
+			var result = SciterApi.SciterGetElementByUID(Handle, uid, out var elementHandle)
 				.IsOk();
 			
 			value = result ? new SciterElement(elementHandle) : null;
@@ -591,12 +588,12 @@ namespace SciterCore
 
 		internal int GetMinWidthInternal()
 		{
-			return unchecked((int)Api.SciterGetMinWidth(Handle));
+			return unchecked((int)SciterApi.SciterGetMinWidth(Handle));
 		}
 
 		internal int GetMinHeightInternal(int width)
 		{
-			return unchecked((int)Api.SciterGetMinHeight(Handle, unchecked((uint)width)));
+			return unchecked((int)SciterApi.SciterGetMinHeight(Handle, unchecked((uint)width)));
 		}
 
 		#endregion
@@ -614,7 +611,7 @@ namespace SciterCore
 		/// </summary>
 		internal bool TryUpdateWindowInternal()
 		{
-			return Api.SciterUpdateWindow(Handle);
+			return SciterApi.SciterUpdateWindow(Handle);
 		}
 
 		public SciterValue CallFunction(string name, params SciterValue[] args)
@@ -623,7 +620,7 @@ namespace SciterCore
 			Debug.Assert(name != null);
 
 			Interop.SciterValue.VALUE vret = new Interop.SciterValue.VALUE();
-			Api.SciterCall(Handle, name, (uint)args.Length, args.AsValueArray(), out vret);
+			SciterApi.SciterCall(Handle, name, (uint)args.Length, args.AsValueArray(), out vret);
 			return new SciterValue(vret);
 		}
 
@@ -633,7 +630,7 @@ namespace SciterCore
 			Debug.Assert(script != null);
 
 			Interop.SciterValue.VALUE vret = new Interop.SciterValue.VALUE();
-			Api.SciterEval(Handle, script, (uint)script.Length, out vret);
+			SciterApi.SciterEval(Handle, script, (uint)script.Length, out vret);
 			return new SciterValue(vret);
 		}
 
@@ -645,7 +642,7 @@ namespace SciterCore
 		/// </summary>
 		public bool SetMediaType(string mediaType)
 		{
-			return Api.SciterSetMediaType(Handle, mediaType);
+			return SciterApi.SciterSetMediaType(Handle, mediaType);
 		}
 
 		/// <summary>
@@ -657,7 +654,7 @@ namespace SciterCore
 		public bool SetMediaVars(SciterValue mediaVars)
 		{
 			Interop.SciterValue.VALUE v = mediaVars.ToVALUE();
-			return Api.SciterSetMediaVars(Handle, ref v);
+			return SciterApi.SciterSetMediaVars(Handle, ref v);
 		}
 
 #if WINDOWS || NETCORE

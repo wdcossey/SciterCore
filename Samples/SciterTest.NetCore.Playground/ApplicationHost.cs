@@ -19,7 +19,7 @@ namespace SciterTest.NetCore
 			var host = this;
 			host
 				.AttachEventHandler(hostEventHandler)
-				.RegisterBehaviorHandler<VirtualTreeBehavior>()
+				//.RegisterBehaviorHandler<VirtualTreeBehavior>()
 				.RegisterBehaviorHandler<DragDropBehavior>()
 				.RegisterBehaviorHandler<CustomWindowEventHandler>();
 
@@ -30,7 +30,6 @@ namespace SciterTest.NetCore
 			host.Window.OnWindowShow += (sender, args) =>
 			{
 				var treeElement = wnd.RootElement.SelectFirst("widget#tree");
-				
 				treeElement.AttachEventHandler<VirtualTreeBehavior>();
 				
 				var button = wnd.RootElement.SelectFirst("#new-dialog");
@@ -42,7 +41,6 @@ namespace SciterTest.NetCore
 					Source = button,
 					Name = "Hello",
 					Data = SciterValue.Create("World!"),
-					
 				});
 				
 				//var window2 = DevZH.UI.Window.AttachWindow(host.Window.WindowHandle);
@@ -140,7 +138,7 @@ namespace SciterTest.NetCore
 	public class BaseHost : SciterHost
 	{
 		private readonly ILogger _logger;
-		private readonly ISciterApi _api = Sciter.Api;
+		private readonly ISciterApi _api = Sciter.SciterApi;
 		private readonly SciterArchive _archive = new SciterArchive();
 
 

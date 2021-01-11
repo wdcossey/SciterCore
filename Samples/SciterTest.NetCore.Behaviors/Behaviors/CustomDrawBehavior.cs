@@ -13,7 +13,7 @@ namespace SciterTest.NetCore.Behaviors
 			return EventGroups.HandleDraw;
 		}
 
-		protected override bool OnTimer(SciterElement element, IntPtr extTimerId)
+		protected override bool OnTimer(SciterElement element, IntPtr? extTimerId)
 		{
 			//dom::element(he).refresh(); // ref
 			element.Refresh();

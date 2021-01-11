@@ -26,11 +26,11 @@ namespace SciterCore
 {
 	public class SciterArchive : IDisposable
 	{
-        private static readonly ISciterApi Api = Sciter.Api;
+        private static readonly ISciterApi SciterApi = Sciter.SciterApi;
 		private IntPtr _handle;
 		private GCHandle _pinnedArray;
 
-		public const string DEFAULT_ARCHIVE_URI = "archive://app/";
+		public const string DEFAULT_ARCHIVE_URI = "this://app/";
 
 		public Uri Uri { get; private set; }
 
@@ -108,7 +108,7 @@ namespace SciterCore
 		{
 			ArchiveAlreadyOpened();
 			_pinnedArray = GCHandle.Alloc(buffer, GCHandleType.Pinned);
-			_handle = Api.SciterOpenArchive(_pinnedArray.AddrOfPinnedObject(), System.Convert.ToUInt32(buffer.Length));
+			_handle = SciterApi.SciterOpenArchive(_pinnedArray.AddrOfPinnedObject(), System.Convert.ToUInt32(buffer.Length));
 			return !_handle.Equals(IntPtr.Zero);
 		}
 
@@ -120,7 +120,7 @@ namespace SciterCore
 		{
 			ArchiveNotOpened();
 			
-			Api.SciterCloseArchive(_handle);
+			SciterApi.SciterCloseArchive(_handle);
 			_handle = IntPtr.Zero;
 			_pinnedArray.Free();
 		}
@@ -168,7 +168,7 @@ namespace SciterCore
 			
 			var path = actualUri.GetComponents(UriComponents.Path, UriFormat.SafeUnescaped);
 
-			var found = Api.SciterGetArchiveItem(_handle, path, out var dataPtr, out var dataLength);
+			var found = SciterApi.SciterGetArchiveItem(_handle, path, out var dataPtr, out var dataLength);
 
 			if (!found) 
 				return false;

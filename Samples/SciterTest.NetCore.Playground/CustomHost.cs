@@ -24,7 +24,7 @@ namespace SciterTest.NetCore
 			SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_CONTROLS |
 			SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_GLASSY;
 		
-			var frame = new PInvokeUtils.RECT(800, 600);
+			var frame = new SciterRectangle(800, 600);
 			CreateWindow(frame: frame, creationFlags: creationFlags, parent: IntPtr.Zero);
 				
 			//CreateWindow(800, 600)

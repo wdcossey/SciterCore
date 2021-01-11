@@ -10,7 +10,7 @@ namespace SciterCore
 {
     public class SciterNode
 	{
-		private static readonly ISciterApi Api = Sciter.Api;
+		private static readonly ISciterApi SciterApi = Sciter.SciterApi;
 		
 		private readonly IntPtr _nodeHandle;
 
@@ -32,7 +32,7 @@ namespace SciterCore
 
 		internal bool TryCreateTextNodeInternal(string text, out SciterNode value)
 		{
-			var result = Api.SciterCreateTextNode(text, System.Convert.ToUInt32(text.Length), out var nodeHandle)
+			var result = SciterApi.SciterCreateTextNode(text, System.Convert.ToUInt32(text.Length), out var nodeHandle)
 				.IsOk();
 			
 			value = result ? new SciterNode(nodeHandle) : default;
@@ -48,7 +48,7 @@ namespace SciterCore
 
 		internal bool TryCreateCommentNodeInternal(string text, out SciterNode value)
 		{
-			var result= Api.SciterCreateCommentNode(text, System.Convert.ToUInt32(text.Length), out var nodeHandle)
+			var result= SciterApi.SciterCreateCommentNode(text, System.Convert.ToUInt32(text.Length), out var nodeHandle)
 				.IsOk();
 			
 			value = result ? new SciterNode(nodeHandle) : default;
@@ -66,7 +66,7 @@ namespace SciterCore
 
 		internal bool TryGetChildCountInternal(out int value)
 		{
-			var result = Api.SciterNodeChildrenCount(this.Handle, out var count)
+			var result = SciterApi.SciterNodeChildrenCount(this.Handle, out var count)
 				.IsOk();
 			value = result ? System.Convert.ToInt32(count) : 0;
 			return result;
@@ -80,7 +80,7 @@ namespace SciterCore
 
 		internal bool TryCastToElementInternal(out SciterElement value)
 		{
-			var result = Api.SciterNodeCastToElement(this.Handle, out var elementHandle).IsOk();
+			var result = SciterApi.SciterNodeCastToElement(this.Handle, out var elementHandle).IsOk();
 			value = result ? new SciterElement(elementHandle) : default;
 			return result;
 		}
@@ -89,7 +89,7 @@ namespace SciterCore
 		
 		private NodeType GetNodeType()
 		{
-			var result = Api.SciterNodeType(this.Handle, out var nodeType)
+			var result = SciterApi.SciterNodeType(this.Handle, out var nodeType)
 				.IsOk();
 
 			return result ? (NodeType)(int)nodeType : NodeType.Undefined;
@@ -115,7 +115,7 @@ namespace SciterCore
 		{
 			string outText = default;
 
-			var domResult = Api.SciterNodeGetText(
+			var domResult = SciterApi.SciterNodeGetText(
 				this.Handle, 
 				(IntPtr strPtr, uint strLength, IntPtr param) =>
 				{
@@ -135,7 +135,7 @@ namespace SciterCore
 		
 		internal bool TrySetTextInternal(string text)
 		{
-			return Api.SciterNodeSetText(this.Handle, text, System.Convert.ToUInt32(text.Length))
+			return SciterApi.SciterNodeSetText(this.Handle, text, System.Convert.ToUInt32(text.Length))
 				.IsOk();
 		}
 		
@@ -145,13 +145,13 @@ namespace SciterCore
 		
 		internal SciterNode GetChildInternal(int index)
 		{
-			Api.SciterNodeNthChild(this.Handle, System.Convert.ToUInt32(index), out var nodeHandle);
+			SciterApi.SciterNodeNthChild(this.Handle, System.Convert.ToUInt32(index), out var nodeHandle);
 			return nodeHandle == IntPtr.Zero ? null : new SciterNode(nodeHandle);
 		}
 		
 		internal bool TryGetChildInternal(int index, out SciterNode value)
 		{
-			var result = Api.SciterNodeNthChild(this.Handle, System.Convert.ToUInt32(index), out var nodeHandle)
+			var result = SciterApi.SciterNodeNthChild(this.Handle, System.Convert.ToUInt32(index), out var nodeHandle)
 				.IsOk();
 			
 			value = result ? new SciterNode(nodeHandle) : default;
