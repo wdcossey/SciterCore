@@ -7,7 +7,7 @@ namespace SciterCore
 {
 	public abstract class SciterDebugOutputHandler
 	{
-		private static ISciterApi _api = Sciter.Api;
+		private static ISciterApi _api = Sciter.SciterApi;
 		private readonly SciterXDef.DEBUG_OUTPUT_PROC _proc;// keep a copy of the delegate so it survives GC
 
 		/// <summary>

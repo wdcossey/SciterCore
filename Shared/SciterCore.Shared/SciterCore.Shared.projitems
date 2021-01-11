@@ -12,6 +12,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Attributes\SciterApiAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Attributes\SciterFunctionNameAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Attributes\SciterCallbackWrapperAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Attributes\SciterHostArchiveAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Attributes\SciterHostBehaviorHandlerAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Attributes\SciterHostEventHandlerAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Attributes\SciterHostWindowAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Convert\SciterPropertyName.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\BehaviorEvents.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\CallbackCode.cs" />
@@ -56,6 +60,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)EventArgs\MouseArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EventArgs\SciterBehaviorArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EventArgs\ScrollEventArgs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EventArgs\WindowCreatedEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EventHandlers\CustomEventHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\DomResultExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\DrawingExtensions.cs" />
@@ -72,6 +77,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\SciterTextExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\SciterValueExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\SciterWindowExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ServiceCollectionExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\TypeExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ValueResultExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\PolygonPoint.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\PolylinePoint.cs" />
@@ -85,6 +92,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\SciterSize.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\SciterText.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\TextMetrics.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\ISciterWindowResolver.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\SciterWindowResolver.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HostCallbackRegistry.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)InternalsVisibility.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\Interfaces\ISciterRequestApi.cs" />
@@ -123,8 +132,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)MessageBox.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformWrappers\Interfaces\ISciterWindowWrapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformWrappers\SciterWindowWrapper.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PlatformWrappers\WindowWrapper.Linux.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PlatformWrappers\WindowWrapper.Windows.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformWrappers\SciterWindowWrapper.Linux.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformWrappers\SciterWindowWrapper.Windows.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SciterApplication.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SciterArchive.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SciterDebugOutputHandler.cs" />

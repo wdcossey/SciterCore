@@ -13,8 +13,8 @@ namespace SciterTest.Mac
 
 		static void Main(string[] args)
 		{
-			Debug.WriteLine(Sciter.Api.Version);
-			Sciter.Api.SciterSetOption(
+			Debug.WriteLine(Sciter.SciterApi.Version);
+			Sciter.SciterApi.SciterSetOption(
 				IntPtr.Zero, 
 				SciterXDef.SCITER_RT_OPTIONS.SCITER_SET_GFX_LAYER, 
 				new IntPtr((int) SciterXDef.GFX_LAYER.GFX_LAYER_CG));

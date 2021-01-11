@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using SciterCore.Interop;
+using SciterCore.Tests.Unit.TestHelpers;
 
 namespace SciterCore.Tests.Unit
 {
@@ -91,7 +92,7 @@ namespace SciterCore.Tests.Unit
                 new SciterWindow()
                     .CreateMainWindow(640, 480)
                     .SetTitle("Wtf");
-			_ = new SciterHost(window);
+			_ = new TestableSciterHost(window);
 			window.LoadHtml("<html></html>");
 
 			var sv = window.EvalScript("Utils.readStreamToEnd");

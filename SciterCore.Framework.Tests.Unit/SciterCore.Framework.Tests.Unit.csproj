@@ -67,6 +67,7 @@
     <Compile Include="SciterElementTests.cs" />
     <Compile Include="SciterValueTests.cs" />
     <Compile Include="SciterHostTests.cs" />
+    <Compile Include="TestHelpers\TestableSciterHost.cs" />
     <Compile Include="UnitTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

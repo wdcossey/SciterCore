@@ -45,7 +45,7 @@ namespace SciterTest.Wpf
                 var buffer = new byte[info.Stream.Length];
 
                 await info.Stream.ReadAsync(buffer, 0, buffer.Length);
-                Sciter.Api.SciterLoadHtml(control.Handle, buffer, (uint)buffer.Length, null);
+                Sciter.SciterApi.SciterLoadHtml(control.Handle, buffer, (uint)buffer.Length, null);
             }
         }
 
@@ -94,7 +94,7 @@ namespace SciterTest.Wpf
 
             //return result;
 
-            string wndclass = Sciter.Api.SciterClassName();
+            string wndclass = Sciter.SciterApi.SciterClassName();
             _sciterHandle = PInvokeWindows.CreateWindowEx(
                 (int)0,
                 wndclass,

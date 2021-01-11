@@ -52,7 +52,7 @@ namespace SciterTest.WinForms
 		{
 			switch (e.Path.OriginalString)
 			{
-				case "archive://app/icons8-visual-studio-code-2019.svg" :
+				case "this://app/icons8-visual-studio-code-2019.svg" :
 					e.Path = new Uri($"{e.BaseAddress}icons8-visual-studio-2019.svg");
 					break;
 			}

@@ -1,5 +1,6 @@
 ﻿using System;
 using NUnit.Framework;
+using SciterCore.Tests.Unit.TestHelpers;
 
 namespace SciterCore.Tests.Unit
 {
@@ -23,7 +24,7 @@ namespace SciterCore.Tests.Unit
         [Test]
         public void SetupWindow_With_An_Null_SciterWindow_Throws_ArgumentNullException()
         {
-            using (var sciterHost = new SciterHost())
+            using (var sciterHost = new TestableSciterHost())
             {
                 Assert.Throws<ArgumentNullException>(() => sciterHost.SetupWindow((SciterWindow)null));
             }
@@ -32,7 +33,7 @@ namespace SciterCore.Tests.Unit
         [Test]
         public void SetupWindow_More_Than_Once_Throws_InvalidOperationException()
         {
-            using (var sciterHost = new SciterHost())
+            using (var sciterHost = new TestableSciterHost())
             using (var window = new SciterWindow(_fakePointer))
             {
                 sciterHost.SetupWindow(window);
@@ -43,7 +44,7 @@ namespace SciterCore.Tests.Unit
         [Test]
         public void SetupWindow_With_IntPtr_And_An_Invalid_Handle_Throws_ArgumentOutOfRangeException()
         {
-            using (var sciterHost = new SciterHost())
+            using (var sciterHost = new TestableSciterHost())
             {
                 Assert.Throws<ArgumentOutOfRangeException>(() => sciterHost.SetupWindow(IntPtr.Zero));
             }
@@ -52,7 +53,7 @@ namespace SciterCore.Tests.Unit
         [Test]
         public void SetupWindow_With_IntPtr_More_Than_Once_Throws_InvalidOperationException()
         {
-            using (var sciterHost = new SciterHost())
+            using (var sciterHost = new TestableSciterHost())
             {
                 sciterHost.SetupWindow(_fakePointer);
                 Assert.Throws<InvalidOperationException>(() => sciterHost.SetupWindow(_fakePointer));

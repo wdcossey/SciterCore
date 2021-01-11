@@ -3,9 +3,9 @@ using SciterCore.Extensions;
 
 namespace SciterCore
 {
-    internal struct EventHandlerRegistry
+    internal readonly struct EventHandlerRegistry
     {
-        private SciterEventHandler _eventHandler;
+        private readonly SciterEventHandler _eventHandler;
 
         private EventHandlerRegistry(string name)
             : this()
@@ -22,32 +22,23 @@ namespace SciterCore
         internal EventHandlerRegistry(SciterEventHandler eventHandler, string name = null)
             : this(name: eventHandler.GetBehaviourName(behaviorName: name))
         {
-            EventHandler = eventHandler;
+            _eventHandler = eventHandler;
         }
 
         internal string Name { get; }
 
         internal Type Type { get; }
 
-        internal SciterEventHandler EventHandler
+        internal SciterEventHandler Create(SciterHost host = null)
         {
-            get => GetOrCreateEventHandler(_eventHandler);
-            private set => _eventHandler = value;
-        }
+            if (_eventHandler == null)
+                return (Activator.CreateInstance(Type) as SciterEventHandler)?
+                    .SetName($"Created by registered native behavior factory: {Name}")
+                    .SetHost(host);
+            
+            _eventHandler.SetHost(host);
+            return _eventHandler;
 
-        private SciterEventHandler GetOrCreateEventHandler(SciterEventHandler eventHandler)
-        {
-            if (eventHandler != null) 
-                return eventHandler;
-            
-            eventHandler = (SciterEventHandler)Activator.CreateInstance(Type);
-            
-            if (eventHandler == null) 
-                return null;
-            
-            eventHandler.Name = $"Create by registered native behavior factory: {Name}";
-            return eventHandler;
         }
-
     }
 }

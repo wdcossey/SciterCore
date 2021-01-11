@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -16,32 +15,55 @@ using SciterValue = SciterCore.SciterValue;
 
 namespace SciterTest.NetCore
 {
-	public class ApplicationHost : BaseHost
-	{
-		public ApplicationHost(ILogger<ApplicationHost> logger, ApplicationWindow wnd, HostEventHandler hostEventHandler)
-			: base(logger, wnd)
-		{
-			var host = this;
-			host
-				.AttachEventHandler(hostEventHandler)
-				.RegisterBehaviorHandler<DragDropBehavior>();
-			
-			host.LoadPage("index.html",
-				onFailed: (sciterHost, window) => throw new InvalidOperationException("Unable to load the requested page."));
 
-#if DEBUG
-			host.Window.OnWindowShow += (sender, args) =>
-			{
-				
-			};
-#endif
+	// This base class overrides OnLoadData and does the resource loading strategy
+	// explained at http://misoftware.rs/Bootstrap/Dev
+	//
+	// - in DEBUG mode: resources loaded directly from the file system
+	// - in RELEASE mode: resources loaded from by a SciterArchive (packed binary data contained as C# code in ArchiveResource.cs)
+	[SciterHostEventHandler(typeof(HostEventHandler))]
+	[SciterHostWindow(typeof(ApplicationWindow), "this://app/index.html")]
+	[SciterHostBehaviorHandler(typeof(DragDropBehavior))]
+	public class ApplicationHost : SciterArchiveHost
+	{
+		private readonly ILogger _logger;
+
+		// ReSharper disable once SuggestBaseTypeForParameter
+		public ApplicationHost(ILogger<ApplicationHost> logger)
+			: base()
+		{
+			_logger = logger;
 		}
 
-		// Things to do here:
-		// -override OnLoadData() to customize or track resource loading
-		// -override OnPostedNotification() to handle notifications generated with SciterHost.PostNotification()
-	}
+		protected override LoadResult OnLoadData(object sender, LoadDataArgs args)
+		{
+			_logger?.LogDebug(args.Uri.ToString());
+			return base.OnLoadData(sender: sender, args: args);
+		}
 
+		protected override bool OnAttachBehavior(SciterElement element, string behaviorName, out SciterEventHandler eventHandler)
+		{
+			_logger?.LogDebug($"{nameof(OnAttachBehavior)}: {nameof(element)}: {element.Tag} ({element.UniqueId}); {nameof(behaviorName)}: {behaviorName}");
+			return base.OnAttachBehavior(element, behaviorName, out eventHandler);
+		}
+
+		protected override void OnDataLoaded(object sender, DataLoadedArgs args)
+		{
+			base.OnDataLoaded(sender, args);
+		}
+
+		protected override void OnEngineDestroyed(object sender, EngineDestroyedArgs args)
+		{
+			_logger?.LogDebug(args.Code.ToString());
+			base.OnEngineDestroyed(sender, args);
+		}
+
+		protected override IntPtr OnPostedNotification(IntPtr wparam, IntPtr lparam)
+		{
+			return base.OnPostedNotification(wparam, lparam);
+		}
+	}
+	
 	public class HostEventHandler : SciterEventHandler
 	{
 		private readonly ILogger<HostEventHandler> _logger;
@@ -239,85 +261,5 @@ namespace SciterTest.NetCore
 			_logger?.LogDebug($"{nameof(OnDataArrived)}: {nameof(prms)}: {prms.uri}");
 			return base.OnDataArrived(element, prms);
 		}
-	}
-
-	// This base class overrides OnLoadData and does the resource loading strategy
-	// explained at http://misoftware.rs/Bootstrap/Dev
-	//
-	// - in DEBUG mode: resources loaded directly from the file system
-	// - in RELEASE mode: resources loaded from by a SciterArchive (packed binary data contained as C# code in ArchiveResource.cs)
-	public class BaseHost : SciterHost
-	{
-		private readonly ILogger _logger;
-		private readonly ISciterApi _api = Sciter.Api;
-		private readonly SciterArchive _archive = new SciterArchive();
-
-
-		public BaseHost(ILogger logger, SciterWindow window)
-			: base(window)
-		{
-			_logger = logger;
-			_archive.Open();
-		}
-
-		public SciterHost LoadPage(string page, Action<SciterHost, SciterWindow> onCompleted = null, Action<SciterHost, SciterWindow> onFailed = null)
-		{
-#if DEBUG
-			var location = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-			var path = Path.Combine(location ?? string.Empty, "wwwroot", page);
-			var uri = new Uri(path, UriKind.Absolute);
-
-			Debug.Assert(uri.IsFile);
-			Debug.Assert(File.Exists(uri.AbsolutePath));
-#else
-			Uri uri = new Uri(baseUri: _archive.Uri, page);
-#endif 
-
-			if (Window.TryLoadPage(uri: uri))
-				onCompleted?.Invoke(this, Window);
-			else
-				onFailed?.Invoke(this, Window);
-
-			return this;
-		}
-
-		protected override LoadResult OnLoadData(object sender, LoadDataArgs args)
-		{
-			_logger?.LogDebug(args.Uri.ToString());
-			
-			// load resource from SciterArchive
-			_archive?.GetItem(args.Uri, (res) => 
-			{
-				if (res.IsSuccessful)
-					_api.SciterDataReady(Window.Handle, res.Path, res.Data, (uint) res.Size);
-			});
-
-			// call base to ensure LibConsole is loaded
-			return base.OnLoadData(sender: sender, args: args);
-		}
-
-		protected override bool OnAttachBehavior(SciterElement element, string behaviorName, out SciterEventHandler eventHandler)
-		{
-			_logger?.LogDebug($"{nameof(OnAttachBehavior)}: {nameof(element)}: {element.Tag} ({element.UniqueId}); {nameof(behaviorName)}: {behaviorName}");
-			return base.OnAttachBehavior(element, behaviorName, out eventHandler);
-		}
-
-		protected override void OnDataLoaded(object sender, DataLoadedArgs args)
-		{
-			base.OnDataLoaded(sender, args);
-		}
-
-		protected override void OnEngineDestroyed(object sender, EngineDestroyedArgs args)
-		{
-			_logger?.LogDebug(args.Code.ToString());
-			base.OnEngineDestroyed(sender, args);
-		}
-
-		protected override IntPtr OnPostedNotification(IntPtr wparam, IntPtr lparam)
-		{
-			return base.OnPostedNotification(wparam, lparam);
-		}
-		
-		
 	}
 }

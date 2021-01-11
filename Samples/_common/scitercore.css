@@ -1,0 +1,246 @@
+﻿html {
+    background-color: #1e2835;
+    color: rgba(160,180,200,.85);
+//border-color: #e6e6e6;
+}
+
+/*  platform supports blurbehind
+@media ui-blurbehind {  
+    html {
+        background:transparent;
+    }
+}
+*/
+
+body {
+    overflow: hidden;
+}
+
+code {
+    color: rgba(160,180,200,.85);
+    opacity: .6;
+}
+
+a {
+    color: #53a6fa !important;
+    text-decoration: none;
+    cursor: pointer;
+    outline: 0;
+}
+a:hover {
+    color: #53a6fa !important;
+}
+
+h1 {
+    color: blue;
+    font-size: 30px;
+}
+
+h2 {
+    color: rgb(160,180,200);
+
+}
+
+h3 {
+    color: rgb(160,180,200);
+
+}
+
+@const TOOLBAR_HEIGHT: 96dip;
+@const FOOTER_HEIGHT: 32dip;
+
+body { margin: 0; }
+
+main {
+    flow:stack;
+    size:*;
+}
+
+toolbar {
+    height: @TOOLBAR_HEIGHT;
+    z-index:1;
+    background-color: rgba(36, 49, 64, 0.55);
+    box-shadow: 0 0 12dip 12dip rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(10dip);
+}
+
+section {
+    size:*;
+    overflow:auto;
+    margin: @TOOLBAR_HEIGHT 0 @FOOTER_HEIGHT 0;
+    clip-box: margin-box;
+    border-spacing:20dip;
+    overflow: scroll-indicator;
+}
+
+footer {
+    overflow:auto;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: @FOOTER_HEIGHT;
+    background-color: rgba(36, 49, 64, 0.55);
+    box-shadow: 0 0 12dip 12dip rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(10dip);
+}
+
+/*overlay
+{
+    color: white;
+    behavior: card-drop-behavior;
+    display:block; 
+    flow:vertical;
+    visibility:none; // invisible by default
+    position:fixed;
+    top:0; left:0; right:0; bottom:0; // covers whole window area
+    background:rgba(0, 0, 0,0.25); // semi-transparent
+    backdrop-filter: blur(10dip);
+    z-index: 100; // above all
+}
+
+overlay > text {
+    width:50%;
+    height:max-content;
+    border-radius: 2dip;
+    margin:*; // to put it in the middle
+    padding:1em;
+    background: rgba(36, 49, 64, 1);
+    box-shadow: rgba(0, 0, 0, 0.133) 0 4dip 8dip 0, rgba(0, 0, 0, 0.11) 0 0.5dip 1.8dip 0;
+    z-index: 101; // above all
+}
+
+html[waiting] overlay {
+    visibility:visible; // visible if root element has attribute "waiting"
+}*/
+
+card {
+    display: block;
+    padding: 16dip;
+    width: 1*;
+    margin-bottom: 16dip;
+    border-radius: 2dip;
+    color: white;
+    background-color: rgba(36, 49, 64, 1);
+    box-shadow: rgba(0, 0, 0, 0.133) 0px 1.6px 3.6px 0px, rgba(0, 0, 0, 0.11) 0px 0.3px 0.9px 0px;
+    /*behavior: card-drop-behavior;*/
+}
+
+card:hover {
+    box-shadow: rgba(0, 0, 0, 0.266) 0px 3.2px 7.2px 0px, rgba(0, 0, 0, 0.22) 0px 0.6px 1.8px 0px;
+}
+
+card > cardcontent
+{
+    display: block;
+    visibility: collapse;
+    width: 1*;
+    opacity: 0;
+    transition: height cubic-in-out 0.4s 0.4s, opacity cubic-in-out 0.4s 0.4s;
+    flow:row(div,div);
+}
+
+card > cardcontent div:nth-child(odd)
+{
+    width:max-content;
+    margin-right: 4dip;
+}
+
+card > cardcontent div:nth-child(even)
+{
+    width:1*;
+}
+
+card > cardcontent[state="visible"]
+{
+    height:max-content;
+    opacity: 1;
+    visibility: visible;
+}
+
+card > cardcontent.has-exception
+{
+    background-color: #1e2835;
+    padding: 8dip;
+    border-radius: 2dip;
+    box-shadow: inset 0 1px 4px 0 rgba(0,0,0,.14);
+    behavior:htmlarea;
+}
+
+card > cardcontent.has-exception span
+{
+    color: crimson;
+}
+
+cardheader {
+    display:inline-block;
+    width: 1*;
+    margin-bottom: 16dip;
+}
+
+cardheader > div {
+    vertical-align: center;
+    font-family: Roboto,Helvetica Neue,sans-serif;
+}
+
+cardheader > div:nth-child(1) {
+    font-size: 20dip;
+    font-weight: 500;
+}
+
+cardheader > div:nth-child(2) {
+    font-size: 14dip;
+    font-weight: 400;
+    opacity: 0.6
+}
+
+cardfooter {
+    display:inline-block;
+    width: 1*;
+    margin-top: 16dip;
+}
+
+tools {
+    z-index: 9999;
+    opacity: 0.75;
+    background-color: #222f;
+    overflow: none;
+    position: fixed;
+    border-radius: 0 0 4dip 4dip;
+    height: max-content;
+    width: max-content;
+    padding: 4dp;
+    top: -42dip;
+    left: *;
+    right: *;
+    float: vertical;
+    transition: opacity 0.4s, top 0.4s;
+}
+
+tools:hover
+{
+    opacity: 1;
+    top: 0dip;
+}
+
+tools > button {
+    cursor: pointer;
+    opacity: 0.75;
+    border-radius: 0 0 2dip 2dip;
+    border: solid 1dip #777f;
+    height: max-content;
+    width: max-content;
+    background: #777f;
+    margin: 0 4dip;
+    padding: 2dip;
+    transition: border-color 0.4s;
+}
+
+tools > button:hover {
+    border-color: #aaaf;
+}
+
+tools > button > img {
+    height: 32 dip;
+    width: 32 dip;
+}

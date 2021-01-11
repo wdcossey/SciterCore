@@ -16,7 +16,7 @@ namespace SciterTest.Graphics
 	        // Sciter needs this for drag 'n drop support
 	        SciterPlatform.EnableDragAndDrop();
 
-            Console.WriteLine($@"Sciter: {Sciter.Api.SciterVersion()}");
+            Console.WriteLine($@"Sciter: {Sciter.SciterApi.SciterVersion()}");
 
 			// Create the window
 			var window = new SciterWindow()

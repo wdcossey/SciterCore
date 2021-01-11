@@ -42,7 +42,7 @@ namespace SciterCore
 	public class SciterValue
 	{
 		internal Interop.SciterValue.VALUE _data;
-		private static readonly ISciterApi Api = Sciter.Api;
+		private static readonly ISciterApi SciterApi = Sciter.SciterApi;
 
 		public static readonly SciterValue Undefined;
 		public static readonly SciterValue Null;
@@ -61,8 +61,8 @@ namespace SciterCore
 
 		public Interop.SciterValue.VALUE ToVALUE()
 		{
-			Api.ValueInit(out var copy);
-			Api.ValueCopy(out copy, ref _data);
+			SciterApi.ValueInit(out var copy);
+			SciterApi.ValueCopy(out copy, ref _data);
 			return copy;
 		}
 
@@ -168,26 +168,26 @@ namespace SciterCore
 		
 		public SciterValue()
 		{
-			Api.ValueInit(out _data);
+			SciterApi.ValueInit(out _data);
 		}
 		
 		public SciterValue(SciterValue value)
 		{
-			Api.ValueInit(out _data);
-			Api.ValueCopy(out _data, ref value._data);
+			SciterApi.ValueInit(out _data);
+			SciterApi.ValueCopy(out _data, ref value._data);
 		}
 		
 		public SciterValue(Interop.SciterValue.VALUE value)
 		{
-			Api.ValueInit(out _data);
-			Api.ValueCopy(out _data, ref value);
+			SciterApi.ValueInit(out _data);
+			SciterApi.ValueCopy(out _data, ref value);
 		}
 		
 		#endregion
 
 		~SciterValue()
 		{
-			Api.ValueClear(out _data);
+			SciterApi.ValueClear(out _data);
 		}
 
 		#region Create
@@ -195,14 +195,14 @@ namespace SciterCore
 		public static SciterValue Create(bool value)
 		{
 			var result = new SciterValue();
-			Api.ValueIntDataSet(ref result._data, value ? 1 : 0, (uint) Interop.SciterValue.VALUE_TYPE.T_BOOL, 0);
+			SciterApi.ValueIntDataSet(ref result._data, value ? 1 : 0, (uint) Interop.SciterValue.VALUE_TYPE.T_BOOL, 0);
 			return result;
 		}
 
 		public static SciterValue Create(int value)
 		{
 			var result = new SciterValue();
-			Api.ValueIntDataSet(ref result._data, value, (uint) Interop.SciterValue.VALUE_TYPE.T_INT, 0);
+			SciterApi.ValueIntDataSet(ref result._data, value, (uint) Interop.SciterValue.VALUE_TYPE.T_INT, 0);
 			return result;
 		}
 		
@@ -210,42 +210,42 @@ namespace SciterCore
 		public static SciterValue Create(uint value)
 		{
 			var result = new SciterValue();
-			Api.ValueIntDataSet(ref result._data, (int)(value), (uint) Interop.SciterValue.VALUE_TYPE.T_INT, 0);
+			SciterApi.ValueIntDataSet(ref result._data, (int)(value), (uint) Interop.SciterValue.VALUE_TYPE.T_INT, 0);
 			return result;
 		}
 
 		public static SciterValue Create(double value)
 		{
 			var result = new SciterValue();
-			Api.ValueFloatDataSet(ref result._data, value, (uint) Interop.SciterValue.VALUE_TYPE.T_FLOAT, 0);
+			SciterApi.ValueFloatDataSet(ref result._data, value, (uint) Interop.SciterValue.VALUE_TYPE.T_FLOAT, 0);
 			return result;
 		}
 
 		public static SciterValue Create(string value)
 		{
 			var result = new SciterValue();
-			Api.ValueStringDataSet(ref result._data, value, (uint) (value?.Length ?? 0), (uint) Interop.SciterValue.VALUE_UNIT_TYPE_STRING.UT_STRING_STRING);
+			SciterApi.ValueStringDataSet(ref result._data, value, (uint) (value?.Length ?? 0), (uint) Interop.SciterValue.VALUE_UNIT_TYPE_STRING.UT_STRING_STRING);
 			return result;
 		}
 
 		public static SciterValue Create(byte[] value)
 		{
 			var result = new SciterValue();
-			Api.ValueBinaryDataSet(ref result._data, value, (uint) (value?.Length ?? 0), (uint) Interop.SciterValue.VALUE_TYPE.T_BYTES, 0);
+			SciterApi.ValueBinaryDataSet(ref result._data, value, (uint) (value?.Length ?? 0), (uint) Interop.SciterValue.VALUE_TYPE.T_BYTES, 0);
 			return result;
 		}
 
 		public static SciterValue Create(long value)
 		{
 			var result = new SciterValue();
-			Api.ValueInt64DataSet(ref result._data, value, (uint)Interop.SciterValue.VALUE_TYPE.T_DATE, 0);
+			SciterApi.ValueInt64DataSet(ref result._data, value, (uint)Interop.SciterValue.VALUE_TYPE.T_DATE, 0);
 			return result;
 		}
 		
 		public static SciterValue Create(SciterColor color)
 		{
 			var result = new SciterValue();
-			Api.ValueIntDataSet(ref result._data, (int)color.Value, (uint) Interop.SciterValue.VALUE_TYPE.T_COLOR, 0);
+			SciterApi.ValueIntDataSet(ref result._data, (int)color.Value, (uint) Interop.SciterValue.VALUE_TYPE.T_COLOR, 0);
 			return result;
 		}
 		
@@ -288,46 +288,46 @@ namespace SciterCore
 		
 		private SciterValue(IConvertible value)
 		{
-			Api.ValueInit(out _data);
+			SciterApi.ValueInit(out _data);
 
 			switch (value)
 			{
 				case bool @bool:
-					Api.ValueIntDataSet(ref _data, @bool ? 1 : 0, (uint) Interop.SciterValue.VALUE_TYPE.T_BOOL,
+					SciterApi.ValueIntDataSet(ref _data, @bool ? 1 : 0, (uint) Interop.SciterValue.VALUE_TYPE.T_BOOL,
 						0);
 					break;
 				case byte @byte:
-					Api.ValueIntDataSet(ref _data, @byte, (uint)Interop.SciterValue.VALUE_TYPE.T_INT, 0);
+					SciterApi.ValueIntDataSet(ref _data, @byte, (uint)Interop.SciterValue.VALUE_TYPE.T_INT, 0);
 					break;
 				case int @int:
-					Api.ValueIntDataSet(ref _data, @int, (uint) Interop.SciterValue.VALUE_TYPE.T_INT, 0);
+					SciterApi.ValueIntDataSet(ref _data, @int, (uint) Interop.SciterValue.VALUE_TYPE.T_INT, 0);
 					break;
 				case uint @uint:
-					Api.ValueIntDataSet(ref _data, (int)@uint, (uint)Interop.SciterValue.VALUE_TYPE.T_INT, 0);
+					SciterApi.ValueIntDataSet(ref _data, (int)@uint, (uint)Interop.SciterValue.VALUE_TYPE.T_INT, 0);
 					break;
 				case double @double:
-					Api.ValueFloatDataSet(ref _data, @double, (uint) Interop.SciterValue.VALUE_TYPE.T_FLOAT, 0);
+					SciterApi.ValueFloatDataSet(ref _data, @double, (uint) Interop.SciterValue.VALUE_TYPE.T_FLOAT, 0);
 					break;
 				case decimal @decimal:
-					Api.ValueFloatDataSet(ref _data, (double)@decimal, (uint)Interop.SciterValue.VALUE_TYPE.T_FLOAT, 0);
+					SciterApi.ValueFloatDataSet(ref _data, (double)@decimal, (uint)Interop.SciterValue.VALUE_TYPE.T_FLOAT, 0);
 					break;
 				case float @float:
-					Api.ValueFloatDataSet(ref _data, (float)@float, (uint)Interop.SciterValue.VALUE_TYPE.T_FLOAT, 0);
+					SciterApi.ValueFloatDataSet(ref _data, (float)@float, (uint)Interop.SciterValue.VALUE_TYPE.T_FLOAT, 0);
 					break;
 				case string @string:
-					Api.ValueStringDataSet(ref _data, @string, (uint) @string.Length, (uint) Interop.SciterValue.VALUE_UNIT_TYPE_STRING.UT_STRING_STRING);
+					SciterApi.ValueStringDataSet(ref _data, @string, (uint) @string.Length, (uint) Interop.SciterValue.VALUE_UNIT_TYPE_STRING.UT_STRING_STRING);
 					break;
 				case long int64:
-					Api.ValueInt64DataSet(ref _data, int64, (uint)Interop.SciterValue.VALUE_TYPE.T_DATE, 0);
+					SciterApi.ValueInt64DataSet(ref _data, int64, (uint)Interop.SciterValue.VALUE_TYPE.T_DATE, 0);
 					break;
 				case DateTime dateTime:
-					Api.ValueInt64DataSet(ref _data, dateTime.ToFileTime(), (uint)Interop.SciterValue.VALUE_TYPE.T_DATE, 0);
+					SciterApi.ValueInt64DataSet(ref _data, dateTime.ToFileTime(), (uint)Interop.SciterValue.VALUE_TYPE.T_DATE, 0);
 					break;
 				case SciterColor sciterColor:
-					Api.ValueIntDataSet(ref _data, (int)sciterColor.Value, (uint) Interop.SciterValue.VALUE_TYPE.T_COLOR, 0);
+					SciterApi.ValueIntDataSet(ref _data, (int)sciterColor.Value, (uint) Interop.SciterValue.VALUE_TYPE.T_COLOR, 0);
 					break;
 				case null:
-					Api.ValueClear(out _data);
+					SciterApi.ValueClear(out _data);
 					_data.t = (uint) Interop.SciterValue.VALUE_TYPE.T_NULL;
 					break;
 				default:
@@ -337,7 +337,7 @@ namespace SciterCore
 		
 		private IConvertible FromSciterValue(SciterValue value)
 		{
-			var valueTypeResult = Api.ValueType(ref value._data, out var valueType, out var _)
+			var valueTypeResult = SciterApi.ValueType(ref value._data, out var valueType, out var _)
 				.IsOk();
 			
 			if (!valueTypeResult)
@@ -473,8 +473,8 @@ namespace SciterCore
 			fnfr_gch = GCHandle.Alloc(fnfr, GCHandleType.Normal);
 			func_gch = GCHandle.Alloc(func, GCHandleType.Normal);
 
-			Api.ValueInit(out _data);
-			Api.ValueNativeFunctorSet(ref _data, fnfi, fnfr, IntPtr.Zero);
+			SciterApi.ValueInit(out _data);
+			SciterApi.ValueNativeFunctorSet(ref _data, fnfi, fnfr, IntPtr.Zero);
 		}
 		
 		//TODO: Clean this up
@@ -511,8 +511,8 @@ namespace SciterCore
 			fnfr_gch = GCHandle.Alloc(fnfr, GCHandleType.Normal);
 			func_gch = GCHandle.Alloc(func, GCHandleType.Normal);
 
-			Api.ValueInit(out _data);
-			Api.ValueNativeFunctorSet(ref _data, fnfi, fnfr, IntPtr.Zero);
+			SciterApi.ValueInit(out _data);
+			SciterApi.ValueNativeFunctorSet(ref _data, fnfi, fnfr, IntPtr.Zero);
 		}
 
 		//TODO: Clean this up
@@ -565,7 +565,7 @@ namespace SciterCore
 			
 			if(convertibles?.Any() != true)
 			{
-				Api.ValueIntDataSet(ref result._data, 0, (uint) Interop.SciterValue.VALUE_TYPE.T_ARRAY, 0);
+				SciterApi.ValueIntDataSet(ref result._data, 0, (uint) Interop.SciterValue.VALUE_TYPE.T_ARRAY, 0);
 				return result;
 			}
 
@@ -601,7 +601,7 @@ namespace SciterCore
 				return null;
 
 			var result = new SciterValue();
-			Api.ValueStringDataSet(ref result._data, msg, (uint) msg.Length, (uint) Interop.SciterValue.VALUE_UNIT_TYPE_STRING.UT_STRING_ERROR);
+			SciterApi.ValueStringDataSet(ref result._data, msg, (uint) msg.Length, (uint) Interop.SciterValue.VALUE_UNIT_TYPE_STRING.UT_STRING_ERROR);
 			return result;
 		}
 
@@ -611,7 +611,7 @@ namespace SciterCore
 				return null;
 
 			var result = new SciterValue();
-			Api.ValueStringDataSet(ref result._data, sym, (uint)sym.Length, (uint)Interop.SciterValue.VALUE_UNIT_TYPE_STRING.UT_STRING_SYMBOL);
+			SciterApi.ValueStringDataSet(ref result._data, sym, (uint)sym.Length, (uint)Interop.SciterValue.VALUE_UNIT_TYPE_STRING.UT_STRING_SYMBOL);
 			return result;
 		}
 		
@@ -630,7 +630,7 @@ namespace SciterCore
 		public static SciterValue MakeDuration(double value)
 		{
 			var sv = new SciterValue();
-			Api.ValueFloatDataSet(ref sv._data, value, (uint)Interop.SciterValue.VALUE_TYPE.T_DURATION, 0);
+			SciterApi.ValueFloatDataSet(ref sv._data, value, (uint)Interop.SciterValue.VALUE_TYPE.T_DURATION, 0);
 			return sv;
 		}
 		
@@ -642,7 +642,7 @@ namespace SciterCore
 		public static SciterValue MakeAngle(double value)
 		{
 			var sv = new SciterValue();
-			Api.ValueFloatDataSet(ref sv._data, value, (uint)Interop.SciterValue.VALUE_TYPE.T_ANGLE, 0);
+			SciterApi.ValueFloatDataSet(ref sv._data, value, (uint)Interop.SciterValue.VALUE_TYPE.T_ANGLE, 0);
 			return sv;
 		}
 
@@ -654,7 +654,7 @@ namespace SciterCore
 		public static SciterValue MakeCurrency(long value)
 		{
 			var result = new SciterValue();
-			Api.ValueInt64DataSet(ref result._data, value, (uint) Interop.SciterValue.VALUE_TYPE.T_CURRENCY, 0);
+			SciterApi.ValueInt64DataSet(ref result._data, value, (uint) Interop.SciterValue.VALUE_TYPE.T_CURRENCY, 0);
 			return result;
 		}
 		
@@ -704,7 +704,7 @@ namespace SciterCore
 		
 		public bool IsResource => _data.t == (uint) Interop.SciterValue.VALUE_TYPE.T_RESOURCE;
 		
-		public bool IsNativeFunction => Api.ValueIsNativeFunctor(ref _data) != 0;
+		public bool IsNativeFunction => SciterApi.ValueIsNativeFunctor(ref _data) != 0;
 		
 		public bool IsColor => _data.t == (uint) Interop.SciterValue.VALUE_TYPE.T_COLOR;
 		
@@ -846,7 +846,7 @@ namespace SciterCore
 		/// <returns></returns>
 		internal bool TryAsBooleanInternal(out bool value, bool @default = default(bool))
 		{
-			var result = Api.ValueIntData(ref _data, out var pData)
+			var result = SciterApi.ValueIntData(ref _data, out var pData)
 				.IsOk();
 			value = result ? pData != 0 : @default;
 			return result;
@@ -871,7 +871,7 @@ namespace SciterCore
 		/// <returns></returns>
 		internal bool TryAsInt32Internal(out int value, int @default = default(int))
 		{
-			var result = Api.ValueIntData(ref _data, out var pData)
+			var result = SciterApi.ValueIntData(ref _data, out var pData)
 				.IsOk();
 			value = result ? pData : @default;
 			return result;
@@ -896,7 +896,7 @@ namespace SciterCore
 		/// <returns></returns>
 		internal bool TryAsUInt32Internal(out uint value, uint @default = default(uint))
         {
-	        var result = Api.ValueIntData(ref _data, out var pData)
+	        var result = SciterApi.ValueIntData(ref _data, out var pData)
 	            .IsOk();
 	        value = result ? unchecked((uint)pData) : @default;
             return result;
@@ -921,7 +921,7 @@ namespace SciterCore
 		/// <returns></returns>
 		internal bool TryAsInt64Internal(out long value, long @default = default(long))
 		{
-			var result = Api.ValueInt64Data(ref _data, out var pData)
+			var result = SciterApi.ValueInt64Data(ref _data, out var pData)
 				.IsOk();
 			value = result ? pData : @default;
 			return result;
@@ -946,7 +946,7 @@ namespace SciterCore
 		/// <returns></returns>
 		internal bool TryAsDoubleInternal(out double value, double @default = default(double))
         {
-	        var result = Api.ValueFloatData(ref _data, out var pData)
+	        var result = SciterApi.ValueFloatData(ref _data, out var pData)
 	            .IsOk();
 	        value = result ? pData : @default;
 	        return result;
@@ -971,7 +971,7 @@ namespace SciterCore
 		/// <returns></returns>
 		internal bool TryAsFloatInternal(out float value, float @default = default(float))
         {
-	        var result = Api.ValueFloatData(ref _data, out var pData)
+	        var result = SciterApi.ValueFloatData(ref _data, out var pData)
 	            .IsOk();
 	        value = result ? (float)pData : @default;
 	        return result;
@@ -996,7 +996,7 @@ namespace SciterCore
 		/// <returns></returns>
 		internal bool TryAsStringInternal(out string value, string @default = default(string))
         {
-            var result = Api.ValueStringData(ref _data, out var retPtr, out var retLength)
+            var result = SciterApi.ValueStringData(ref _data, out var retPtr, out var retLength)
 	            .IsOk();
             value = result ? Marshal.PtrToStringUni(retPtr, (int) retLength) : @default;
             return result;
@@ -1019,7 +1019,7 @@ namespace SciterCore
 		/// <returns></returns>
 		internal bool TryAsBytesInternal(out byte[] value)
 		{
-			var result = Api.ValueBinaryData(ref _data, out var retPtr, out var retLength)
+			var result = SciterApi.ValueBinaryData(ref _data, out var retPtr, out var retLength)
 				.IsOk();
 			value = result ? new byte[retLength] : null;
 			if (result && retLength > 0)
@@ -1165,7 +1165,7 @@ namespace SciterCore
 		public static SciterValue FromJsonString(string json, StringConversionType conversionType = StringConversionType.JsonLiteral)
 		{
 			var result = new SciterValue();
-			Api.ValueFromString(ref result._data, json, (uint) json.Length, (uint)(SciterCore.Interop.SciterValue.VALUE_STRING_CVT_TYPE)conversionType);
+			SciterApi.ValueFromString(ref result._data, json, (uint) json.Length, (uint)(SciterCore.Interop.SciterValue.VALUE_STRING_CVT_TYPE)conversionType);
 			return result;
 		}
 
@@ -1184,7 +1184,7 @@ namespace SciterCore
 				return TryAsStringInternal(out value);
 
 			var sciterValue = new SciterValue(this);
-			var result = Api.ValueToString(ref sciterValue._data, (Interop.SciterValue.VALUE_STRING_CVT_TYPE)(uint)conversionType)
+			var result = SciterApi.ValueToString(ref sciterValue._data, (Interop.SciterValue.VALUE_STRING_CVT_TYPE)(uint)conversionType)
 				.IsOk();
 
 			value = result ? sciterValue.AsStringInternal() : null;
@@ -1203,7 +1203,7 @@ namespace SciterCore
 		
 		internal bool TryClearInternal()
 		{
-			return Api.ValueClear(out _data).IsOk();
+			return SciterApi.ValueClear(out _data).IsOk();
 		}
 		
 		#endregion
@@ -1212,7 +1212,7 @@ namespace SciterCore
 		{
 			get
 			{
-				Api.ValueElementsCount(ref _data, out var count);
+				SciterApi.ValueElementsCount(ref _data, out var count);
 				return count;
 			}
 		}
@@ -1238,7 +1238,7 @@ namespace SciterCore
 		
 		internal bool TrySetItemInternal(int index, SciterValue value)
 		{
-			return Api.ValueNthElementValueSet(ref _data, index, ref value._data)
+			return SciterApi.ValueNthElementValueSet(ref _data, index, ref value._data)
 				.IsOk();
 		}
 
@@ -1249,7 +1249,7 @@ namespace SciterCore
 
 		internal bool TrySetItemInternal(SciterValue key, SciterValue value)
 		{
-			return Api.ValueSetValueToKey(ref _data, ref key._data, ref value._data)
+			return SciterApi.ValueSetValueToKey(ref _data, ref key._data, ref value._data)
 				.IsOk();
 		}
 
@@ -1261,7 +1261,7 @@ namespace SciterCore
 		internal bool TrySetItemInternal(string key, SciterValue value)
 		{
 			var symbol = MakeSymbol(key);
-			return Api.ValueSetValueToKey(ref _data, ref symbol._data, ref value._data)
+			return SciterApi.ValueSetValueToKey(ref _data, ref symbol._data, ref value._data)
 				.IsOk();
 		}
 
@@ -1272,7 +1272,7 @@ namespace SciterCore
 
 		internal bool TryAppendInternal(SciterValue value)
 		{
-			return Api.ValueNthElementValueSet(ref _data, Length, ref value._data)
+			return SciterApi.ValueNthElementValueSet(ref _data, Length, ref value._data)
 				.IsOk();
 		}
 
@@ -1284,7 +1284,7 @@ namespace SciterCore
 
 		internal bool TryGetItemInternal(out SciterValue value, int index)
 		{
-			var result = Api.ValueNthElementValue(ref _data, index, out var intValue)
+			var result = SciterApi.ValueNthElementValue(ref _data, index, out var intValue)
 				.IsOk();
 			value = result ? new SciterValue(intValue) : Null;
 			return result;
@@ -1298,7 +1298,7 @@ namespace SciterCore
 
 		internal bool TryGetItemInternal(out SciterValue value, SciterValue key)
 		{
-			var result = Api.ValueGetValueOfKey(ref _data, ref key._data, out var intValue)
+			var result = SciterApi.ValueGetValueOfKey(ref _data, ref key._data, out var intValue)
 				.IsOk();
 			value = result ? new SciterValue(intValue) : Null;
 			return result;
@@ -1329,7 +1329,7 @@ namespace SciterCore
 		
 		internal bool TryGetKeyInternal(out SciterValue value, int index)
 		{
-			var result = Api.ValueNthElementKey(ref _data, index, out var intValue)
+			var result = SciterApi.ValueNthElementKey(ref _data, index, out var intValue)
 				.IsOk();
 
 			value = result ? new SciterValue(intValue) : Null;
@@ -1374,7 +1374,7 @@ namespace SciterCore
 		
 		internal bool TryGetObjectDataInternal(out IntPtr value)
 		{
-			return Api.ValueBinaryData(ref _data, out value, out var dummy)
+			return SciterApi.ValueBinaryData(ref _data, out value, out var dummy)
 				.IsOk();
 		}
 		
@@ -1399,7 +1399,7 @@ namespace SciterCore
 			
 			self ??= Undefined;
 
-			var result = Api.ValueInvoke(ref _data, ref self._data, (uint) (args?.Count() ?? 0), args?.Count > 0 ? valueArray : null, out value._data, null)
+			var result = SciterApi.ValueInvoke(ref _data, ref self._data, (uint) (args?.Count() ?? 0), args?.Count > 0 ? valueArray : null, out value._data, null)
 				.IsOk();
 
 			return result;
@@ -1421,7 +1421,7 @@ namespace SciterCore
 
 		internal bool TryIsolateInternal()
 		{
-			return Api.ValueIsolate(ref _data).IsOk();
+			return SciterApi.ValueIsolate(ref _data).IsOk();
 		}
 		
 		#endregion

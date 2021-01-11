@@ -42,7 +42,7 @@ namespace SciterTest.Idioms
 	// - in RELEASE mode: resources loaded from by a SciterArchive (packed binary data contained as C# code in ArchiveResource.cs)
 	class BaseHost : SciterHost
 	{
-		protected static ISciterApi _api = Sciter.Api;
+		protected static ISciterApi _api = Sciter.SciterApi;
 		protected SciterArchive _archive = new SciterArchive();
 		protected SciterWindow _window;
 

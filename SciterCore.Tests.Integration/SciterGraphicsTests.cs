@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Threading;
-using System.Threading.Tasks;
 using NUnit.Framework;
 using SciterCore.Attributes;
-using SciterCore.Interop;
+using SciterCore.Tests.Integration.TestHelpers;
 
 namespace SciterCore.Tests.Integration
 {
@@ -80,7 +78,7 @@ namespace SciterCore.Tests.Integration
         {
             var random = new Random();
             
-            var host = new SciterHost(_sciterWindow);
+            var host = new TestableSciterHost(_sciterWindow);
             host.RegisterBehaviorHandler(() => new DrawContentBehavior(_sciterWindow, (element, args) =>
             {
                 if (args.DrawEvent != DrawEvent.Content) 
@@ -160,7 +158,7 @@ namespace SciterCore.Tests.Integration
         {
             var random = new Random();
             
-            var host = new SciterHost(_sciterWindow);
+            var host = new TestableSciterHost(_sciterWindow);
             host.RegisterBehaviorHandler(() => new DrawContentBehavior(_sciterWindow, (element, prms) =>
             {
                 if (prms.DrawEvent != DrawEvent.Content) 
@@ -235,7 +233,7 @@ namespace SciterCore.Tests.Integration
         {
             var random = new Random();
             
-            var host = new SciterHost(_sciterWindow);
+            var host = new TestableSciterHost(_sciterWindow);
             host.RegisterBehaviorHandler(() => new DrawContentBehavior(_sciterWindow, (element, prms) =>
             {
                 if (prms.DrawEvent != DrawEvent.Content) 
@@ -295,7 +293,7 @@ namespace SciterCore.Tests.Integration
         {
             var random = new Random();
             
-            var host = new SciterHost(_sciterWindow);
+            var host = new TestableSciterHost(_sciterWindow);
             host.RegisterBehaviorHandler(() => new DrawContentBehavior(_sciterWindow, (element, prms) =>
             {
                 switch (prms.DrawEvent)
@@ -375,7 +373,7 @@ namespace SciterCore.Tests.Integration
         {
             var random = new Random();
             
-            var host = new SciterHost(_sciterWindow);
+            var host = new TestableSciterHost(_sciterWindow);
             host.RegisterBehaviorHandler(() => new DrawContentBehavior(_sciterWindow, (element, prms) =>
             {
                 if (prms.DrawEvent != DrawEvent.Content) 
@@ -428,7 +426,7 @@ namespace SciterCore.Tests.Integration
         {
             var random = new Random();
             
-            var host = new SciterHost(_sciterWindow);
+            var host = new TestableSciterHost(_sciterWindow);
             host.RegisterBehaviorHandler(() => new DrawContentBehavior(_sciterWindow, (element, prms) =>
             {
                 if (prms.DrawEvent != DrawEvent.Content) 
@@ -480,7 +478,7 @@ namespace SciterCore.Tests.Integration
         {
             var random = new Random();
             
-            var host = new SciterHost(_sciterWindow);
+            var host = new TestableSciterHost(_sciterWindow);
             host.RegisterBehaviorHandler(() => new DrawContentBehavior(_sciterWindow, (element, args) =>
             {
                 if (args.DrawEvent != DrawEvent.Content) 

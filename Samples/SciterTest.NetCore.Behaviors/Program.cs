@@ -32,9 +32,7 @@ namespace SciterTest.NetCore
                         .AddConsole();
                 })
                 .AddSingleton<IConfiguration>(provider => configuration)
-                .AddSingleton<ApplicationWindow>()
-                .AddSingleton<HostEventHandler>()
-                .AddSingleton<SciterHost, ApplicationHost>()
+                .AddSciterHost<ApplicationHost>()
                 .AddSingleton<SciterApplication>();
 
             var serviceProvider = services.BuildServiceProvider();

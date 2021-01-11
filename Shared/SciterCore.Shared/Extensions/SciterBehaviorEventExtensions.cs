@@ -8,7 +8,6 @@ namespace SciterTest.CoreForms.Extensions
 {
     internal static class SciterBehaviorEventExtensions
     {
-        //
         /// <summary>
         /// Maps the <see cref="SciterCore.SciterValue"/> to the specified <see cref="Type"/>
         /// </summary>
@@ -17,7 +16,7 @@ namespace SciterTest.CoreForms.Extensions
         /// <exception cref="ArgumentOutOfRangeException"></exception>
         public static SciterBehaviors.BEHAVIOR_EVENT_PARAMS FromEventArgs(this SciterBehaviorArgs args)
         {
-            return new SciterBehaviors.BEHAVIOR_EVENT_PARAMS()
+            return new SciterBehaviors.BEHAVIOR_EVENT_PARAMS
             {
                 cmd = (SciterBehaviors.BEHAVIOR_EVENTS)(uint)@args.Command,
                 data = args.Data.GetValueOrDefault() ,
@@ -30,13 +29,11 @@ namespace SciterTest.CoreForms.Extensions
 
         private static SciterCore.Interop.SciterValue.VALUE GetValueOrDefault(this SciterValue value)
         {
-            if (value == null)
-            {
-                var valueResult = Sciter.Api.ValueInit(out var @default);
-                return @default;
-            }
-
-            return value.ToVALUE();
+            if (value != null) 
+                return value.ToVALUE();
+            
+            Sciter.SciterApi.ValueInit(out var @default);
+            return @default;
         }
     }
 }

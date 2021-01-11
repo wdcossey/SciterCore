@@ -34,7 +34,7 @@ namespace SciterTest.Core
 
 			var ss = SciterValue.Create(new { aa = list });
 
-			Console.WriteLine($@"Sciter: {Sciter.Api.SciterVersion()}");
+			Console.WriteLine($@"Sciter: {Sciter.SciterApi.SciterVersion()}");
 			Console.WriteLine("Bitness: " + IntPtr.Size);
 
 			// Platform specific (required for GTK)

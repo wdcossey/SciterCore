@@ -33,7 +33,7 @@ namespace SciterTest.Core
 
 	class BaseHost : SciterHost
 	{
-		protected static ISciterApi _api = Sciter.Api;
+		protected static ISciterApi _api = Sciter.SciterApi;
 		protected SciterArchive _archive = new SciterArchive();
 		protected SciterWindow _window;
 

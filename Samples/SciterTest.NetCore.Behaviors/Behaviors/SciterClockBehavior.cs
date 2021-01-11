@@ -28,7 +28,7 @@ namespace SciterTest.NetCore.Behaviors
             base.Detached(element);
         }
 
-        protected override bool OnTimer(SciterElement element, IntPtr extTimerId)
+        protected override bool OnTimer(SciterElement element, IntPtr? extTimerId)
         {
             element.Refresh();
             return true;
