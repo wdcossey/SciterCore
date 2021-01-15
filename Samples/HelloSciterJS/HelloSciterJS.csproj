@@ -19,7 +19,7 @@
         <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
         <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="5.0.0" />
         <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="5.0.0" />
-        <PackageReference Include="SciterCore.JS.Binaries." Version="4.4.5.9-alpha.336" />
+        <PackageReference Include="SciterCore.JS.Binaries" Version="4.4.5.10-alpha.465" />
         <PackageReference Include="SciterCore.PackFolder" Version="0.1.293" />
         <PackageReference Include="System.Text.Json" Version="5.0.0" />
     </ItemGroup>

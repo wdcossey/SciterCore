@@ -1399,7 +1399,7 @@ namespace SciterCore
 			
 			self ??= Undefined;
 
-			var result = SciterApi.ValueInvoke(ref _data, ref self._data, (uint) (args?.Count() ?? 0), args?.Count > 0 ? valueArray : null, out value._data, null)
+			var result = SciterApi.ValueInvoke(ref _data, ref self._data, (uint) (args?.Count ?? 0), args?.Count > 0 ? valueArray : null, out value._data, null)
 				.IsOk();
 
 			return result;

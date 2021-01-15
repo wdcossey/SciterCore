@@ -112,46 +112,25 @@ namespace HelloSciterJS
 			
 			return Task.CompletedTask;
 		}
-		
-		public Task GetRuntimeInfo(SciterElement element, SciterValue onCompleted, SciterValue onError)
-		{
-			try
-			{
-				var value = SciterValue.Create(
-					new {
-						FrameworkDescription = RuntimeInformation.FrameworkDescription,
-						ProcessArchitecture = RuntimeInformation.ProcessArchitecture.ToString(),
-						OSArchitecture = RuntimeInformation.OSArchitecture.ToString(),
-						OSDescription = RuntimeInformation.OSDescription,
-						SystemVersion = RuntimeEnvironment.GetSystemVersion()
-					});
-			
-				onCompleted.Invoke(value);
-			}
-			catch (Exception e)
-			{
-				onError.Invoke(SciterValue.MakeError(e.Message));
-			}
-
-			return Task.CompletedTask;
-		}
 
 		private ManualResetEventSlim _callMeBackResetEvent;
 		
 		public async Task CallMeBack(SciterElement element, SciterValue value, SciterValue onProgress, SciterValue onCompleted)
 		{
 			_callMeBackResetEvent = new ManualResetEventSlim(false);
-			
+
 			for (var i = 0; i < 201; i++)
 			{
 				if (_callMeBackResetEvent.IsSet)
 					break;
-				
+
 				//Simulates a delay
 				await Task.Delay(10);
-				onProgress.Invoke(SciterValue.Create(i), SciterValue.Create(i / 200d * 100));
+				var val = i / 200d * 100;
+				
+				onProgress.Invoke(SciterValue.Create(i), SciterValue.Create(val));
 			}
-			
+
 			onCompleted.Invoke(SciterValue.Create($"You have {(!_callMeBackResetEvent.IsSet ? "successfully completed" : "cancelled")} your task!"), SciterValue.Create(!_callMeBackResetEvent.IsSet));
 		}
 		
@@ -161,6 +140,7 @@ namespace HelloSciterJS
 			return Task.CompletedTask;
 		}
 		
+		[SciterFunctionName("breakMe")]
 		[SciterCallbackWrapper]
 		public Task ThrowException(SciterValue numerator, SciterValue denominator)
 		{
@@ -183,27 +163,20 @@ namespace HelloSciterJS
 			_logger.LogInformation($"{nameof(SynchronousFunction)} was executed!");
 		}
 
-		public void SynchronousArgumentFunction(SciterElement element, SciterValue[] args)
+		public void SynchronousFunction(SciterElement element, SciterValue[] args)
 		{
-			_logger.LogInformation($"{nameof(SynchronousArgumentFunction)} was executed!\n\t{string.Join(",", args.Select(s => s.AsInt32()))}");
+			_logger.LogInformation($"{nameof(SynchronousFunction)} was executed!\n\t{string.Join(",", args.Select(s => s.AsInt32()))}");
 		}
 
-		public void SynchronousArgumentsFunction(SciterElement element, SciterValue arg1, SciterValue arg2, SciterValue arg3, SciterValue arg4, SciterValue arg5)
+		public void SynchronousFunction(SciterElement element, SciterValue arg1, SciterValue arg2, SciterValue arg3, SciterValue arg4, SciterValue arg5)
 		{
-			_logger.LogInformation($"{nameof(SynchronousArgumentsFunction)} was executed!\n\t{arg1.AsInt32()},{arg2.AsInt32()},{arg3.AsInt32()},{arg4.AsInt32()},{arg5.AsInt32()}");
+			_logger.LogInformation($"{nameof(SynchronousFunction)} was executed!\n\t{arg1.AsInt32()},{arg2.AsInt32()},{arg3.AsInt32()},{arg4.AsInt32()},{arg5.AsInt32()}");
 		}
 		
 		public async Task AsynchronousFunction()
 		{
 			await Task.Delay(TimeSpan.FromSeconds(2));
-
-			//var value = _host.EvalScript(@"view.msgbox { type:#question, " +
-            //                             			"content:\"Is anybody out there?\", " +
-            //                                        "buttons:[" +
-            //                             			"{id:#yes,text:\"Yes\",role:\"default-button\"}," +
-            //                             			"{id:#no,text:\"No\",role:\"cancel-button\"}]" +
-            //                                        "};");
-            _logger.LogInformation($"{nameof(AsynchronousFunction)} was executed!");
+			_logger.LogInformation($"{nameof(AsynchronousFunction)} was executed!");
 		}
 
 		[SciterFunctionName("eval")]
@@ -273,10 +246,9 @@ namespace HelloSciterJS
 		{
 			if (type == BehaviorEvents.DocumentReady)
 			{
-				Host.CallFunction("Init", SciterValue.Create(Sciter.SciterApi.SciterVersion().ToString()));
-	            //Sciter.Api.SciterCall()
-                //Host.ConnectToInspector();
-            }
+				//Host.CallFunction("Init", SciterValue.Create(Sciter.SciterApi.SciterVersion().ToString()));
+				//Host.ConnectToInspector();
+			}
 
 			_logger?.LogDebug($"{nameof(OnEvent)}: {nameof(type)}: {type}; {nameof(eventName)}: {eventName}; {nameof(data)}: {data.AsString()}");
 			return base.OnEvent(sourceElement, targetElement, type, reason, data, eventName);

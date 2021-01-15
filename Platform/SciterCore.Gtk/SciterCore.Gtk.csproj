@@ -29,7 +29,7 @@
     <WarningLevel>3</WarningLevel>
     <ConsolePause>false</ConsolePause>
     <DefineConstants>TRACE;GTKMONO,GTK</DefineConstants>
-    <DocumentationFile>bin\Release\SciterCore.Gtk.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\SciterCore.Gtk.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>false</SignAssembly>
