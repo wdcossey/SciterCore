@@ -291,7 +291,12 @@ namespace SciterCore
 
 			await Task.Delay(100);
 
-			EvalScriptInternal("view.connectToInspector()");
+#if SCITER_JS
+			throw new NotImplementedException();
+#else
+			this.EvalScriptInternal("view.connectToInspector()");
+#endif
+
 #if OSX
 			var app_inspector = AppKit.NSRunningApplication.GetRunningApplications("terrainformatica.inspector");
 			if(app_inspector.Length==1)

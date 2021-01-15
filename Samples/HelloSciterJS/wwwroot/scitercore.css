@@ -219,6 +219,73 @@ cardfooter {
     margin-top: 16dip;
 }
 
+progress.custom-progress {
+    border:none;
+    border-radius:2dip;
+    background: rgba(0,0,0,.25);
+    height: 4dip;
+    width: 1*;
+    padding: 0;
+    vertical-align: top;
+    foreground: color(accent-color);
+    list-style-image: none;
+}
+
+button.action-button {
+    cursor: pointer;
+    font-size: 14dip;
+    font-weight: 400;
+    border-radius:3dip;
+    border: none;
+    background: transparent;
+    color: white;
+    padding: 0dip 16dip;
+    margin: 0 4dip;
+}
+
+button.action-button.primary {
+    border: 1dip solid morph(color(accent-color), lighten: 0.10);
+    background: color(accent-color);
+}
+
+button.action-button.primary:hover {
+    background: morph(color(accent-color), lighten: 0.05);
+    box-shadow: 0 8px 25px -8px color(accent-color);
+}
+
+button.action-button.primary:active {
+    background: morph(color(accent-color), lighten: 0.10);
+    box-shadow: none;
+}
+
+button.action-button.primary:disabled {
+    border-color: color(accent-color);
+}
+
+button.action-button.secondary {
+    border: 1dip solid morph( #990000, lighten: 0.10);
+    background: #990000;
+}
+
+button.action-button.secondary:hover {
+    background: morph(#990000, lighten: 0.05);
+    box-shadow: 0 8px 25px -8px #990000;
+}
+
+button.action-button.secondary:active {
+    background: morph( #990000, lighten: 0.10);
+    box-shadow: none;
+}
+
+button.action-button.secondary:disabled {
+    border-color: #990000;
+}
+
+button.action-button:disabled {
+    opacity: 0.4;
+}
+
+
 tools {
     z-index: 9999;
     opacity: 0.75;

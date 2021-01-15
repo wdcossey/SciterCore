@@ -84,7 +84,12 @@ namespace SciterCore
 		public bool SetSciterOption(SciterXDef.SCITER_RT_OPTIONS option, IntPtr value)
 		{
 			Debug.Assert(Handle != IntPtr.Zero);
-			return SciterApi.SciterSetOption(Handle, option, value);
+			return SetSciterOption(Handle, option, value);
+		}
+
+		public bool SetSciterOption(IntPtr windowHandle, SciterXDef.SCITER_RT_OPTIONS option, IntPtr value)
+		{
+			return SciterApi.SciterSetOption(windowHandle, option, value);
 		}
 
 		public SciterWindow()

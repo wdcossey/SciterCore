@@ -36,10 +36,43 @@
             $("#os-type").innerText = env.DEVICE;
             $("#os-version").innerText = env.OS;
             $("#gfx-backend").innerText = Window.this.graphicsBackend;
+            
+            Window.this.xcall("StackTrace", function(value) {
+               $("#stMethodName").innerText = value.MethodName;
+               $("#stFileUri").textContent = value.FileName;
+               $("#stFileUri").setAttribute("href", value.FileUri);
+               $("#stLineNumber").innerText = value.LineNumber;
+               $("#stColumnNumber").innerText = value.ColumnNumber;
+
+                const args = [];
+                value.Parameters.forEach(val => {
+                    args.push("<b>" + val.Type + "</b> <i>" + val.Name + "</i>");
+                });
+
+               $("#stParameters").innerHTML += "(" + args.join(", ") + ")";
+
+               $("#stContent").setAttribute("state", "visible");
+            });
+            
+            Window.this.xcall("breakMe", 100, 0,
+                function(value, ex) {
+                    if (ex)
+                    {
+                        $("#exContent").innerHTML = `<div>Type:</div><div><span>${ex.Type}</span></div><div>Message:</div><div><span>${ex.Message}</span></div><div>StackTrace:</div><div><span>${ex.StackTrace}</span></div><div>Source: </div><div><span>${ex.Source}</span></div>`;
+                        $("#exContent").classList.add("has-exception");
+                    }
+                    else {
+                        $("#exContent").innerHTML = `<div>Value:</div><div><span>${value}</span></div>`;
+                    }
+                    
+                    $("#exContent").setAttribute("state", "visible");
+                }
+            );
+            
         }
 
-        on("^click", "a[href]", function () {
-            sciter.launch(this.attributes["href"]);
+        on("^click", "a[href]", function (evt, hlink) {
+            env.launch(hlink.getAttribute("href"));
             return true;
         });
 
@@ -55,6 +88,42 @@
 
         on("click", "#menuViewRefresh", function () {
             return true;
+        });
+
+        on("click", "#startCallback", function () {
+
+            $("#cancelCallback").disabled = false;
+            $("#startCallback").disabled = true;
+
+            $("#callbackState").style["color"] = undefined;
+            $("#callbackProgressContainer").style.display = "block";
+            $("#callbackProgress").value = 0;
+            
+
+            const cbs = $('#callbackState');
+            const cbm = $('#callbackMessage');
+            const cbp = $('#callbackProgress');
+
+            Window.this.xcall("CallMeBack",
+                100,
+                function(val, progress) {
+                    cbs.innerText = "Busy";
+                    cbp.value = val;
+                    cbm.innerText = `${progress.toFixed(0)}%`;
+                },
+                function(msg, result) {
+                    cbs.innerText = result ? "Completed" : "Cancelled";
+                    cbs.style["color"] = result ? "lime" : "red";
+                    cbm.innerText = msg;
+                    $("#callbackProgressContainer").style.display = "none";
+                    $("#startCallback").disabled = false;
+                    $("#cancelCallback").disabled = true;
+                }
+            );
+        });
+
+        on("click", "#cancelCallback", function () {
+            Window.this.xcall("CancelCallMeBack");
         });
         
     </script>
@@ -109,6 +178,7 @@
     
                 </card>
 
+                <!-- Attached via a behaviour on `.runtimeInformation` -->
                 <card .runtimeInformation>
                     <cardheader>
                         <div>RuntimeInformation</div>
@@ -127,7 +197,62 @@
                     </cardcontent>
 
                 </card>
-    
+
+                <card>
+                    <cardheader>
+                        <div>Multiple Callbacks</div>
+                        <div>This will execute a Task on the host with multiple callbacks.</div>
+                        <div style="margin: 4dip 0; display: none" #callbackProgressContainer><progress #callbackProgress .custom-progress max="200" value="0"/></div>
+                    </cardheader>
+
+                    <cardcontent #callbackContent state="visible">
+                        <div>State:</div>
+                        <div #callbackState></div>
+
+                        <div>Message:</div>
+                        <div #callbackMessage style="font-weight: bold;"></div>
+
+                    </cardcontent>
+
+                    <cardfooter>
+                        <hr style="width: 1*; margin: -8dip -16dip 8dip -16dip; border-color: #0004"/>
+                        <button #startCallback .action-button .primary>Execute</button>
+                        <button #cancelCallback .action-button .secondary disabled>Cancel</button>
+                    </cardfooter>
+
+                </card>
+                
+                <card>
+                    <cardheader>
+                        <div>StackFrame</div>
+                        <div>StackFrame corresponding to the calling stack frame.</div>
+                    </cardheader>
+
+                    <cardcontent #stContent>
+                        <div>Method:</div>
+                        <div style="font-weight: bold;"><span #stMethodName/></div>
+                        <div>Arguments:</div>
+                        <div><span #stParameters/></div>
+                        <div>File:</div>
+                        <div><a #stFileUri/></div>
+                        <div>Line #:</div>
+                        <div style="font-weight: bold;"><span #stLineNumber/></div>
+                        <div>Column #:</div>
+                        <div style="font-weight: bold;"><span #stColumnNumber/></div>
+                    </cardcontent>
+                </card>
+
+                <card>
+                    <cardheader>
+                        <div>Exception Handling</div>
+                        <div>Represents errors that occured during execution.</div>
+                    </cardheader>
+
+                    <cardcontent #exContent>
+                        <div><span>Hello:</span>&nbsp;<span style="font-weight: bold;">Sciter</span></div>
+                    </cardcontent>
+                </card>
+                
             </div>
         </section>
     

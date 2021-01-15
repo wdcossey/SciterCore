@@ -353,14 +353,34 @@ namespace SciterCore
 
 					if (!scriptResult.IsSuccessful)
 					{
-						var methodInfo = GetType().GetMethod(methodParamsWrapper.name) ?? GetType().GetMethods()
-							.SingleOrDefault(s =>
-								s.GetCustomAttributes<SciterFunctionNameAttribute>()
-									.Any(a => a.FunctionName.Equals(methodParamsWrapper.name)));
+						var methodInfos = GetType().GetMethods()
+							.Where(w => w.GetCustomAttributes<SciterFunctionNameAttribute>()
+								.Any(a => a.FunctionName.Equals(methodParamsWrapper.name)) || w.Name.Equals(methodParamsWrapper.name))
+							.ToArray();
+
+						if (methodInfos?.Any() != true)
+							return false;
+
+						MethodInfo methodInfo;
+
+						if (methodInfos.Length == 1)
+						{
+							methodInfo = methodInfos.First();
+						}
+						else
+						{
+							methodInfo = methodInfos.FirstOrDefault(fd =>
+								(fd.GetParameters().Count(c => c.ParameterType == typeof(SciterValue)) ==
+								 methodParamsWrapper.args.Length)
+								||
+								fd.GetParameters().Any(a =>
+									a.ParameterType == typeof(SciterValue[]))
+							);
+						}
 
 						if (methodInfo == null)
 							return false;
-
+						
 						scriptResult = OnScriptCall(sourceElement, methodInfo, methodParamsWrapper.args);
 
 						if (scriptResult.IsSuccessful)
