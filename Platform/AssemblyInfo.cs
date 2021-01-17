@@ -3,13 +3,13 @@ using System.Runtime.InteropServices;
 
 #if WINDOWS
 [assembly: AssemblyTitle("SciterCore")]
-[assembly: AssemblyProduct("SciterCore.WinForms")]
+[assembly: AssemblyProduct("SciterCore.Windows")]
 #elif GTKMONO
-	[assembly: AssemblyTitle("SciterCore")]
-	[assembly: AssemblyProduct("SciterCore.Gtk")]
+[assembly: AssemblyTitle("SciterCore")]
+[assembly: AssemblyProduct("SciterCore.Gtk")]
 #elif OSX
-	[assembly: AssemblyTitle("SciterCore")]
-	[assembly: AssemblyProduct("SciterCore.MacOS")]
+[assembly: AssemblyTitle("SciterCore")]
+[assembly: AssemblyProduct("SciterCore.Xamarin.Mac")]
 #endif
 
 [assembly: AssemblyDescription("C# bindings for the Sciter engine")]

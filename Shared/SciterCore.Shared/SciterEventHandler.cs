@@ -369,13 +369,15 @@ namespace SciterCore
 						}
 						else
 						{
-							methodInfo = methodInfos.FirstOrDefault(fd =>
-								(fd.GetParameters().Count(c => c.ParameterType == typeof(SciterValue)) ==
+							methodInfo = methodInfos.Where(w =>
+								(w.GetParameters().Count(c => c.ParameterType == typeof(SciterValue)) ==
 								 methodParamsWrapper.args.Length)
 								||
-								fd.GetParameters().Any(a =>
+								w.GetParameters().Any(a =>
 									a.ParameterType == typeof(SciterValue[]))
-							);
+							).OrderByDescending(ob =>
+								ob.GetParameters().Count(c => c.ParameterType == typeof(SciterValue)) ==
+								methodParamsWrapper.args.Length).FirstOrDefault();
 						}
 
 						if (methodInfo == null)

@@ -19,5 +19,11 @@ namespace SciterCore
         public IntPtr WindowHandle { get; }
         
         public CallbackCode Code { get; }
+        
+        public override string ToString()
+        {
+            return
+                $"{nameof(WindowHandle)}: {WindowHandle.ToInt64()}; {nameof(Code)}: {Code}";
+        }
     }
 }

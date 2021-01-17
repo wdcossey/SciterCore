@@ -1,5 +1,10 @@
 ﻿using System;
 
+#pragma warning disable 169
+// ReSharper disable ArrangeTypeMemberModifiers
+// ReSharper disable UnusedType.Local
+// ReSharper disable InconsistentNaming
+
 namespace SciterCore.Interop
 {
 	class SciterXMsg

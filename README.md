@@ -2,30 +2,30 @@
 
 | Package               | Version                                                                                                                 | Build Status |
 | --------------------- | ------------------------------------------------------------------------------------------------------------------------|--------------|
-| [SciterCore.Binaries](https://github.com/wdcossey/SciterCore.Binaries)   | [![NuGet](https://img.shields.io/nuget/v/SciterCore.Binaries)](https://www.nuget.org/packages/SciterCore.Binaries/)     | [![Build Status](https://dev.azure.com/wdcossey/SciterCore/_apis/build/status/SciterCore.Binaries?branchName=main)](https://dev.azure.com/wdcossey/SciterCore/_build/latest?definitionId=11&branchName=main) |
-| [SciterCore.JS.Binaries](https://github.com/wdcossey/SciterCore.JS.Binaries)   | [![NuGet](https://img.shields.io/nuget/v/SciterCore.JS.Binaries)](https://www.nuget.org/packages/SciterCore.JS.Binaries/)     | [![Build Status](https://dev.azure.com/wdcossey/SciterCore/_apis/build/status/SciterCore.JS.Binaries?branchName=main)](https://dev.azure.com/wdcossey/SciterCore/_build/latest?definitionId=15&branchName=main) |
-| [SciterCore.PackFolder](https://github.com/wdcossey/SciterCore.PackFolder) | [![Nuget](https://img.shields.io/nuget/v/SciterCore.PackFolder)](https://www.nuget.org/packages/SciterCore.PackFolder/) | [![Build status](https://dev.azure.com/wdcossey/SciterCore/_apis/build/status/SciterCore.PackFolder-import)](https://dev.azure.com/wdcossey/SciterCore/_build/latest?definitionId=12&branchName=main) |
-| SciterCore.NetStd     | [![Nuget](https://img.shields.io/nuget/v/SciterCore.NetStd)](https://www.nuget.org/packages/SciterCore.NetStd/)         | [![Build status](https://dev.azure.com/wdcossey/SciterCore/_apis/build/status/SciterCore)](https://dev.azure.com/wdcossey/SciterCore/_build/latest?definitionId=13&branchName=master) |
+| SciterCore            | [![Nuget](https://img.shields.io/nuget/v/SciterCore)](https://www.nuget.org/packages/SciterCore/)                       | [![Build status](https://dev.azure.com/wdcossey/SciterCore/_apis/build/status/SciterCore)](https://dev.azure.com/wdcossey/SciterCore/_build/latest?definitionId=13&branchName=master) |
 | SciterCore.JS         | [![Nuget](https://img.shields.io/nuget/v/SciterCore.JS)](https://www.nuget.org/packages/SciterCore.JS/)                 | [![Build status](https://dev.azure.com/wdcossey/SciterCore/_apis/build/status/SciterCore)](https://dev.azure.com/wdcossey/SciterCore/_build/latest?definitionId=13&branchName=master) |
-| SciterCore.WinForms   | [![Nuget](https://img.shields.io/nuget/v/SciterCore.WinForms)](https://www.nuget.org/packages/SciterCore.WinForms/)     | |
+| SciterCore.Windows    | [![Nuget](https://img.shields.io/nuget/v/SciterCore.WinForms)](https://www.nuget.org/packages/SciterCore.WinForms/)     | |
 | SciterCore.Gtk        | [![Nuget](https://img.shields.io/nuget/v/SciterCore.Gtk)](https://www.nuget.org/packages/SciterCore.Gtk/)               | |
-| SciterCore.Mac        | [![Nuget](https://img.shields.io/nuget/v/SciterCore.Mac)](https://www.nuget.org/packages/SciterCore.Mac/)               | |
+| SciterCore.Xamarin.Mac| [![Nuget](https://img.shields.io/nuget/v/SciterCore.Mac)](https://www.nuget.org/packages/SciterCore.Mac/)               | |
+| [SciterCore.Binaries](https://github.com/wdcossey/SciterCore.Binaries)   | [![NuGet](https://img.shields.io/nuget/v/SciterCore.Binaries)](https://www.nuget.org/packages/SciterCore.Binaries/)     | [![Build Status](https://dev.azure.com/wdcossey/SciterCore/_apis/build/status/SciterCore.Binaries)](https://dev.azure.com/wdcossey/SciterCore/_build/latest?definitionId=11) |
+| [SciterCore.JS.Binaries](https://github.com/wdcossey/SciterCore.JS.Binaries)   | [![NuGet](https://img.shields.io/nuget/v/SciterCore.JS.Binaries)](https://www.nuget.org/packages/SciterCore.JS.Binaries/)     | [![Build Status](https://dev.azure.com/wdcossey/SciterCore/_apis/build/status/SciterCore.JS.Binaries)](https://dev.azure.com/wdcossey/SciterCore/_build/latest?definitionId=15) |
+| [SciterCore.PackFolder](https://github.com/wdcossey/SciterCore.PackFolder) | [![Nuget](https://img.shields.io/nuget/v/SciterCore.PackFolder)](https://www.nuget.org/packages/SciterCore.PackFolder/) | [![Build status](https://dev.azure.com/wdcossey/SciterCore/_apis/build/status/SciterCore.PackFolder)](https://dev.azure.com/wdcossey/SciterCore/_build/latest?definitionId=12) |
 
 ## Status
 
-| Operating System      | Version(s)                  | .Net              | Status      | Comments |
-| ----------------------|-----------------------------|-------------------|-------------|-----------------------------------------------------------------------------------------|
-| Windows               | Windows 10 Pro v19042.685   | .Net Core 3.1.10  | Working     |                                                                                         |
-| Windows               | Windows 8.x                 | N/A               | Untested    |                                                                                         |
-| Windows               | Windows 7 Pro SP1 v7601     | .Net Core 3.1.404 | Working     | Ensure you have updated your OS!                                                       |
-| Linux                 | Ubuntu 20.04 (Hyper-V)      | .Net Core 3.1.10  | Working     | Run `sudo chmod +x packfolder` in `scripts/bin.lnx` to build `SciterCore.NetStd.csproj` |
-| Linux                 | Fedora 33 (proxmox)         | .Net Core 3.1.10  | Working     | Run `sudo chmod +x packfolder` in `scripts/bin.lnx` to build `SciterCore.NetStd.csproj` |
-| Linux                 | Manjaro XFCE (proxmox)      | .Net Core 3.1.10  | Working     | Run `sudo chmod +x packfolder` in `scripts/bin.lnx` to build `SciterCore.NetStd.csproj` |
-| Linux                 | Other                       | N/A               | Untested    | As long as you have `libgtk-3.so.0` it's possible.                                      |
-| MacOS                 | MacOS Catalina              | N/A               | In-Progress |                                                                                         |
-| MacOS                 | MacOS Big Sur               | N/A               | Untested    |                                                                                         |
+| Operating System      | Version(s)                        | .Net                           | Status      | Comments |
+| ----------------------|-----------------------------------|--------------------------------|-------------|-----------------------------------------------------------------------------------------|
+| Windows               | Windows 10 Pro `v19042.685`       | .Net Core `3.1.10` & `5.0.102` | Working     |                                                                                         |
+| Windows               | Windows 8.x                       | N/A                            | Untested    |                                                                                         |
+| Windows               | Windows 7 Pro SP1 `v7601`         | .Net Core `3.1.404`            | Working     | Ensure you have updated your OS!                                                        |
+| Linux                 | Ubuntu `20.04` <sup>proxmox</sup> | .Net Core `3.1.10`             | Working     | Run `sudo chmod +x packfolder` in `scripts/bin.lnx` to build `SciterCore.csproj`        |
+| Linux                 | Fedora `33` <sup>proxmox</sup>    | .Net Core `3.1.10`             | Working     | Run `sudo chmod +x packfolder` in `scripts/bin.lnx` to build `SciterCore.csproj`        |
+| Linux                 | Manjaro `XFCE` <sup>proxmox</sup> | .Net Core `3.1.10`             | Working     | Run `sudo chmod +x packfolder` in `scripts/bin.lnx` to build `SciterCore.csproj`        |
+| Linux                 | Other                             | N/A                            | Untested    | As long as you have `libgtk-3.so.0`.                                                    |
+| MacOS                 | MacOS Catalina                    | N/A                            | In-Progress |                                                                                         |
+| MacOS                 | MacOS Big Sur                     | N/A                            | Untested    |                                                                                         |
 
-All builds are done using `JetBrains Rider` and/or (vanilla) `dotnet` CLI.
+All builds are done using `JetBrains Rider` or _vanilla_ `dotnet` CLI.
 
 The changes are going to be frequent while I add stop-gaps between adding/enhancing functionality, expect things to break!!!
 
@@ -65,40 +65,48 @@ This library provides bindings of [Sciter](http://sciter.com/download/) C/C++ he
 
 ## Available Packages
 
-#### SciterCore.PackFolder
+### SciterCore (previously `SciterCore.NetStd`)
+Windows/MacOS/Linux via `.Net Core 3.1` & `.Net 5`.
+
+### SciterCore.JS
+Windows/MacOS/Linux via `.Net Core 3.1` & `.Net 5`, using Sciter.JS (JavaScript).
+
+### SciterCore.Windows  (previously `SciterCore.WinForms`)
+Windows, WinForms and WPF support via `.Net Framework 4.6.1`
+
+### SciterCore.Gtk
+Linux/Gtk support via `MonoDevelop`
+
+### SciterCore.Xamarin.Mac (previously `SciterCore.Mac`)
+MacOS support via `Xamarin.Mac`
+
+### SciterCore.PackFolder
 
 The source can be found [here](https://github.com/wdcossey/SciterCore.PackFolder)
 
-#### SciterCore.Binaries
+### SciterCore.Binaries
 
 The source can be found [here](https://github.com/wdcossey/SciterCore.Binaries)
 
-#### SciterCore.NetStd
-Windows/MacOS/Linux (via .Net Core 3.1)
+### SciterCore.JS.Binaries
 
-#### SciterCore.Windows
-Windows, WinForms and WPF support (via .Net Framework 4.6.1)
-
-#### SciterCore.Gtk
-Linux/Gtk support (via MonoDevelop)
-
-#### SciterCore.Mac
-MacOS support (via Xamarin.Mac)
+The source can be found [here](https://github.com/wdcossey/SciterCore.JS.Binaries)
 
 ## Available Samples
 
 | Project                           | Description                                               | Platform(s)                 |
 | --------------------------------- | :-------------------------------------------------------- | --------------------------- |
-| SciterTest.NetCore                | Demo using `.Net Core 3.1`                                | `MacOS`, `Windows`, `Linux` |
-| SciterTest.NetCore.Behaviors      | Behaviors Demo using `.Net Core 3.1`                      | `MacOS`, `Windows`, `Linux` |
-| SciterTest.CoreForms              | Demo using `.Net Core 3.1` and `WinForms`                 | `Windows`                   |
+| SciterCore.JS.HelloSciter         | `SciterCore.JS` demo using `.Net 5.0.x`                   | `MacOS`, `Windows`, `Linux` |
+| SciterCore.HelloSciter            | `SciterCore` demo using `.Net Core 3.1.x`                 | `MacOS`, `Windows`, `Linux` |
+| SciterCore.Behaviors              | `SciterCore` Behaviors Demo using `.Net Core 3.1.x`       | `MacOS`, `Windows`, `Linux` |
+| SciterCore.Playground             | `SciterCore` playground project using `.Net Core 3.1.x`   | `MacOS`, `Windows`, `Linux` |
+| SciterCore.CoreForms              | `SciterCore` Demo using `.Net Core 3.1.x` w/ `WinForms`   | `Windows`                   |
 | SciterCore.Sample.SkiaSharp.***   | Demo using [SkiaSharp](https://github.com/mono/SkiaSharp) | `MacOS`, `Windows`          |
 | SciterCore.Sample.Gtk.***         | Demo using `GTK`, migrated from `SciterSharp`             | `MacOS`, `Windows`, `Linux` |
-| SciterTest.WinForms               | Demo using `.Net Framework 4.6.1` and `WinForms`          | `Windows`                   |
-| SciterTest.Wpf                    | Demo using `.Net Framework 4.6.1` and `WPF`               | `Windows`                   |
-| SciterTest.Core                   | Sample migrated from `SciterSharp`                        | `Windows`                   |
-| SciterTest.Mac                    | Demo using `Xamarin.Mac`, migrated from `SciterSharp`     | `MacOS`                     |
-| SciterTest.Idioms                 | Sample migrated from `SciterSharp`                        | `Windows`                   |
+| SciterCore.Windows.WinForms       | Demo using `.Net Framework 4.6.x` w/ `WinForms`           | `Windows`                   |
+| SciterCore.Windows.Wpf            | Demo using `.Net Framework 4.6.x` w/ `WPF`                | `Windows`                   |
+| SciterCore.Windows.Core           | Migrated from `SciterSharp`, using `.Net Framework 4.6.x` | `Windows`                   |
+| SciterCore.Xamarin.Mac.HelloSciter| Migrated from `SciterSharp`, using `Xamarin.Mac`          | `MacOS`                     |
 
 ## Screenshots
 

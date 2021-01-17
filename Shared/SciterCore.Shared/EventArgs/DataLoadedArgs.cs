@@ -53,5 +53,11 @@ namespace SciterCore
         /// <para>Status > 12000 - wininet error code, see ERROR_INTERNET_*** in wininet.h</para>
         /// </summary>
         public int Status { get; internal set; }
+
+        public override string ToString()
+        {
+            return
+                $"{nameof(WindowHandle)}: {WindowHandle.ToInt64()}; {nameof(Uri)}: {Uri}; {nameof(Code)}: {Code}; {nameof(DataType)}: {DataType}; {nameof(DataSize)}: {DataSize}; {nameof(Status)}: {Status}";
+        }
     }
 }

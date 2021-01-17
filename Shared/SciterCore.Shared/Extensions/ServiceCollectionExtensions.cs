@@ -85,9 +85,23 @@ namespace Microsoft.Extensions.DependencyInjection
                     
                     var hostWindow =
                         typeof(THost).GetCustomAttributes<SciterHostWindowAttribute>().FirstOrDefault();
-                    
+
                     if (hostWindow != null)
-                        instance?.SetupWindow(provider.GetRequiredService(hostWindow.Type) as SciterWindow);
+                    {
+                        var sciterWindow = provider.GetRequiredService(hostWindow.Type);
+
+                        if (sciterWindow.GetType() == typeof(SciterWindow))
+                        {
+                            (sciterWindow as SciterWindow)
+                                ?.CreateMainWindow(hostWindow.Width ?? 800, hostWindow.Height ?? 600)
+                                ?.SetTitle(hostWindow.Title ?? "SciterCore");
+                        }
+                            
+                        instance?.SetupWindow(sciterWindow as SciterWindow);
+                        
+                        //if (hostWindow.Height.HasValue && hostWindow.Width.HasValue)
+                        //    instance?.Window?.SetSize()
+                    }
 
                     if (hostEventHandler != null)
                         instance?.AttachEventHandler(provider.GetRequiredService(hostEventHandler.Type) as SciterEventHandler);

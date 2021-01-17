@@ -16,7 +16,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{2ABB
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SciterTest.Mac", "Samples\SciterTest.Mac\SciterTest.Mac.csproj", "{764A2B71-F267-4C2E-A4CD-33E050659BD6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SciterCore.MacOS", "Platform\SciterCore.MacOS\SciterCore.MacOS.csproj", "{42BB6EC1-E806-4B5B-A242-1662AAE7BF25}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SciterCore.Xamarin.Mac", "Platform\SciterCore.Xamarin.Mac\SciterCore.Xamarin.Mac.csproj", "{42BB6EC1-E806-4B5B-A242-1662AAE7BF25}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SciterTest.Core", "Samples\SciterTest.Core\SciterTest.Core.csproj", "{EA51B66E-0862-4D79-8FB9-4BB1ED2CFB59}"
 EndProject
@@ -48,7 +48,7 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SciterCore.Shared.WinForms"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Platform", "Platform", "{9F087828-7FA8-47AC-81F3-5CC574414030}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SciterCore.NetStd", "Platform\SciterCore.NetStd\SciterCore.NetStd.csproj", "{431E9182-8873-40AB-8800-B0BFA410F7C4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SciterCore", "Platform\SciterCore\SciterCore.csproj", "{431E9182-8873-40AB-8800-B0BFA410F7C4}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MacOS", "MacOS", "{9C16F18C-6215-4C89-B23F-AC7FB2389BB9}"
 EndProject

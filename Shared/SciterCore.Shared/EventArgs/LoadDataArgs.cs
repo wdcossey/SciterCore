@@ -56,6 +56,12 @@ namespace SciterCore
         /// <summary>
         /// 
         /// </summary>
-        public IntPtr Initiator { get; internal set; }	
+        public IntPtr Initiator { get; internal set; }
+
+        public override string ToString()
+        {
+            return
+                $"{nameof(WindowHandle)}: {WindowHandle.ToInt64()}; {nameof(Uri)}: {Uri}; {nameof(Code)}: {Code}; {nameof(DataType)}: {DataType}; {nameof(DataSize)}: {DataSize}; {nameof(RequestId)}: {RequestId.ToInt64()}; {nameof(Principal)}: {Principal.ToInt64()}; {nameof(Initiator)}: {Initiator.ToInt64()}";
+        }
     }
 }

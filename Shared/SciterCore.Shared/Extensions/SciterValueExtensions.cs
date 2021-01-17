@@ -346,7 +346,7 @@ namespace SciterCore
 	    }
 	    
 	    /// <summary>
-	    /// Maps the <see cref="SciterValue"/> to the specified Type (<see cref="T"/>)
+	    /// Maps the <see cref="SciterValue"/> to <value>T</value>
 	    /// </summary>
 	    /// <param name="sciterValue"></param>
 	    /// <typeparam name="T"></typeparam>
