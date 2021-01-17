@@ -155,7 +155,6 @@ namespace SciterCore.PlatformWrappers
 			// TODO: Does this exist in GTK?
 			public SciterPoint GetPosition(IntPtr window) =>
 				SciterPoint.Empty;
-			
 
 			public void SetPosition(IntPtr window, SciterPoint point) =>
 				PInvokeGtk.gtk_window_move(window, point.X, point.Y);

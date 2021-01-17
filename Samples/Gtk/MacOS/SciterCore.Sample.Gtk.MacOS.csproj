@@ -100,9 +100,9 @@
       </Compile>
     </ItemGroup>
     <ItemGroup>
-      <ProjectReference Include="..\..\..\Platform\SciterCore.MacOS\SciterCore.MacOS.csproj">
+      <ProjectReference Include="..\..\..\Platform\SciterCore.Xamarin.Mac\SciterCore.Xamarin.Mac.csproj">
         <Project>{42bb6ec1-e806-4b5b-a242-1662aae7bf25}</Project>
-        <Name>SciterCore.MacOS</Name>
+        <Name>SciterCore.Xamarin.Mac</Name>
       </ProjectReference>
     </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets" />

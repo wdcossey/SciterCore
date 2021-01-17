@@ -29,11 +29,11 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Platform\SciterCore.NetStd\SciterCore.NetStd.csproj" />
+      <Content Include="wwwroot\index.html" />
     </ItemGroup>
 
     <ItemGroup>
-      <Content Include="wwwroot\index.html" />
+      <ProjectReference Include="..\Platform\SciterCore\SciterCore.csproj" />
     </ItemGroup>
 
 </Project>

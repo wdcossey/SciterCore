@@ -453,7 +453,6 @@ namespace SciterCore.Interop
             /// <param name="vmPtr"></param>
             /// <param name="ns"></param>
             /// <param name="input"></param>
-            /// <param name="input"></param>
             /// <param name="templateMode"></param>
             /// <param name="retValue"></param>
             /// <returns></returns>

@@ -642,7 +642,7 @@ namespace SciterCore.Interop
 			/// GRAPHIN_RESULT SCFN(gScreenToWorld) ( HGFX hgfx, POS* inout_x, POS* inout_y);
 			/// </summary>
 			/// <param name="hgfx"></param>
-			/// <param name="inoutY"></param>
+			/// <param name="inoutX"></param>
 			/// <param name="inoutY"></param>
 			[SciterStructMap(nameof(SciterGraphicsApi.gScreenToWorld))]
 			public delegate GRAPHIN_RESULT GraphicsScreenToWorld(IntPtr hgfx, ref float inoutX, ref float inoutY);

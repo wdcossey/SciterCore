@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using SciterCore.Interop;
 
 namespace SciterCore
@@ -49,6 +50,10 @@ namespace SciterCore
             return Run(SciterPlatform.RunMessageLoop);
         }
         
+        public Task<int> RunAsync()
+        {
+            return Task.FromResult(Run(SciterPlatform.RunMessageLoop));
+        }
 
         public int Run<THost>()
             where THost: SciterHost

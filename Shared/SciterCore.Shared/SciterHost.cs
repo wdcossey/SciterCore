@@ -44,7 +44,7 @@ namespace SciterCore
 
 		private SciterEventHandler _windowEventHandler;
 
-#if SCITER_JS
+#if SCITER_JS || WPF || WINDOWS
 		public static bool InjectLibConsole = false;
 #else
 		public static bool InjectLibConsole = true;
@@ -121,6 +121,10 @@ namespace SciterCore
 
 			WindowHandle = handle;
 
+			if (Window == null || Window.Handle != handle)
+			{
+				Window = new SciterWindow(handle, true);
+			}
 			// Register a global event handler for this Sciter window
 			Api.SciterSetCallback(handle, HostCallbackRegistry.Set(this, NotificationHandler), IntPtr.Zero);
 

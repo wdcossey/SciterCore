@@ -1,0 +1,18 @@
+﻿<Window x:Class="SciterCore.Windows.Wpf.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:wf="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms" 
+        xmlns:local="clr-namespace:SciterTest.Wpf"
+        xmlns:wpf="clr-namespace:SciterCore.Windows.Wpf"
+        mc:Ignorable="d"
+        WindowStyle="SingleBorderWindow"
+        Title="SciterCore.Windows::Wpf" Height="450" Width="800">
+    
+    <Grid >
+        <wpf:SciterControl Source="/wwwroot/index.html">
+            
+        </wpf:SciterControl>
+    </Grid>
+</Window>
