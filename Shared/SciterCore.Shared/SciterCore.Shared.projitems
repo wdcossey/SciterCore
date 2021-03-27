@@ -97,10 +97,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\SciterWindowResolver.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HostCallbackRegistry.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)InternalsVisibility.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Internal\NamedBehaviorRegistry.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internal\INamedBehaviorResolver.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internal\IHostWindowResolver.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Internal\HostWindowRegistry.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\Interfaces\ISciterRequestApi.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\Interfaces\ISciterScriptApi.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interop\PInvokeGtk.cs" />
