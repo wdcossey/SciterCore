@@ -396,7 +396,7 @@ namespace SciterCore
 				throw new InvalidOperationException("Recursion too deep");
 			
 			if (value == null)
-				return SciterValue.Null;
+				return Null;
 			
 			if (value is IConvertible convertible)
 				return new SciterValue(convertible);
@@ -1159,7 +1159,7 @@ namespace SciterCore
 			if(!IsResource && !IsDomElement)
 				ThrowTypeException(nameof(Interop.SciterValue.VALUE_TYPE.T_RESOURCE), nameof(Interop.SciterValue.VALUE_TYPE.T_DOM_OBJECT));
 			
-			return new SciterElement(this.GetObjectData());
+			return SciterElement.Attach(this.GetObjectData());
 		}
 		
 		public static SciterValue FromJsonString(string json, StringConversionType conversionType = StringConversionType.JsonLiteral)

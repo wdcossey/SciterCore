@@ -8,9 +8,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using SciterCore.Attributes;
+using SciterCore.Behaviors.Behaviors;
 using SciterCore.Interop;
-using SciterTest.NetCore;
-using SciterTest.NetCore.Behaviors;
 
 namespace SciterCore.Behaviors
 {
@@ -21,13 +20,13 @@ namespace SciterCore.Behaviors
 	// - in RELEASE mode: resources loaded from by a SciterArchive (packed binary data contained as C# code in ArchiveResource.cs)
 	
 	[SciterHostEventHandler(typeof(HostEventHandler))]
-	[SciterHostArchive("this://app/")]
+	//[SciterHostArchive]
 	[SciterHostWindow(typeof(ApplicationWindow), "this://app/index.html")]
-	[SciterHostBehaviorHandler(typeof(SciterClockBehavior))]
-	[SciterHostBehaviorHandler(typeof(CustomDrawBehavior))]
-	[SciterHostBehaviorHandler(typeof(CustomExchangeBehavior))]
-	[SciterHostBehaviorHandler(typeof(CustomFocusBehavior))]
-	[SciterHostBehaviorHandler(typeof(CustomMouseBehavior))]
+	//[SciterHostBehaviorHandler(typeof(SciterClockBehavior))]
+	//[SciterHostBehaviorHandler(typeof(CustomDrawBehavior))]
+	//[SciterHostBehaviorHandler(typeof(CustomExchangeBehavior))]
+	//[SciterHostBehaviorHandler(typeof(CustomFocusBehavior))]
+	//[SciterHostBehaviorHandler(typeof(CustomMouseBehavior))]
 	public class ApplicationHost : SciterArchiveHost
 	{
 		private readonly ILogger _logger;
@@ -36,6 +35,13 @@ namespace SciterCore.Behaviors
 		public ApplicationHost(ILogger<ApplicationHost> logger)
 		{
 			_logger = logger;
+
+			OnCreated += (sender, args) =>
+			{
+				args.Window
+					.LoadPage(new Uri("this://app/index.html"))
+					.CenterWindow();
+			};
 		}
 
 		/*public SciterHost LoadPage(string page, Action<SciterHost, SciterWindow> onCompleted = null, Action<SciterHost, SciterWindow> onFailed = null)
@@ -97,6 +103,7 @@ namespace SciterCore.Behaviors
 		{
 			_logger = logger;
 		}
+		
 		/// A dynamic script call handler. Any call in TIScript to function 'view.Host_HelloSciter()' with invoke this method
 		/// Notice that signature of these handlers is always the same
 		/// (Hint: install OmniCode snippets which adds the 'ssh' snippet to C# editor so you can easily declare 'Siter Handler' methods)
@@ -289,8 +296,8 @@ namespace SciterCore.Behaviors
 		protected override bool OnEvent(SciterElement sourceElement, SciterElement targetElement,
 			BehaviorEvents type, IntPtr reason, SciterValue data, string eventName)
 		{
-			if (type == BehaviorEvents.DocumentReady) 
-				this.Host.ConnectToInspector();
+			//if (type == BehaviorEvents.DocumentReady) 
+			//	this.Host.ConnectToInspector();
 
 			_logger?.LogDebug($"{nameof(OnEvent)}: {nameof(type)}: {type}; {nameof(eventName)}: {eventName}; {nameof(data)}: {data.AsString()}");
 			return base.OnEvent(sourceElement, targetElement, type, reason, data, eventName);

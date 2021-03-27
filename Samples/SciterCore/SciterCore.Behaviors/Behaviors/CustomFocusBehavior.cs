@@ -1,9 +1,7 @@
 ﻿using System.Diagnostics;
-using System.Globalization;
-using SciterCore;
 using SciterCore.Attributes;
 
-namespace SciterTest.NetCore.Behaviors
+namespace SciterCore.Behaviors.Behaviors
 {
     [SciterBehavior("focus-behavior")]
     public class CustomFocusBehavior : SciterEventHandler

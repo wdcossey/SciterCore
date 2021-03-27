@@ -519,7 +519,7 @@ namespace SciterCore
 			var result = SciterApi.SciterGetRootElement(Handle, out var elementHandle)
 				.IsOk();
 
-			element = result ? new SciterElement(elementHandle) : null; // no page loaded yet?
+			element = result ? SciterElement.Attach(elementHandle) : null; // no page loaded yet?
 			return result;
 		}
 
@@ -542,7 +542,7 @@ namespace SciterCore
 			var result = SciterApi.SciterFindElement(Handle, point, out var elementHandle)
 				.IsOk();
 
-			value = result ? new SciterElement(elementHandle) : null;
+			value = result ? SciterElement.Attach(elementHandle) : null;
 				
 			return result;
 		}
@@ -582,7 +582,7 @@ namespace SciterCore
 			var result = SciterApi.SciterGetElementByUID(Handle, uid, out var elementHandle)
 				.IsOk();
 			
-			value = result ? new SciterElement(elementHandle) : null;
+			value = result ? SciterElement.Attach(elementHandle) : null;
 
 			return result;
 		}

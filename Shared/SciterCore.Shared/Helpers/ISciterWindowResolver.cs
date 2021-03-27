@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace SciterCore.Helpers
 {
-    public interface ISciterWindowResolver : IDictionary<Type, Type>
+    internal interface ISciterWindowResolver : IDictionary<Type, Type>
     {
         
     }

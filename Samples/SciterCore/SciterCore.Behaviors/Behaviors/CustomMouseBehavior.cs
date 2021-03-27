@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using SciterCore;
+using System.Linq;
 using SciterCore.Attributes;
 
-namespace SciterTest.NetCore.Behaviors
+namespace SciterCore.Behaviors.Behaviors
 {
     [SciterBehavior("mouse-behavior")]
     public class CustomMouseBehavior : SciterEventHandler
     {
-        List<SciterPoint> points = new List<SciterPoint>()
+        List<SciterPoint> _points = new List<SciterPoint>()
         {
             SciterPoint.Empty
         };
@@ -32,6 +32,12 @@ namespace SciterTest.NetCore.Behaviors
                 case MouseEvents.Up:
                     break;
                 case MouseEvents.Down:
+                    if (args.ButtonState == MouseButton.Secondary)
+                        _points = new List<SciterPoint>()
+                        {
+                            new SciterPoint(args.ElementPosition.X, args.ElementPosition.Y)
+                        };
+                        
                     break;
                 case MouseEvents.DoubleClick:
                     break;
@@ -50,9 +56,10 @@ namespace SciterTest.NetCore.Behaviors
                 case MouseEvents.DragRequest:
                     break;
                 case MouseEvents.MouseClick:
-                    points.Add(new SciterPoint(args.ElementPosition.X, args.ElementPosition.Y));
+                    _points.Add(new SciterPoint(args.ElementPosition.X, args.ElementPosition.Y));
                     break;
                 case MouseEvents.Dragging:
+                    
                     break;
                 default:
                     return base.OnMouse(element, args);;
@@ -69,35 +76,56 @@ namespace SciterTest.NetCore.Behaviors
             if (args.DrawEvent != DrawEvent.Foreground)
                 return false;
             
-            var random = new Random(50);
-            var padding = 8;
+            var scale = args.Area.Width < args.Area.Height ? args.Area.Width / 300.0f : args.Area.Height / 300.0f;
             
             //if (args.Event == MouseEvents.MouseClick)
             using (var graphics = SciterGraphics.Create(args.Handle))
             {
-                    
+
                 graphics.SaveState()
-                        
+
                     .Translate(args.Area.Left, args.Area.Top)
-                    .PushClipBox(args.Area.Left, args.Area.Top, args.Area.Width, args.Area.Height)
                     .SetLineWidth(2)
                     .SetLineJoin(LineJoinType.Round)
                     .SetLineGradientLinear(
-                        1, 1, 100, 100,
+                        1, 1, args.Area.Width, args.Area.Height,
                         SciterColorStop.Create(0f, 0, 255, 0, 1f),
                         SciterColorStop.Create(.5f, 255, 255, 0, 1f),
-                        SciterColorStop.Create(1f, 255, 0, 0, 1f));
+                        SciterColorStop.Create(1f, 255, 0, 0, 1f))
+                    .SetFillGradientLinear(
+                        1, 1, args.Area.Width, args.Area.Height,
+                        SciterColorStop.Create(0f, 0, 255, 0, .5f),
+                        SciterColorStop.Create(.5f, 255, 255, 0, .5f),
+                        SciterColorStop.Create(1f, 255, 0, 0, .5f));
 
-                for (int i = 1; i < points.Count; i++)
+                var path = SciterPath.Create();
+                path.MoveTo(_points[0].X,_points[0].Y,false);
+                
+                for (var i = 0; i < _points.Count; i++)
                 {
-                    graphics.DrawLine(points[i-1].X, points[i-1].Y, points[i].X, points[i].Y);
-                }
                     
-                foreach (var point in points)
-                {
-                        
+                    path.LineTo(_points[i].X,_points[i].Y,false);
+                    //path.BezierCurveTo(_points[i].X,_points[i].Y, _points[i].X,_points[i].Y, _points[i].X,_points[i].Y,false);
                 }
-                        
+
+                graphics.SaveState()
+                    .DrawPath(path, DrawPathMode.FillOnly )
+                    .RestoreState();
+                
+                graphics.SaveState()
+                    .DrawPath(path, DrawPathMode.StrokeOnly )
+                    .RestoreState();
+
+                //graphics.SaveState()
+                //    .DrawPolyline(() => { return _points.Select(s => PolylinePoint.Create(s.X, s.Y)); })
+                //    .RestoreState();
+
+                //for (int i = 1; i < _points.Count; i++)
+                //{
+                //    
+                //    graphics.DrawLine(_points[i-1].X, _points[i-1].Y, _points[i].X, _points[i].Y);
+                //}
+                //graphics.RestoreState();
 
                 graphics.RestoreState();
             }

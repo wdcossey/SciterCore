@@ -12,7 +12,7 @@ html:theme(dark) {
     
     var(header-bg-color): color(accent-color);
     
-    var(toolbar-bg-color): morph(color(main-bg-color), opacity: 75%);
+    var(toolbar-bg-color): morph(color(main-bg-color), opacity: 50%);
     
     var(menu-color): morph(rgb(255,255,255), opacity: 85%);
     var(menu-bg-color): morph(color(main-bg-color), darken: 4%);
@@ -107,7 +107,7 @@ toolbar {
     z-index:1;
     background-color: color(toolbar-bg-color);
     box-shadow: 0 0 12dip 12dip rgba(0, 0, 0, 0.25);
-    backdrop-filter: blur(10dip);
+    backdrop-filter: blur(15dip);
 }
 
 section {

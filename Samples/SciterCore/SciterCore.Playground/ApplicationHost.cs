@@ -5,8 +5,7 @@ using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SciterCore.Interop;
-using SciterTest.NetCore;
-using SciterTest.NetCore.Behaviors;
+using SciterCore.Playground.Behaviors;
 
 namespace SciterCore.Playground
 {

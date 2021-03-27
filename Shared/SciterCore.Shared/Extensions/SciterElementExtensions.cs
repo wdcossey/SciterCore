@@ -725,6 +725,7 @@ namespace SciterCore
             return element;
         }
 		
+        //TODO: Fix/Remove this!
         public static SciterElement OnCustomEvent(this SciterElement element, Action<string, SciterElement, SciterElement, SciterValue> callback)
         {
             element?.OnCustomEventInternal(callback);

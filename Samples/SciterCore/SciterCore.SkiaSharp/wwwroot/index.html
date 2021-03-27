@@ -1,0 +1,113 @@
+<html window-blurbehind="none" theme="dark">
+<head>
+    <title>SciterCore::SkiaSharp</title>
+
+    <style>
+
+        html {
+            background :url(no-color.png) repeat;
+            color: white;
+        }
+
+        body {
+            margin: 30dip;
+            behavior: draw-checkered-background;
+        }
+
+        img {
+            margin: 4dip;
+            height: 96dip;
+            border: 1dip dashed rgba(255, 127, 0, 0.75);
+            behavior: draw-alt-attribute;
+        }
+
+        img.alt-background {
+            fill: rgba(255, 255, 255, 0.5);
+            background: rgba(0, 127, 255, 0.5);
+        }
+
+        img.solid {
+            behavior: draw-solid-background;
+        }
+
+        img.solid-fore {
+            behavior: draw-solid-foreground;
+        }
+
+        img.linear {
+            behavior: draw-linear-background;
+        }
+
+        img.linear-fore {
+            behavior: draw-linear-foreground;
+        }
+
+        img.radial {
+            behavior: draw-radial-background;
+        }
+
+        img.radial-fore {
+            behavior: draw-radial-foreground;
+        }
+        
+    </style>
+    
+    <script type="text/tiscript"></script>
+    
+</head>
+<body>
+    <div>
+        <img src="logo.png"
+             alt="Default"/>
+    
+        <img src="icons8-visual-studio-2019.svg"
+             alt="Default"/>
+    
+        <img src="icons8-c-sharp-logo.svg"
+             .alt-background
+             alt="Default"/>
+    </div>
+    
+    <div>
+        <img src="logo.png"
+             alt="Solid"
+             .solid/>
+    
+        <img src="icons8-visual-studio-2019.svg"
+             alt="Solid"
+             .solid/>
+    
+        <img src="icons8-c-sharp-logo.svg"
+             alt="Solid"
+             .solid-fore .alt-background/>
+    </div>
+    
+    <div>
+        <img src="logo.png"
+             alt="Linear"
+             .linear/>
+    
+        <img src="icons8-visual-studio-2019.svg"
+             alt="Linear"
+             .linear/>
+    
+        <img src="icons8-c-sharp-logo.svg"
+             alt="Linear"
+             .linear-fore .alt-background/>
+    </div>
+    
+    <div>
+        <img src="logo.png"
+             alt="Radial"
+             class="radial"/>
+    
+        <img src="icons8-visual-studio-2019.svg"
+             alt="Radial"
+             class="radial"/>
+    
+        <img src="icons8-c-sharp-logo.svg"
+             alt="Radial"
+             class="radial-fore alt-background"/>
+    </div>
+</body>
+</html>

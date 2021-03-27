@@ -1,9 +1,7 @@
-﻿using System;
-using HelloSciterJS;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using SciterCore.JS.HelloSciter.Behaviors;
 
 namespace SciterCore.JS.HelloSciter
 {
@@ -30,8 +28,9 @@ namespace SciterCore.JS.HelloSciter
                         .AddConsole();
                 })
                 .AddSingleton<IConfiguration>(configuration)
-                .AddSciterHost<ApplicationHost>()
-                .AddSingleton<SciterApplication>();
+                .AddSciterBehavior<RuntimeInformationBehavior>()
+                .AddSciter<AppHost>();
+                //.AddSingleton<SciterApplication>();
 
             var serviceProvider = services.BuildServiceProvider();
 

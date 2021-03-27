@@ -202,7 +202,7 @@ namespace SciterCore
 		{
 			SciterElement sourceElement = null;
 			if(!he.Equals(IntPtr.Zero))
-				sourceElement = new SciterElement(he);
+				sourceElement = SciterElement.Attach(he);
 
 			switch ((SciterBehaviors.EVENT_GROUPS) evtg)
 			{
@@ -265,8 +265,8 @@ namespace SciterCore
 
 				case SciterBehaviors.EVENT_GROUPS.HANDLE_MOUSE:
 				{
-					var args = Marshal.PtrToStructure<SciterBehaviors.MOUSE_PARAMS>(prms).ToEventArgs();
-					return OnMouse(element: sourceElement, args: args);
+					var args = Marshal.PtrToStructure<SciterBehaviors.MOUSE_PARAMS>(prms);
+					return OnMouse(element: sourceElement, args: args.ToEventArgs());
 				}
 
 				case SciterBehaviors.EVENT_GROUPS.HANDLE_KEY:
@@ -297,7 +297,7 @@ namespace SciterCore
 				case SciterBehaviors.EVENT_GROUPS.HANDLE_BEHAVIOR_EVENT:
 				{
 					var eventParams = Marshal.PtrToStructure<SciterBehaviors.BEHAVIOR_EVENT_PARAMS>(prms);
-					var targetElement = eventParams.he != IntPtr.Zero ? new SciterElement(eventParams.he) : null;
+					var targetElement = eventParams.he != IntPtr.Zero ? SciterElement.Attach(eventParams.he) : null;
 
 					Element = eventParams.cmd switch
 					{
@@ -337,8 +337,8 @@ namespace SciterCore
 					var resultOffset = Marshal.OffsetOf(typeof(SciterBehaviors.SCRIPTING_METHOD_PARAMS),
 						nameof(SciterBehaviors.SCRIPTING_METHOD_PARAMS.result));
 #if OSX
-						if(IntPtr.Size == 4)
-							Debug.Assert(resultOffset.ToInt32() == 12);
+					if(IntPtr.Size == 4)
+						Debug.Assert(resultOffset.ToInt32() == 12);
 #else
 					if (IntPtr.Size == 4)
 						Debug.Assert(resultOffset.ToInt32() == 16); // yep 16, strange but is what VS C++ compiler says

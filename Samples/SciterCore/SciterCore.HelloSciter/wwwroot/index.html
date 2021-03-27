@@ -129,8 +129,8 @@
 		{
 			display: block;
 			visibility: collapse;
-			width: 1*;
 			opacity: 0;
+			width: 1*;
 			transition: height cubic-in-out 0.4s 0.4s, opacity cubic-in-out 0.4s 0.4s;
 			flow:row(div,div);
 		}
@@ -302,109 +302,116 @@
 			height: 32dip;
 			width: 32dip;
 		}
+
+		#callbackState {
+		}
+
+		#callbackState[result="completed"] {
+			color: lime;
+		}
+
+		#callbackState[result="cancelled"] {
+			color: #dc143c;
+		}
+		
 	</style>
 	
 	<script type="text/tiscript"></script>
 	
 	<script type="text/tiscript">
 
-		//Synchronous
-		view.SynchronousFunction();
-
-		console.log(view.SynchronousArgumentFunction(1,2,3,4,5));
-
-		console.log(view.SynchronousArgumentsFunction(1,2,3,4,5));
-
-		//Asynchronous
-		view.AsynchronousFunction();
-
-		function callmeFromCSharp(uri)
-		{
-			Sciter.launch(uri);
-		}
-
-		function testing()
-		{
-			console.log("testing...");
-		}
-
-		view.StackTrace(function(value) {
-			$(#stMethodName).text = value.MethodName;
-			$(#stFileUri).text = value.FileName;
-			$(#stFileUri).attributes["href"] = value.FileUri;
-			$(#stLineNumber).text = value.LineNumber;
-			$(#stColumnNumber).text = value.ColumnNumber;
-
-			var args = [];
-
-			for(var (index, val) in value.Parameters)
-				args.push("<b>" + val.Type + "</b> <i>" + val.Name + "</i>");
-
-			$(#stParameters).html += "(" + args.join(", ") + ")";
-
-			$(#stContent).attributes["state"] = "visible";
-		});
-
-		view.GetRuntimeInfo(
-			function(value) {
-				$(#frameworkDescription).text = value.FrameworkDescription;
-				//$(#systemVersion).text = value.SystemVersion;
-				$(#processArchitecture).text = value.ProcessArchitecture;
-				$(#osArchitecture).text = value.OSArchitecture;
-				$(#osDescription).text = value.OSDescription;
-				$(#osContent).attributes["state"] = "visible";
-			},
-			function() {
-
+		function self.ready() {
+			//Synchronous
+			view.SynchronousFunction();
+	
+			console.log(view.SynchronousArgumentFunction(1,2,3,4,5));
+	
+			console.log(view.SynchronousArgumentsFunction(1,2,3,4,5));
+	
+			//Asynchronous
+			view.AsynchronousFunction();
+	
+			function callmeFromCSharp(uri)
+			{
+				Sciter.launch(uri);
 			}
-		);
-
-		view.ThrowException(100, 0,
-			function(value, ex) {
-				if (ex)
-				{
-					$(#exContent).html = String.printf("<div>Type:</div><div><span>%s</span></div><div>Message:</div><div><span>%s</span></div><div>StackTrace:</div><div><span>%s</span></div><div>Source: </div><div><span>%s</span></div>", ex.Type, ex.Message, ex.StackTrace, ex.Source);
-					$(#exContent).attributes["state"] = "visible";
-					$(#exContent).attributes.addClass("has-exception");
-				}
-				else {
-					$(#exContent).html = String.printf("<div>Value:</div><div><span>%s</span></div>", value);
-					$(#exContent).attributes["state"] = "visible";
-				}
+	
+			function testing()
+			{
+				console.log("testing...");
 			}
-		);
+	
+			view.StackTrace(function(value) {
+				$(#stMethodName).text = value.MethodName;
+				$(#stFileUri).text = value.FileName;
+				$(#stFileUri).attributes["href"] = value.FileUri;
+				$(#stLineNumber).text = value.LineNumber;
+				$(#stColumnNumber).text = value.ColumnNumber;
+	
+				var args = [];
+	
+				for(var (index, val) in value.Parameters)
+					args.push("<b>" + val.Type + "</b> <i>" + val.Name + "</i>");
+	
+				$(#stParameters).html += "(" + args.join(", ") + ")";
+	
+				$(#stContent).attributes["state"] = "visible";
+			});
+	
+			view.GetRuntimeInfo(
+				function(value) {
+					$(#frameworkDescription).text = value.FrameworkDescription;
+					//$(#systemVersion).text = value.SystemVersion;
+					$(#processArchitecture).text = value.ProcessArchitecture;
+					$(#osArchitecture).text = value.OSArchitecture;
+					$(#osDescription).text = value.OSDescription;
+					$(#osContent).attributes["state"] = "visible";
+				},
+				function() {
+	
+				}
+			);
+	
+			view.ThrowException(100, 0,
+				function(value, ex) {
+					if (ex)
+					{
+						$(#exContent).html = String.printf("<div>Type:</div><div><span>%s</span></div><div>Message:</div><div><span>%s</span></div><div>StackTrace:</div><div><span>%s</span></div><div>Source: </div><div><span>%s</span></div>", ex.Type, ex.Message, ex.StackTrace, ex.Source);
+						$(#exContent).attributes["state"] = "visible";
+						$(#exContent).attributes.addClass("has-exception");
+					}
+					else {
+						$(#exContent).html = String.printf("<div>Value:</div><div><span>%s</span></div>", value);
+						$(#exContent).attributes["state"] = "visible";
+					}
+				}
+			);
+	
+			var version_major = Sciter.VERSION >> 16;
+			var version_minor = Sciter.VERSION & 0xFFFF;
+			var revision_major = Sciter.REVISION >> 16;
+			var revision_minor = Sciter.REVISION & 0xFFFF;
+			$(#sciterversion).text = String.printf("%d.%d.%d.%d (%d)", version_major, version_minor, revision_major, revision_minor, Sciter.BUILD);
+	
+			$(#user).text = Sciter.userName();
+			$(#machine).text = Sciter.machineName();
+			$(#domain).text = Sciter.machineName(true);
+			//$(#home).text = System.home();
+			$(#language).text = System.language;
+			$(#country).text = System.country;
+			$(#os-type).text = System.HANDHELD_OS? "handheld":"desktop";
+			$(#os-version).text = System.OS;
+			$(#gfx-backend).text = view.backendName;
 
-		var version_major = Sciter.VERSION >> 16;
-		var version_minor = Sciter.VERSION & 0xFFFF;
-		var revision_major = Sciter.REVISION >> 16;
-		var revision_minor = Sciter.REVISION & 0xFFFF;
-		$(#sciterversion).text = String.printf("%d.%d.%d.%d (%d)", version_major, version_minor, revision_major, revision_minor, Sciter.BUILD);
-
-		$(#user).text = Sciter.userName();
-		$(#machine).text = Sciter.machineName();
-		$(#domain).text = Sciter.machineName(true);
-		//$(#home).text = System.home();
-		$(#language).text = System.language;
-		$(#country).text = System.country;
-		$(#os-type).text = System.HANDHELD_OS? "handheld":"desktop";
-		$(#os-version).text = System.OS;
-		$(#gfx-backend).text = view.backendName;
-
-		//$$(a).on("click", function(evt) {
-		//	Sciter.launch(this.@#href);
-		//	return true;
-		//});
-
+		}
+		
 		for(var (i,child) in $$(a) ) {
 			child.on("click", function(evt) {
 				Sciter.launch(this.@#href);
 				return true;
 			});
 		}
-
-		function self.ready() {
-		}
-
+		
 		event click $(#start) {
 		  self.postEvent("waiting","Waiting for something..."); // start waiting with the message
 		  self.timer(10s, function() {
@@ -418,6 +425,7 @@
 			$(#start).enabled = false;
 
 			$(#callbackState).style["color"] = undefined;
+			$(#callbackState).attributes["result"] = initial;
 			$(#callbackProgressContainer).show();
 			$(#callbackProgress).value = 0;
 
@@ -430,7 +438,8 @@
 				function(msg, result) {
 					//$(#callbackContent).attributes["state"] = "visible";
 					$(#callbackState).text = result ? "Completed" : "Cancelled";
-					$(#callbackState).style["color"] = result ? "lime" : "red";
+					$(#callbackState).attributes["result"] = result ? "completed" : "cancelled";
+					//$(#callbackState).style["color"] = result ? "lime" : "red";
 					$(#callbackMessage).text = msg;
 					$(#callbackProgressContainer).hide();
 					$(#start).enabled = true;
@@ -446,7 +455,6 @@
 		event click $(#eval) {
 			$(#evalResult).text = view.eval($(#evalInput).text);
 		}
-
 
 		event click $(#btnInspector) {
 			view.connectToInspector();
@@ -529,7 +537,9 @@
 
 					<cardcontent #callbackContent state="visible">
 						<div>State:</div>
-						<div #callbackState></div>
+						<div>
+							<div #callbackState></div>
+						</div>
 						
 						<div>Message:</div>
 						<div #callbackMessage style="font-weight: bold;"></div>

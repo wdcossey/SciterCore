@@ -81,7 +81,7 @@ namespace SciterCore
 		internal bool TryCastToElementInternal(out SciterElement value)
 		{
 			var result = SciterApi.SciterNodeCastToElement(this.Handle, out var elementHandle).IsOk();
-			value = result ? new SciterElement(elementHandle) : default;
+			value = result ? SciterElement.Attach(elementHandle) : default;
 			return result;
 		}
 

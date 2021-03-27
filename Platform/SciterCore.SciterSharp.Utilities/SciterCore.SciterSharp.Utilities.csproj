@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <SciterCoreResourceName>LibConsole</SciterCoreResourceName>
+        <SciterCorePackFileName>SciterSharp.Console</SciterCorePackFileName>
+        <TargetFrameworks>net5.0;netcoreapp2.1;netcoreapp3.1;netstandard2.0;netstandard2.1</TargetFrameworks>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="SciterCore" Version="0.0.474-alpha" />
+      <PackageReference Include="SciterCore.PackFolder" Version="0.1.483" />
+    </ItemGroup>
+
+    <ItemGroup Condition=" '$(Configuration)' == 'Debug' ">
+      <ProjectReference Include="..\SciterCore\SciterCore.csproj" />
+    </ItemGroup>
+
+</Project>

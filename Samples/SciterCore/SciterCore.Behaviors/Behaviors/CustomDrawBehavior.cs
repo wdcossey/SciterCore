@@ -1,9 +1,7 @@
 ﻿using System;
-using SciterCore;
 using SciterCore.Attributes;
-using SciterGraphics = SciterCore.SciterGraphics;
 
-namespace SciterTest.NetCore.Behaviors
+namespace SciterCore.Behaviors.Behaviors
 {
 	[SciterBehavior("draw-line")]
 	public class CustomDrawBehavior : SciterEventHandler

@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 
 namespace SciterCore.Helpers
 {
-    public class SciterWindowResolver : Dictionary<Type, Type>, ISciterWindowResolver
+    internal class SciterWindowResolver : Dictionary<Type, Type>, ISciterWindowResolver
     {
         public SciterWindowResolver()
         {

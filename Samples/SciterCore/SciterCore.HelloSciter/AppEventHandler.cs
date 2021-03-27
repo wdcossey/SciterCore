@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -9,67 +9,18 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using SciterCore.Attributes;
 using SciterCore.Interop;
-using SciterTest.NetCore.Behaviors;
 
 namespace SciterCore.HelloSciter
 {
-	[SciterHostEventHandler(typeof(HostEventHandler))]
-	[SciterHostWindow("this://app/index.html", 800, 600, "SciterCore::Hello")]
-	[SciterHostArchive("this://app/")]
-	[SciterHostBehaviorHandler(typeof(DragDropBehavior))]
-	public class ApplicationHost : SciterArchiveHost
+    public class AppEventHandler : SciterEventHandler
 	{
-		private readonly ILogger _logger;
+		private readonly ILogger<AppEventHandler> _logger;
 
-		// ReSharper disable once SuggestBaseTypeForParameter
-		public ApplicationHost(ILogger<ApplicationHost> logger)
-			: base()
-		{
-			_logger = logger;
-			OnCreated += (sender, args) =>
-			{
-				args.Window.CenterWindow();
-			};
-		}
-
-		protected override LoadResult OnLoadData(object sender, LoadDataArgs args)
-		{
-			_logger?.LogDebug(args.Uri.ToString());
-			return base.OnLoadData(sender: sender, args: args);
-		}
-
-		protected override bool OnAttachBehavior(SciterElement element, string behaviorName, out SciterEventHandler eventHandler)
-		{
-			_logger?.LogDebug($"{nameof(OnAttachBehavior)}: {nameof(element)}: {element.Tag} ({element.UniqueId}); {nameof(behaviorName)}: {behaviorName}");
-			return base.OnAttachBehavior(element, behaviorName, out eventHandler);
-		}
-
-		protected override void OnDataLoaded(object sender, DataLoadedArgs args)
-		{
-			base.OnDataLoaded(sender, args);
-		}
-
-		protected override void OnEngineDestroyed(object sender, EngineDestroyedArgs args)
-		{
-			_logger?.LogDebug(args.Code.ToString());
-			base.OnEngineDestroyed(sender, args);
-		}
-
-		protected override IntPtr OnPostedNotification(IntPtr wparam, IntPtr lparam)
-		{
-			return base.OnPostedNotification(wparam, lparam);
-		}
-	}
-	
-	public class HostEventHandler : SciterEventHandler
-	{
-		private readonly ILogger<HostEventHandler> _logger;
-
-		public HostEventHandler(ILogger<HostEventHandler> logger)
+		public AppEventHandler(ILogger<AppEventHandler> logger)
 		{
 			_logger = logger;
 		}
-		
+
 		public Task StackTrace(SciterElement element, SciterValue onCompleted)
 		{
 			var stackTrace = new StackTrace(true);
@@ -80,7 +31,7 @@ namespace SciterCore.HelloSciter
 				{
 					MethodName = stackFrame?.GetMethod()?.Name,
 					Parameters = stackFrame?.GetMethod()?.GetParameters().Select(s => new { s.Name, s.Position, Type = s.ParameterType.Name}),
-					FileUri = new Uri(stackFrame?.GetFileName())?.AbsoluteUri,
+					FileUri = new Uri(stackFrame?.GetFileName() ?? string.Empty).AbsoluteUri,
 					FileName = Path.GetFileName(stackFrame?.GetFileName()),
 					LineNumber = stackFrame?.GetFileLineNumber(),
 					ColumnNumber = stackFrame?.GetFileColumnNumber()
@@ -151,37 +102,42 @@ namespace SciterCore.HelloSciter
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(exception: ex, message: ex.Message);
+				_logger.LogError(exception: ex, message: "{Message}", ex.Message);
 				throw;
 			}
 		}
 
 		public void SynchronousFunction()
 		{
-			_logger.LogInformation($"{nameof(SynchronousFunction)} was executed!");
+			_logger?.LogInformation("{NameOfMethod}() was executed!", nameof(SynchronousFunction));
 		}
 
 		public void SynchronousArgumentFunction(SciterElement element, SciterValue[] args)
 		{
-			_logger.LogInformation($"{nameof(SynchronousArgumentFunction)} was executed!\n\t{string.Join(",", args.Select(s => s.AsInt32()))}");
+			_logger?.LogInformation("{NameOfMethod}({Parameters}) was executed!", nameof(SynchronousArgumentFunction),
+				string.Join(", ", args.Select(s => $"{Array.IndexOf(args, s)}: {s.AsInt32()}")));
 		}
 
 		public void SynchronousArgumentsFunction(SciterElement element, SciterValue arg1, SciterValue arg2, SciterValue arg3, SciterValue arg4, SciterValue arg5)
 		{
-			_logger.LogInformation($"{nameof(SynchronousArgumentsFunction)} was executed!\n\t{arg1.AsInt32()},{arg2.AsInt32()},{arg3.AsInt32()},{arg4.AsInt32()},{arg5.AsInt32()}");
+			_logger?.LogInformation(
+				"{NameOfMethod}(arg1: {Arg1}; arg2: {Arg2}; arg3: {Arg3}; arg4: {Arg4}; arg5: {Arg5}) was executed!",
+				nameof(SynchronousArgumentsFunction), arg1.AsInt32(), arg2.AsInt32(), arg3.AsInt32(), arg4.AsInt32(),
+				arg5.AsInt32());
 		}
 		
 		public async Task AsynchronousFunction()
 		{
-			await Task.Delay(TimeSpan.FromSeconds(2));
-
-			//var value = _host.EvalScript(@"view.msgbox { type:#question, " +
+			await Task.Delay(TimeSpan.FromSeconds(5));
+			
+			_logger?.LogInformation("{NameOfMethod}() was executed!", nameof(AsynchronousFunction));
+			
+			//var value = Host.EvalScript(@"view.msgbox { type:#question, " +
             //                             			"content:\"Is anybody out there?\", " +
             //                                        "buttons:[" +
             //                             			"{id:#yes,text:\"Yes\",role:\"default-button\"}," +
             //                             			"{id:#no,text:\"No\",role:\"cancel-button\"}]" +
             //                                        "};");
-            _logger.LogInformation($"{nameof(AsynchronousFunction)} was executed!");
 		}
 
 		[SciterFunctionName("eval")]
@@ -196,18 +152,21 @@ namespace SciterCore.HelloSciter
 			return EventGroups.HandleAll;
 		}
 
+		// ReSharper disable once RedundantOverriddenMember
 		protected override bool OnMouse(SciterElement element, MouseArgs args)
 		{
 			//Console.WriteLine($"{args.ButtonState}| {args.Cursor} | {args.Event} | {args.DragMode}");
 			return base.OnMouse(element, args);
 		}
 
+		// ReSharper disable once RedundantOverriddenMember
 		protected override bool OnKey(SciterElement element, KeyArgs args)
 		{
 			//Console.WriteLine($"{args.Event} | {args.KeyboardState} | {(char)args.KeyCode}");
 			return base.OnKey(element, args);
 		}
 
+		// ReSharper disable once RedundantOverriddenMember
 		protected override bool OnFocus(SciterElement element, FocusArgs args)
 		{
 			//Console.WriteLine($"{args.Event} | {args.Cancel} | {args.IsMouseClick}");
@@ -216,10 +175,11 @@ namespace SciterCore.HelloSciter
 
 		protected override void Attached(SciterElement element)
 		{
-			_logger?.LogDebug($"{nameof(Attached)}");
+			_logger?.LogTrace("{NameOfMethod}()", nameof(Attached));
 			base.Attached(element);
 		}
 
+		// ReSharper disable once RedundantOverriddenMember
 		protected override bool OnGesture(SciterElement element, GestureArgs args)
 		{
 			//Console.WriteLine($"{args}");
@@ -228,16 +188,22 @@ namespace SciterCore.HelloSciter
 			
 			return base.OnGesture(element, args);
 		}
-
+		
 		protected override bool OnMethodCall(SciterElement element, SciterBehaviors.BEHAVIOR_METHOD_IDENTIFIERS methodId)
 		{
-			_logger?.LogDebug($"{nameof(OnMethodCall)}: {nameof(methodId)}: {methodId}");
+			_logger?.LogTrace("{NameOfMethod}(methodId: \"{MethodId}\")", nameof(OnMethodCall), methodId);
 			return base.OnMethodCall(element, methodId);
 		}
 
+		protected override ScriptEventResult OnScriptCall(SciterElement element, string methodName, SciterValue[] args)
+		{
+			_logger?.LogTrace("{NameOfMethod}(methodName: \"{MethodName}\")", nameof(OnScriptCall), methodName);
+			return base.OnScriptCall(element, methodName, args);
+		}
+		
 		protected override ScriptEventResult OnScriptCall(SciterElement element, MethodInfo method, SciterValue[] args)
 		{
-			_logger?.LogDebug($"{nameof(OnScriptCall)}: {nameof(method)}: {method.Name}");
+			_logger?.LogTrace("{NameOfMethod}(method: \"{Method}\")", nameof(OnScriptCall), method.Name);
 			return base.OnScriptCall(element, method, args);
 		}
 
@@ -249,13 +215,19 @@ namespace SciterCore.HelloSciter
                 //Host.ConnectToInspector();
             }
 
-			_logger?.LogDebug($"{nameof(OnEvent)}: {nameof(type)}: {type}; {nameof(eventName)}: {eventName}; {nameof(data)}: {data.AsString()}");
+			_logger?.LogTrace(
+				"{NameOfMethod}(sourceElement: {SourceElement}; targetElement: {TargetElement}; type: {Type}; data: {DataString}; eventName: {EventName})",
+				nameof(OnEvent), sourceElement?.Tag, targetElement?.Tag, type, data.AsString(), eventName);
+			
 			return base.OnEvent(sourceElement, targetElement, type, reason, data, eventName);
 		}
 
 		protected override bool OnDataArrived(SciterElement element, SciterBehaviors.DATA_ARRIVED_PARAMS prms)
 		{
-			_logger?.LogDebug($"{nameof(OnDataArrived)}: {nameof(prms)}: {prms.uri}");
+			_logger?.LogTrace(
+				"{NameOfMethod}(element: {Element}; prms: {Params})", nameof(OnDataArrived),
+				element?.Tag, prms);
+			
 			return base.OnDataArrived(element, prms);
 		}
 	}

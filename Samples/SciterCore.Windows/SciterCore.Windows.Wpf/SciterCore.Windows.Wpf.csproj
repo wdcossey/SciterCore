@@ -110,8 +110,8 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="SciterCore.Binaries" Version="4.4.5.9" />
-    <PackageReference Include="SciterCore.PackFolder" Version="0.1.293" />
+    <PackageReference Include="SciterCore.Binaries" Version="4.4.5.10" />
+    <PackageReference Include="SciterCore.PackFolder" Version="0.1.483" />
     <PackageReference Include="System.Runtime.InteropServices.RuntimeInformation" Version="4.3.0" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
   </ItemGroup>

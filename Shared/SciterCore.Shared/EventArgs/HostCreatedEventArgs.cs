@@ -1,9 +1,8 @@
 ﻿namespace SciterCore
 {
-    public struct WindowCreatedEventArgs
+    public struct HostCreatedEventArgs
     {
-
-        internal WindowCreatedEventArgs(SciterWindow window)
+        internal HostCreatedEventArgs(SciterWindow window)
         {
             Window = window;
         }

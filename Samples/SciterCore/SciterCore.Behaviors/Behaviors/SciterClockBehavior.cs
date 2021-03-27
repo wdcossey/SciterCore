@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using SciterCore;
 using SciterCore.Attributes;
 
-namespace SciterTest.NetCore.Behaviors
+namespace SciterCore.Behaviors.Behaviors
 {
     [SciterBehavior("sciter-clock-behavior")]
     public class SciterClockBehavior : SciterEventHandler
@@ -437,7 +436,7 @@ namespace SciterTest.NetCore.Behaviors
                 .SetLineColor(minuteColor)
                 .DrawEllipse(0, 0, 150, 150)
                 .RestoreState();
-            
+
             graphics.RestoreState();
         }
 
