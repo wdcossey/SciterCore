@@ -21,8 +21,10 @@ namespace SciterCore.Windows.Wpf
 
         protected override LoadResult OnLoadData(object sender, LoadDataArgs args)
         {
-            Uri uri = new Uri(args.Uri.AbsolutePath, UriKind.Relative);
+            //Uri uri = new Uri(args.Uri.AbsolutePath, UriKind.RelativeOrAbsolute);
+            Uri uri = args.Uri;
   
+            //var info = Application.GetResourceStream(uri);
             var info = Application.GetContentStream(uri);
 
             info.Stream.Seek(0, System.IO.SeekOrigin.Begin);

@@ -11,9 +11,9 @@ namespace SciterCore.Options
         
         internal string Title { get; set; }
 
-        internal int Width { get; set; }
+        internal int? Width { get; set; }
         
-        internal int Height { get; set; }
+        internal int? Height { get; set; }
         
         internal SciterWindowPosition Position { get; set; }
 

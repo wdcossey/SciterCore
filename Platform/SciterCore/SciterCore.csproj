@@ -26,7 +26,7 @@
     </PropertyGroup>
     <ItemGroup>
       <PackageReference Include="SciterCore.Binaries" Version="(4.4.0.2,)" />
-      <PackageReference Include="SciterCore.PackFolder" Version="0.1.483" />
+      <PackageReference Include="SciterCore.PackFolder" Version="[0.1.*,1.0)" />
       <PackageReference Include="System.Reflection.Emit" Version="4.7.0" />
     </ItemGroup>
     

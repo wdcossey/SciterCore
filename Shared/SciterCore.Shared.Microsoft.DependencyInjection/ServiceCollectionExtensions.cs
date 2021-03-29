@@ -131,7 +131,13 @@ namespace Microsoft.Extensions.DependencyInjection
                     {
                         if (hostOptions?.WindowOptions != null)
                         {
-                            //sciterWindow.SetTitle(hostOptions.WindowOptions?.Title);
+                            if (!string.IsNullOrWhiteSpace(hostOptions.WindowOptions?.Title))
+                                sciterWindow.SetTitle(hostOptions.WindowOptions.Title);
+
+                            if (hostOptions.WindowOptions.Height.HasValue && hostOptions.WindowOptions.Width.HasValue)
+                            {
+                                //sciterWindow.SetDimensions();
+                            }
 
                             switch (hostOptions.WindowOptions.Position)
                             {
@@ -159,7 +165,14 @@ namespace Microsoft.Extensions.DependencyInjection
 
                     //Must load the `Home Page` after setting up the Window and attaching the Hosts' EventHandler
                     if (hostOptions.HomePageUri != null)
-                        result?.Window.TryLoadPage(uri: hostOptions?.HomePageUri);
+                    {
+                        var homePageUri = hostOptions.HomePageUri;
+                        
+                        if (!hostOptions.HomePageUri.IsAbsoluteUri && hostOptions.ArchiveUri != null)
+                            homePageUri = new Uri(hostOptions.ArchiveUri, hostOptions.HomePageUri);
+
+                        result?.Window.TryLoadPage(uri: homePageUri);
+                    }
 
                     //if (!string.IsNullOrWhiteSpace(hostWindow?.HomePage))
                     //    result?.Window.TryLoadPage(uri: new Uri(hostWindow.HomePage));

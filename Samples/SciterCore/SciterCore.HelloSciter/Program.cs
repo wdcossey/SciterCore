@@ -41,11 +41,11 @@ namespace SciterCore.HelloSciter
                 {
                     options
                         .SetArchiveUri("this://app/")
-                        .SetHomePage("this://app/index.html")
+                        .SetHomePage("index.html")
                         .SetWindowOptions<SciterWindow>(windowOptions =>
                         {
                             windowOptions
-                                .SetTitle("SciterCore::Hello")
+                                .SetTitle("SciterCore::Hello1")
                                 .SetDimensions(800, 600)
                                 .SetPosition(SciterWindowPosition.CenterScreen);
                         });

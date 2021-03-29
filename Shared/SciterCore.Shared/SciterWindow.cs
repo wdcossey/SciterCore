@@ -589,7 +589,7 @@ namespace SciterCore
 		
 		#endregion
 
-		#region Dimentions
+		#region Dimensions
 
 		internal int GetMinWidthInternal()
 		{

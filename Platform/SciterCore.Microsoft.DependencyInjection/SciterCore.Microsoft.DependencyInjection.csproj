@@ -22,7 +22,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="SciterCore" Version="0.0.474-alpha" />
+      <PackageReference Include="SciterCore" Version="[0.0-*,1.0)" />
     </ItemGroup>
 
     <ItemGroup Condition=" '$(Configuration)' == 'Debug' ">
