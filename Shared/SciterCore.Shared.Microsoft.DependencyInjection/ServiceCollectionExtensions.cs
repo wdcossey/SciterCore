@@ -21,13 +21,27 @@ namespace Microsoft.Extensions.DependencyInjection
             var hostEventHandlerAttribute =
                 typeof(THost).GetCustomAttributes<SciterHostEventHandlerAttribute>().FirstOrDefault();
 
-            if (hostEventHandlerAttribute != null)
-            {
-                HostEventHandlerRegistry.Instance.TryAdd(typeof(THost),
-                    hostEventHandlerAttribute.EventHandlerType);
+            if (hostEventHandlerAttribute == null) 
+                return services;
 
+            if (HostEventHandlerRegistry.Instance.TryAdd(typeof(THost),
+                hostEventHandlerAttribute.EventHandlerType))
+            {
                 services.Add(ServiceDescriptor.Describe(hostEventHandlerAttribute.EventHandlerType,
                     hostEventHandlerAttribute.EventHandlerType, ServiceLifetime.Transient));
+            }
+
+            return services;
+        }
+        
+        private static IServiceCollection AddHostEventHandler<THost, TPrimaryEventHandler>(this IServiceCollection services)
+            where THost : SciterHost
+            where TPrimaryEventHandler : SciterEventHandler
+        {
+            if (HostEventHandlerRegistry.Instance.TryAdd(typeof(THost), typeof(TPrimaryEventHandler)))
+            {
+                //services.Replace(ServiceDescriptor.Describe(typeof()))
+                services.Add(ServiceDescriptor.Describe(typeof(TPrimaryEventHandler), typeof(TPrimaryEventHandler), ServiceLifetime.Transient));
             }
             return services;
         }
@@ -78,7 +92,10 @@ namespace Microsoft.Extensions.DependencyInjection
             return services;
         }
         
-        public static IServiceCollection AddSciter<TPrimaryHost>(this IServiceCollection services, Action<SciterHostOptions> sciterHostOptions = null)
+        public static IServiceCollection AddSciter<TPrimaryHost>(
+            this IServiceCollection services, 
+            Action<SciterHostOptions> hostOptions = null, 
+            Action<SciterWindowOptions> windowOptions = null)
             where TPrimaryHost : SciterHost
         {
             services
@@ -93,8 +110,9 @@ namespace Microsoft.Extensions.DependencyInjection
                 {
                     var scopedServiceProvider = provider.CreateScope().ServiceProvider;
 
-                    var hostOptions = new SciterHostOptions();
-                    sciterHostOptions?.Invoke(hostOptions);
+                    var sciterHostOptions = new SciterHostOptions();
+                    var sciterWindowOptions = new SciterWindowOptions();
+                    hostOptions?.Invoke(sciterHostOptions);
                     
                     /*THost result;
                     
@@ -113,7 +131,7 @@ namespace Microsoft.Extensions.DependencyInjection
                         result = ActivatorUtilities.CreateInstance<THost>(provider);
                     }*/
                     
-                    if (hostOptions.ArchiveUri != null)
+                    if (sciterHostOptions.ArchiveUri != null)
                         ;
 
                     var result = ActivatorUtilities.CreateInstance<TPrimaryHost>(scopedServiceProvider);
@@ -127,31 +145,31 @@ namespace Microsoft.Extensions.DependencyInjection
 
                     var sciterWindow = hostWindowResolver?.GetWindow(typeof(TPrimaryHost));
 
-                    if (sciterWindow != null)
+                    if (sciterWindow != null && windowOptions != null)
                     {
-                        if (hostOptions?.WindowOptions != null)
-                        {
-                            if (!string.IsNullOrWhiteSpace(hostOptions.WindowOptions?.Title))
-                                sciterWindow.SetTitle(hostOptions.WindowOptions.Title);
-
-                            if (hostOptions.WindowOptions.Height.HasValue && hostOptions.WindowOptions.Width.HasValue)
-                            {
-                                //sciterWindow.SetDimensions();
-                            }
-
-                            switch (hostOptions.WindowOptions.Position)
-                            {
-                                case SciterWindowPosition.CenterScreen:
-                                    sciterWindow.CenterWindow();
-                                    break;
-                                case SciterWindowPosition.Custom:
-                                    break;
-                                case SciterWindowPosition.Default:
-                                default:
-                                    break;;
-                            }
-                        }
+                        windowOptions?.Invoke(sciterWindowOptions);
                         
+                        if (!string.IsNullOrWhiteSpace(sciterWindowOptions?.Title))
+                            sciterWindow.SetTitle(sciterWindowOptions.Title);
+
+                        if (sciterWindowOptions.Height.HasValue && sciterWindowOptions.Width.HasValue)
+                        {
+                            //sciterWindow.SetDimensions();
+                        }
+
+                        switch (sciterWindowOptions.Position)
+                        {
+                            case SciterWindowPosition.CenterScreen:
+                                sciterWindow.CenterWindow();
+                                break;
+                            case SciterWindowPosition.Custom:
+                                break;
+                            case SciterWindowPosition.Default:
+                            default:
+                                break;
+                                ;
+                        }
+
                         result?.SetupWindow(sciterWindow);
                         //result?.Window.TryLoadPage(uri: new Uri("this://app/index.html"));
                     }
@@ -164,12 +182,12 @@ namespace Microsoft.Extensions.DependencyInjection
                         result?.AttachEventHandler(hostEventHandler);
 
                     //Must load the `Home Page` after setting up the Window and attaching the Hosts' EventHandler
-                    if (hostOptions.HomePageUri != null)
+                    if (sciterHostOptions.HomePageUri != null)
                     {
-                        var homePageUri = hostOptions.HomePageUri;
+                        var homePageUri = sciterHostOptions.HomePageUri;
                         
-                        if (!hostOptions.HomePageUri.IsAbsoluteUri && hostOptions.ArchiveUri != null)
-                            homePageUri = new Uri(hostOptions.ArchiveUri, hostOptions.HomePageUri);
+                        if (!sciterHostOptions.HomePageUri.IsAbsoluteUri && sciterHostOptions.ArchiveUri != null)
+                            homePageUri = new Uri(sciterHostOptions.ArchiveUri, sciterHostOptions.HomePageUri);
 
                         result?.Window.TryLoadPage(uri: homePageUri);
                     }
@@ -193,13 +211,12 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         public static IServiceCollection AddSciter<TPrimaryHost, TPrimaryEventHandler>(this IServiceCollection services,
-            Action<SciterHostOptions> sciterHostOptions = null)
+            Action<SciterHostOptions> hostOptions = null, Action<SciterWindowOptions> windowOptions = null)
             where TPrimaryHost : SciterHost
             where TPrimaryEventHandler : SciterEventHandler
         {
-
-            services.AddSciter<TPrimaryHost>(sciterHostOptions);
-            
+            services.AddHostEventHandler<TPrimaryHost, TPrimaryEventHandler>();
+            services.AddSciter<TPrimaryHost>(hostOptions, windowOptions);
             //services.Replace(ServiceDescriptor.Describe(typeof()))
             return services;
         }

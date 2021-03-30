@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using SciterCore.Enums;
 using SciterCore.JS.HelloSciter.Behaviors;
 
 namespace SciterCore.JS.HelloSciter
@@ -29,8 +30,14 @@ namespace SciterCore.JS.HelloSciter
                 })
                 .AddSingleton<IConfiguration>(configuration)
                 .AddSciterBehavior<RuntimeInformationBehavior>()
-                .AddSciter<AppHost>();
-                //.AddSingleton<SciterApplication>();
+                .AddSciter<AppHost, AppEventHandler>(hostOptions =>
+                        hostOptions
+                            .SetArchiveUri("this://app/")
+                            .SetHomePage("index.html"),
+                    windowOptions => windowOptions
+                        .SetPosition(SciterWindowPosition.Default));
+            
+            //.AddSingleton<SciterApplication>();
 
             var serviceProvider = services.BuildServiceProvider();
 

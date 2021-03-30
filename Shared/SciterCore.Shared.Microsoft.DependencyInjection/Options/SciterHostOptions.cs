@@ -13,8 +13,6 @@ namespace SciterCore.Options
         internal Uri HomePageUri { get; set; }
         
         internal Uri ArchiveUri { get; set; }
-        
-        internal SciterWindowOptions WindowOptions { get; set; }
 
         #endregion
         
@@ -57,19 +55,6 @@ namespace SciterCore.Options
         public SciterHostOptions SetArchiveUri(Uri baseUrl)
         {
             ArchiveUri = baseUrl;
-            return this;
-        }
-        
-        public SciterHostOptions SetWindowOptions(Action<SciterWindowOptions> options)
-        {
-            options.Invoke(WindowOptions ?? (WindowOptions = new SciterWindowOptions()));
-            return this;
-        }
-        
-        public SciterHostOptions SetWindowOptions<TWindow>(Action<SciterWindowOptions> options)
-            where TWindow : SciterWindow
-        {
-            options.Invoke(WindowOptions ?? (WindowOptions = new SciterWindowOptions<TWindow>()));
             return this;
         }
         

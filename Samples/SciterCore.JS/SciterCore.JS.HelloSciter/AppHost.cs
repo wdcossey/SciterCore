@@ -14,10 +14,10 @@ using SciterCore.JS.HelloSciter.Behaviors;
 namespace SciterCore.JS.HelloSciter
 {
 	
-	[SciterHostEventHandler(typeof(AppEventHandler))]
-	[SciterHostWindow(null, 800, 600, "SciterCore.JS::NetCore")]
-	[SciterHostArchive]
-	[SciterHostBehaviorHandler(typeof(RuntimeInformationBehavior))]
+	//[SciterHostEventHandler(typeof(AppEventHandler))]
+	//[SciterHostWindow(null, 800, 600, "SciterCore.JS::NetCore")]
+	//[SciterHostArchive]
+	//[SciterHostBehaviorHandler(typeof(RuntimeInformationBehavior))]
 	public class AppHost : SciterArchiveHost
 	{
 		private readonly ILogger<AppHost> _logger;

@@ -13,11 +13,11 @@ using SciterCore.Interop;
 
 namespace SciterCore.HelloSciter
 {
-	[SciterHostEventHandler(typeof(AppEventHandler))]
-	//[SciterHostWindow("this://app/index.html", 800, 600)]
-	[SciterHostWindow("this://app/index.html", 800, 600, "SciterCore::Hello")]
-	[SciterHostArchive]
-	[SciterHostBehaviorHandler(typeof(DragDropBehavior))]
+	//[SciterHostEventHandler(typeof(AppEventHandler))]
+	////[SciterHostWindow("this://app/index.html", 800, 600)]
+	//[SciterHostWindow("this://app/index.html", 800, 600, "SciterCore::Hello")]
+	//[SciterHostArchive]
+	//[SciterHostBehaviorHandler(typeof(DragDropBehavior))]
 	public class AppHost : SciterArchiveHost
 	{
 		private readonly ILogger _logger;

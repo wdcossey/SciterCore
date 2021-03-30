@@ -13,8 +13,9 @@ namespace SciterCore.HelloSciter
         [MTAThread]
         static Task Main(string[] args)
         {
-            AppDomain.CurrentDomain.UnhandledException += (sender, eventArgs) => throw ((Exception) eventArgs.ExceptionObject);
-            
+            AppDomain.CurrentDomain.UnhandledException +=
+                (sender, eventArgs) => throw ((Exception) eventArgs.ExceptionObject);
+
             // Platform specific (required for GTK)
             SciterPlatform.Initialize();
             // Sciter needs this for drag 'n drop support
@@ -37,19 +38,14 @@ namespace SciterCore.HelloSciter
                 //.AddSciterHost<AppHost>()
                 .AddSciterBehavior<DragDropBehavior>()
                 .AddSciterBehavior<SecondBehavior>()
-                .AddSciter<AppHost, AppEventHandler>((options)  =>
-                {
-                    options
-                        .SetArchiveUri("this://app/")
-                        .SetHomePage("index.html")
-                        .SetWindowOptions<SciterWindow>(windowOptions =>
-                        {
-                            windowOptions
-                                .SetTitle("SciterCore::Hello")
-                                .SetDimensions(800, 600)
-                                .SetPosition(SciterWindowPosition.CenterScreen);
-                        });
-                });
+                .AddSciter<AppHost, AppEventHandler>(hostOptions =>
+                        hostOptions
+                            .SetArchiveUri("this://app/")
+                            .SetHomePage("index.html"),
+                    windowOptions => windowOptions
+                        .SetTitle("SciterCore::Hello")
+                        .SetDimensions(800, 600)
+                        .SetPosition(SciterWindowPosition.CenterScreen));
 
             var serviceProvider = services.BuildServiceProvider();
 
