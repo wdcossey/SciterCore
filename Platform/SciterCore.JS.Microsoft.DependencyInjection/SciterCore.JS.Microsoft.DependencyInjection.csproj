@@ -2,6 +2,16 @@
 
     <PropertyGroup>
         <TargetFrameworks>net5.0;netcoreapp2.1;netcoreapp3.1;netstandard2.0;netstandard2.1</TargetFrameworks>
+        <LangVersion>8</LangVersion>
+        <Title>SciterCore.JS.Microsoft.DependencyInjection</Title>
+        <Authors>William D Cossey</Authors>
+        <Description>SciterCore.JS package for .Net applications using Microsoft.Extensions.DependencyInjection</Description>
+        <PackageProjectUrl>https://github.com/wdcossey/SciterCore</PackageProjectUrl>
+        <PackageLicenseUrl>https://www.gnu.org/licenses/gpl-3.0.en.html</PackageLicenseUrl>
+        <PackageIconUrl>https://github.com/wdcossey/SciterCore/raw/master/Assets/sciter_nuget_icon.png</PackageIconUrl>
+        <RepositoryUrl>https://github.com/wdcossey/SciterCore</RepositoryUrl>
+        <PackageTags>Sciter Sciter.JS SciterCore SciterCore.JS SciterSharp WinForms WPF Gtk Xamarin</PackageTags>
+        <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
         <RootNamespace>SciterCore</RootNamespace>
     </PropertyGroup>
 

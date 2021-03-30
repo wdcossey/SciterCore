@@ -5,12 +5,12 @@
         <LangVersion>8</LangVersion>
         <Title>SciterCore</Title>
         <Authors>William D Cossey</Authors>
-        <Description>SciterCore package for .Net Standard/Core applications</Description>
+        <Description>SciterCore package for .Net applications</Description>
         <PackageProjectUrl>https://github.com/wdcossey/SciterCore</PackageProjectUrl>
         <PackageLicenseUrl>https://www.gnu.org/licenses/gpl-3.0.en.html</PackageLicenseUrl>
         <PackageIconUrl>https://github.com/wdcossey/SciterCore/raw/master/Assets/sciter_nuget_icon.png</PackageIconUrl>
         <RepositoryUrl>https://github.com/wdcossey/SciterCore</RepositoryUrl>
-        <PackageTags>Sciter SciterCore SciterSharp WinForms WPF Gtk Xamarin</PackageTags>
+        <PackageTags>Sciter Sciter.JS SciterCore SciterCore.JS SciterSharp WinForms WPF Gtk Xamarin</PackageTags>
         <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
         <RootNamespace>SciterCore</RootNamespace>
         <PackageId>SciterCore</PackageId>

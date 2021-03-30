@@ -45,7 +45,7 @@ namespace SciterCore.HelloSciter
                         .SetWindowOptions<SciterWindow>(windowOptions =>
                         {
                             windowOptions
-                                .SetTitle("SciterCore::Hello1")
+                                .SetTitle("SciterCore::Hello")
                                 .SetDimensions(800, 600)
                                 .SetPosition(SciterWindowPosition.CenterScreen);
                         });
