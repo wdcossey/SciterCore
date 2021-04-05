@@ -308,7 +308,7 @@ namespace SciterCore
 
 					return OnEvent(sourceElement: sourceElement, targetElement: targetElement,
 						eventType: (BehaviorEvents) (int) eventParams.cmd, reason: eventParams.reason,
-						data: new SciterValue(eventParams.data), eventName: eventParams.name);
+						data: SciterValue.Attach(eventParams.data), eventName: eventParams.name);
 				}
 
 				case SciterBehaviors.EVENT_GROUPS.HANDLE_METHOD_CALL:

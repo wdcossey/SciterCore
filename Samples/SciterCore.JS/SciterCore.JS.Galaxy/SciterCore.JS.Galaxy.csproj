@@ -1,0 +1,47 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net5.0</TargetFramework>
+        <RuntimeIdentifiers>win-x86;win-x64;linux-x64</RuntimeIdentifiers>
+        <SciterCorePackDirectory>wwwroot</SciterCorePackDirectory>
+        <SciterCorePackCopyToOutput Condition=" '$(Configuration)' == 'Debug' ">true</SciterCorePackCopyToOutput>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="5.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="5.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="5.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="5.0.0" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="5.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="5.0.0" />
+        <PackageReference Include="SciterCore.JS.Binaries" Version="4.4.6.3-alpha.502" />
+        <PackageReference Include="SciterCore.PackFolder" Version="0.1.483" />
+        <PackageReference Include="System.Text.Json" Version="5.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="wwwroot\**" />
+        <None Update="appsettings.json">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="appsettings.json">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\..\Platform\SciterCore.JS.Microsoft.DependencyInjection\SciterCore.JS.Microsoft.DependencyInjection.csproj" />
+        <ProjectReference Include="..\..\..\Platform\SciterCore.JS\SciterCore.JS.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Folder Include="Behaviors" />
+        <Folder Include="sciter.build" />
+    </ItemGroup>
+
+</Project>

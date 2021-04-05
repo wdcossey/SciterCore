@@ -1,0 +1,40 @@
+﻿<html window-frame="extended" window-blurbehind="none" theme="dark" window-resizable>
+<header role="window-caption">
+
+    <!--<div style="flow:horizontal; height: *">
+        <div style="width: 300dip; background-color: rgba(0, 0, 0, 0.3); height: *"></div>
+        <div style="width: *; background-color: transparent; height: *"></div>
+    </div>-->
+    
+    <ul id="menu-bar"> <!-- top level - menu bar, it must match ul#menu-bar selector, see std-menu.css -->
+        <li><icon .settings></icon>
+            <menu class="cool">
+        <li #menuNewFile accesskey="^N" disabled>New<span class="accesskey">Ctrl+N</span></li>
+        <li #menuOpenFile accesskey="^O">Open<span class="accesskey">Ctrl+O</span></li>
+        <li #menuSaveFile accesskey="^S" disabled>Save<span class="accesskey">Ctrl+S</span></li>
+        <hr/>
+        <li>Recent Files
+            <menu>
+            <li accesskey="^1" >First file...<span class="accesskey">Ctrl+1</span></li>
+            <li accesskey="^2" >Second file...<span class="accesskey">Ctrl+2</span></li>
+            <li accesskey="^3" >Third file...<span class="accesskey">Ctrl+3</span></li>
+            </menu>
+        </li>
+        <hr/>
+        <li accesskey="^4">Settings<span class="accesskey">Ctrl+4</span></li>
+        <hr/>
+        <li #menuExit accesskey="^Q">Exit<span class="accesskey">Ctrl+Q</span></li>
+        </menu>
+        </li>
+    </ul>
+
+    <!--<window-caption role="window-caption">SciterJS - Galaxy</window-caption>-->
+    <window-buttons>
+        <window-button role="window-minimize"></window-button>
+        <window-button role="window-maximize"></window-button>
+        <window-button role="window-close"></window-button>
+    </window-buttons>
+</header>
+<style src="win-frame.css" />
+<include src="index.html" />
+</html>

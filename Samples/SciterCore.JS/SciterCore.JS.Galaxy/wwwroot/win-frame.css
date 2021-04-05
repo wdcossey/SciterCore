@@ -1,0 +1,106 @@
+
+html {
+  var(no-focus): #444f;
+  border: window-frame-width solid transparent;
+}
+
+html:owns-focus {
+  border-color: transparent;
+}
+
+html > header { 
+  width:*; 
+  background-color: transparent;
+}
+
+html:owns-focus > header {
+  
+}
+
+@const TOOLBAR_HEIGHT: 58dip;
+
+html > header > ul#menu-bar { height:45dip; }
+html > header {
+  width:*; 
+  flow:horizontal;
+  margin:0; 
+  overflow: hidden;
+  height: @TOOLBAR_HEIGHT;
+  z-index:1;
+  background-color: color(toolbar-bg-color);
+  position: relative;
+} 
+/*html > header { width:*; flow:horizontal; height:window-caption-height; margin:0; overflow: hidden; } */
+html > header > window-caption { 
+  display:block; 
+  line-height:45dip; 
+  width:*; 
+  padding:0 1em; 
+  color:white; 
+  opacity: 0.75; 
+  text-align: center;
+  text-overflow:ellipsis; 
+  overflow-x:hidden; 
+  text-wrap: none;
+  white-space: nowrap;
+}
+html > header > window-buttons 
+{
+  display:block; 
+  flow:horizontal; 
+  width:max-content; height:*; 
+}
+
+html > header > window-buttons > window-button {
+  cursor: pointer;
+  behavior:clickable; 
+  display:block; 
+  height:35dip; 
+  width:45dip; 
+  foreground-size: 11dip;
+  foreground-repeat: no-repeat;
+  foreground-position:50% 50%;
+  stroke:white;
+  stroke-width:1dip;
+  transition: background-color linear 100ms;
+  background: rgb(6, 6, 7);
+}
+html > header > window-buttons > window-button:hover { 
+  background: rgb(66, 66, 66);
+}
+html > header > window-buttons > window-button[role="window-close"] 
+{ 
+  stroke-width:1.44dip; 
+  foreground-image: url(path:M0 0 L10 10 M10 0 L0 10);
+  border-radius: 0 4dip 4dip 0;
+}
+html > header > window-buttons > window-button[role="window-close"]:hover 
+{ 
+  background: rgb(172, 72, 54); 
+  stroke:#fff; 
+}
+
+html > header > window-buttons > window-button[role="window-maximize"] 
+{ 
+  foreground-image: url(path:M0 0 H10 V10 H0 Z); 
+}
+
+html[window-state="maximized"] 
+{ 
+  border-color:transparent; 
+}
+
+html[window-state="maximized"] > header > window-buttons > window-button[role="window-maximize"] 
+{ 
+  foreground-image: url(path:M0 2 h8 v8 h-8 Z M2 2 v-2 h8 v8 h-2); 
+}
+
+html > header > window-buttons > window-button[role="window-minimize"] 
+{ 
+  foreground-image: url(path:M0 0 M0 5 H10 M10 10);
+  border-radius: 4dip 0 0 4dip;
+}
+
+frame { size:*; background-color: transparent; }
+
+

@@ -1,0 +1,122 @@
+<head>
+    <title>SciterJS Galaxy</title>
+
+
+    <style>
+
+        @import url(scitercore.css);
+        @import url(std-menu.css);
+        
+        a:link { behavior: clickable;  }
+
+        .runtimeInformation {
+            behavior: runtime-info;
+        }
+        
+    </style>
+
+    <script type="module">
+        import * as sciter from "@sciter";
+        import * as env from "@env";
+
+        const $ = sciter.$;
+        const on = sciter.on;
+
+        document.ready = function () {
+            var version = sciter.VERSION;
+            var revision = sciter.REVISION;
+            $("#sciterversion").innerText = `${version} (${revision})`;
+            $("#quickjs-version").innerText = sciter.QUICKJS_VERSION;
+        }
+
+        on("^click", "a[href]", function (evt, hlink) {
+            env.launch(hlink.getAttribute("href"));
+            return true;
+        });
+
+        on("click", "#menuExit", function () {
+            Window.this.close();
+            return true;
+        });
+
+        on("click", "#menuOpenFile", function () {
+            Window.this.selectFile();
+            return true;
+        });
+
+        on("click", "#menuViewRefresh", function () {
+            return true;
+        });
+
+        on("click", "#startCallback", function () {
+
+            $("#cancelCallback").disabled = false;
+            $("#startCallback").disabled = true;
+
+            $("#callbackState").style["color"] = undefined;
+            $("#callbackProgressContainer").style.display = "block";
+            $("#callbackProgress").value = 0;
+            
+
+            const cbs = $('#callbackState');
+            const cbm = $('#callbackMessage');
+            const cbp = $('#callbackProgress');
+
+            Window.this.xcall("CallMeBack",
+                100,
+                function(val, progress) {
+                    cbs.innerText = "Busy";
+                    cbp.value = val;
+                    cbm.innerText = `${progress.toFixed(0)}%`;
+                },
+                function(msg, result) {
+                    cbs.innerText = result ? "Completed" : "Cancelled";
+                    cbs.style["color"] = result ? "lime" : "red";
+                    cbm.innerText = msg;
+                    $("#callbackProgressContainer").style.display = "none";
+                    $("#startCallback").disabled = false;
+                    $("#cancelCallback").disabled = true;
+                }
+            );
+        });
+
+        on("click", "#cancelCallback", function () {
+            Window.this.xcall("CancelCallMeBack");
+        });
+        
+    </script>
+
+    <menu.popup #for-menu-bar/>
+    
+</head>
+<body>
+
+    <main>
+        <section>
+            <div style="flow:horizontal; height: *">
+                <div style="width: 300dip; background-color: rgba(0, 0, 0, 0.3); height: *"></div>
+                <div style="width: *; background-color: transparent; height: *"></div>
+            </div>
+        </section>
+    
+        <footer>
+            <div style=" flow:horizontal; border-spacing:*;height:*; overflow-x: hidden; overflow-y: hidden">
+                <div style="margin-top:*; margin-bottom:*; margin-left: 8dip; display: inline-block; white-space: nowrap; overflow-x: fragments ">
+                    <a #sciterCore href="https://github.com/wdcossey/SciterCore">SciterCore.JS</a>
+                </div>
+    
+                <div style="margin: * 8dip;display: inline-block; white-space: nowrap; overflow-x: fragments">
+                    <a href="https://sciter.com/" style="display: inline-block; white-space: nowrap;">Sciter.JS</a>
+                    <span #sciterversion id="sciterversion"
+                          style="margin:0 auto; display: inline-block; white-space: nowrap;">Version</span> |
+                    <a href="https://bellard.org/quickjs/" style="display: inline-block; white-space: nowrap;">QuickJS</a>
+                    <span #quickjs-version style="margin:0 auto; display: inline-block; white-space: nowrap;">Version</span>
+                    |
+                    <a href="https://icons8.com/">Icons8</a>
+                </div>
+    
+            </div>
+        </footer>
+    </main>
+
+</body>

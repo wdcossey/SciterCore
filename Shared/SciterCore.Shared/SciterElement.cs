@@ -937,7 +937,7 @@ namespace SciterCore
 			get
 			{
 				SciterApi.SciterGetValue(this.Handle, out var val);
-				return new SciterValue(val);
+				return SciterValue.Attach(val);
 			}
 
 			set
@@ -952,7 +952,7 @@ namespace SciterCore
 			get
 			{
 				SciterApi.SciterGetExpando(this.Handle, out var value, true);
-				return new SciterValue(value);
+				return SciterValue.Attach(value);
 			}
 		}
 		
@@ -983,7 +983,7 @@ namespace SciterCore
 
 			var result = SciterApi.SciterCallScriptingMethod(this.Handle, method, args.AsValueArray(), (uint) args.Length, out var returnValue)
 				.IsOk();
-			value = result ? new SciterValue(returnValue) : default;
+			value = result ? SciterValue.Attach(returnValue) : default;
 			return result;
 		}
 
@@ -1012,7 +1012,7 @@ namespace SciterCore
 
 			var result = SciterApi.SciterCallScriptingFunction(this.Handle, function, args.AsValueArray(), (uint) args.Length, out var returnValue)
 				.IsOk();
-			value = result ? new SciterValue(returnValue) : default;
+			value = result ? SciterValue.Attach(returnValue) : default;
 			return result;
 		}
 
@@ -1041,7 +1041,7 @@ namespace SciterCore
 		{
 			var result = SciterApi.SciterEvalElementScript(this.Handle, script, System.Convert.ToUInt32(script.Length), out var returnValue)
 				.IsOk();
-			value = result ? new SciterValue(returnValue) : default;
+			value = result ? SciterValue.Attach(returnValue) : default;
 			return result;
 		}
 		

@@ -11,7 +11,9 @@ namespace SciterCore.WinForms
         [STAThread]
         static void Main()
         {
+            SciterPlatform.Initialize();
             SciterPlatform.EnableDragAndDrop();
+            
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);

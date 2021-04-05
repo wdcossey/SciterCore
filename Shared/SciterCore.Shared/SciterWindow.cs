@@ -16,8 +16,6 @@
 // along with SciterSharp.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
 using System.Diagnostics;
@@ -94,13 +92,7 @@ namespace SciterCore
 
 		public SciterWindow()
 		{
-
-			var allow = SciterXDef.SCRIPT_RUNTIME_FEATURES.ALLOW_EVAL |
-						SciterXDef.SCRIPT_RUNTIME_FEATURES.ALLOW_FILE_IO |
-						SciterXDef.SCRIPT_RUNTIME_FEATURES.ALLOW_SOCKET_IO |
-						SciterXDef.SCRIPT_RUNTIME_FEATURES.ALLOW_SYSINFO;
-
-			SciterApi.SciterSetOption(IntPtr.Zero, SciterXDef.SCITER_RT_OPTIONS.SCITER_SET_SCRIPT_RUNTIME_FEATURES, new IntPtr((int)allow));
+			SciterApi.SciterSetOption(IntPtr.Zero, SciterXDef.SCITER_RT_OPTIONS.SCITER_SET_SCRIPT_RUNTIME_FEATURES, new IntPtr((int)DefaultRuntimeFeatures));
 
 #if WINDOWS || NETCORE
 			WindowDelegateRegistry.Set(this, InternalProcessSciterWindowMessage);
@@ -111,7 +103,7 @@ namespace SciterCore
 		public SciterWindow(IntPtr hwnd, bool weakReference = false)
 		{
 			Handle = hwnd;
-			
+
 			if (!weakReference)
 			{
 #if WINDOWS || NETCORE
@@ -128,7 +120,13 @@ namespace SciterCore
 			SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_RESIZEABLE |
 			SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_CONTROLS |
 			SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_GLASSY;
-
+		
+		public const SciterXDef.SCRIPT_RUNTIME_FEATURES DefaultRuntimeFeatures = 
+			SciterXDef.SCRIPT_RUNTIME_FEATURES.ALLOW_EVAL |
+			SciterXDef.SCRIPT_RUNTIME_FEATURES.ALLOW_FILE_IO |
+			SciterXDef.SCRIPT_RUNTIME_FEATURES.ALLOW_SOCKET_IO |
+			SciterXDef.SCRIPT_RUNTIME_FEATURES.ALLOW_SYSINFO;
+		
 		//
 		/// <summary>
 		/// Creates the Sciter window and returns the native handle
@@ -190,25 +188,29 @@ namespace SciterCore
 		}*/
 
 #if WINDOWS || NETCORE
-		public static SciterWindow CreateChildWindow(IntPtr hwndParent, SciterXDef.SCITER_CREATE_WINDOW_FLAGS flags = SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_CHILD)
+		public static SciterWindow CreateChildWindow(
+			IntPtr hwndParent, 
+			Func<SciterXDef.SCRIPT_RUNTIME_FEATURES> runtimeFeatures = null)
 		{
 			if(PInvokeWindows.IsWindow(hwndParent) == false)
 				throw new ArgumentException("Invalid parent window");
 
 			PInvokeWindows.GetClientRect(hwndParent, out var frame);
 
+			SciterApi.SciterSetOption(IntPtr.Zero, SciterXDef.SCITER_RT_OPTIONS.SCITER_SET_SCRIPT_RUNTIME_FEATURES, new IntPtr((int)(runtimeFeatures?.Invoke() ?? DefaultRuntimeFeatures)));
+			
 #if DEBUG
 			SciterApi.SciterSetOption(IntPtr.Zero, SciterXDef.SCITER_RT_OPTIONS.SCITER_SET_DEBUG_MODE, new IntPtr(1));
 #endif
 
 #if true
-            string wndclass = SciterApi.SciterClassName();
-
+            var wndclass = SciterApi.SciterClassName();
+            
             var childWindowHandle = PInvokeWindows.CreateWindowEx(
-	            (int)(PInvokeWindows.WindowStyles.WS_EX_TRANSPARENT),
+	            (int)(0),
 	            wndclass,
 	            null,
-	            (int)PInvokeWindows.WindowStyles.WS_CHILD,
+	            (int)(PInvokeWindows.WindowStyles.WS_CHILD),
 	            0, 
 	            0, 
 	            frame.Right, 
@@ -220,11 +222,10 @@ namespace SciterCore
 
             return new SciterWindow(childWindowHandle);
             
-            
 			//Hwnd = PInvokeWindows.CreateWindowEx(0, wndclass, null, (int)PInvokeWindows.WindowStyles.WS_CHILD, 0, 0, frame.Right, frame.Bottom, hwnd_parent, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero);
 			//SetSciterOption(SciterXDef.SCITER_RT_OPTIONS.SCITER_SET_DEBUG_MODE, new IntPtr(1));// NO, user should opt for it
 #else
-			Hwnd = _api.SciterCreateWindow(flags, ref frame, _proc, IntPtr.Zero, hwnd_parent);
+			Hwnd = SciterApi.SciterCreateWindow(flags, ref frame, _proc, IntPtr.Zero, hwnd_parent);
 #endif
 		}
 #endif
@@ -626,7 +627,7 @@ namespace SciterCore
 
 			Interop.SciterValue.VALUE vret = new Interop.SciterValue.VALUE();
 			SciterApi.SciterCall(Handle, name, (uint)args.Length, args.AsValueArray(), out vret);
-			return new SciterValue(vret);
+			return SciterValue.Attach(vret);
 		}
 
 		public SciterValue EvalScript(string script)
@@ -636,7 +637,7 @@ namespace SciterCore
 
 			Interop.SciterValue.VALUE vret = new Interop.SciterValue.VALUE();
 			SciterApi.SciterEval(Handle, script, (uint)script.Length, out vret);
-			return new SciterValue(vret);
+			return SciterValue.Attach(vret);
 		}
 
 		/// <summary>

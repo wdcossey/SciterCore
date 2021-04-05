@@ -100,7 +100,7 @@ namespace SciterCore.Interop
                 TargetElement = @params.target.Equals(IntPtr.Zero) ? null : SciterElement.Attach(@params.target),
                 SourceElement = @params.source.Equals(IntPtr.Zero) ? null : SciterElement.Attach(@params.target),
                 Mode = (DragAndDropMode)unchecked((int)@params.mode),
-                Value = new SciterCore.SciterValue(@params.data)
+                Value = SciterCore.SciterValue.Attach(@params.data)
             };
         }
         

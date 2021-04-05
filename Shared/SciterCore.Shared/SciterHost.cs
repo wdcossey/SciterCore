@@ -112,7 +112,7 @@ namespace SciterCore
 
 		public SciterWindow Window { get; internal set; }
 
-		internal SciterHost SetupWindow(IntPtr handle)
+		public SciterHost SetupWindow(IntPtr handle)
 		{
 			if (handle.Equals(IntPtr.Zero))
 				throw new ArgumentOutOfRangeException(nameof(handle), $"Cannot be {nameof(IntPtr.Zero)}.");
@@ -231,7 +231,7 @@ namespace SciterCore
 
 			var result = Api.SciterCall(WindowHandle, functionName, (uint) args.Length, args.AsValueArray(),
 				out var retValue);
-			value = result ? new SciterValue(retValue) : SciterValue.Null;
+			value = result ? SciterValue.Attach(retValue) : SciterValue.Null;
 			return result;
 		}
 
@@ -247,7 +247,7 @@ namespace SciterCore
 			Debug.Assert(script != null);
 
 			var result = Api.SciterEval(WindowHandle, script, (uint) script.Length, out var retValue);
-			value = result ? new SciterValue(retValue) : SciterValue.Null;
+			value = result ? SciterValue.Attach(retValue) : SciterValue.Null;
 			return result;
 		}
 
