@@ -1,0 +1,25 @@
+﻿<Window x:Class="SciterCore.JS.Wpf.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:wpf="clr-namespace:SciterCore.JS.Wpf"
+        mc:Ignorable="d"
+        Title="SciterCore.JS::WPF" Height="450" Width="800">
+    <Grid>
+       <Grid.RowDefinitions>
+           <RowDefinition Height="*"/>
+           <!--<RowDefinition Height="*"/>-->
+       </Grid.RowDefinitions>
+        
+        <wpf:SciterControl Grid.Row="0"  Content="this://app/index.html">
+        
+        </wpf:SciterControl>
+        
+        <!--<sciter:SciterControl Grid.Row="1"  >
+            <sciter:SciterControl.Content>
+                Hello WPF from the &lt;b&gt;Content&lt;/b&gt;.
+            </sciter:SciterControl.Content>
+        </sciter:SciterControl>-->
+    </Grid>
+</Window>

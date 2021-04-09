@@ -52,6 +52,22 @@ namespace SciterCore
 		private static readonly ISciterApi SciterApi = Sciter.SciterApi;
 		private static readonly ISciterWindowWrapper WindowWrapper = SciterWindowWrapper.NativeMethodWrapper.GetInterface();
 
+		#region Events
+		
+		public EventHandler OnShow;
+		
+		public EventHandler<CancelEventArgs> OnClosing;
+		
+		public EventHandler OnClosed;
+		
+		public EventHandler OnDestroy;
+		
+		public EventHandler<WindowLoadPageEventArgs> OnLoadPage;
+		
+		public EventHandler<WindowLoadHtmlEventArgs> OnLoadHtml;
+
+		#endregion
+		
 		private IntPtr _handle;
 
 		/// <summary>
@@ -230,8 +246,11 @@ namespace SciterCore
 		}
 #endif
 
-		public void Destroy() => 
+		public void Destroy()
+		{
+			OnDestroy?.Invoke(this, EventArgs.Empty);
 			WindowWrapper.Destroy(WindowHandle);
+		}
 
 #if WINDOWS || NETCORE
 		public bool ModifyStyle(PInvokeWindows.WindowStyles dwRemove, PInvokeWindows.WindowStyles dwAdd)
@@ -365,8 +384,15 @@ namespace SciterCore
         /// </summary>
         /// <param name="uri">URL or file path of the page</param>
         internal bool TryLoadPageInternal(Uri uri)
-        {
-	        var absoluteUri = uri.AbsoluteUri;
+		{
+			var eventArgs = new WindowLoadPageEventArgs()
+			{
+				PageUri = uri
+			};
+			
+	        OnLoadPage?.Invoke(this, eventArgs);
+		        
+	        var absoluteUri = eventArgs.PageUri.AbsoluteUri;
 
 #if WINDOWS || NETCORE
 	        //TODO: Check why SciterLoadFile() behaves differently in Windows with AbsoluteUri (file:///)
@@ -393,8 +419,16 @@ namespace SciterCore
         /// <param name="baseUrl">Base Url given to the loaded page</param>
         internal bool TryLoadHtmlInternal(string html, string baseUrl = null)
 		{
-			var bytes = Encoding.UTF8.GetBytes(s: html);
-			return SciterApi.SciterLoadHtml(hwnd: Handle, html: bytes, htmlSize: (uint)bytes.Length, baseUrl: baseUrl);
+			var eventArgs = new WindowLoadHtmlEventArgs()
+			{
+				Html = html,
+				BaseUrl = baseUrl
+			};
+			
+			OnLoadHtml?.Invoke(this, eventArgs);
+
+			var bytes = Encoding.UTF8.GetBytes(s: eventArgs.Html);
+			return SciterApi.SciterLoadHtml(hwnd: Handle, html: bytes, htmlSize: (uint)bytes.Length, baseUrl: eventArgs.BaseUrl);
 		}
 
 		public SciterWindow Show(bool show = true)
@@ -413,12 +447,10 @@ namespace SciterCore
 			WindowWrapper.Show(WindowHandle, show);
 #endif
 			
-			OnWindowShow?.Invoke(this, EventArgs.Empty);
+			OnShow?.Invoke(this, EventArgs.Empty);
 			
 			return this;
 		}
-
-		public EventHandler OnWindowShow;
 
 		public void ShowModal() =>
 			WindowWrapper.ShowModal(WindowHandle);
@@ -430,7 +462,7 @@ namespace SciterCore
 		{
 			var args = new CancelEventArgs(false);
 			
-			OnWindowClosing?.Invoke(this, args);
+			OnClosing?.Invoke(this, args);
 			
 			if (args.Cancel)
 				return;
@@ -441,12 +473,8 @@ namespace SciterCore
 			WindowWrapper.Close(WindowHandle);
 #endif
 			
-			OnWindowClosed?.Invoke(this, EventArgs.Empty);
+			OnClosed?.Invoke(this, EventArgs.Empty);
 		}
-		
-		public EventHandler<CancelEventArgs> OnWindowClosing;
-		
-		public EventHandler OnWindowClosed;
 
 		public bool IsVisible
 		{

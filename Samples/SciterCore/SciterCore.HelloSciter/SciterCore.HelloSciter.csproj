@@ -29,6 +29,7 @@
     <PackageReference Include="SciterCore.Binaries" Version="4.4.6.3" />
     <PackageReference Include="SciterCore.Microsoft.DependencyInjection" Version="0.0.504-alpha" />
     <PackageReference Include="SciterCore.PackFolder" Version="0.1.483" />
+    <PackageReference Include="SciterCore.SciterSharp.Utilities" Version="0.0.507-alpha" />
     <PackageReference Include="System.Text.Json" Version="4.7.2" />
   </ItemGroup>
 

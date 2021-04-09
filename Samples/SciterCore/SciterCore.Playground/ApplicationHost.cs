@@ -25,9 +25,8 @@ namespace SciterCore.Playground
 				onFailed: (sciterHost, window) => throw new InvalidOperationException("Unable to load the requested page."));
 
 
-			host.Window.OnWindowShow += (sender, args) =>
+			host.Window.OnShow += (sender, args) =>
 			{
-
 				var treeElement = wnd.RootElement.SelectFirst("widget#tree");
 				treeElement.AttachEventHandler<VirtualTreeBehavior>();
 				

@@ -16,6 +16,7 @@
 // along with SciterSharp.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -23,7 +24,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 using SciterCore.Interop;
-
 #if NETCORE
 	using SciterCore.Internal;
 #endif
@@ -40,7 +40,8 @@ namespace SciterCore
 		private static readonly ISciterApi Api = Sciter.SciterApi;
 
 		private IntPtr _windowHandle;
-			
+		
+		//TODO: Remove this!
 		private readonly Dictionary<string, EventHandlerRegistry> _behaviorMap = new Dictionary<string, EventHandlerRegistry>();
 		
 		internal SciterEventHandler WindowEventHandler;
@@ -51,9 +52,19 @@ namespace SciterCore
 		public static bool InjectLibConsole = true;
 #endif
 		
-		private static readonly SciterArchive ConsoleArchive;
-		
+		protected static readonly HashSet<SciterArchive> AttachedArchives = new HashSet<SciterArchive>();
+
+		#region Events
+
 		public EventHandler<HostCreatedEventArgs> OnCreated;
+		
+		public EventHandler<HostSetupWindowEventArgs> OnSetupWindow;
+		
+		public EventHandler<AttachHandlerEventArgs> OnAttachEventHandler;
+		
+		public EventHandler<DetachHandlerEventArgs> OnDetachEventHandler;
+		
+		#endregion
 		
 
 #if NETCORE
@@ -70,7 +81,7 @@ namespace SciterCore
 		{
 			if (InjectLibConsole)
 			{
-				ConsoleArchive = new SciterArchive("scitersharp:").Open("LibConsole");
+				AttachedArchives.Add(new SciterArchive("scitersharp:").Open("LibConsole"));
 
 				var byteArray = Encoding.UTF8.GetBytes("include \"scitersharp:console.tis\";");
 				var pinnedArray = GCHandle.Alloc(byteArray, GCHandleType.Pinned);
@@ -129,6 +140,9 @@ namespace SciterCore
 			// Register a global event handler for this Sciter window
 			var hostCallbackWrapper = HostCallbackRegistry.Instance.GetOrAdd(this, new HostCallbackWrapper(this));
 			Api.SciterSetCallback(handle, (SciterXDef.SCITER_HOST_CALLBACK) hostCallbackWrapper.CallbackDelegate, IntPtr.Zero);
+			
+			OnSetupWindow?.Invoke(this, new HostSetupWindowEventArgs() { Window = this.Window});
+			
 			return this;
 		}
 
@@ -190,6 +204,7 @@ namespace SciterCore
 
 			eventHandler?.SetHost(result ? this : null);
 
+			OnAttachEventHandler?.Invoke(this, new AttachHandlerEventArgs() {EventHandler = this.WindowEventHandler});
 			return result;
 		}
 
@@ -208,6 +223,8 @@ namespace SciterCore
 		{
 			Debug.Assert(WindowEventHandler != null);
 
+			OnDetachEventHandler?.Invoke(this, new DetachHandlerEventArgs() { EventHandler = this.WindowEventHandler});
+			
 			var result = WindowEventHandler == null ||
 			             Api.SciterWindowDetachEventHandler(WindowHandle, WindowEventHandler.EventProc, IntPtr.Zero)
 				             .IsOk();
@@ -542,13 +559,17 @@ namespace SciterCore
 		{
 			Debug.Assert(WindowHandle != IntPtr.Zero, "Call SciterHost.SetupWindow() first");
 
-			if (InjectLibConsole)
+			foreach (var archive in AttachedArchives)
 			{
-				ConsoleArchive?.GetItem(args.Uri, (result) =>
+				if (archive.TryGetItem(args.Uri,
+					(result) =>
+					{
+						if (result.IsSuccessful)
+							Api.SciterDataReady(WindowHandle, result.Path, result.Data, (uint) result.Size);
+					}))
 				{
-					if (result.IsSuccessful)
-						Api.SciterDataReady(WindowHandle, result.Path, result.Data, (uint) result.Size);
-				});
+					break;
+				}
 			}
 
 			return LoadResult.Ok;

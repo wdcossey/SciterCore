@@ -2,10 +2,9 @@
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
-using System.Windows.Resources;
 using SciterCore.Interop;
 
-namespace SciterCore.Wpf
+namespace SciterCore.JS.Wpf
 {
     public class SciterControl : HwndHost
     {

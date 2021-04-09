@@ -86,6 +86,20 @@ namespace SciterCore
 			return archive?.TryGetItemInternal(uri: uri, data: out data) == true;
 		}
 
+        public static bool TryGetItem(this SciterArchive archive, Uri uri, Action<ArchiveGetItemResult> onGetResult)
+        {
+	        byte[] data = null;
+	        var result = archive?.TryGetItemInternal(uri: uri, data: out data) == true;
+	        onGetResult?.Invoke(new ArchiveGetItemResult(data, uri.GetComponents(UriComponents.Path, UriFormat.SafeUnescaped), result && data != null));
+	        return result;
+        }
+
+        public static bool TryGetItem(this SciterArchive archive, string uriString, Action<ArchiveGetItemResult> onGetResult)
+        {
+	        var actualUri = new Uri(uriString, UriKind.RelativeOrAbsolute);
+	        return TryGetItem(archive: archive, uri: actualUri, onGetResult: onGetResult);
+        }
+
 		#endregion
     }
 }

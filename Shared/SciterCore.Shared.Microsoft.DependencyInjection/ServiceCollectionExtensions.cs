@@ -80,6 +80,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
         #region Public methods
 
+        #region AddSciterBehavior
+        
         public static IServiceCollection AddSciterBehavior<THandler>(this IServiceCollection services)
             where THandler : SciterEventHandler
         {
@@ -88,9 +90,25 @@ namespace Microsoft.Extensions.DependencyInjection
             NamedBehaviorRegistry.Instance.TryAdd(behaviourName, typeof(THandler));
             //BehaviorRegistry.Instance.Add(behaviourName, typeof(THandler));
             
-            services.Add(ServiceDescriptor.Describe(typeof(THandler), typeof(THandler), ServiceLifetime.Transient));
+            services.Add(ServiceDescriptor.Describe(serviceType:typeof(THandler), implementationType: typeof(THandler), lifetime: ServiceLifetime.Transient));
             return services;
         }
+
+        public static IServiceCollection AddSciterBehavior<THandler>(this IServiceCollection services, Func<IServiceProvider, THandler> implementationFactory)
+            where THandler : SciterEventHandler
+        {
+            var behaviourName = typeof(THandler).GetBehaviourName();
+                
+            NamedBehaviorRegistry.Instance.TryAdd(behaviourName, typeof(THandler));
+            //BehaviorRegistry.Instance.Add(behaviourName, typeof(THandler));
+            
+            services.Add(ServiceDescriptor.Describe(serviceType: typeof(THandler), implementationFactory: implementationFactory, lifetime: ServiceLifetime.Transient));
+            return services;
+        }
+
+        #endregion
+        
+        #region AddSciter
         
         public static IServiceCollection AddSciter<TPrimaryHost>(
             this IServiceCollection services, 
@@ -108,10 +126,11 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddTransient<TPrimaryHost>(
                 provider =>
                 {
-                    var scopedServiceProvider = provider.CreateScope().ServiceProvider;
+                    using var scope = provider.CreateScope();
+                    var scopedServiceProvider = scope.ServiceProvider;
 
-                    var sciterHostOptions = new SciterHostOptions();
-                    var sciterWindowOptions = new SciterWindowOptions();
+                    var sciterHostOptions = new SciterHostOptions(scopedServiceProvider);
+                    var sciterWindowOptions = new SciterWindowOptions(scopedServiceProvider);
                     hostOptions?.Invoke(sciterHostOptions);
                     
                     /*THost result;
@@ -186,15 +205,12 @@ namespace Microsoft.Extensions.DependencyInjection
                     {
                         var homePageUri = sciterHostOptions.HomePageUri;
                         
-                        if (!sciterHostOptions.HomePageUri.IsAbsoluteUri && sciterHostOptions.ArchiveUri != null)
+                        if (result is SciterArchiveHost && !sciterHostOptions.HomePageUri.IsAbsoluteUri && sciterHostOptions.ArchiveUri != null)
                             homePageUri = new Uri(sciterHostOptions.ArchiveUri, sciterHostOptions.HomePageUri);
 
                         result?.Window.TryLoadPage(uri: homePageUri);
                     }
-
-                    //if (!string.IsNullOrWhiteSpace(hostWindow?.HomePage))
-                    //    result?.Window.TryLoadPage(uri: new Uri(hostWindow.HomePage));
-
+                    
                     result
                         ?.OnCreated
                         ?.Invoke(result, new HostCreatedEventArgs(sciterWindow));
@@ -217,30 +233,11 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             services.AddHostEventHandler<TPrimaryHost, TPrimaryEventHandler>();
             services.AddSciter<TPrimaryHost>(hostOptions, windowOptions);
-            //services.Replace(ServiceDescriptor.Describe(typeof()))
             return services;
         }
-
-        /*public static IServiceCollection AddSciterWithDefaultHost<TPrimaryEventHandler>(this IServiceCollection services,
-            Action<SciterHostOptions> sciterHostOptions = null)
-            where TPrimaryEventHandler : SciterEventHandler
-        {
-            services.AddSciter<SciterHost>(sciterHostOptions);
-            
-            //services.Replace(ServiceDescriptor.Describe(typeof()))
-            return services;
-        }
-
-        public static IServiceCollection AddSciterWithArchiveHost<TPrimaryEventHandler>(this IServiceCollection services,
-            Action<SciterHostOptions> sciterHostOptions = null)
-            where TPrimaryEventHandler : SciterEventHandler
-        {
-            services.AddSciter<SciterHost>(sciterHostOptions);
-            
-            //services.Replace(ServiceDescriptor.Describe(typeof()))
-            return services;
-        }*/
         
+        #endregion
+
         #endregion
     }
 }

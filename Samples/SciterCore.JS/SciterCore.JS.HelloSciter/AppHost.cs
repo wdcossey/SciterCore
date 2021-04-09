@@ -25,37 +25,6 @@ namespace SciterCore.JS.HelloSciter
 		public AppHost(ILogger<AppHost> logger)
 		{
 			_logger = logger;
-
-			OnCreated += (_, args) =>
-			{
-				args.Window.CenterWindow();
-
-				string indexPage = null;
-
-				if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-					indexPage = "index-win.html";
-
-				if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-					indexPage = "index-lnx.html";
-
-				if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-					indexPage = "index-macos.html";
-
-				if (string.IsNullOrWhiteSpace(indexPage))
-					throw new PlatformNotSupportedException();
-
-#if DEBUG
-				//Used for development/debugging (load file(s) from the disk)
-				var location = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-				var path = Path.Combine(location ?? string.Empty, "wwwroot", indexPage);
-				var uri = new Uri(path, UriKind.Absolute);
-				Debug.Assert(uri.IsFile);
-				Debug.Assert(File.Exists(uri.AbsolutePath));
-#else
-				var uri = new Uri(baseUri: this.Archive.Uri, startPage);
-#endif
-				args.Window.LoadPage(uri);
-			};
 		}
 		
 		protected override LoadResult OnLoadData(object sender, LoadDataArgs args)
