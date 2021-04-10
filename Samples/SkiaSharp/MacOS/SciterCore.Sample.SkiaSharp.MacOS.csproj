@@ -100,7 +100,7 @@
     <InterfaceDefinition Include="MainMenu.xib" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="SciterCore.Binaries" Version="4.4.6.3" />
+    <PackageReference Include="SciterCore.Binaries" Version="4.4.6.6" />
     <PackageReference Include="SciterCore.PackFolder" Version="0.1.483" />
     <PackageReference Include="SkiaSharp" Version="1.68.1.1" />
     <PackageReference Include="System.Buffers" Version="4.4.0" />

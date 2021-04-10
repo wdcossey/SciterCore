@@ -183,7 +183,7 @@ card > cardcontent.has-exception
     padding: 8dip;
     border-radius: 2dip;
     box-shadow: inset 0 1px 4px 0 rgba(0,0,0,.14);
-    behavior:htmlarea;
+    behavior:selectable; /* htmlarea with Sciter.JS < 4.4.6.4 */
 }
 
 card > cardcontent.has-exception span

@@ -821,8 +821,11 @@ namespace SciterCore.Interop
 				public SciterXDom.SCDOM_RESULT SciterSelectParentW(IntPtr he, string selector, uint depth, out IntPtr heFound) => 
 					_sciterSelectParentW(he, selector, depth, out heFound);
 
-				public SciterXDom.SCDOM_RESULT SciterSetElementHtml(IntPtr he, byte[] html, uint htmlLength, SciterXDom.SET_ELEMENT_HTML where) => 
-					_sciterSetElementHtml(he, html, htmlLength, where);
+				public SciterXDom.SCDOM_RESULT SciterSetElementHtml(IntPtr he, byte[] html, uint htmlLength, SetElementHtml where)
+				{
+					var value = (SciterXDom.SET_ELEMENT_HTML)System.Convert.ToUInt32(where);
+					return _sciterSetElementHtml(he, html, htmlLength, value);
+				}
 
 				public SciterXDom.SCDOM_RESULT SciterGetElementUID(IntPtr he, out uint puid) => 
 					_sciterGetElementUID(he, out puid);

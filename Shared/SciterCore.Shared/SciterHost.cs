@@ -404,6 +404,7 @@ namespace SciterCore
 #endif
 		
 		//TODO: Remove this!
+		[Obsolete("This method is obsolete")]
 		internal void RegisterBehaviorHandlerInternal(Type eventHandlerType, string behaviorName = null)
 		{
 			var entry = new EventHandlerRegistry(type: eventHandlerType, name: behaviorName);
@@ -411,6 +412,7 @@ namespace SciterCore
 		}
 
 		//TODO: Remove this!
+		[Obsolete("This method is obsolete")]
 		internal void RegisterBehaviorHandlerInternal<TType>(string behaviorName = null)
 			where TType : SciterEventHandler
 		{
@@ -419,6 +421,7 @@ namespace SciterCore
 		}
 
 		//TODO: Remove this!
+		[Obsolete("This method is obsolete")]
 		internal void RegisterBehaviorHandlerInternal<THandler>(THandler eventHandler, string behaviorName = null)
 			where THandler : SciterEventHandler
 		{
@@ -427,6 +430,7 @@ namespace SciterCore
 		}
 
 		//TODO: Remove this!
+		[Obsolete("This method is obsolete")]
 		public void RegisterBehaviorHandlerInternal<THandler>(Func<THandler> eventHandlerFunc,
 			string behaviorName = null)
 			where THandler : SciterEventHandler

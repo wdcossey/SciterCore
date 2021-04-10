@@ -19,7 +19,7 @@
       <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
       <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="5.0.0" />
       <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="5.0.0" />
-      <PackageReference Include="SciterCore.Binaries" Version="4.4.6.3" />
+      <PackageReference Include="SciterCore.Binaries" Version="4.4.6.6" />
       <PackageReference Include="SciterCore.PackFolder" Version="0.1.483" />
       <PackageReference Include="SkiaSharp" Version="2.80.2" />
     </ItemGroup>

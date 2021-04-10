@@ -132,7 +132,7 @@ namespace SciterCore.Interop
 		// alias BOOL function(HELEMENT he, LPVOID param) SciterElementCallback;
 		public delegate bool SCITER_ELEMENT_CALLBACK(IntPtr he, IntPtr param);
 
-		public enum SET_ELEMENT_HTML : uint
+		internal enum SET_ELEMENT_HTML : uint
 		{
 			SIH_REPLACE_CONTENT = 0,
 			SIH_INSERT_AT_START = 1,
@@ -148,7 +148,7 @@ namespace SciterCore.Interop
 
 
 		[Flags]
-		public enum ELEMENT_STATE_BITS : ulong
+		internal enum ELEMENT_STATE_BITS : ulong
 		{
 			STATE_LINK             = 0x00000001,
 			STATE_HOVER            = 0x00000002,

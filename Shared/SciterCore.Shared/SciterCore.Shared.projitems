@@ -27,7 +27,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Enums\DrawEvent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\DrawPathMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\ElementArea.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Enums\ElementHtmlReplacement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\ElementState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\EventGroups.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\ExchangeEvent.cs" />
@@ -49,6 +48,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Enums\ScrollbarPart.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\ScrollEvents.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\ScrollSource.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Enums\SetElementHtml.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\StringConversionType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EventArgs\ArchiveGetItemResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EventArgs\DataLoadedArgs.cs" />

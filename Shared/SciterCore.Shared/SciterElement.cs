@@ -128,16 +128,16 @@ namespace SciterCore
 			return result;
 		}
 
-		internal void SetHtmlInternal(string html, SciterXDom.SET_ELEMENT_HTML where = SciterXDom.SET_ELEMENT_HTML.SIH_REPLACE_CONTENT)
+		internal void SetHtmlInternal(string html, SetElementHtml where = SetElementHtml.ReplaceContent)
 		{
 			TrySetHtmlInternal(html: html, where: where);
 		}
 
-		internal bool TrySetHtmlInternal(string html, SciterXDom.SET_ELEMENT_HTML where = SciterXDom.SET_ELEMENT_HTML.SIH_REPLACE_CONTENT)
+		internal bool TrySetHtmlInternal(string html, SetElementHtml where = SetElementHtml.ReplaceContent)
 		{
 			if (html == null)
 				return ClearTextInternal();
-
+			
 			var data = Encoding.UTF8.GetBytes(html);
 			return SciterApi.SciterSetElementHtml(this.Handle, data, (uint) data.Length, where)
 				.IsOk();
@@ -782,15 +782,13 @@ namespace SciterCore
 				.IsOk();
 		}
 
-		internal bool TransformHtmlInternal(string html, ElementHtmlReplacement replacement = ElementHtmlReplacement.ReplaceContent)
+		internal bool TransformHtmlInternal(string html, SetElementHtml replacement = SetElementHtml.ReplaceContent)
 		{
-			var value = (SciterXDom.SET_ELEMENT_HTML)System.Convert.ToUInt32(replacement);
-			
 			var bytes = Encoding.UTF8.GetBytes(html);
-			return TransformHtmlInternal(bytes: bytes, replacement: value);
+			return TransformHtmlInternal(bytes: bytes, replacement: replacement);
 		}
 
-		internal bool TransformHtmlInternal(byte[] bytes, SciterXDom.SET_ELEMENT_HTML replacement = SciterXDom.SET_ELEMENT_HTML.SIH_REPLACE_CONTENT)
+		internal bool TransformHtmlInternal(byte[] bytes, SetElementHtml replacement = SetElementHtml.ReplaceContent)
 		{
 			return SciterApi.SciterSetElementHtml(this.Handle, bytes, (uint) bytes.Length, replacement)
 				.IsOk();

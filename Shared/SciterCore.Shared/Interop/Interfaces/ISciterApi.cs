@@ -118,7 +118,7 @@ namespace SciterCore.Interop
 		SciterXDom.SCDOM_RESULT SciterSelectParentW(IntPtr he, string selector, uint depth, out IntPtr heFound);
 
 		SciterXDom.SCDOM_RESULT SciterSetElementHtml(IntPtr he, byte[] html, uint htmlLength,
-			SciterXDom.SET_ELEMENT_HTML where);
+			SetElementHtml where);
 
 		SciterXDom.SCDOM_RESULT SciterGetElementUID(IntPtr he, out uint puid);
 		SciterXDom.SCDOM_RESULT SciterGetElementByUID(IntPtr hwnd, uint uid, out IntPtr phe);

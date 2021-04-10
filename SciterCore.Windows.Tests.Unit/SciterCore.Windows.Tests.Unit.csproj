@@ -76,7 +76,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="NUnit" Version="3.13.1" />
-    <PackageReference Include="SciterCore.Binaries" Version="4.4.6.3" />
+    <PackageReference Include="SciterCore.Binaries" Version="4.4.6.6" />
     <PackageReference Include="SciterCore.PackFolder" Version="0.1.483" />
     <PackageReference Include="xunit.abstractions" Version="2.0.3" />
     <PackageReference Include="xunit.assert" Version="2.4.1" />

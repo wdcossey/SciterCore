@@ -146,12 +146,14 @@ namespace SciterCore
         
         #region Behavior Factory
 		
+        [Obsolete("This method is obsolete")]
         public static SciterHost RegisterBehaviorHandler(this SciterHost host, Type eventHandlerType, string behaviorName = null)
         {
             host?.RegisterBehaviorHandlerInternal(eventHandlerType: eventHandlerType, behaviorName: behaviorName);
             return host;
         }
 
+        [Obsolete("This method is obsolete")]
         public static SciterHost RegisterBehaviorHandler<TType>(this SciterHost host, string behaviorName = null)
             where TType : SciterEventHandler
         {
@@ -159,6 +161,7 @@ namespace SciterCore
             return host;
         }
 
+        [Obsolete("This method is obsolete")]
         public static SciterHost RegisterBehaviorHandler<THandler>(this SciterHost host, THandler eventHandler, string behaviorName = null)
             where THandler : SciterEventHandler
         {
@@ -166,6 +169,7 @@ namespace SciterCore
             return host;
         }
 
+        [Obsolete("This method is obsolete")]
         public static SciterHost RegisterBehaviorHandler<THandler>(this SciterHost host, Func<THandler> eventHandlerFunc, string behaviorName = null)
             where THandler : SciterEventHandler
         {
