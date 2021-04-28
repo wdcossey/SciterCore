@@ -12,7 +12,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="SciterCore.Binaries" Version="4.4.6.6" />
+      <PackageReference Include="SciterCore.Binaries" Version="4.4.7" />
       <PackageReference Include="SciterCore.PackFolder" Version="0.1.483" />
     </ItemGroup>
 

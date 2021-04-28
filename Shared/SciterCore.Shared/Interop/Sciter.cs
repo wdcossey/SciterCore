@@ -17,6 +17,7 @@ namespace SciterCore.Interop
 {
 	public static partial class Sciter
 	{
+		private static readonly Version UnifiedApiVersion = new Version(4, 4, 7, 0);
 		private static readonly object SciterApiLock = new object();
 		private static readonly object SciterGraphicsApiLock = new object();
 		private static readonly object SciterRequestApiLock = new object();
@@ -271,8 +272,9 @@ namespace SciterCore.Interop
 					fieldInfoDictionary = fieldInfoDictionary
 						.Where(w => 
 							w.GetCustomAttribute<SciterApiOSPlatformAttribute>() == null || 
-							w.GetCustomAttribute<SciterApiOSPlatformAttribute>().Platform == sciterOS);
-
+							w.GetCustomAttribute<SciterApiOSPlatformAttribute>().Platform == sciterOS ||
+							version.CompareTo(UnifiedApiVersion) >= 0);
+					
 					fieldInfoDictionary = fieldInfoDictionary
 						.Where(w => 
 							w.GetCustomAttribute<SciterApiMinVersionAttribute>() == null || 
@@ -569,6 +571,7 @@ namespace SciterCore.Interop
 					var fieldInfos = @struct.GetType().GetFields();
 					foreach (var fieldInfo in fieldInfos)
 					{
+						System.Console.WriteLine(fieldInfo.Name);
 						if (!fieldInfoDictionary.ContainsKey(fieldInfo.Name))
 							continue;
 						fieldInfoDictionary[fieldInfo.Name].SetValue(this, fieldInfo.GetValue(@struct));

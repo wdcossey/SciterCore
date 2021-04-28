@@ -137,7 +137,7 @@ card {
     width: 1*;
     margin-bottom: 16dip;
     border: var(card-bd-width, 1dip) solid color(card-bd-color);
-    border-radius: 4dip;
+    border-radius: 0dip;
     //color: white;
     //background-color: rgba(36, 49, 64, 1);
     background-color: color(card-bg-color);
@@ -181,7 +181,8 @@ card > cardcontent.has-exception
 {
     background-color: color(main-bg-color);
     padding: 8dip;
-    border-radius: 2dip;
+    border-radius: 0dip;
+    border: var(card-bd-width, 1dip) solid morph(color(card-bd-color), opacity: 85%);
     box-shadow: inset 0 1px 4px 0 rgba(0,0,0,.14);
     behavior:selectable; /* htmlarea with Sciter.JS < 4.4.6.4 */
 }
@@ -219,6 +220,12 @@ cardfooter {
     margin-top: 16dip;
 }
 
+cardfooter > hr {
+    width: 1*;
+    margin: -8dip -17dip 8dip -16dip;
+    border-color: color(card-bd-color);
+}
+
 progress.custom-progress {
     border:none;
     border-radius:2dip;
@@ -235,7 +242,7 @@ button.action-button {
     cursor: pointer;
     font-size: 14dip;
     font-weight: 400;
-    border-radius:3dip;
+    border-radius:0dip;
     border: none;
     background: transparent;
     color: white;

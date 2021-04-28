@@ -26,7 +26,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.11" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="3.1.11" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="3.1.11" />
-    <PackageReference Include="SciterCore.Binaries" Version="4.4.6.6" />
+    <PackageReference Include="SciterCore.Binaries" Version="4.4.7" />
     <PackageReference Include="SciterCore.PackFolder" Version="0.1.483" />
     <PackageReference Include="System.Text.Json" Version="4.7.2" />
   </ItemGroup>
