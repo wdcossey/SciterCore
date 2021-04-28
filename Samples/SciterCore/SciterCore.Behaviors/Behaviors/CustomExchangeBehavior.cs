@@ -1,14 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using SciterCore;
 using SciterCore.Attributes;
-using SciterCore.Interop;
-using SciterGraphics = SciterCore.SciterGraphics;
-using SciterValue = SciterCore.SciterValue;
 
-namespace SciterTest.NetCore.Behaviors
+namespace SciterCore.Behaviors.Behaviors
 {
 	[SciterBehavior("custom-exchange")]
 	public class CustomExchangeBehavior : SciterEventHandler

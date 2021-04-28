@@ -69,7 +69,7 @@ namespace SciterCore.Interop
                 Event = (KeyEvent)unchecked((int)@params.cmd),
                 KeyboardState = (KeyboardStates)unchecked((int)@params.alt_state),
                 KeyCode = unchecked((int)@params.key_code),
-                TargetElement = @params.target.Equals(IntPtr.Zero) ? null : new SciterElement(@params.target)
+                TargetElement = @params.target.Equals(IntPtr.Zero) ? null : SciterElement.Attach(@params.target)
             };
         }
         
@@ -81,11 +81,11 @@ namespace SciterCore.Interop
                 Cursor = (CursorType)unchecked((int)@params.cursor_type),
                 ButtonState = (MouseButton)unchecked((int)@params.button_state),
                 DragMode = (DraggingMode)unchecked((int)@params.dragging_mode),
-                DragTarget = @params.dragging.Equals(IntPtr.Zero) ? null : new SciterElement(@params.dragging),
+                DragTarget = @params.dragging.Equals(IntPtr.Zero) ? null : SciterElement.Attach(@params.dragging),
                 ElementPosition = new SciterPoint(@params.pos.X, @params.pos.Y),
                 ViewPosition = new SciterPoint(@params.pos_view.X, @params.pos_view.Y),
                 KeyboardState = (KeyboardStates)unchecked((int)@params.alt_state),
-                TargetElement = @params.target.Equals(IntPtr.Zero) ? null : new SciterElement(@params.target),
+                TargetElement = @params.target.Equals(IntPtr.Zero) ? null : SciterElement.Attach(@params.target),
                 IsOverIcon = @params.is_on_icon
             };
         }
@@ -97,10 +97,10 @@ namespace SciterCore.Interop
                 Event = (ExchangeEvent)unchecked((int)@params.cmd),
                 ElementPosition = new SciterPoint(@params.pos.X, @params.pos.Y),
                 ViewPosition = new SciterPoint(@params.pos_view.X, @params.pos_view.Y),
-                TargetElement = @params.target.Equals(IntPtr.Zero) ? null : new SciterElement(@params.target),
-                SourceElement = @params.source.Equals(IntPtr.Zero) ? null : new SciterElement(@params.target),
+                TargetElement = @params.target.Equals(IntPtr.Zero) ? null : SciterElement.Attach(@params.target),
+                SourceElement = @params.source.Equals(IntPtr.Zero) ? null : SciterElement.Attach(@params.target),
                 Mode = (DragAndDropMode)unchecked((int)@params.mode),
-                Value = new SciterCore.SciterValue(@params.data)
+                Value = SciterCore.SciterValue.Attach(@params.data)
             };
         }
         
@@ -109,7 +109,7 @@ namespace SciterCore.Interop
             return new ScrollEventArgs
             {
                 Event = (ScrollEvents)unchecked((int)@params.cmd),
-                TargetElement = @params.target.Equals(IntPtr.Zero) ? null : new SciterElement(@params.target),
+                TargetElement = @params.target.Equals(IntPtr.Zero) ? null : SciterElement.Attach(@params.target),
                 Position = @params.pos,
                 Source = (ScrollSource)unchecked((int)@params.source),
                 IsVertical = @params.vertical,
@@ -122,7 +122,7 @@ namespace SciterCore.Interop
             return new FocusArgs
             {
                 Event = (FocusEvents)unchecked((int)@params.cmd),
-                TargetElement = @params.target.Equals(IntPtr.Zero) ? null : new SciterElement(@params.target),
+                TargetElement = @params.target.Equals(IntPtr.Zero) ? null : SciterElement.Attach(@params.target),
                 Cancel = @params.cancel,
                 IsMouseClick = @params.by_mouse_click
             };
@@ -133,7 +133,7 @@ namespace SciterCore.Interop
             return new GestureArgs
             {
                 Event = (GestureEvent)unchecked((int)@params.cmd),
-                TargetElement = @params.target.Equals(IntPtr.Zero) ? null : new SciterElement(@params.target),
+                TargetElement = @params.target.Equals(IntPtr.Zero) ? null : SciterElement.Attach(@params.target),
                 Flags = unchecked((int)@params.flags),
                 DeltaTime = unchecked((int)@params.delta_time),
                 DeltaV = @params.delta_v,

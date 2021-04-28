@@ -608,7 +608,7 @@ namespace SciterCore.Interop
 					var ptr = IntPtr.Add(prms.argv,
 						i * Marshal.SizeOf(typeof(SciterValue.VALUE)));
 
-					args[i] = new SciterCore.SciterValue(Marshal.PtrToStructure<SciterValue.VALUE>(ptr));
+					args[i] = SciterCore.SciterValue.Attach(Marshal.PtrToStructure<SciterValue.VALUE>(ptr));
 				}
 			}
 

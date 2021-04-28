@@ -9,24 +9,27 @@ namespace SciterCore.Attributes
     public class SciterHostWindowAttribute : Attribute
     {
         public string HomePage { get; }
+        
         public int? Width { get; }
+        
         public int? Height { get; }
+        
         public string Title { get; }
-        public Type Type { get; }
+        
+        public Type WindowType { get; }
 
         public SciterHostWindowAttribute(Type type, string homePage = null)
         {
             HomePage = homePage;
-            Type = type.Validate<SciterWindow>();
+            WindowType = type.Validate<SciterWindow>();
         }
 
-        public SciterHostWindowAttribute(string homePage, int width, int height, string title)
+        public SciterHostWindowAttribute(string homePage = null, int width = 800, int height = 600, string title = null)
         {
             HomePage = homePage;
             Width = width;
             Height = height;
             Title = title;
-            Type = typeof(SciterWindow);
         }
         
     }

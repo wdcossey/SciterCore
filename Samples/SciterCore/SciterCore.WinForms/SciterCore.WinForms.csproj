@@ -2,9 +2,10 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
     <RootNamespace>SciterCore.WinForms</RootNamespace>
+    <LangVersion>default</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -22,9 +23,14 @@
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="SciterCore.Binaries" Version="4.4.5.9" />
+    <PackageReference Include="SciterCore.Binaries" Version="4.4.7" />
+    <PackageReference Include="SciterCore.PackFolder" Version="0.1.483" />
+    <PackageReference Include="SciterCore.SciterSharp.Utilities" Version="0.0.507-alpha" />
   </ItemGroup>
-
-  <Import Project="$(SolutionDir)Shared\SciterCore.Shared\SciterCore.Shared.projitems" Label="Shared" Condition="Exists('$(SolutionDir)Shared\SciterCore.Shared\SciterCore.Shared.projitems')" />
-
+  
+  <ItemGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <ProjectReference Include="..\..\..\Platform\SciterCore\SciterCore.csproj" />
+    <ProjectReference Include="..\..\..\Platform\SciterCore.SciterSharp.Utilities\SciterCore.SciterSharp.Utilities.csproj" />
+  </ItemGroup>
+  
 </Project>

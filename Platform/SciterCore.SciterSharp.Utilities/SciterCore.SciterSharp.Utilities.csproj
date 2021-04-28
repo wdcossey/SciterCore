@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <SciterCoreResourceName>LibConsole</SciterCoreResourceName>
+        <SciterCorePackFileName>SciterSharp.Console</SciterCorePackFileName>
+        <TargetFrameworks>net5.0;netcoreapp2.1;netcoreapp3.1;netstandard2.0;netstandard2.1</TargetFrameworks>
+        <LangVersion>8</LangVersion>
+        <Title>SciterSharp.Console</Title>
+        <Authors>Ramon Mendes, William D Cossey</Authors>
+        <Description>This package includes SciterSharp.Console and SciterSharp.Utils for extending TIScript</Description>
+        <PackageProjectUrl>https://github.com/wdcossey/SciterCore</PackageProjectUrl>
+        <PackageLicenseUrl>https://www.gnu.org/licenses/gpl-3.0.en.html</PackageLicenseUrl>
+        <PackageIconUrl>https://github.com/wdcossey/SciterCore/raw/master/Assets/sciter_nuget_icon.png</PackageIconUrl>
+        <RepositoryUrl>https://github.com/ramon-mendes/SciterSharp</RepositoryUrl>
+        <PackageTags>Sciter SciterCore SciterSharp WinForms WPF Gtk Xamarin</PackageTags>
+        <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+        <RootNamespace>SciterCore</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <!--<PackageReference Include="SciterCore" Version="[0.0-*,1.0)" />-->
+      <PackageReference Include="SciterCore.PackFolder" Version="[0.1.*,1.0)" />
+    </ItemGroup>
+
+    <ItemGroup Condition=" '$(Configuration)' == 'Debug' ">
+      <ProjectReference Include="..\SciterCore\SciterCore.csproj" />
+    </ItemGroup>
+
+</Project>

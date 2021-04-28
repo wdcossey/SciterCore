@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>8F3F1616-16D8-4ABC-91DA-017EB8964337</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>SciterCore.Shared.Microsoft.DependencyInjection</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Enums\SciterWindowPosition.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Internal\HostEventHandlerRegistry.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Internal\HostWindowRegistry.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Internal\HostWindowResolver.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Internal\NamedBehaviorRegistry.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Internal\NamedBehaviorResolver.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Options\SciterHostOptions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Options\SciterWindowOptions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ServiceCollectionExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ServiceProviderExtensions.cs" />
+  </ItemGroup>
+</Project>

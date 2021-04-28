@@ -74,14 +74,14 @@ namespace SciterCore.Interop
 			
 			public readonly SciterApiDelegates.SciterSetHomeUrl SciterSetHomeURL;
 			
-			[SciterApiOSPlatformAttribute(SciterOSPlatform.Windows)]
-			public readonly SciterApiDelegates.SciterCreateWindow SciterCreateWindow;
-			
 			[SciterApiOSPlatformAttribute(SciterOSPlatform.MacOS)]
 			public readonly SciterApiDelegates.SciterCreateNsView SciterCreateNSView;
 			
 			[SciterApiOSPlatformAttribute(SciterOSPlatform.Linux)]
 			public readonly SciterApiDelegates.SciterCreateWidget SciterCreateWidget;
+			
+			[SciterApiOSPlatformAttribute(SciterOSPlatform.Windows)]
+			public readonly SciterApiDelegates.SciterCreateWindow SciterCreateWindow;
 
 			public readonly SciterApiDelegates.SciterSetupDebugOutput SciterSetupDebugOutput;
 

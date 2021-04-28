@@ -1,4 +1,6 @@
-﻿namespace SciterCore.WinForms
+﻿using System.Windows.Forms;
+
+namespace SciterCore.WinForms
 {
     partial class Form1
     {

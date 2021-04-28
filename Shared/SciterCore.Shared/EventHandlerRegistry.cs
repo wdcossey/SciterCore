@@ -3,12 +3,11 @@ using SciterCore.Extensions;
 
 namespace SciterCore
 {
-    internal readonly struct EventHandlerRegistry
+    internal class EventHandlerRegistry
     {
         private readonly SciterEventHandler _eventHandler;
 
         private EventHandlerRegistry(string name)
-            : this()
         {
             Name = name;
         }
@@ -38,7 +37,6 @@ namespace SciterCore
             
             _eventHandler.SetHost(host);
             return _eventHandler;
-
         }
     }
 }

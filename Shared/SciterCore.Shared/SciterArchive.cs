@@ -179,10 +179,15 @@ namespace SciterCore
 			
 			return true;
 		}
-
         
+        internal bool TryGetItemInternal(string uriString, out byte[] data)
+        {
+	        var uri = new Uri(uriString, UriKind.RelativeOrAbsolute);
+	        var actualUri = uri.IsAbsoluteUri ? uri : new Uri(this.Uri, uri);
+	        return TryGetItemInternal(actualUri, out data);
+		}
 
-		#endregion
+        #endregion
 
         #region Private Methods
 

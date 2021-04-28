@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFrameworks>net5.0;netcoreapp2.1;netcoreapp3.1;netstandard2.0;netstandard2.1</TargetFrameworks>
+        <LangVersion>8</LangVersion>
+        <Title>SciterCore.JS.Microsoft.DependencyInjection</Title>
+        <Authors>William D Cossey</Authors>
+        <Description>SciterCore.JS package for .Net applications using Microsoft.Extensions.DependencyInjection</Description>
+        <PackageProjectUrl>https://github.com/wdcossey/SciterCore</PackageProjectUrl>
+        <PackageLicenseUrl>https://www.gnu.org/licenses/gpl-3.0.en.html</PackageLicenseUrl>
+        <PackageIconUrl>https://github.com/wdcossey/SciterCore/raw/master/Assets/sciter_nuget_icon.png</PackageIconUrl>
+        <RepositoryUrl>https://github.com/wdcossey/SciterCore</RepositoryUrl>
+        <PackageTags>Sciter Sciter.JS SciterCore SciterCore.JS SciterSharp WinForms WPF Gtk Xamarin</PackageTags>
+        <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+        <RootNamespace>SciterCore</RootNamespace>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+      <DefineConstants>TRACE;NETCORE;SCITER_JS</DefineConstants>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+      <DefineConstants>TRACE;NETCORE;SCITER_JS</DefineConstants>
+    </PropertyGroup>
+    
+    <ItemGroup Condition=" '$(TargetFramework)' == 'net5.0' ">
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.0" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1' or '$(TargetFramework)' == 'netstandard2.0'  or '$(TargetFramework)' == 'netstandard2.1' ">
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="SciterCore.JS" Version="[0.0-*,1.0)" />
+    </ItemGroup>
+
+    <ItemGroup Condition=" '$(Configuration)' == 'Debug' ">
+      <ProjectReference Include="..\SciterCore.JS\SciterCore.JS.csproj" />
+    </ItemGroup>
+
+    <Import Project="..\..\Shared\SciterCore.Shared.Microsoft.DependencyInjection\SciterCore.Shared.Microsoft.DependencyInjection.projitems" Label="Shared" />
+    
+</Project>

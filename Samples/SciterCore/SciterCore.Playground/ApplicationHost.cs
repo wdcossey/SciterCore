@@ -5,8 +5,7 @@ using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SciterCore.Interop;
-using SciterTest.NetCore;
-using SciterTest.NetCore.Behaviors;
+using SciterCore.Playground.Behaviors;
 
 namespace SciterCore.Playground
 {
@@ -26,9 +25,8 @@ namespace SciterCore.Playground
 				onFailed: (sciterHost, window) => throw new InvalidOperationException("Unable to load the requested page."));
 
 
-			host.Window.OnWindowShow += (sender, args) =>
+			host.Window.OnShow += (sender, args) =>
 			{
-
 				var treeElement = wnd.RootElement.SelectFirst("widget#tree");
 				treeElement.AttachEventHandler<VirtualTreeBehavior>();
 				

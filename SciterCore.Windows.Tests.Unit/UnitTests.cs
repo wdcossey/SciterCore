@@ -15,7 +15,7 @@ namespace SciterCore.Windows.Tests.Unit
 		public void TestSciterElement()
 		{
 			SciterElement el = SciterElement.Create("div");
-			SciterElement el2 = new SciterElement(el.Handle);
+			SciterElement el2 = SciterElement.Attach(el.Handle);
 			Assert.IsTrue(el == el2);
 		}
 

@@ -1,0 +1,329 @@
+<html>
+<head>
+	<style>
+
+		 html {
+			 background-color: #1e2835;
+			 color: rgba(160,180,200,.85);
+			 border-color: #e6e6e6;
+		 }
+
+		body {
+			overflow: hidden;
+		}
+
+		code {
+			color: rgba(160,180,200,.85);
+			opacity: .6;
+		}
+
+		a {
+			color: #53a6fa !important;
+			text-decoration: none;
+			cursor: pointer;
+			outline: 0;
+		}
+		a:hover {
+			color: #53a6fa !important;
+		}
+
+		h1 {
+			color: blue;
+			font-size: 30px;
+		}
+
+		h2 {
+			color: rgb(160,180,200);
+
+		}
+
+		h3 {
+			color: rgb(160,180,200);
+
+		}
+
+		@const TOOLBAR_HEIGHT: 96dip;
+		@const FOOTER_HEIGHT: 32dip;
+
+		body { margin: 0; }
+
+		main {
+			flow:stack;
+			size:*;
+		}
+
+		toolbar {
+			height: @TOOLBAR_HEIGHT;
+			z-index:1;
+			background-color: rgba(36, 49, 64, 0.55);
+			box-shadow: 0 0 12dip 12dip rgba(0, 0, 0, 0.25);
+			backdrop-filter: blur(10dip);
+		}
+
+		section {
+			size:*;
+			overflow:auto;
+			margin: @TOOLBAR_HEIGHT 0 @FOOTER_HEIGHT 0;
+			clip-box: margin-box;
+			border-spacing:20dip;
+			overflow: scroll-indicator;
+		}
+
+		footer {
+			overflow:auto;
+			position: fixed;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			height: @FOOTER_HEIGHT;
+			background-color: rgba(36, 49, 64, 0.55);
+			box-shadow: 0 0 12dip 12dip rgba(0, 0, 0, 0.25);
+			backdrop-filter: blur(10dip);
+		}
+
+		card {
+			display: block;
+			padding: 16dip;
+			width: 1*;
+			margin-bottom: 16dip;
+			border-radius: 2dip;
+			color: white;
+			background-color: rgba(36, 49, 64, 1);
+			box-shadow: rgba(0, 0, 0, 0.133) 0px 1.6px 3.6px 0px, rgba(0, 0, 0, 0.11) 0px 0.3px 0.9px 0px;
+			/*behavior: card-drop-behavior;*/
+		}
+
+		card:hover {
+			box-shadow: rgba(0, 0, 0, 0.133) 0px 3.2px 7.2px 0px, rgba(0, 0, 0, 0.11) 0px 0.6px 1.8px 0px;
+		}
+
+		card > cardcontent
+		{
+			display: block;
+			visibility: collapse;
+			width: 1*;
+			opacity: 0;
+			transition: height cubic-in-out 0.4s 0.4s, opacity cubic-in-out 0.4s 0.4s;
+			flow:row(div,div);
+		}
+
+		card > cardcontent div:nth-child(odd)
+		{
+			width:max-content;
+			margin-right: 4dip;
+		}
+
+		card > cardcontent div:nth-child(even)
+		{
+			width:1*;
+		}
+
+		card > cardcontent[state="visible"]
+		{
+			height:max-content;
+			opacity: 1;
+			visibility: visible;
+		}
+
+		card > cardcontent.has-exception
+		{
+			background-color: #1e2835;
+			padding: 8dip;
+			border-radius: 2dip;
+			box-shadow: inset 0 1px 4px 0 rgba(0,0,0,.14);
+			behavior:htmlarea;
+		}
+
+		card > cardcontent.has-exception span
+		{
+			color: crimson;
+		}
+
+		cardheader {
+			display:inline-block;
+			width: 1*;
+			margin-bottom: 16dip;
+		}
+
+		cardheader > div {
+			vertical-align: center;
+			font-family: Roboto,Helvetica Neue,sans-serif;
+		}
+
+		cardheader > div:nth-child(1) {
+			font-size: 20dip;
+			font-weight: 500;
+		}
+
+		cardheader > div:nth-child(2) {
+			font-size: 14dip;
+			font-weight: 400;
+			opacity: 0.6
+		}
+
+		cardfooter {
+			display:inline-block;
+			width: 1*;
+			margin-top: 16dip;
+		}
+
+		progress.custom-progress {
+			border:none;
+			border-radius:2dip;
+			background: rgba(0,0,0,.25);
+
+			/*background-position:8px 8px 8px 8px; left top right bottom offsets*/
+
+			height: 4dip;
+			width: 1*;
+			padding: 0;
+			vertical-align: top;
+
+			foreground: #53a6fa;
+			/*foreground-position: 5px 5px 5px 5px; left top right bottom offsets*/
+
+			list-style-image: none;
+		}
+
+		button.action-button {
+			cursor: pointer;
+			font-size: 14dip;
+			font-weight: 400;
+			border-radius:3dip;
+			border: solid 1dip #fff1;
+			background: transparent;
+			color: white;
+			padding: 2dip 12dip;
+		}
+
+		button.action-button:disabled {
+			opacity: 0.4;
+		}
+
+		button.action-button:hover {
+			background: #fff1;
+		}
+
+		button.action-button:active {
+			background: #fff2;
+		}
+
+	</style>
+
+	<script type="text/tiscript"></script>
+	
+	<script type="text/tiscript">
+		view.GetRuntimeInfo(
+			function(value) {
+				$(#frameworkDescription).text = value.FrameworkDescription;
+				$(#processArchitecture).text = value.ProcessArchitecture;
+				$(#osArchitecture).text = value.OSArchitecture;
+				$(#osDescription).text = value.OSDescription;
+				$(#osContent).attributes["state"] = "visible";
+			},
+			function() {
+				
+			}
+		);
+		
+		var version_major = Sciter.VERSION >> 16;
+		var version_minor = Sciter.VERSION & 0xFFFF;
+		var revision_major = Sciter.REVISION >> 16;
+		var revision_minor = Sciter.REVISION & 0xFFFF;
+		$(#sciterversion).text = String.printf("%d.%d.%d.%d (%d)", version_major, version_minor, revision_major, revision_minor, Sciter.BUILD);
+
+		$(#user).text = Sciter.userName();
+		$(#machine).text = Sciter.machineName();
+		$(#domain).text = Sciter.machineName(true);
+		//$(#home).text = System.home();
+		$(#language).text = System.language;
+		$(#country).text = System.country;
+		$(#os-type).text = System.HANDHELD_OS? "handheld":"desktop";
+		$(#os-version).text = System.OS;
+		$(#gfx-backend).text = view.backendName;
+		
+		for(var (i,child) in $$(a) ) {
+			child.on("click", function(evt) {
+				Sciter.launch(this.@#href);
+				return true;
+			});
+		}
+	</script>
+</head>
+
+<body>
+	<main>
+		<toolbar>
+			<div style="width: 1*; display: inline-block; white-space: nowrap;">
+				<img src="logo.png"
+					 alt="Sciter - Sciter Logo"
+					 height="96dip" />
+	
+				<img style="float: right; margin-right: 10dip; display:  none"
+					 src="winforms.svg"
+					 alt="Microsoft - WinForms"
+					 height="96dip" />
+			</div>
+		</toolbar>
+		<section>
+	
+			<div style="margin: 20dip">
+				<div #helloSciter />
+
+				<card>
+					<cardheader>
+						<div>Hello WinForms!</div>
+						<div>Greetings from SciterCore running on .Net 5 using WinForms.</div>
+					</cardheader>
+
+					<cardcontent state="visible">
+						<div>OS type:</div>	   <div style="font-weight: bold;" #os-type></div>
+						<div>OS version:</div> <div style="font-weight: bold;" #os-version></div>
+						<div>GFX backend:</div><div style="font-weight: bold;" #gfx-backend></div>
+						<div>User:</div>		   <div style="font-weight: bold;" #user></div>
+						<div>Machine:</div>	   <div style="font-weight: bold;" #machine></div>
+						<div>Domain:</div>	   <div style="font-weight: bold;" #domain></div>
+						<!--<div>home:</div>	     <div style="font-weight: bold;" #home></div>-->
+						<div>Country:</div>	   <div style="font-weight: bold;" #country></div>
+						<div>Language:</div>	 <div style="font-weight: bold;" #language></div>
+					</cardcontent>
+
+				</card>
+				
+				<card>
+					<cardheader>
+						<div>RuntimeInformation</div>
+						<div>Provides information about the .NET runtime installation.</div>
+					</cardheader>
+	
+					<cardcontent #osContent>
+						<div>Operating System:</div>
+						<div style="font-weight: bold;"><span #osDescription/></div>
+						<div>Framework:</div>
+						<div style="font-weight: bold;"><span #frameworkDescription/></div>
+						<div>OS Architecture:</div>
+						<div style="font-weight: bold;"><span #osArchitecture/></div>
+						<div>Process Architecture:</div>
+						<div style="font-weight: bold;"><span #processArchitecture/></div>
+					</cardcontent>
+	
+				</card>
+			</div>
+		</section>
+	
+		<footer>
+			<div style=" flow:horizontal; border-spacing:*;height:*; overflow-x: hidden; overflow-y: hidden">
+				<div style="margin-top:*; margin-bottom:*; margin-left: 8dip; display: inline-block; white-space: nowrap; overflow-x: fragments ">
+					<a href="https://github.com/wdcossey/SciterCore" >SciterCore</a> | <a href="https://github.com/ramon-mendes/SciterSharp" >SciterSharp</a>
+				</div>
+	
+				<div style="margin: * 8dip;display: inline-block; white-space: nowrap; overflow-x: fragments">
+					<a href="https://sciter.com/" style="display: inline-block; white-space: nowrap;">Sciter</a>
+					<span #sciterversion style="margin:0 auto; display: inline-block; white-space: nowrap;">Version</span> | <a href="https://icons8.com/" >Icons8</a>
+				</div>
+	
+			</div>
+		</footer>
+	</main>
+</body>
+</html>

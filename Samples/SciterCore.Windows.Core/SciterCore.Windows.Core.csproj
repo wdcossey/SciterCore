@@ -77,8 +77,8 @@
     <None Include="wwwroot\**" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="SciterCore.Binaries" Version="4.4.5.9" />
-    <PackageReference Include="SciterCore.PackFolder" Version="0.1.293" />
+    <PackageReference Include="SciterCore.Binaries" Version="4.4.7" />
+    <PackageReference Include="SciterCore.PackFolder" Version="0.1.483" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Platform\SciterCore.Windows\SciterCore.Windows.csproj">

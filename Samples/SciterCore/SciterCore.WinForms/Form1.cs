@@ -10,10 +10,9 @@ namespace SciterCore.WinForms
         {
             InitializeComponent();
             sciterControl1.HandleCreated += SciterControl1HandleCreated;
-            sciterControl1.LoadHtml += SciterControl1OnLoadHtml;
+            //sciterControl1.LoadHtml += SciterControl1OnLoadHtml;
+            sciterControl1.LoadUri += (sender, args) => args.Uri = new Uri("this://app/index.html");
         }
-
-        
 
         private void SciterControl1OnLoadHtml(object? sender, LoadHtmlEventArgs e)
         {

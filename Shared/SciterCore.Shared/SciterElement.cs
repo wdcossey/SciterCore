@@ -35,20 +35,28 @@ namespace SciterCore
 	{
 		private static readonly ISciterApi SciterApi = Sciter.SciterApi;
 		private readonly IntPtr _elementHandle;
+		private readonly bool _unuseElement;
 
 		/// <summary>
 		/// Sciter Element Handle
 		/// </summary>
 		public IntPtr Handle => _elementHandle;
 
-		public SciterElement(IntPtr elementHandle)
+		internal static SciterElement Attach(IntPtr elementHandle)
+		{
+			return elementHandle == IntPtr.Zero
+				? null
+				: ElementRegistry.Instance.GetOrAdd(elementHandle, ptr => new SciterElement(ptr));
+		}
+
+		internal SciterElement(IntPtr elementHandle)
 		{
 			if(elementHandle == IntPtr.Zero)
 				throw new ArgumentException($"IntPtr.Zero received at {nameof(SciterElement)} constructor.");
-
-			SciterApi.Sciter_UseElement(elementHandle);
+			
 			_elementHandle = elementHandle;
 		}
+		
 
 		public SciterElement(SciterValue sv)
 		{
@@ -59,7 +67,10 @@ namespace SciterCore
 			if(elementHandle == IntPtr.Zero)
 				throw new ArgumentException("IntPtr.Zero received at SciterElement constructor");
 
-			SciterApi.Sciter_UseElement(this.Handle);
+
+			if (SciterApi.Sciter_UseElement(this.Handle).IsOk())
+				_unuseElement = true;
+
 			_elementHandle = elementHandle;
 		}
 		
@@ -117,16 +128,16 @@ namespace SciterCore
 			return result;
 		}
 
-		internal void SetHtmlInternal(string html, SciterXDom.SET_ELEMENT_HTML where = SciterXDom.SET_ELEMENT_HTML.SIH_REPLACE_CONTENT)
+		internal void SetHtmlInternal(string html, SetElementHtml where = SetElementHtml.ReplaceContent)
 		{
 			TrySetHtmlInternal(html: html, where: where);
 		}
 
-		internal bool TrySetHtmlInternal(string html, SciterXDom.SET_ELEMENT_HTML where = SciterXDom.SET_ELEMENT_HTML.SIH_REPLACE_CONTENT)
+		internal bool TrySetHtmlInternal(string html, SetElementHtml where = SetElementHtml.ReplaceContent)
 		{
 			if (html == null)
 				return ClearTextInternal();
-
+			
 			var data = Encoding.UTF8.GetBytes(html);
 			return SciterApi.SciterSetElementHtml(this.Handle, data, (uint) data.Length, where)
 				.IsOk();
@@ -771,15 +782,13 @@ namespace SciterCore
 				.IsOk();
 		}
 
-		internal bool TransformHtmlInternal(string html, ElementHtmlReplacement replacement = ElementHtmlReplacement.ReplaceContent)
+		internal bool TransformHtmlInternal(string html, SetElementHtml replacement = SetElementHtml.ReplaceContent)
 		{
-			var value = (SciterXDom.SET_ELEMENT_HTML)System.Convert.ToUInt32(replacement);
-			
 			var bytes = Encoding.UTF8.GetBytes(html);
-			return TransformHtmlInternal(bytes: bytes, replacement: value);
+			return TransformHtmlInternal(bytes: bytes, replacement: replacement);
 		}
 
-		internal bool TransformHtmlInternal(byte[] bytes, SciterXDom.SET_ELEMENT_HTML replacement = SciterXDom.SET_ELEMENT_HTML.SIH_REPLACE_CONTENT)
+		internal bool TransformHtmlInternal(byte[] bytes, SetElementHtml replacement = SetElementHtml.ReplaceContent)
 		{
 			return SciterApi.SciterSetElementHtml(this.Handle, bytes, (uint) bytes.Length, replacement)
 				.IsOk();
@@ -794,6 +803,7 @@ namespace SciterCore
 			if (callback == null)
 				return;
 
+			//TODO: Fix this!
 			var eventHandler = new EventHandlers.CustomEventHandler(this, callback);
 			
 			var result = SciterApi.SciterAttachEventHandler(this.Handle, eventHandler.EventProc, IntPtr.Zero)
@@ -925,7 +935,7 @@ namespace SciterCore
 			get
 			{
 				SciterApi.SciterGetValue(this.Handle, out var val);
-				return new SciterValue(val);
+				return SciterValue.Attach(val);
 			}
 
 			set
@@ -940,7 +950,7 @@ namespace SciterCore
 			get
 			{
 				SciterApi.SciterGetExpando(this.Handle, out var value, true);
-				return new SciterValue(value);
+				return SciterValue.Attach(value);
 			}
 		}
 		
@@ -971,7 +981,7 @@ namespace SciterCore
 
 			var result = SciterApi.SciterCallScriptingMethod(this.Handle, method, args.AsValueArray(), (uint) args.Length, out var returnValue)
 				.IsOk();
-			value = result ? new SciterValue(returnValue) : default;
+			value = result ? SciterValue.Attach(returnValue) : default;
 			return result;
 		}
 
@@ -1000,7 +1010,7 @@ namespace SciterCore
 
 			var result = SciterApi.SciterCallScriptingFunction(this.Handle, function, args.AsValueArray(), (uint) args.Length, out var returnValue)
 				.IsOk();
-			value = result ? new SciterValue(returnValue) : default;
+			value = result ? SciterValue.Attach(returnValue) : default;
 			return result;
 		}
 
@@ -1029,7 +1039,7 @@ namespace SciterCore
 		{
 			var result = SciterApi.SciterEvalElementScript(this.Handle, script, System.Convert.ToUInt32(script.Length), out var returnValue)
 				.IsOk();
-			value = result ? new SciterValue(returnValue) : default;
+			value = result ? SciterValue.Attach(returnValue) : default;
 			return result;
 		}
 		
@@ -1077,7 +1087,8 @@ namespace SciterCore
 
 				// TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
 				// TODO: set large fields to null.
-				SciterApi.Sciter_UnuseElement(this.Handle);
+				if (_unuseElement)
+					SciterApi.Sciter_UnuseElement(this.Handle);
 
 				_disposedValue = true;
 			}
@@ -1085,6 +1096,7 @@ namespace SciterCore
 
 		~SciterElement()
 		{
+			ElementRegistry.Instance.TryRemove(this.Handle, out _);
 			// Do not change this code. Put cleanup code in Dispose(bool disposing) above.
 			Dispose(false);
 		}

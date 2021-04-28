@@ -86,11 +86,9 @@ namespace SciterCore
         /// <exception cref="ArgumentNullException">If the <paramref name="tag"/> is null.</exception>
         public static SciterElement AppendChildElement(this SciterElement parent, string tag, string text = null)
         {
-            return parent?.AppendChildElement(childElement: SciterElement.Create(tag: tag, text));
+            return parent.AppendChildElement(childElement: SciterElement.Create(tag: tag, text));
         }
-
-        //TODO: Add TryAppendChildElement
-
+        
         /// <summary>
         /// Appends and returns the the given <paramref name="childElement"/>.
         /// </summary>
@@ -111,8 +109,39 @@ namespace SciterCore
 
             return childElement;
         }
+
+        /// <summary>
+        /// Creates, appends and returns a new <see cref="SciterElement"/> with the given <paramref name="tag"/>.
+        /// </summary>
+        /// <param name="parent"></param>
+        /// <param name="tag"></param>
+        /// <param name="text"></param>
+        /// <returns>The newly created child <see cref="SciterElement"/></returns>
+        /// <exception cref="ArgumentNullException">If the <paramref name="parent"/> is null.</exception>
+        /// <exception cref="ArgumentNullException">If the <paramref name="tag"/> is null.</exception>
+        public static bool TryAppendChildElement(this SciterElement parent, string tag, string text = null)
+        {
+            return parent.TryAppendChildElement(childElement: SciterElement.Create(tag: tag, text)) == true;
+        }
         
-        //TODO: Add TryAppendChildElement
+        /// <summary>
+        /// Appends and returns the the given <paramref name="childElement"/>.
+        /// </summary>
+        /// <param name="parent"></param>
+        /// <param name="childElement"></param>
+        /// <returns>The newly created child <see cref="SciterElement"/></returns>
+        /// <exception cref="ArgumentNullException">If the <paramref name="parent"/> is null.</exception>
+        /// <exception cref="ArgumentNullException">If the <paramref name="childElement"/> is null.</exception>
+        public static bool TryAppendChildElement(this SciterElement parent, SciterElement childElement)
+        {
+            if (parent == null)
+                throw new ArgumentNullException(nameof(parent), @"Parent element cannot be null.");
+            
+            if (childElement == null)
+                throw new ArgumentNullException(nameof(childElement), @"Element cannot be null or empty.");
+            
+            return parent.TryAppendElement(childElement);
+        }
         
         /// <summary>
         /// Deletes all Children from the the given <paramref name="element"/>. 
@@ -582,8 +611,11 @@ namespace SciterCore
         /// <exception cref="ArgumentNullException">If the <paramref name="element"/> is null.</exception>
         public static bool TryAppendElement(this SciterElement parent, SciterElement element, Action<SciterElement> callback = null)
         {
+            if (parent == null)
+                throw new ArgumentNullException(nameof(parent), $"{nameof(parent)} cannot be null.");
+            
             if (element == null)
-                throw new ArgumentNullException(nameof(element), @"Element cannot be null.");
+                throw new ArgumentNullException(nameof(element), $"{nameof(element)} cannot be null.");
 
             var result = parent?.AppendElementInternal(element: element) == true;
             
@@ -697,13 +729,13 @@ namespace SciterCore
             return element?.ClearTextInternal() == true;
         }
 
-        public static SciterElement TransformHtml(this SciterElement element, string html, ElementHtmlReplacement replacement)
+        public static SciterElement TransformHtml(this SciterElement element, string html, SetElementHtml replacement = SetElementHtml.ReplaceContent)
         {
             element?.TryTransformHtml(html: html, replacement: replacement);
             return element;
         }
 
-        public static bool TryTransformHtml(this SciterElement element, string html, ElementHtmlReplacement replacement)
+        public static bool TryTransformHtml(this SciterElement element, string html, SetElementHtml replacement = SetElementHtml.ReplaceContent)
         {
             return element?.TransformHtmlInternal(html: html, replacement: replacement) == true;
         }
@@ -725,6 +757,7 @@ namespace SciterCore
             return element;
         }
 		
+        //TODO: Fix/Remove this!
         public static SciterElement OnCustomEvent(this SciterElement element, Action<string, SciterElement, SciterElement, SciterValue> callback)
         {
             element?.OnCustomEventInternal(callback);
@@ -931,17 +964,15 @@ namespace SciterCore
             return element?.TryGetHtmlInternal(html: out html) == true;
         }
         
-        //TODO: Missing parameters
-        public static SciterElement SetHtml(this SciterElement element, string html)
+        public static SciterElement SetHtml(this SciterElement element, string html, SetElementHtml where = SetElementHtml.ReplaceContent)
         {
-            element?.SetHtmlInternal(html: html);
+            element?.SetHtmlInternal(html: html, where: where);
             return element;
         }
-		
-        //TODO: Missing parameters
-        public static bool TrySetHtml(this SciterElement element, string html)
+        
+        public static bool TrySetHtml(this SciterElement element, string html, SetElementHtml where = SetElementHtml.ReplaceContent)
         {
-            return element?.TrySetHtmlInternal(html: html) == true;
+            return element?.TrySetHtmlInternal(html: html, where: where) == true;
         }
         
         public static string GetInnerHtml(this SciterElement element)

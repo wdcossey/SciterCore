@@ -39,11 +39,12 @@ namespace SciterCore
 	{
 	}
 
-	public class SciterValue
+	public class SciterValue : IDisposable
 	{
 		internal Interop.SciterValue.VALUE _data;
 		private static readonly ISciterApi SciterApi = Sciter.SciterApi;
-
+		
+		private readonly bool _unuseValue = true;
 		public static readonly SciterValue Undefined;
 		public static readonly SciterValue Null;
 
@@ -166,87 +167,85 @@ namespace SciterCore
 		
 		#region Constructor(s)
 		
-		public SciterValue()
+		internal SciterValue()
 		{
 			SciterApi.ValueInit(out _data);
 		}
 		
-		public SciterValue(SciterValue value)
+		internal SciterValue(Action<SciterValue> setupFunc)
 		{
 			SciterApi.ValueInit(out _data);
-			SciterApi.ValueCopy(out _data, ref value._data);
+			setupFunc?.Invoke(this);
+		}
+
+		internal static SciterValue Attach(SciterValue value)
+		{
+			return new SciterValue(value._data);
 		}
 		
-		public SciterValue(Interop.SciterValue.VALUE value)
+		private SciterValue(Interop.SciterValue.VALUE value)
 		{
 			SciterApi.ValueInit(out _data);
 			SciterApi.ValueCopy(out _data, ref value);
+			_unuseValue = false;
+		}
+		
+		internal static SciterValue Attach(Interop.SciterValue.VALUE value)
+		{
+			return new SciterValue(value);
 		}
 		
 		#endregion
-
-		~SciterValue()
-		{
-			SciterApi.ValueClear(out _data);
-		}
 
 		#region Create
 		
 		public static SciterValue Create(bool value)
 		{
-			var result = new SciterValue();
-			SciterApi.ValueIntDataSet(ref result._data, value ? 1 : 0, (uint) Interop.SciterValue.VALUE_TYPE.T_BOOL, 0);
-			return result;
+			return new SciterValue(v => 
+				SciterApi.ValueIntDataSet(ref v._data, value ? 1 : 0, (uint) Interop.SciterValue.VALUE_TYPE.T_BOOL, 0));
 		}
 
 		public static SciterValue Create(int value)
 		{
-			var result = new SciterValue();
-			SciterApi.ValueIntDataSet(ref result._data, value, (uint) Interop.SciterValue.VALUE_TYPE.T_INT, 0);
-			return result;
+			return new SciterValue(v =>
+				SciterApi.ValueIntDataSet(ref v._data, value, (uint) Interop.SciterValue.VALUE_TYPE.T_INT, 0));
 		}
-		
+
 
 		public static SciterValue Create(uint value)
 		{
-			var result = new SciterValue();
-			SciterApi.ValueIntDataSet(ref result._data, (int)(value), (uint) Interop.SciterValue.VALUE_TYPE.T_INT, 0);
-			return result;
+			return new SciterValue(v =>
+				SciterApi.ValueIntDataSet(ref v._data, (int) (value), (uint) Interop.SciterValue.VALUE_TYPE.T_INT, 0));
 		}
 
 		public static SciterValue Create(double value)
 		{
-			var result = new SciterValue();
-			SciterApi.ValueFloatDataSet(ref result._data, value, (uint) Interop.SciterValue.VALUE_TYPE.T_FLOAT, 0);
-			return result;
+			return new SciterValue(v =>
+				SciterApi.ValueFloatDataSet(ref v._data, value, (uint) Interop.SciterValue.VALUE_TYPE.T_FLOAT, 0));
 		}
 
 		public static SciterValue Create(string value)
 		{
-			var result = new SciterValue();
-			SciterApi.ValueStringDataSet(ref result._data, value, (uint) (value?.Length ?? 0), (uint) Interop.SciterValue.VALUE_UNIT_TYPE_STRING.UT_STRING_STRING);
-			return result;
+			return new SciterValue(v => SciterApi.ValueStringDataSet(ref v._data, value,
+				(uint) (value?.Length ?? 0), (uint) Interop.SciterValue.VALUE_UNIT_TYPE_STRING.UT_STRING_STRING));
 		}
 
 		public static SciterValue Create(byte[] value)
 		{
-			var result = new SciterValue();
-			SciterApi.ValueBinaryDataSet(ref result._data, value, (uint) (value?.Length ?? 0), (uint) Interop.SciterValue.VALUE_TYPE.T_BYTES, 0);
-			return result;
+			return new SciterValue(v => SciterApi.ValueBinaryDataSet(ref v._data, value,
+				(uint) (value?.Length ?? 0), (uint) Interop.SciterValue.VALUE_TYPE.T_BYTES, 0));
 		}
 
 		public static SciterValue Create(long value)
 		{
-			var result = new SciterValue();
-			SciterApi.ValueInt64DataSet(ref result._data, value, (uint)Interop.SciterValue.VALUE_TYPE.T_DATE, 0);
-			return result;
+			return new SciterValue(v =>
+				SciterApi.ValueInt64DataSet(ref v._data, value, (uint) Interop.SciterValue.VALUE_TYPE.T_DATE, 0));
 		}
 		
 		public static SciterValue Create(SciterColor color)
 		{
-			var result = new SciterValue();
-			SciterApi.ValueIntDataSet(ref result._data, (int)color.Value, (uint) Interop.SciterValue.VALUE_TYPE.T_COLOR, 0);
-			return result;
+			return new SciterValue(v => SciterApi.ValueIntDataSet(ref v._data, (int) color.Value,
+				(uint) Interop.SciterValue.VALUE_TYPE.T_COLOR, 0));
 		}
 		
 		public static SciterValue Create(params SciterValue[] values)
@@ -278,7 +277,7 @@ namespace SciterCore
 			var result = new SciterValue();
 			// ReSharper disable once UseDeconstruction
 			foreach(var item in value)
-				result.SetItem(new SciterValue(item.Key), new SciterValue(item.Value));
+				result.SetItem(new SciterValue(item.Key), Attach(item.Value));
 			return result;
 		}
 		
@@ -396,7 +395,7 @@ namespace SciterCore
 				throw new InvalidOperationException("Recursion too deep");
 			
 			if (value == null)
-				return SciterValue.Null;
+				return Null;
 			
 			if (value is IConvertible convertible)
 				return new SciterValue(convertible);
@@ -1159,7 +1158,7 @@ namespace SciterCore
 			if(!IsResource && !IsDomElement)
 				ThrowTypeException(nameof(Interop.SciterValue.VALUE_TYPE.T_RESOURCE), nameof(Interop.SciterValue.VALUE_TYPE.T_DOM_OBJECT));
 			
-			return new SciterElement(this.GetObjectData());
+			return SciterElement.Attach(this.GetObjectData());
 		}
 		
 		public static SciterValue FromJsonString(string json, StringConversionType conversionType = StringConversionType.JsonLiteral)
@@ -1183,7 +1182,7 @@ namespace SciterCore
 			if (conversionType == StringConversionType.Simple && IsString)
 				return TryAsStringInternal(out value);
 
-			var sciterValue = new SciterValue(this);
+			var sciterValue = Attach(this);
 			var result = SciterApi.ValueToString(ref sciterValue._data, (Interop.SciterValue.VALUE_STRING_CVT_TYPE)(uint)conversionType)
 				.IsOk();
 
@@ -1430,5 +1429,35 @@ namespace SciterCore
 		{
 			throw new InvalidOperationException($"{nameof(SciterValue)} is not of {nameof(Type)} `{string.Join(" | ", typeNames)}`");
 		}
+
+		#region IDisposable
+		
+		private bool _disposedValue = false;
+
+		private void Dispose(bool disposing)
+		{
+			if (_disposedValue) 
+				return;
+			
+			if(disposing) { }
+				
+			if (_unuseValue)
+				SciterApi.ValueClear(out _data);
+
+			_disposedValue = true;
+		}
+
+		~SciterValue()
+		{
+			Dispose(false);
+		}
+		
+		public void Dispose()
+		{
+			Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+		
+		#endregion
 	}
 }

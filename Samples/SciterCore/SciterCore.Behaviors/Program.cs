@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using SciterCore.Behaviors.Behaviors;
 
 namespace SciterCore.Behaviors
 {
@@ -29,7 +30,14 @@ namespace SciterCore.Behaviors
                         .AddConsole();
                 })
                 .AddSingleton<IConfiguration>(provider => configuration)
-                .AddSciterHost<ApplicationHost>()
+
+                .AddSciterBehavior<SciterClockBehavior>()
+                .AddSciterBehavior<CustomDrawBehavior>()
+                .AddSciterBehavior<CustomExchangeBehavior>()
+                .AddSciterBehavior<CustomFocusBehavior>()
+                .AddSciterBehavior<CustomMouseBehavior>()
+                
+                .AddSciter<ApplicationHost>()
                 .AddSingleton<SciterApplication>();
 
             var serviceProvider = services.BuildServiceProvider();
@@ -38,41 +46,6 @@ namespace SciterCore.Behaviors
 
             app.Run();
             
-            //var host = new HostBuilder()
-            //    .ConfigureHostConfiguration(configHost =>
-            //    {
-            //        configHost.SetBasePath(Directory.GetCurrentDirectory());
-            //        //configHost.AddJsonFile(_hostsettings, optional: true);
-            //        //configHost.AddEnvironmentVariables(prefix: _prefix);
-            //        configHost.AddCommandLine(args);
-            //    })
-            //    .ConfigureAppConfiguration((hostContext, configApp) =>
-            //    {
-            //        configApp.SetBasePath(Directory.GetCurrentDirectory());
-            //        //configApp.AddJsonFile(_appsettings, optional: true);
-            //        configApp.AddJsonFile(
-            //            $"appsettings.{hostContext.HostingEnvironment.EnvironmentName}.json",
-            //            optional: true);
-            //        //configApp.AddEnvironmentVariables(prefix: _prefix);
-            //        configApp.AddCommandLine(args);
-            //    })
-            //    .ConfigureServices((hostContext, services) =>
-            //    {
-            //        services.AddLogging();
-            //        services.AddHostedService<Startup>();
- 
-            //    })
-            //    .ConfigureLogging((hostContext, configLogging) =>
-            //    {
-            //        configLogging.AddConsole();
- 
-            //    })
-            //    .UseConsoleLifetime()
-            //    .Build();
- 
-
-            //await host.RunAsync();
-
         }
     }
 }

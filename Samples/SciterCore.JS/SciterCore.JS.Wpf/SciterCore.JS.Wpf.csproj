@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net5.0-windows</TargetFramework>
+        <UseWPF>true</UseWPF>
+        <LangVersion>default</LangVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\Platform\SciterCore.JS\SciterCore.JS.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="SciterCore.JS.Binaries" Version="4.4.7.2" />
+      <PackageReference Include="SciterCore.PackFolder" Version="0.1.483" />
+    </ItemGroup>
+
+</Project>

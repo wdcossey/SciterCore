@@ -1,109 +1,21 @@
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
-using HelloSciterJS.Behaviors;
 using Microsoft.Extensions.Logging;
 using SciterCore.Attributes;
 using SciterCore.Interop;
 
-namespace SciterCore.JS.HelloSciter
+namespace SciterCore.JS.Galaxy
 {
-	
-	[SciterHostEventHandler(typeof(HostEventHandler))]
-	[SciterHostWindow(null, 800, 600, "SciterCore.JS::NetCore")]
-	[SciterHostArchive]
-	[SciterHostBehaviorHandler(typeof(RuntimeInformationBehavior))]
-	public class ApplicationHost : SciterArchiveHost
+    public class AppEventHandler : SciterEventHandler
 	{
-		private readonly ILogger<ApplicationHost> _logger;
+		private readonly ILogger<AppEventHandler> _logger;
 
-		public ApplicationHost(ILogger<ApplicationHost> logger)
-		{
-			_logger = logger;
-
-			OnCreated += (_, args) =>
-			{
-				args.Window.CenterWindow();
-
-				string indexPage = null;
-
-				if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-					indexPage = "index-win.html";
-
-				if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-					indexPage = "index-lnx.html";
-
-				if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-					indexPage = "index-macos.html";
-
-				if (string.IsNullOrWhiteSpace(indexPage))
-					throw new PlatformNotSupportedException();
-
-#if DEBUG
-				//Used for development/debugging (load file(s) from the disk)
-				var location = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-				var path = Path.Combine(location ?? string.Empty, "wwwroot", indexPage);
-				var uri = new Uri(path, UriKind.Absolute);
-				Debug.Assert(uri.IsFile);
-				Debug.Assert(File.Exists(uri.AbsolutePath));
-#else
-				var uri = new Uri(baseUri: this.Archive.Uri, startPage);
-#endif
-				args.Window.LoadPage(uri);
-			};
-		}
-		
-		protected override LoadResult OnLoadData(object sender, LoadDataArgs args)
-		{
-			_logger?.LogTrace(
-				"{NameOfMethod}({NameOfArgs}: [{Args}])", nameof(OnLoadData), nameof(args), args);
-			
-			return base.OnLoadData(sender: sender, args: args);
-		}
-		
-		protected override bool OnAttachBehavior(SciterElement element, string behaviorName,
-			out SciterEventHandler eventHandler)
-		{
-			_logger?.LogTrace("{NameOfMethod}({ElementName}: {ElementTag} [{ElementId}]; {BehaviorName}: {BehaviorNameValue})", nameof(OnAttachBehavior),
-				nameof(element), element.Tag, element.UniqueId, nameof(behaviorName), behaviorName);
-			
-			return base.OnAttachBehavior(element, behaviorName, out eventHandler);
-		}
-
-		protected override void OnDataLoaded(object sender, DataLoadedArgs args)
-		{
-			_logger?.LogTrace(
-				"{NameOfMethod}({NameOfArgs}: [{Args}])", nameof(OnDataLoaded), nameof(args), args);
-
-			base.OnDataLoaded(sender, args);
-		}
-
-		protected override void OnEngineDestroyed(object sender, EngineDestroyedArgs args)
-		{
-			_logger?.LogTrace("{NameOfMethod}({NameOfArgs}: [{ArgsValue}])",
-				nameof(OnEngineDestroyed), nameof(args), args);
-			
-			base.OnEngineDestroyed(sender, args);
-		}
-
-		protected override IntPtr OnPostedNotification(IntPtr wparam, IntPtr lparam)
-		{
-			_logger?.LogTrace("{NameOfMethod}()", nameof(OnPostedNotification));
-
-			return base.OnPostedNotification(wparam, lparam);
-		}
-	}
-
-	public class HostEventHandler : SciterEventHandler
-	{
-		private readonly ILogger<HostEventHandler> _logger;
-
-		public HostEventHandler(ILogger<HostEventHandler> logger)
+		public AppEventHandler(ILogger<AppEventHandler> logger)
 		{
 			_logger = logger;
 		}
@@ -118,7 +30,7 @@ namespace SciterCore.JS.HelloSciter
 				{
 					MethodName = stackFrame?.GetMethod()?.Name,
 					Parameters = stackFrame?.GetMethod()?.GetParameters().Select(s => new { s.Name, s.Position, Type = s.ParameterType.Name}),
-					FileUri = new Uri(stackFrame?.GetFileName() ?? string.Empty)?.AbsoluteUri,
+					FileUri = new Uri(stackFrame?.GetFileName() ?? string.Empty).AbsoluteUri,
 					FileName = Path.GetFileName(stackFrame?.GetFileName()),
 					LineNumber = stackFrame?.GetFileLineNumber(),
 					ColumnNumber = stackFrame?.GetFileColumnNumber()
@@ -240,12 +152,6 @@ namespace SciterCore.JS.HelloSciter
 			base.Attached(element);
 		}
 
-		protected override ScriptEventResult OnScriptCall(SciterElement element, string methodName, SciterValue[] args)
-		{
-			_logger?.LogTrace("{NameOfMethod}(methodName: \"{MethodName}\")", nameof(OnScriptCall), methodName);
-			return base.OnScriptCall(element, methodName, args);
-		}
-
 		// ReSharper disable once RedundantOverriddenMember
 		protected override bool OnGesture(SciterElement element, GestureArgs args)
 		{
@@ -262,6 +168,12 @@ namespace SciterCore.JS.HelloSciter
 			return base.OnMethodCall(element, methodId);
 		}
 
+		protected override ScriptEventResult OnScriptCall(SciterElement element, string methodName, SciterValue[] args)
+		{
+			_logger?.LogTrace("{NameOfMethod}(methodName: \"{MethodName}\")", nameof(OnScriptCall), methodName);
+			return base.OnScriptCall(element, methodName, args);
+		}
+		
 		protected override ScriptEventResult OnScriptCall(SciterElement element, MethodInfo method, SciterValue[] args)
 		{
 			_logger?.LogTrace("{NameOfMethod}(method: \"{Method}\")", nameof(OnScriptCall), method.Name);

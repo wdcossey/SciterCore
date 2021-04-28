@@ -17,6 +17,7 @@ namespace SciterCore.Interop
 {
 	public static partial class Sciter
 	{
+		private static readonly Version UnifiedApiVersion = new Version(4, 4, 7, 0);
 		private static readonly object SciterApiLock = new object();
 		private static readonly object SciterGraphicsApiLock = new object();
 		private static readonly object SciterRequestApiLock = new object();
@@ -271,8 +272,9 @@ namespace SciterCore.Interop
 					fieldInfoDictionary = fieldInfoDictionary
 						.Where(w => 
 							w.GetCustomAttribute<SciterApiOSPlatformAttribute>() == null || 
-							w.GetCustomAttribute<SciterApiOSPlatformAttribute>().Platform == sciterOS);
-
+							w.GetCustomAttribute<SciterApiOSPlatformAttribute>().Platform == sciterOS ||
+							version.CompareTo(UnifiedApiVersion) >= 0);
+					
 					fieldInfoDictionary = fieldInfoDictionary
 						.Where(w => 
 							w.GetCustomAttribute<SciterApiMinVersionAttribute>() == null || 
@@ -569,6 +571,7 @@ namespace SciterCore.Interop
 					var fieldInfos = @struct.GetType().GetFields();
 					foreach (var fieldInfo in fieldInfos)
 					{
+						System.Console.WriteLine(fieldInfo.Name);
 						if (!fieldInfoDictionary.ContainsKey(fieldInfo.Name))
 							continue;
 						fieldInfoDictionary[fieldInfo.Name].SetValue(this, fieldInfo.GetValue(@struct));
@@ -821,8 +824,11 @@ namespace SciterCore.Interop
 				public SciterXDom.SCDOM_RESULT SciterSelectParentW(IntPtr he, string selector, uint depth, out IntPtr heFound) => 
 					_sciterSelectParentW(he, selector, depth, out heFound);
 
-				public SciterXDom.SCDOM_RESULT SciterSetElementHtml(IntPtr he, byte[] html, uint htmlLength, SciterXDom.SET_ELEMENT_HTML where) => 
-					_sciterSetElementHtml(he, html, htmlLength, where);
+				public SciterXDom.SCDOM_RESULT SciterSetElementHtml(IntPtr he, byte[] html, uint htmlLength, SetElementHtml where)
+				{
+					var value = (SciterXDom.SET_ELEMENT_HTML)System.Convert.ToUInt32(where);
+					return _sciterSetElementHtml(he, html, htmlLength, value);
+				}
 
 				public SciterXDom.SCDOM_RESULT SciterGetElementUID(IntPtr he, out uint puid) => 
 					_sciterGetElementUID(he, out puid);

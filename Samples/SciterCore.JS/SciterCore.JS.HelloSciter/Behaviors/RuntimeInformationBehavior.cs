@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using SciterCore;
+﻿using System.Runtime.InteropServices;
 using SciterCore.Attributes;
 
-namespace HelloSciterJS.Behaviors
+namespace SciterCore.JS.HelloSciter.Behaviors
 {
     [SciterBehavior("runtime-info")]
     public class RuntimeInformationBehavior : SciterEventHandler

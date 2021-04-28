@@ -42,11 +42,55 @@ namespace SciterCore
             
         }
         
+        #region Create
+        
         public static SciterColor Create(uint value)
         {
             return new SciterColor(value: value);
         }
+
+        public static SciterColor Create(byte r, byte g, byte b)
+        {
+            return new SciterColor(r, g, b);
+        }
         
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="r"></param>
+        /// <param name="g"></param>
+        /// <param name="b"></param>
+        /// <param name="alpha">Range between 0.0f and 1.0f</param>
+        /// <returns></returns>
+        // ReSharper disable once MethodOverloadWithOptionalParameter
+        public static SciterColor Create(byte r, byte g, byte b, float alpha = 1f)
+        {
+            return new SciterColor(r, g, b, alpha);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="r"></param>
+        /// <param name="g"></param>
+        /// <param name="b"></param>
+        /// <param name="alpha">Range between 0 and 255</param>
+        /// <returns></returns>
+        // ReSharper disable once MethodOverloadWithOptionalParameter
+        public static SciterColor Create(byte r, byte g, byte b, byte alpha = byte.MaxValue)
+        {
+            return new SciterColor(r, g, b, alpha);
+        }
+        
+        public static SciterColor Create(Color color)
+        {
+            return new SciterColor(color.R, color.G, color.B, color.A);
+        }
+        
+        #endregion
+
+        #region Parse
+
         public static SciterColor Parse(string value)
         {
             if (string.IsNullOrWhiteSpace(value) || value.Length < 3)
@@ -87,42 +131,8 @@ namespace SciterCore
 
             return new SciterColor(r, g, b, a);
         }
-        
-        public static SciterColor Create(byte r, byte g, byte b)
-        {
-            return new SciterColor(r, g, b);
-        }
-        
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="r"></param>
-        /// <param name="g"></param>
-        /// <param name="b"></param>
-        /// <param name="alpha">Range between 0.0f and 1.0f</param>
-        /// <returns></returns>
-        public static SciterColor Create(byte r, byte g, byte b, float alpha = 1f)
-        {
-            return new SciterColor(r, g, b, alpha);
-        }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="r"></param>
-        /// <param name="g"></param>
-        /// <param name="b"></param>
-        /// <param name="alpha">Range between 0 and 255</param>
-        /// <returns></returns>
-        public static SciterColor Create(byte r, byte g, byte b, byte alpha = byte.MaxValue)
-        {
-            return new SciterColor(r, g, b, alpha);
-        }
-        
-        public static SciterColor Create(Color color)
-        {
-            return new SciterColor(color.R, color.G, color.B, color.A);
-        }
+        #endregion
         
         public SciterColor WithAlpha(byte alpha)
         {

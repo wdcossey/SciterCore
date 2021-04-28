@@ -8,11 +8,11 @@ namespace SciterCore.Attributes
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
     public class SciterHostEventHandlerAttribute : Attribute
     {
-        public Type Type { get; }
+        public Type EventHandlerType { get; }
 
-        public SciterHostEventHandlerAttribute(Type type)
+        public SciterHostEventHandlerAttribute(Type eventHandlerType)
         {
-            Type = type.Validate<SciterEventHandler>();
+            EventHandlerType = eventHandlerType.Validate<SciterEventHandler>();
         }
     }
 }

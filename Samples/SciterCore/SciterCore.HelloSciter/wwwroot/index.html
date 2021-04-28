@@ -1,410 +1,118 @@
 <html window-blurbehind="none" theme="dark">
 <head>
 	<style>
-		html {
-			background-color: #1e2835;
-			color: rgba(160,180,200,.85);
-			border-color: #e6e6e6;
-		}
+		@import url(scitercore.css);
 		
-		body {
-			overflow: hidden;
+		#callbackState {
 		}
 
-		code {
-			color: rgba(160,180,200,.85);
-			opacity: .6;
-		}
-		
-		a {
-			color: #53a6fa !important;
-			text-decoration: none;
-			cursor: pointer;
-			outline: 0;
-		}
-		a:hover {
-			color: #53a6fa !important;
-		}
-		
-		h1 { 
-			color: blue; 
-			font-size: 30px; 
-		}
-		
-		h2 {
-			color: rgb(160,180,200);
-
-		}
-		
-		h3 {
-			color: rgb(160,180,200);
-
+		#callbackState[result="completed"] {
+			color: lime;
 		}
 
-		@const TOOLBAR_HEIGHT: 96dip;
-		@const FOOTER_HEIGHT: 32dip;
-		
-		body { margin: 0; }
-
-		main {
-			flow:stack;
-			size:*;
+		#callbackState[result="cancelled"] {
+			color: #dc143c;
 		}
 
-		toolbar {
-			height: @TOOLBAR_HEIGHT;
-			z-index:1;
-			background-color: rgba(36, 49, 64, 0.55);
-			box-shadow: 0 0 12dip 12dip rgba(0, 0, 0, 0.25);
-			backdrop-filter: blur(10dip);
-		}
 
-		section {
-			size:*;
-			overflow:auto;
-			margin: @TOOLBAR_HEIGHT 0 @FOOTER_HEIGHT 0;
-			clip-box: margin-box;
-			border-spacing:20dip;
-			overflow: scroll-indicator;
-		}
-
-		footer {
-			overflow:auto;
-			position: fixed;
-			bottom: 0;
-			left: 0;
-			right: 0;
-			height: @FOOTER_HEIGHT;
-			background-color: rgba(36, 49, 64, 0.55);
-			box-shadow: 0 0 12dip 12dip rgba(0, 0, 0, 0.25);
-			backdrop-filter: blur(10dip);
-		}
-
-		/*overlay
-		{
-			color: white;
-			behavior: card-drop-behavior;
-			display:block; 
-			flow:vertical;
-			visibility:none; // invisible by default
-			position:fixed;
-			top:0; left:0; right:0; bottom:0; // covers whole window area
-			background:rgba(0, 0, 0,0.25); // semi-transparent
-			backdrop-filter: blur(10dip);
-			z-index: 100; // above all
-		}
-
-		overlay > text {
-			width:50%;
-			height:max-content;
-			border-radius: 2dip;
-			margin:*; // to put it in the middle
-			padding:1em;
-			background: rgba(36, 49, 64, 1);
-			box-shadow: rgba(0, 0, 0, 0.133) 0 4dip 8dip 0, rgba(0, 0, 0, 0.11) 0 0.5dip 1.8dip 0;
-			z-index: 101; // above all
-		}
-
-		html[waiting] overlay {
-			visibility:visible; // visible if root element has attribute "waiting"
-		}*/
-		
-		card {
-			display: block;
-			padding: 16dip;
-			width: 1*; 
-			margin-bottom: 16dip;
-			border-radius: 2dip;
-			color: white;
-			background-color: rgba(36, 49, 64, 1);
-			box-shadow: rgba(0, 0, 0, 0.133) 0px 1.6px 3.6px 0px, rgba(0, 0, 0, 0.11) 0px 0.3px 0.9px 0px;
-			/*behavior: card-drop-behavior;*/
-		}
-		
-		card:hover {
-			box-shadow: rgba(0, 0, 0, 0.266) 0px 3.2px 7.2px 0px, rgba(0, 0, 0, 0.22) 0px 0.6px 1.8px 0px;
-		}
-		
-		card > cardcontent
-		{
-			display: block;
-			visibility: collapse;
-			width: 1*;
-			opacity: 0;
-			transition: height cubic-in-out 0.4s 0.4s, opacity cubic-in-out 0.4s 0.4s;
-			flow:row(div,div);
-		}
-		
-		card > cardcontent div:nth-child(odd)
-		{
-			width:max-content;
-			margin-right: 4dip;
-		}
-		
-		card > cardcontent div:nth-child(even)
-		{
-			width:1*;
-		}
-
-		card > cardcontent[state="visible"]
-		{
-			height:max-content;
-			opacity: 1;
-			visibility: visible;
-		}
-
-		card > cardcontent.has-exception
-		{
-			background-color: #1e2835;
-			padding: 8dip;
-			border-radius: 2dip;
-			box-shadow: inset 0 1px 4px 0 rgba(0,0,0,.14);
-			behavior:htmlarea;
-		}
-
-		card > cardcontent.has-exception span
-		{
-			color: crimson;
-		}
-		
-		cardheader {
-			display:inline-block; 
-			width: 1*;
-			margin-bottom: 16dip;
-		}
-		
-		cardheader > div {
-			vertical-align: center; 
-			font-family: Roboto,Helvetica Neue,sans-serif;
-		}
-		
-		cardheader > div:nth-child(1) {
-			font-size: 20dip;
-			font-weight: 500;
-		}
-		
-		cardheader > div:nth-child(2) {
-			font-size: 14dip;
-			font-weight: 400;
-			opacity: 0.6
-		}
-
-		cardfooter {
-			display:inline-block;
-			width: 1*;
-			margin-top: 16dip;
-		}
-		
-		progress.custom-progress {
-			border:none; 
-			border-radius:2dip;
-			background: rgba(0,0,0,.25);
-
-			/*background-position:8px 8px 8px 8px; left top right bottom offsets*/
-			
-			height: 4dip;
-			width: 1*;
-			padding: 0;
-			vertical-align: top;
-
-			foreground: #53a6fa;
-			/*foreground-position: 5px 5px 5px 5px; left top right bottom offsets*/
-
-			list-style-image: none;
-		}
-		
-		button.action-button {
-			cursor: pointer;
-			font-size: 14dip;
-			font-weight: 400;
-			border-radius:3dip;
-			border: solid 1dip #fff1;
-			background: transparent;
-			color: white;
-			padding: 2dip 12dip;
-		}
-		
-		button.action-button:disabled {
-			opacity: 0.4;
-		}
-		
-		button.action-button:hover {
-			background: #fff1;
-		}
-		
-		button.action-button:active {
-			background: #fff2;
-		}
-		
-		tools {
-			z-index: 9999;
-			opacity: 0.75;
-			//background-color: #222f;
-			overflow: none;
-			position: fixed;
-			border-radius: 0 0 4dip 4dip;
-			height: max-content;
-			width: max-content;
-			//padding: 4dp;
-			top: -50dip;
-			left: *;
-			right: *;
-			float: vertical;
-			transition: opacity 0.4s, top 0.4s;
-		}
-		
-		tools > container {
-			z-index: 9998;
-		}
-
-		tools > div
-		{
-			position: relative;
-			top: 0;
-			left: 0;
-			right: 0;
-			opacity: 1;
-			max-width: 60dip;
-			//top: 0;
-			transition: opacity 0.2s, top 0.2s;
-		}
-
-		tools:hover > div
-		{
-			opacity: 0;
-			top: -8dip;
-		}
-
-		tools:hover
-		{
-			opacity: 1;
-			top: 0dip;
-		}
-		
-		tools button {
-			cursor: pointer;
-			opacity: 0.75;
-			border-radius: 0 0 2dip 2dip;
-			border: solid 1dip #777f;
-			height: max-content;
-			width: max-content;
-			background: #777f;
-			margin: 2dip;
-			padding: 2dip;
-			transition: border-color 0.4s;
-		}
-		
-		tools button:hover {
-			border-color: #aaaf;
-		}
-		
-		tools button > img {
-			height: 32dip;
-			width: 32dip;
-		}
 	</style>
 	
 	<script type="text/tiscript"></script>
 	
 	<script type="text/tiscript">
 
-		//Synchronous
-		view.SynchronousFunction();
-
-		console.log(view.SynchronousArgumentFunction(1,2,3,4,5));
-
-		console.log(view.SynchronousArgumentsFunction(1,2,3,4,5));
-
-		//Asynchronous
-		view.AsynchronousFunction();
-
-		function callmeFromCSharp(uri)
-		{
-			Sciter.launch(uri);
-		}
-
-		function testing()
-		{
-			console.log("testing...");
-		}
-
-		view.StackTrace(function(value) {
-			$(#stMethodName).text = value.MethodName;
-			$(#stFileUri).text = value.FileName;
-			$(#stFileUri).attributes["href"] = value.FileUri;
-			$(#stLineNumber).text = value.LineNumber;
-			$(#stColumnNumber).text = value.ColumnNumber;
-
-			var args = [];
-
-			for(var (index, val) in value.Parameters)
-				args.push("<b>" + val.Type + "</b> <i>" + val.Name + "</i>");
-
-			$(#stParameters).html += "(" + args.join(", ") + ")";
-
-			$(#stContent).attributes["state"] = "visible";
-		});
-
-		view.GetRuntimeInfo(
-			function(value) {
-				$(#frameworkDescription).text = value.FrameworkDescription;
-				//$(#systemVersion).text = value.SystemVersion;
-				$(#processArchitecture).text = value.ProcessArchitecture;
-				$(#osArchitecture).text = value.OSArchitecture;
-				$(#osDescription).text = value.OSDescription;
-				$(#osContent).attributes["state"] = "visible";
-			},
-			function() {
-
+		function self.ready() {
+			//Synchronous
+			view.SynchronousFunction();
+	
+			console.log(view.SynchronousArgumentFunction(1,2,3,4,5));
+	
+			console.log(view.SynchronousArgumentsFunction(1,2,3,4,5));
+	
+			//Asynchronous
+			view.AsynchronousFunction();
+	
+			function callmeFromCSharp(uri)
+			{
+				Sciter.launch(uri);
 			}
-		);
-
-		view.ThrowException(100, 0,
-			function(value, ex) {
-				if (ex)
-				{
-					$(#exContent).html = String.printf("<div>Type:</div><div><span>%s</span></div><div>Message:</div><div><span>%s</span></div><div>StackTrace:</div><div><span>%s</span></div><div>Source: </div><div><span>%s</span></div>", ex.Type, ex.Message, ex.StackTrace, ex.Source);
-					$(#exContent).attributes["state"] = "visible";
-					$(#exContent).attributes.addClass("has-exception");
-				}
-				else {
-					$(#exContent).html = String.printf("<div>Value:</div><div><span>%s</span></div>", value);
-					$(#exContent).attributes["state"] = "visible";
-				}
+	
+			function testing()
+			{
+				console.log("testing...");
 			}
-		);
+	
+			view.StackTrace(function(value) {
+				$(#stMethodName).text = value.MethodName;
+				$(#stFileUri).text = value.FileName;
+				$(#stFileUri).attributes["href"] = value.FileUri;
+				$(#stLineNumber).text = value.LineNumber;
+				$(#stColumnNumber).text = value.ColumnNumber;
+	
+				var args = [];
+	
+				for(var (index, val) in value.Parameters)
+					args.push("<b>" + val.Type + "</b> <i>" + val.Name + "</i>");
+	
+				$(#stParameters).html += "(" + args.join(", ") + ")";
+	
+				$(#stContent).attributes["state"] = "visible";
+			});
+	
+			view.GetRuntimeInfo(
+				function(value) {
+					$(#frameworkDescription).text = value.FrameworkDescription;
+					//$(#systemVersion).text = value.SystemVersion;
+					$(#processArchitecture).text = value.ProcessArchitecture;
+					$(#osArchitecture).text = value.OSArchitecture;
+					$(#osDescription).text = value.OSDescription;
+					$(#osContent).attributes["state"] = "visible";
+				},
+				function() {
+	
+				}
+			);
+	
+			view.ThrowException(100, 0,
+				function(value, ex) {
+					if (ex)
+					{
+						$(#exContent).html = String.printf("<div>Type:</div><div><span>%s</span></div><div>Message:</div><div><span>%s</span></div><div>StackTrace:</div><div><span>%s</span></div><div>Source: </div><div><span>%s</span></div>", ex.Type, ex.Message, ex.StackTrace, ex.Source);
+						$(#exContent).attributes["state"] = "visible";
+						$(#exContent).attributes.addClass("has-exception");
+					}
+					else {
+						$(#exContent).html = String.printf("<div>Value:</div><div><span>%s</span></div>", value);
+						$(#exContent).attributes["state"] = "visible";
+					}
+				}
+			);
+	
+			var version_major = Sciter.VERSION >> 16;
+			var version_minor = Sciter.VERSION & 0xFFFF;
+			var revision_major = Sciter.REVISION >> 16;
+			var revision_minor = Sciter.REVISION & 0xFFFF;
+			$(#sciterversion).text = String.printf("%d.%d.%d.%d (%d)", version_major, version_minor, revision_major, revision_minor, Sciter.BUILD);
+	
+			$(#user).text = Sciter.userName();
+			$(#machine).text = Sciter.machineName();
+			$(#domain).text = Sciter.machineName(true);
+			//$(#home).text = System.home();
+			$(#language).text = System.language;
+			$(#country).text = System.country;
+			$(#os-type).text = System.HANDHELD_OS? "handheld":"desktop";
+			$(#os-version).text = System.OS;
+			$(#gfx-backend).text = view.backendName;
 
-		var version_major = Sciter.VERSION >> 16;
-		var version_minor = Sciter.VERSION & 0xFFFF;
-		var revision_major = Sciter.REVISION >> 16;
-		var revision_minor = Sciter.REVISION & 0xFFFF;
-		$(#sciterversion).text = String.printf("%d.%d.%d.%d (%d)", version_major, version_minor, revision_major, revision_minor, Sciter.BUILD);
-
-		$(#user).text = Sciter.userName();
-		$(#machine).text = Sciter.machineName();
-		$(#domain).text = Sciter.machineName(true);
-		//$(#home).text = System.home();
-		$(#language).text = System.language;
-		$(#country).text = System.country;
-		$(#os-type).text = System.HANDHELD_OS? "handheld":"desktop";
-		$(#os-version).text = System.OS;
-		$(#gfx-backend).text = view.backendName;
-
-		//$$(a).on("click", function(evt) {
-		//	Sciter.launch(this.@#href);
-		//	return true;
-		//});
-
+		}
+		
 		for(var (i,child) in $$(a) ) {
 			child.on("click", function(evt) {
 				Sciter.launch(this.@#href);
 				return true;
 			});
 		}
-
-		function self.ready() {
-		}
-
+		
 		event click $(#start) {
 		  self.postEvent("waiting","Waiting for something..."); // start waiting with the message
 		  self.timer(10s, function() {
@@ -418,6 +126,7 @@
 			$(#start).enabled = false;
 
 			$(#callbackState).style["color"] = undefined;
+			$(#callbackState).attributes["result"] = initial;
 			$(#callbackProgressContainer).show();
 			$(#callbackProgress).value = 0;
 
@@ -430,7 +139,8 @@
 				function(msg, result) {
 					//$(#callbackContent).attributes["state"] = "visible";
 					$(#callbackState).text = result ? "Completed" : "Cancelled";
-					$(#callbackState).style["color"] = result ? "lime" : "red";
+					$(#callbackState).attributes["result"] = result ? "completed" : "cancelled";
+					//$(#callbackState).style["color"] = result ? "lime" : "red";
 					$(#callbackMessage).text = msg;
 					$(#callbackProgressContainer).hide();
 					$(#start).enabled = true;
@@ -446,7 +156,6 @@
 		event click $(#eval) {
 			$(#evalResult).text = view.eval($(#evalInput).text);
 		}
-
 
 		event click $(#btnInspector) {
 			view.connectToInspector();
@@ -482,7 +191,7 @@
 				<card>
 					<cardheader>
 						<div>Hello C#!</div>
-						<div>Greetings from SciterCore running in .Net Core.</div>
+						<div>Greetings from SciterCore running on .Net Core 3.1.</div>
 					</cardheader>
 
 					<cardcontent state="visible">
@@ -501,7 +210,7 @@
 				
 				
 
-				<card>
+				<card .runtimeInformation>
 					<cardheader>
 						<div>RuntimeInformation</div>
 						<div>Provides information about the .NET runtime installation.</div>
@@ -538,8 +247,8 @@
 					
 					<cardfooter>
 						<hr style="width: 1*; margin: -8dip -16dip 8dip -16dip; border-color: #0004"/>
-						<button#start .action-button>Execute</button>
-						<button#cancel .action-button disabled>Cancel</button>
+						<button#start .action-button .primary>Execute</button>
+						<button#cancel .action-button .secondary disabled>Cancel</button>
 					</cardfooter>
 
 				</card>

@@ -38,7 +38,9 @@ namespace SciterCore.Windows.Wpf
             if (obj is SciterControl control && !_hwnd.Equals(IntPtr.Zero))
             {
                 //control.Host.Window.LoadPage(new Uri($"{args.NewValue}", UriKind.RelativeOrAbsolute));
-                Uri uri = new Uri($"{args.NewValue}", UriKind.Relative);
+                Uri uri = new Uri($"{args.NewValue}", UriKind.RelativeOrAbsolute);
+                
+                //StreamResourceInfo info = Application.GetResourceStream(uri);
                 StreamResourceInfo info = Application.GetContentStream(uri);
 
                 info.Stream.Seek(0, System.IO.SeekOrigin.Begin);

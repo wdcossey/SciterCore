@@ -94,7 +94,7 @@ namespace SciterCore
 			var result= GraphicsApi.ValueWrapPath(this.Handle, out var value)
 				.IsOk();
 
-			sciterValue =  (result || ignoreResult) ? new SciterValue(value) : default;
+			sciterValue =  (result || ignoreResult) ? SciterValue.Attach(value) : default;
 			return result;
 		}
 		

@@ -111,7 +111,7 @@
     <EmbeddedResource Include="Properties\Resources.resx" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="SciterCore.PackFolder" Version="0.1.293" />
+    <PackageReference Include="SciterCore.PackFolder" Version="0.1.483" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Platform\SciterCore.Windows\SciterCore.Windows.csproj">

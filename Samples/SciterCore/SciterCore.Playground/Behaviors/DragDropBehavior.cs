@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using SciterCore;
 using SciterCore.Attributes;
 using SciterCore.Interop;
-using SciterValue = SciterCore.SciterValue;
 
-namespace SciterTest.NetCore.Behaviors
+namespace SciterCore.Playground.Behaviors
 {
     [SciterBehavior("card-drop-behavior")]
     internal class DragDropBehavior : SciterEventHandler

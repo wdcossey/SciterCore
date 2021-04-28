@@ -1,7 +1,6 @@
-﻿using SciterCore;
-using SciterCore.Attributes;
+﻿using SciterCore.Attributes;
 
-namespace SciterTest.NetCore.Behaviors
+namespace SciterCore.Playground.Behaviors
 {
     [SciterBehavior("window-behavior")]
     public class CustomWindowEventHandler: SciterEventHandler
