@@ -10,8 +10,8 @@
 | SciterCore.Windows    | [![Nuget](https://img.shields.io/nuget/v/SciterCore.WinForms)](https://www.nuget.org/packages/SciterCore.WinForms/)     | |
 | SciterCore.Gtk        | [![Nuget](https://img.shields.io/nuget/v/SciterCore.Gtk)](https://www.nuget.org/packages/SciterCore.Gtk/)               | |
 | SciterCore.Xamarin.Mac| [![Nuget](https://img.shields.io/nuget/v/SciterCore.Mac)](https://www.nuget.org/packages/SciterCore.Mac/)               | |
-| [SciterCore.Binaries](https://github.com/wdcossey/SciterCore.Binaries)   | [![NuGet](https://img.shields.io/nuget/v/SciterCore.Binaries)](https://www.nuget.org/packages/SciterCore.Binaries/)     | [![Build Status](https://dev.azure.com/wdcossey/SciterCore/_apis/build/status/SciterCore.Binaries)](https://dev.azure.com/wdcossey/SciterCore/_build/latest?definitionId=11) |
-| [SciterCore.JS.Binaries](https://github.com/wdcossey/SciterCore.JS.Binaries)   | [![NuGet](https://img.shields.io/nuget/v/SciterCore.JS.Binaries)](https://www.nuget.org/packages/SciterCore.JS.Binaries/)     | [![Build Status](https://dev.azure.com/wdcossey/SciterCore/_apis/build/status/SciterCore.JS.Binaries)](https://dev.azure.com/wdcossey/SciterCore/_build/latest?definitionId=15) |
+| [SciterCore.Binaries](https://github.com/wdcossey/SciterCore.Binaries)   | [![NuGet](https://img.shields.io/nuget/v/SciterCore.Binaries)](https://www.nuget.org/packages/SciterCore.Binaries/)     | |
+| [SciterCore.JS.Binaries](https://github.com/wdcossey/SciterCore.JS.Binaries)   | [![NuGet](https://img.shields.io/nuget/v/SciterCore.JS.Binaries)](https://www.nuget.org/packages/SciterCore.JS.Binaries/)     | |
 | [SciterCore.PackFolder](https://github.com/wdcossey/SciterCore.PackFolder) | [![Nuget](https://img.shields.io/nuget/v/SciterCore.PackFolder)](https://www.nuget.org/packages/SciterCore.PackFolder/) | [![Build status](https://dev.azure.com/wdcossey/SciterCore/_apis/build/status/SciterCore.PackFolder)](https://dev.azure.com/wdcossey/SciterCore/_build/latest?definitionId=12) |
 
 ## Status
