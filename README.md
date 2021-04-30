@@ -16,17 +16,17 @@
 
 ## Status
 
-| Operating System      | Version(s)                        | .Net                           | Status      | Comments |
-| ----------------------|-----------------------------------|--------------------------------|-------------|-----------------------------------------------------------------------------------------|
-| Windows               | Windows 10 Pro `v19042.685`       | .Net Core `3.1.10` & `5.0.102` | Working     |                                                                                         |
-| Windows               | Windows 8.x                       | N/A                            | Untested    |                                                                                         |
-| Windows               | Windows 7 Pro SP1 `v7601`         | .Net Core `3.1.404`            | Working     | Ensure you have updated your OS!                                                        |
-| Linux                 | Ubuntu `20.04` <sup>proxmox</sup> | .Net Core `3.1.10`             | Working     | Run `sudo chmod +x packfolder` in `scripts/bin.lnx` to build `SciterCore.csproj`        |
-| Linux                 | Fedora `33` <sup>proxmox</sup>    | .Net Core `3.1.10`             | Working     | Run `sudo chmod +x packfolder` in `scripts/bin.lnx` to build `SciterCore.csproj`        |
-| Linux                 | Manjaro `XFCE` <sup>proxmox</sup> | .Net Core `3.1.10`             | Working     | Run `sudo chmod +x packfolder` in `scripts/bin.lnx` to build `SciterCore.csproj`        |
-| Linux                 | Other                             | N/A                            | Untested    | As long as you have `libgtk-3.so.0`.                                                    |
-| MacOS                 | MacOS Catalina                    | N/A                            | In-Progress |                                                                                         |
-| MacOS                 | MacOS Big Sur                     | N/A                            | Untested    |                                                                                         |
+| Operating System      | Version(s)                        | .Net Core 3.x                  | .Net 5.x  | Status      | Comments |
+| ----------------------|-----------------------------------|--------------------------------|-----------|-------------|-----------------------------------------------------------------------------------------|
+| Windows               | Windows 10 Pro `v19042.685`       | ✔️ | ✔️ | Working     |                                                                                         |
+| Windows               | Windows 8.x                       | ⚠️ | ⚠️ | Untested    |                                                                                         |
+| Windows               | Windows 7 Pro SP1 `v7601`         | ✔️ | ✔️ | Working     | Ensure you have updated your OS!                                                        |
+| Linux                 | Ubuntu `20.04` <sup>proxmox</sup> | ✔️ | ✔️ | Working     | Run `sudo chmod +x packfolder` in `scripts/bin.lnx` to build `SciterCore.csproj`        |
+| Linux                 | Fedora `33` <sup>proxmox</sup>    | ✔️ | ✔️ | Working     | Run `sudo chmod +x packfolder` in `scripts/bin.lnx` to build `SciterCore.csproj`        |
+| Linux                 | Manjaro `XFCE` <sup>proxmox</sup> | ✔️ | ✔️ | Working     | Run `sudo chmod +x packfolder` in `scripts/bin.lnx` to build `SciterCore.csproj`        |
+| Linux                 | Other                             | ⚠️ | ⚠️ | Untested    | As long as you have `libgtk-3.so.0`.                                                    |
+| MacOS                 | MacOS Catalina                    | ⚠️ | ⚠️ | In-Progress |                                                                                         |
+| MacOS                 | MacOS Big Sur                     | ⚠️ | ⚠️ | Untested    |                                                                                         |
 
 All builds are done using `JetBrains Rider` or _vanilla_ `dotnet` CLI.
 
@@ -100,10 +100,12 @@ The source can be found [here](https://github.com/wdcossey/SciterCore.JS.Binarie
 | Project                           | Description                                               | Platform(s)                 |
 | --------------------------------- | :-------------------------------------------------------- | --------------------------- |
 | SciterCore.JS.HelloSciter         | `SciterCore.JS` demo using `.Net 5.0.x`                   | `MacOS`, `Windows`, `Linux` |
+| SciterCore.JS.Wpf                 | `SciterCore.JS` demo using `.Net 5.0.x` w/ `WPF`          | `Windows`                   |
 | SciterCore.HelloSciter            | `SciterCore` demo using `.Net Core 3.1.x`                 | `MacOS`, `Windows`, `Linux` |
+| SciterCore.WinForms               | `SciterCore` Demo using `.Net Core 3.1.x` w/ `WinForms`   | `Windows`                   |
+| SciterCore.Wpf                    | `SciterCore` Demo using `.Net Core 3.1.x` w/ `WPF`        | `Windows`                   |
 | SciterCore.Behaviors              | `SciterCore` Behaviors Demo using `.Net Core 3.1.x`       | `MacOS`, `Windows`, `Linux` |
 | SciterCore.Playground             | `SciterCore` playground project using `.Net Core 3.1.x`   | `MacOS`, `Windows`, `Linux` |
-| SciterCore.CoreForms              | `SciterCore` Demo using `.Net Core 3.1.x` w/ `WinForms`   | `Windows`                   |
 | SciterCore.Sample.SkiaSharp.***   | Demo using [SkiaSharp](https://github.com/mono/SkiaSharp) | `MacOS`, `Windows`          |
 | SciterCore.Sample.Gtk.***         | Demo using `GTK`, migrated from `SciterSharp`             | `MacOS`, `Windows`, `Linux` |
 | SciterCore.Windows.WinForms       | Demo using `.Net Framework 4.6.x` w/ `WinForms`           | `Windows`                   |
