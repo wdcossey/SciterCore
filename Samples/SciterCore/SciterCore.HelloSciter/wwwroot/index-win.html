@@ -1,0 +1,61 @@
+﻿<html window-frame="extended" window-blurbehind="none" theme="dark" window-resizable>
+<header>
+    <window-icon role=window-icon></window-icon>
+    
+    <ul id="menu-bar"> <!-- top level - menu bar, it must match ul#menu-bar selector, see std-menu.css -->
+        <li>File
+            <menu class="cool">
+        <li #menuNewFile accesskey="^N" disabled>New<span class="accesskey">Ctrl+N</span></li>
+        <li #menuOpenFile accesskey="^O">Open<span class="accesskey">Ctrl+O</span></li>
+        <li #menuSaveFile accesskey="^S" disabled>Save<span class="accesskey">Ctrl+S</span></li>
+        <hr/>
+        <li>Recent Files
+            <menu>
+            <li accesskey="^1" >First file...<span class="accesskey">Ctrl+1</span></li>
+            <li accesskey="^2" >Second file...<span class="accesskey">Ctrl+2</span></li>
+            <li accesskey="^3" >Third file...<span class="accesskey">Ctrl+3</span></li>
+            </menu>
+        </li>
+        <hr/>
+        <li accesskey="^4">Settings<span class="accesskey">Ctrl+4</span></li>
+        <hr/>
+        <li #menuExit accesskey="^Q">Exit<span class="accesskey">Ctrl+Q</span></li>
+        </menu>
+        </li>
+        <li>Edit
+            <menu>
+        <li accesskey="^X" >Cut<span class="accesskey">Ctrl+X</span></li>
+        <li accesskey="^C" >Copy<span class="accesskey">Ctrl+C</span></li>
+        <li accesskey="^V" disabled>Paste<span class="accesskey">Ctrl+V</span></li>
+        <hr/>
+        <li accesskey="^A">Select All<span class="accesskey">Ctrl+A</span></li>
+        </menu>
+        </li>
+        <li>View
+            <menu class="cool">
+            <li >First item</li>
+            <li >Second item</li>
+            <li >Third item</li>
+        <hr/>
+        <li #menuViewRefresh accesskey="!F5">Reload<span class="accesskey">F5</span></li>
+        </menu>
+        </li>
+    </ul>
+    
+    <!--<menu.bar>
+        <li>File</li>
+        <li>Edit</li>
+        <li>View</li>
+        <li>Help</li>
+    </menu>-->
+        
+    <window-caption role=window-caption>Hello Sciter</window-caption>
+    <window-buttons>
+        <window-button role="window-minimize"></window-button>
+        <window-button role="window-maximize"></window-button>
+        <window-button role="window-close"></window-button>
+    </window-buttons>
+</header>
+    <style src="win-frame.css" />
+    <include src="index.html" />
+</html>

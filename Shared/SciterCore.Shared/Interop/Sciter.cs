@@ -571,7 +571,6 @@ namespace SciterCore.Interop
 					var fieldInfos = @struct.GetType().GetFields();
 					foreach (var fieldInfo in fieldInfos)
 					{
-						System.Console.WriteLine(fieldInfo.Name);
 						if (!fieldInfoDictionary.ContainsKey(fieldInfo.Name))
 							continue;
 						fieldInfoDictionary[fieldInfo.Name].SetValue(this, fieldInfo.GetValue(@struct));

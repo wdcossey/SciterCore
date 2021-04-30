@@ -1,7 +1,7 @@
-<html window-blurbehind="none" theme="dark">
 <head>
 	<style>
 		@import url(scitercore.css);
+		@import url(std-menu.css);
 		
 		#callbackState {
 		}
@@ -113,17 +113,31 @@
 			});
 		}
 		
-		event click $(#start) {
-		  self.postEvent("waiting","Waiting for something..."); // start waiting with the message
-		  self.timer(10s, function() {
-			 self.postEvent("waiting",false); // done waiting
-		  });
+		event click $(#menuExit) {
+			view.close();
+			return true;
 		}
+		
+		event click $(#menuOpenFile) {
+			view.selectFile(#load);
+			return true;
+		}
+		
+		event click $(#menuViewRefresh) {
+			return true;
+		}
+		
+		//event click $(#startCallback) {
+		//  self.postEvent("waiting","Waiting for something..."); // start waiting with the message
+		//  self.timer(10s, function() {
+		//	 self.postEvent("waiting",false); // done waiting
+		//  });
+		//}
 
-		event click $(#start) {
+		event click $(#startCallback) {
 
-			$(#cancel).enabled = true;
-			$(#start).enabled = false;
+			$(#cancelCallback).enabled = true;
+			$(#startCallback).enabled = false;
 
 			$(#callbackState).style["color"] = undefined;
 			$(#callbackState).attributes["result"] = initial;
@@ -143,13 +157,13 @@
 					//$(#callbackState).style["color"] = result ? "lime" : "red";
 					$(#callbackMessage).text = msg;
 					$(#callbackProgressContainer).hide();
-					$(#start).enabled = true;
-					$(#cancel).enabled = false;
+					$(#startCallback).enabled = true;
+					$(#cancelCallback).enabled = false;
 				}
 			);
 		}
 
-		event click $(#cancel) {
+		event click $(#cancelCallback) {
 			view.CancelCallMeBack();
 		}
 
@@ -247,8 +261,8 @@
 					
 					<cardfooter>
 						<hr style="width: 1*; margin: -8dip -16dip 8dip -16dip; border-color: #0004"/>
-						<button#start .action-button .primary>Execute</button>
-						<button#cancel .action-button .secondary disabled>Cancel</button>
+						<button#startCallback .action-button .primary>Execute</button>
+						<button#cancelCallback .action-button .secondary disabled>Cancel</button>
 					</cardfooter>
 
 				</card>
