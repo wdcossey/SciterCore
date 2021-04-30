@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Diagnostics;
+using System.IO;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -41,7 +45,44 @@ namespace SciterCore.HelloSciter
                 .AddSciter<AppHost, AppEventHandler>(hostOptions =>
                         hostOptions
                             .SetArchiveUri("this://app/")
-                            .SetHomePage("index.html"),
+                            .SetHomePage(provider =>
+                            {
+                                string indexPage = null;
+
+                                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                                {
+                                    var osVersion = Environment.OSVersion.Version;
+                                    
+                                    if (osVersion.Major < 6 ||
+                                        (osVersion.Major == 6 && osVersion.Minor < 1))
+                                        indexPage = "index-win.html"; // TODO: Add fallback page
+                                    else
+                                        indexPage = "index-win.html";
+                                }
+                                    
+
+                                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                                    indexPage = "index-lnx.html";
+
+                                if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                                    indexPage = "index-macos.html";
+
+                                if (string.IsNullOrWhiteSpace(indexPage))
+                                    throw new PlatformNotSupportedException();
+
+#if DEBUG
+                                //Used for development/debugging (load file(s) from the disk)
+                                //See this .csproj file for the SciterCorePackDirectory and SciterCorePackCopyToOutput properties
+                                var location = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                                var path = Path.Combine(location ?? string.Empty, "wwwroot", indexPage);
+                                var uri = new Uri(path, UriKind.Absolute);
+                                Debug.Assert(uri.IsFile);
+                                Debug.Assert(File.Exists(uri.AbsolutePath));
+#else
+				                var uri = new Uri(uriString: indexPage, UriKind.Relative);
+#endif
+                                return uri;
+                            }),
                     windowOptions => windowOptions
                         .SetTitle("SciterCore::Hello")
                         .SetDimensions(800, 600)
