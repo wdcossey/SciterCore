@@ -13,6 +13,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Internal\HostEventHandlerRegistry.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internal\HostWindowRegistry.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internal\HostWindowResolver.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Internal\LazySciterArchive.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internal\NamedBehaviorRegistry.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internal\NamedBehaviorResolver.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Options\SciterHostOptions.cs" />

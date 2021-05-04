@@ -68,7 +68,7 @@ namespace SciterCore.JS.Wpf
             SciterWindow = SciterWindow
                 .CreateChildWindow(hwndParent.Handle);
             
-            Host.SetupWindow(SciterWindow.Handle)
+            Host.SetupWindow(SciterWindow)
                 .AttachEventHandler<WpfHostEventHandler>();
 
             OnContentChanged(this, new DependencyPropertyChangedEventArgs(ContentProperty, null, Content));

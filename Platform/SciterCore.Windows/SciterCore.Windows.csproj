@@ -1,13 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" TreatAsLocalProperty="TaskFolder;PackSourceFolder;PackOutputFile;TaskAssembly">
-  <Import Project="$(SolutionDir)Shared\SciterCore.Shared.WinForms\SciterCore.Shared.WinForms.projitems" Label="Shared" Condition="Exists('$(SolutionDir)Shared\SciterCore.Shared.WinForms\SciterCore.Shared.WinForms.projitems')" />
-  <Import Project="$(SolutionDir)Shared\SciterCore.Shared\SciterCore.Shared.projitems" Label="Shared" Condition="Exists('$(SolutionDir)Shared\SciterCore.Shared\SciterCore.Shared.projitems')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-    <PropertyGroup>
-      <BaseOutputPath>$(MSBuildProjectDirectory)/out/$(MSBuildProjectName)/bin</BaseOutputPath>
-      <BaseIntermediateOutputPath>$(MSBuildProjectDirectory)/out/$(MSBuildProjectName)/obj</BaseIntermediateOutputPath>
-      <LangVersion>8</LangVersion>
-    </PropertyGroup>
+  <Import Project="..\..\Shared\SciterCore.Shared.WinForms\SciterCore.Shared.WinForms.projitems" Label="Shared" Condition="Exists('..\..\Shared\SciterCore.Shared.WinForms\SciterCore.Shared.WinForms.projitems')" />
+  <Import Project="..\..\Shared\SciterCore.Shared\SciterCore.Shared.projitems" Label="Shared" Condition="Exists('..\..\Shared\SciterCore.Shared\SciterCore.Shared.projitems')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -18,6 +13,7 @@
     <AssemblyName>SciterCore.Windows</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <LangVersion>default</LangVersion>
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -36,7 +32,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;WINDOWS</DefineConstants>
+    <DefineConstants>TRACE;WINDOWS;NET45</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>3</WarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -57,19 +53,20 @@
     <Reference Include="System.Net" />
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
-  <ItemGroup>
+<!--  <ItemGroup>
     <Compile Include="..\AssemblyInfo.cs">
       <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
-  </ItemGroup>
+  </ItemGroup>-->
   <ItemGroup>
     <PackageReference Include="SciterCore.Binaries" Version="(4.4.0.2,)" />
     <PackageReference Include="SciterCore.PackFolder" Version="[0.1.*,1.0)" />
     <PackageReference Include="System.Runtime.InteropServices.RuntimeInformation" Version="4.3.0" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+
   <!-- LibConsole packaging -->
   <PropertyGroup>
     <TaskFolder>$(MSBuildThisFileDirectory)..\..\scripts\</TaskFolder>
@@ -90,6 +87,21 @@
       <EmbeddedResource Include="$(ProjectDir)sciter.build\LibConsole.bin">
         <LogicalName>LibConsole</LogicalName>
       </EmbeddedResource>
+    </ItemGroup>
+  </Target>
+
+  <Target Name="BeforeBuild">
+    <ItemGroup>
+      <AssemblyAttributes Include="AssemblyVersion">
+        <_Parameter1>$(Version)</_Parameter1>
+      </AssemblyAttributes>
+    </ItemGroup>
+    <MakeDir Directories="$(IntermediateOutputPath)" />
+    <WriteCodeFragment Language="C#"
+                       OutputFile="$(IntermediateOutputPath)Version.cs"
+                       AssemblyAttributes="@(AssemblyAttributes)" />
+    <ItemGroup>
+      <Compile Include="$(IntermediateOutputPath)Version.cs" />
     </ItemGroup>
   </Target>
 </Project>

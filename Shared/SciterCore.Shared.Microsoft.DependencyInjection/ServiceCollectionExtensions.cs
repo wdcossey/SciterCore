@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Text;
 using SciterCore;
 using SciterCore.Attributes;
 using SciterCore.Enums;
 using SciterCore.Extensions;
 using SciterCore.Internal;
+using SciterCore.Interop;
 using SciterCore.Options;
 
 // ReSharper disable once CheckNamespace
@@ -107,6 +110,32 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         #endregion
+
+        #region AddSciterArchives...
+
+        public static IServiceCollection AddSciterArchivesFromAssembly(this IServiceCollection services,
+            Assembly assembly)
+        {
+            var attributes = assembly?.GetCustomAttributes<SciterCoreArchiveAttribute>()?.ToList();
+
+            if (attributes?.Any() == true)
+                foreach (var attribute in attributes)
+                {
+                    services.Add(ServiceDescriptor.Describe(
+                        serviceType: typeof(LazySciterArchive),
+                        implementationFactory: provider => new LazySciterArchive(attribute.Uri, assembly,
+                            attribute.ResourceName, attribute.InitScripts), lifetime: ServiceLifetime.Singleton));
+                }
+
+            return services;
+        }
+
+        public static IServiceCollection AddSciterArchivesFromAssemblyWithType(this IServiceCollection services, Type type)
+        {
+            return services.AddSciterArchivesFromAssembly(type?.Assembly);
+        }
+
+        #endregion
         
         #region AddSciter
         
@@ -155,6 +184,28 @@ namespace Microsoft.Extensions.DependencyInjection
 
                     var result = ActivatorUtilities.CreateInstance<TPrimaryHost>(scopedServiceProvider);
                     
+                    var archives = scopedServiceProvider.GetServices<LazySciterArchive>();
+
+                    foreach (var archive in archives)
+                    {
+                        archive.Open();
+                        result.AttachedArchives.TryAdd(archive.Uri.Scheme, archive);
+
+                        if (archive.InitScripts?.Any() != true) 
+                            continue;
+                        
+                        foreach (var initScript in archive.InitScripts)
+                        {
+                            var byteArray = Encoding.UTF8.GetBytes($"include \"{initScript}\";");
+                            var pinnedArray = GCHandle.Alloc(byteArray, GCHandleType.Pinned);
+                            var pointer = pinnedArray.AddrOfPinnedObject();
+                            Sciter.SciterApi.SciterSetOption(IntPtr.Zero, SciterXDef.SCITER_RT_OPTIONS.SCITER_SET_INIT_SCRIPT,
+                                pointer);
+                            pinnedArray.Free();
+                        }
+                    }
+                    
+                        
                     var namedBehaviorResolver = scopedServiceProvider.GetService<INamedBehaviorResolver>();
                     
                     if (namedBehaviorResolver != null)
@@ -188,10 +239,10 @@ namespace Microsoft.Extensions.DependencyInjection
                                 break;
                                 ;
                         }
-
-                        result?.SetupWindow(sciterWindow);
-                        //result?.Window.TryLoadPage(uri: new Uri("this://app/index.html"));
                     }
+                    
+                    result?.SetupWindow(sciterWindow);
+                    //result?.Window.TryLoadPage(uri: new Uri("this://app/index.html"));
 
                     HostEventHandlerRegistry.Instance
                         .TryGetValue(typeof(TPrimaryHost), out var hostEventHandlerType);

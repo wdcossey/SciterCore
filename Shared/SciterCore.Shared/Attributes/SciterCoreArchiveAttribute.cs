@@ -6,12 +6,16 @@ namespace SciterCore.Attributes
     public class SciterCoreArchiveAttribute : Attribute
     {
         public string Uri { get; }
+        
         public string ResourceName { get; }
+        
+        public string[] InitScripts { get; }
 
-        public SciterCoreArchiveAttribute(string uri, string resourceName)
+        public SciterCoreArchiveAttribute(string uri, string resourceName = "SciterResource", params string[] initScripts)
         {
             Uri = uri;
             ResourceName = resourceName;
+            InitScripts = initScripts;
         }
     }
 }

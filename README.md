@@ -16,19 +16,20 @@
 
 ## Status
 
-| Operating System      | Version(s)                        | .Net Core 3.x                  | .Net 5.x  | Status      | Comments |
-| ----------------------|-----------------------------------|--------------------------------|-----------|-------------|-----------------------------------------------------------------------------------------|
-| Windows               | Windows 10 Pro `v19042.685`       | ✔️ | ✔️ | Working     |                                                                                         |
-| Windows               | Windows 8.x                       | ⚠️ | ⚠️ | Untested    |                                                                                         |
-| Windows               | Windows 7 Pro SP1 `v7601`         | ✔️ | ✔️ | Working     | Ensure you have updated your OS!                                                        |
-| Linux                 | Ubuntu `20.04` <sup>proxmox</sup> | ✔️ | ✔️ | Working     | Run `sudo chmod +x packfolder` in `scripts/bin.lnx` to build `SciterCore.csproj`        |
-| Linux                 | Fedora `33` <sup>proxmox</sup>    | ✔️ | ✔️ | Working     | Run `sudo chmod +x packfolder` in `scripts/bin.lnx` to build `SciterCore.csproj`        |
-| Linux                 | Manjaro `XFCE` <sup>proxmox</sup> | ✔️ | ✔️ | Working     | Run `sudo chmod +x packfolder` in `scripts/bin.lnx` to build `SciterCore.csproj`        |
-| Linux                 | Other                             | ⚠️ | ⚠️ | Untested    | As long as you have `libgtk-3.so.0`.                                                    |
-| MacOS                 | MacOS Catalina                    | ⚠️ | ⚠️ | In-Progress |                                                                                         |
-| MacOS                 | MacOS Big Sur                     | ⚠️ | ⚠️ | Untested    |                                                                                         |
+| Operating System | Version(s)                          | .Net Core 3.x | .Net 5.x  | Status      | Comments                                                     |
+| -----------------|-------------------------------------|---------------|-----------|-------------|--------------------------------------------------------------|
+| Windows          | 10 Pro `v19042.928`                 | ✔️          | ✔️     | Working     |                                                              |
+| Windows          | 8.1 Pro `v9600`<sup>proxmox</sup>   | ✔️          | ✔️     | Working     |                                                              |
+| Windows          | 8.0 Pro `v9200`<sup>proxmox</sup>   | ✔️          | ✔️     | Working     | Requires `Visual C++ Redistributable for Visual Studio 2015` |
+| Windows          | 7 Pro SP1 `v7601`<sup>proxmox</sup> | ✔️          | ✔️     | Working     | Ensure you have updated your OS!                             |
+| Ubuntu           | `20.04` <sup>proxmox</sup>          | ✔️          | ✔️     | Working     |                                                              |
+| Fedora           | `33` <sup>proxmox</sup>             | ✔️          | ✔️     | Working     |                                                              |
+| Manjaro          | `20.2` `XFCE` <sup>proxmox</sup>    | ✔️          | ✔️     | Working     |                                                              |
+| Linux            | Other                               |               |           | Untested    | Requires `libgtk-3.so.0`                                     |
+| MacOS            | Catalina                            | ⚠️          | ⚠️     | In-Progress |                                                              |
+| MacOS            | Big Sur                             | ⚠️          | ⚠️     | Untested    |                                                              |
 
-All builds are done using `JetBrains Rider` or _vanilla_ `dotnet` CLI.
+All development is done using `JetBrains Rider` and/or _vanilla_ `dotnet` CLI.
 
 The changes are going to be frequent while I add stop-gaps between adding/enhancing functionality, expect things to break!!!
 
@@ -38,13 +39,13 @@ Join in, start building, testing, help the project find and fix bugs, add/sugges
 
 SciterCore is based off the work done by [Ramon F. Mendes](https://github.com/ramon-mendes) on [SciterSharp](https://github.com/ramon-mendes/SciterSharp)
 
-** `SciterCore` is `NOT` backwards compatible with `SciterSharp`, you can't simply change the packages and hope things will work, changes will need to be made.
+** `SciterCore` is `NOT` backwards compatible with `SciterSharp`, simply changing the packages and hoping things will work is futile, changes will need to be made.
 
 1. **Why SciterCore if SciterSharp exists?**
 
-    SciterCore aims to bring Sciter to .Net Core developers, the end goal of this project is to build Sciter applications using .Net Core w/o the need for Xamarin/Mono.
+    SciterCore aims to bring Sciter to `.Net Core 3.x` and `.Net 5.x` developers, the end goal of this project is to build Sciter applications using .Net Core w/o the need for Xamarin/Mono.
   
-    While I will do my best to add support for WinForms, WPF, Xamarin, etc. these are not high priority, the goal is .Net Core (and .Net 5+).
+    Support for `.Net Framework 4.6.x` (`WinForms`, `WPF`, `Xamarin`, etc) applications is limited, functionality may be limited and/or missing.
 
     I have spent many hours cleaning up and tuning the project, modifying the code to make it simpler to use as well as adding support for newer versions of Sciter.
     
@@ -68,13 +69,27 @@ This library provides bindings of [Sciter](http://sciter.com/download/) C/C++ he
 
 ## Available Packages
 
-### SciterCore (previously `SciterCore.NetStd`)
-Windows/MacOS/Linux via `.Net Core 3.1` & `.Net 5`.
+### SciterCore
+Windows/MacOS/Linux using `Sciter` (`TIScript`).
+
+`.NetStandard 2.1` `.NetStandard 2.0` `.NetCoreApp 2.1` `.NetCoreApp 3.1` `.Net 5`.
+
+### SciterCore.Microsoft.DependencyInjection
+`SciterCore` dependency injection extensions using `Microsoft.DependencyInjection`.
+
+`.NetStandard 2.1` `.NetStandard 2.0` `.NetCoreApp 2.1` `.NetCoreApp 3.1` `.Net 5`.
 
 ### SciterCore.JS
-Windows/MacOS/Linux via `.Net Core 3.1` & `.Net 5`, using Sciter.JS (JavaScript).
+Windows/MacOS/Linux using `SciterJS` (`JavaScript`).
 
-### SciterCore.Windows  (previously `SciterCore.WinForms`)
+`.NetStandard 2.1` `.NetStandard 2.0` `.NetCoreApp 2.1` `.NetCoreApp 3.1` `.Net 5`.
+
+### SciterCore.JS.Microsoft.DependencyInjection
+`SciterCore.JS` dependency injection extensions using `Microsoft.DependencyInjection` 
+
+`.NetStandard 2.1` `.NetStandard 2.0` `.NetCoreApp 2.1` `.NetCoreApp 3.1` `.Net 5`.
+
+### SciterCore.Windows
 Windows, WinForms and WPF support via `.Net Framework 4.6.1`
 
 ### SciterCore.Gtk

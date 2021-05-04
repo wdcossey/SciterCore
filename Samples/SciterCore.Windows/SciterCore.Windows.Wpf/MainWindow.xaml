@@ -11,7 +11,7 @@
         Title="SciterCore.Windows::Wpf" Height="450" Width="800">
     
     <Grid >
-        <wpf:SciterControl Source="/wwwroot/index.html">
+        <wpf:SciterControl Content="this://app/index.html">
             
         </wpf:SciterControl>
     </Grid>

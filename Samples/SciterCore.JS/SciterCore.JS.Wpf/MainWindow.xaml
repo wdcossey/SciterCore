@@ -12,14 +12,14 @@
            <!--<RowDefinition Height="*"/>-->
        </Grid.RowDefinitions>
         
-        <wpf:SciterControl Grid.Row="0"  Content="this://app/index.html">
+        <wpf:SciterControl Grid.Row="0" Content="this://app/index.html">
         
         </wpf:SciterControl>
         
-        <!--<sciter:SciterControl Grid.Row="1"  >
-            <sciter:SciterControl.Content>
+        <!--<wpf:SciterControl Grid.Row="1"  >
+            <wpf:SciterControl.Content>
                 Hello WPF from the &lt;b&gt;Content&lt;/b&gt;.
-            </sciter:SciterControl.Content>
-        </sciter:SciterControl>-->
+            </wpf:SciterControl.Content>
+        </wpf:SciterControl>-->
     </Grid>
 </Window>

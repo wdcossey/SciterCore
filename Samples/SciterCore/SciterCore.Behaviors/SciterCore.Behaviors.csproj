@@ -37,13 +37,10 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
+  
   <ItemGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <ProjectReference Include="..\..\..\Platform\SciterCore\SciterCore.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\..\Platform\SciterCore.Microsoft.DependencyInjection\SciterCore.Microsoft.DependencyInjection.csproj" />
+    <ProjectReference Include="..\..\..\Platform\SciterCore\SciterCore.csproj" />
   </ItemGroup>
 
 </Project>

@@ -46,13 +46,7 @@ namespace SciterCore
 		
 		internal SciterEventHandler WindowEventHandler;
 
-#if SCITER_JS
-		public static bool InjectLibConsole = false;
-#else
-		public static bool InjectLibConsole = true;
-#endif
-		
-		protected static readonly HashSet<SciterArchive> AttachedArchives = new HashSet<SciterArchive>();
+		protected internal readonly ConcurrentDictionary<string, SciterArchive> AttachedArchives = new ConcurrentDictionary<string, SciterArchive>();
 
 		#region Events
 
@@ -65,7 +59,6 @@ namespace SciterCore
 		public EventHandler<DetachHandlerEventArgs> OnDetachEventHandler;
 		
 		#endregion
-		
 
 #if NETCORE
 		private INamedBehaviorResolver _namedBehaviorResolver;
@@ -76,32 +69,11 @@ namespace SciterCore
 			get => _windowHandle;
 			set => _windowHandle = value;
 		}
-
-		static SciterHost()
-		{
-			if (InjectLibConsole)
-			{
-				AttachedArchives.Add(new SciterArchive("scitersharp:").Open("LibConsole"));
-
-				var byteArray = Encoding.UTF8.GetBytes("include \"scitersharp:console.tis\";");
-				var pinnedArray = GCHandle.Alloc(byteArray, GCHandleType.Pinned);
-				var pointer = pinnedArray.AddrOfPinnedObject();
-				Sciter.SciterApi.SciterSetOption(IntPtr.Zero, SciterXDef.SCITER_RT_OPTIONS.SCITER_SET_INIT_SCRIPT,
-					pointer);
-				pinnedArray.Free();
-			}
-		}
 		
-		public SciterHost()
-		{
-			//			
-		}
+		public SciterHost() { }
 
 		public SciterHost(Func<SciterWindow> windowFunc)
-			: this(window: windowFunc?.Invoke())
-		{
-			//
-		}
+			: this(window: windowFunc?.Invoke()) { }
 
 		// ReSharper disable once SuggestBaseTypeForParameter
 		public SciterHost(SciterWindow window)
@@ -562,19 +534,16 @@ namespace SciterCore
 		protected virtual LoadResult OnLoadData(object sender, LoadDataArgs args)
 		{
 			Debug.Assert(WindowHandle != IntPtr.Zero, "Call SciterHost.SetupWindow() first");
-
-			foreach (var archive in AttachedArchives)
-			{
-				if (archive.TryGetItem(args.Uri,
-					(result) =>
-					{
-						if (result.IsSuccessful)
-							Api.SciterDataReady(WindowHandle, result.Path, result.Data, (uint) result.Size);
-					}))
+			
+			if (!AttachedArchives.TryGetValue(args.Uri.Scheme, out var archive)) 
+				return LoadResult.Ok;
+			
+			archive.TryGetItem(args.Uri,
+				(result) =>
 				{
-					break;
-				}
-			}
+					if (result.IsSuccessful)
+						Api.SciterDataReady(WindowHandle, result.Path, result.Data, (uint) result.Size);
+				});
 
 			return LoadResult.Ok;
 		}

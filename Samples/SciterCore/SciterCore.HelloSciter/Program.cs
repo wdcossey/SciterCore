@@ -39,7 +39,8 @@ namespace SciterCore.HelloSciter
                         .AddConsole();
                 })
                 .AddSingleton<IConfiguration>(provider => configuration)
-                //.AddSciterHost<AppHost>()
+                
+                .AddSciterArchivesFromAssembly(Assembly.Load("SciterCore.SciterSharp.Utilities"))
                 .AddSciterBehavior<DragDropBehavior>()
                 .AddSciterBehavior<SecondBehavior>()
                 .AddSciter<AppHost, AppEventHandler>(hostOptions =>

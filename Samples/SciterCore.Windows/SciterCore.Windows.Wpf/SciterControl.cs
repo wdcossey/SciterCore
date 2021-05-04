@@ -17,48 +17,40 @@ namespace SciterCore.Windows.Wpf
             "        args.Html = \"&lt;body&gt;Hello &lt;b&gt;World&lt;/b&gt;&lt;/body&gt;\";<br/>" + 
             "    }</code></pre></body></html>";
 
-        public SciterWindow SciterWnd { get; private set; }
-        
-        private IntPtr _sciterHandle = IntPtr.Zero;
-        
         public SciterControl()
         {
-            this.Host = new WpfSciterHost(this);
+            Host = new SciterArchiveHost();
+            Content = DefaultHtml;
         }
+        
+        public SciterWindow SciterWindow { get; private set; }
+        
+        public SciterArchiveHost Host { get; set; }
 
-        public SciterHost Host { get; set; }
+        public static readonly DependencyProperty ContentProperty =
+            DependencyProperty.Register(
+                nameof(Content), typeof(object), typeof(SciterControl),
+                new FrameworkPropertyMetadata(DefaultHtml, new PropertyChangedCallback(OnContentChanged)));
 
-        public static readonly DependencyProperty SourceProperty =
-           DependencyProperty.Register(
-               nameof(Source), typeof(object), typeof(SciterControl),
-               new FrameworkPropertyMetadata(DefaultHtml, new PropertyChangedCallback(OnSourceChanged)));
-
-        private static async void OnSourceChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args)
+        private static void OnContentChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args)
         {
-            if (obj is SciterControl control && !_hwnd.Equals(IntPtr.Zero))
+            if (!(obj is SciterControl control) || (control.SciterWindow == null || control.SciterWindow.WindowHandle.Equals(IntPtr.Zero)))
+                return;
+
+            if (Uri.TryCreate($"{args.NewValue}", UriKind.Absolute, out var uri))
             {
-                //control.Host.Window.LoadPage(new Uri($"{args.NewValue}", UriKind.RelativeOrAbsolute));
-                Uri uri = new Uri($"{args.NewValue}", UriKind.RelativeOrAbsolute);
-                
-                //StreamResourceInfo info = Application.GetResourceStream(uri);
-                StreamResourceInfo info = Application.GetContentStream(uri);
-
-                info.Stream.Seek(0, System.IO.SeekOrigin.Begin);
-                var buffer = new byte[info.Stream.Length];
-
-                await info.Stream.ReadAsync(buffer, 0, buffer.Length);
-                Sciter.SciterApi.SciterLoadHtml(control.Handle, buffer, (uint)buffer.Length, null);
+                control.Host.Window.LoadPage(uri);
+                return;
             }
+            
+            control.Host.Window.LoadHtml((string)args.NewValue);
         }
 
-        /// <summary>
-        /// Gets or sets the value assigned to the control.
-        /// </summary>
-        public object Source
-       {          
-           get { return (string)GetValue(SourceProperty); }
-           set { SetValue(SourceProperty, value); }
-       }
+        public object Content
+        {
+            get => (string) GetValue(ContentProperty);
+            set => SetValue(ContentProperty, value);
+        }
 
        // public static readonly DependencyProperty HtmlProperty =
        //    DependencyProperty.Register(
@@ -83,44 +75,15 @@ namespace SciterCore.Windows.Wpf
 
         protected override HandleRef BuildWindowCore(HandleRef hwndParent)
         {
-            //SciterWnd = new SciterWindow(hwndParent.Handle);
-            //SciterWnd.CreateChildWindow(hwndParent.Handle, SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_CHILD | SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_RESIZEABLE | SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_ALPHA);
-            ////SciterWnd.LoadHtml(/*loadHtmlEventArgs?.Html ?? this.Html ??*/ DefaultHtml);
-            ////SciterWnd.Show();
-
-            //var result = new HandleRef(this, SciterWnd.Handle);
-
-            //_hwnd = result.Handle;
-
-            //OnSourceChanged(this, new DependencyPropertyChangedEventArgs(SourceProperty, null, Source));
-
-            //return result;
-
-            string wndclass = Sciter.SciterApi.SciterClassName();
-            _sciterHandle = PInvokeWindows.CreateWindowEx(
-                (int)0,
-                wndclass,
-                null,
-                (int)(PInvokeWindows.WindowStyles.WS_CHILD),
-                (int)VisualOffset.X,
-                (int)VisualOffset.Y,
-                (int)ActualWidth,
-                (int)ActualHeight,
-                hwndParent.Handle, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero);
-
-            //var bytes = Encoding.UTF8.GetBytes(Html);
-
-            //Sciter.Api.SciterLoadHtml(child, bytes, (uint)bytes.Length, null);
-
-            var result = new HandleRef(this, _sciterHandle);
-
-            _hwnd = result.Handle;
-
-            Host.SetupWindow(_sciterHandle);
+            SciterWindow = SciterWindow
+                .CreateChildWindow(hwndParent.Handle);
             
-            OnSourceChanged(this, new DependencyPropertyChangedEventArgs(SourceProperty, null, Source));
+            Host.SetupWindow(SciterWindow.Handle)
+                .AttachEventHandler<WpfHostEventHandler>();
 
-            return result;
+            OnContentChanged(this, new DependencyPropertyChangedEventArgs(ContentProperty, null, Content));
+
+            return new HandleRef(this, SciterWindow.Handle);
         }
 
         private static IntPtr _hwnd = IntPtr.Zero;
@@ -129,19 +92,5 @@ namespace SciterCore.Windows.Wpf
         {
             PInvokeWindows.DestroyWindow(hwnd: hwnd.Handle);
         }
-
-        //private void PresentationSourceOnContentRendered(object sender, EventArgs e)
-        //{
-        //    HwndSource source = (HwndSource)sender;
-        //    SciterWnd = new SciterWindow(source.Handle);
-        //    SciterWnd.CreateChildWindow(source.Handle);
-        //    SciterWnd.LoadHtml(/*loadHtmlEventArgs?.Html ?? this.Html ??*/ DefaultHtml);
-        //    SciterWnd.Show();
-        //    if (SciterWnd.Handle.ToInt32() != 0)
-        //    {
-        //        //PInvokeWindows.MoveWindow(source.Handle, 0, 0, (int)ActualWidth, (int)ActualHeight, true);
-        //        PInvokeWindows.MoveWindow(SciterWnd.Handle, (int)VisualOffset.X, (int)VisualOffset.Y, (int)ActualWidth, (int)ActualHeight, true);
-        //    }
-        //}
     }
 }
