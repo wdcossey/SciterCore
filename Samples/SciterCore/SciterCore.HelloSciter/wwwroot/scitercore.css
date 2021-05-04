@@ -136,8 +136,8 @@ card {
     padding: 16dip;
     width: 1*;
     margin-bottom: 16dip;
-    border: var(card-bd-width, 1dip) solid color(card-bd-color);
-    border-radius: 4dip;
+    border: var(card-bd-width, 1dip) solid morph(color(card-bd-color), opacity: 50%);
+    border-radius: 0dip;
     //color: white;
     //background-color: rgba(36, 49, 64, 1);
     background-color: color(card-bg-color);
@@ -146,7 +146,8 @@ card {
 }
 
 card:hover {
-    /*box-shadow: rgba(0, 0, 0, 0.266) 0px 3.2px 7.2px 0px, rgba(0, 0, 0, 0.22) 0px 0.6px 1.8px 0px;*/
+    border-color: color(card-bd-color);
+    box-shadow: rgba(0, 0, 0, 0.266) 0px 3.2px 7.2px 0px, rgba(0, 0, 0, 0.22) 0px 0.6px 1.8px 0px;
 }
 
 card > cardcontent
@@ -217,6 +218,12 @@ cardfooter {
     display:inline-block;
     width: 1*;
     margin-top: 16dip;
+}
+
+cardfooter > hr {
+    width: 1*;
+    margin: -8dip -17dip 8dip -16dip;
+    border-color: color(card-bd-color);
 }
 
 progress.custom-progress {

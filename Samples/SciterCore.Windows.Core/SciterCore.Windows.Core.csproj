@@ -79,13 +79,20 @@
   <ItemGroup>
     <PackageReference Include="SciterCore.Binaries" Version="4.4.7" />
     <PackageReference Include="SciterCore.PackFolder" Version="0.1.483" />
+    <PackageReference Include="SciterCore.SciterSharp.Utilities" Version="*-*" />
+    <!--<PackageReference Include="SciterCore.Windows" Version="*-*" />-->
   </ItemGroup>
-  <ItemGroup>
+  <ItemGroup Condition=" '$(Configuration)' == 'Debug' ">
     <ProjectReference Include="..\..\Platform\SciterCore.Windows\SciterCore.Windows.csproj">
       <Project>{18b2e4e7-cb77-44c3-865b-be05620aba4d}</Project>
       <Name>SciterCore.Windows</Name>
     </ProjectReference>
   </ItemGroup>
+  
+  <ItemGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <ProjectReference Include="..\..\Platform\SciterCore.SciterSharp.Utilities\SciterCore.SciterSharp.Utilities.csproj" />
+  </ItemGroup>
+  
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

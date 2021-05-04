@@ -73,6 +73,8 @@ namespace SciterCore
 
 		internal Task OpenInternalAsync(string resourceName, StringComparison comparisonType = StringComparison.OrdinalIgnoreCase)
 		{
+			ArchiveAlreadyOpened();
+			
 			var assembly = Assembly.GetEntryAssembly();
 			if (assembly?.GetManifestResourceNames().Any(a => a.Equals(resourceName, comparisonType: comparisonType)) != true)
             {

@@ -49,8 +49,7 @@ namespace SciterCore.Windows.Core
 			
 			// Prepares SciterHost and then load the page
 			AppHost = new ApplicationHost(AppWindow);
-				
-				
+
 			AppHost
 				.SetupWindow(AppWindow)
 				.AttachEventHandler(new HostEventHandler());

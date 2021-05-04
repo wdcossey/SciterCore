@@ -9,11 +9,11 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>TRACE;NETCORE</DefineConstants>
+    <DefineConstants>TRACE;NETCORE;SCITERCORE</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <DefineConstants>TRACE;NETCORE</DefineConstants>
+    <DefineConstants>TRACE;NETCORE;SCITERCORE;</DefineConstants>
   </PropertyGroup>
   
   <ItemGroup>
@@ -29,7 +29,7 @@
     <PackageReference Include="SciterCore.Binaries" Version="4.4.7" />
     <PackageReference Include="SciterCore.Microsoft.DependencyInjection" Version="0.0.507-alpha" />
     <PackageReference Include="SciterCore.PackFolder" Version="0.1.483" />
-    <PackageReference Include="SciterCore.SciterSharp.Utilities" Version="0.0.507-alpha" />
+    <PackageReference Include="SciterCore.SciterSharp.Utilities" Version="*-*" />
     <PackageReference Include="System.Text.Json" Version="4.7.2" />
   </ItemGroup>
 
@@ -43,6 +43,11 @@
   <ItemGroup Condition=" '$(Configuration)' == 'Debug' ">
     <ProjectReference Include="..\..\..\Platform\SciterCore.Microsoft.DependencyInjection\SciterCore.Microsoft.DependencyInjection.csproj" />
     <ProjectReference Include="..\..\..\Platform\SciterCore\SciterCore.csproj" />
+    <ProjectReference Include="..\..\..\Platform\SciterCore.SciterSharp.Utilities\SciterCore.SciterSharp.Utilities.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\_Shared\SciterCore.Samples.Shared\SciterCore.Samples.Shared.csproj" />
   </ItemGroup>  
 
 </Project>

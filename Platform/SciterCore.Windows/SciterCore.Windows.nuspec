@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>SciterCore.Windows</id>
+    <version>$version$</version>
+    <title>SciterCore.Windows</title>
+    <authors>William D Cossey</authors>
+    <owners>wdcossey</owners>
+    <projectUrl>https://github.com/wdcossey/SciterCore</projectUrl>
+    <description>SciterCore package for .Net Framework applications</description>
+    <copyright>William D Cossey</copyright>
+    <tags>Sciter SciterCore SciterSharp WinForms WPF</tags>
+    <icon>images\icon.png</icon>
+    <dependencies>
+      <group targetFramework="net461">
+        <dependency id="SciterCore.Binaries" version="(4.4.0.2,)" />
+        <dependency id="SciterCore.PackFolder" version="[0.1.*,1.0)" />
+        <dependency id="System.Runtime.InteropServices.RuntimeInformation" version="4.3.0" />
+        <dependency id="System.ValueTuple" version="4.5.0" />
+      </group>
+	</dependencies>
+  </metadata>
+  <files>
+    <file src="..\..\Assets\sciter_nuget_icon.png" target="images\icon.png" />
+    <file src="bin\Release\**\*.*" target="lib\net461" />
+   
+  </files>
+</package>
