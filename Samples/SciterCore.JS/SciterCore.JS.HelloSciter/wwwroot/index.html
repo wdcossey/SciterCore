@@ -10,7 +10,7 @@
         a:link { behavior: clickable;  }
 
         .runtimeInformation {
-            behavior: runtime-info;
+            /*behavior: runtime-info;*/
         }
         
     </style>
@@ -21,7 +21,7 @@
 
         const $ = sciter.$;
         const on = sciter.on;
-
+        
         document.ready = function () {
             var version = sciter.VERSION;
             var revision = sciter.REVISION;
@@ -60,6 +60,24 @@
                $("#stParameters").innerHTML += "(" + args.join(", ") + ")";
 
                $("#stContent").setAttribute("state", "visible");
+            });
+
+            Window.this.xcall("GetRuntimeInfo",
+                function(value) {
+                    $("#frameworkDescription").innerText = value.FrameworkDescription;
+                    //$("#systemVersion").innerText = value.SystemVersion;
+                    $("#processArchitecture").innerText = value.ProcessArchitecture;
+                    $("#osArchitecture").innerText = value.OSArchitecture;
+                    $("#osDescription").innerText = value.OSDescription;
+                    $("#osContent").attributes["state"] = "visible";
+                },
+                function() {
+
+                }
+            );
+
+            Window.this.xcall("GetDotNetVersion", function(value) {
+                $("#dotnet-version").innerText = value;
             });
             
             Window.this.xcall("breakMe", 100, 0,
@@ -134,6 +152,10 @@
             Window.this.xcall("CancelCallMeBack");
         });
         
+        on("click", "li|radio(theme)", function (evt,sender) {
+            document.attributes["theme"] = sender.value;
+        });
+        
     </script>
     
 </head>
@@ -160,7 +182,7 @@
                 <card>
                     <cardheader>
                         <div>Hello C#!</div>
-                        <div>Greetings from SciterCore.JS running on .Net 5.</div>
+                        <div>Greetings from SciterCore.JS running on <span #dotnet-version>.Net</span>.</div>
                     </cardheader>
     
                     <cardcontent state="visible">

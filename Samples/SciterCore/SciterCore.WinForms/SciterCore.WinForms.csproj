@@ -25,7 +25,7 @@
   <ItemGroup>
     <PackageReference Include="SciterCore.Binaries" Version="4.4.7" />
     <PackageReference Include="SciterCore.PackFolder" Version="0.1.483" />
-    <PackageReference Include="SciterCore.SciterSharp.Utilities" Version="0.0.507-alpha" />
+    <PackageReference Include="SciterCore.SciterSharp.Utilities" Version="*-*" />
   </ItemGroup>
   
   <ItemGroup Condition=" '$(Configuration)' == 'Debug' ">

@@ -25,9 +25,9 @@
 			//Synchronous
 			view.SynchronousFunction();
 	
-			console.log(view.SynchronousArgumentFunction(1,2,3,4,5));
+			console.log(view.SynchronousFunction([1,2,3,4,5,6]));
 	
-			console.log(view.SynchronousArgumentsFunction(1,2,3,4,5));
+			console.log(view.SynchronousFunction(1,2,3,4,5));
 	
 			//Asynchronous
 			view.AsynchronousFunction();
@@ -70,6 +70,12 @@
 				},
 				function() {
 	
+				}
+			);
+	
+			view.GetDotNetVersion(
+				function(value) {
+					$(#dotnet-version).text = value;
 				}
 			);
 	
@@ -166,6 +172,12 @@
 		event click $(#cancelCallback) {
 			view.CancelCallMeBack();
 		}
+		
+		for(var (i,child) in $$(li|radio(theme)) ) {
+			child.on("click", function(evt) {
+				self.attributes["theme"] = this.value;
+			});
+		}
 
 		event click $(#eval) {
 			$(#evalResult).text = view.eval($(#evalInput).text);
@@ -205,7 +217,7 @@
 				<card>
 					<cardheader>
 						<div>Hello C#!</div>
-						<div>Greetings from SciterCore running on .Net Core 3.1.</div>
+						<div>Greetings from SciterCore running on <span #dotnet-version>.Net</span>.</div>
 					</cardheader>
 
 					<cardcontent state="visible">

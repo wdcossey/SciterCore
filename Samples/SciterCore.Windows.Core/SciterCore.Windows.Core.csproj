@@ -55,7 +55,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Host.cs" />
+    <Compile Include="AppHost.cs" />
+    <Compile Include="AppEventHandler.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -83,10 +84,7 @@
     <!--<PackageReference Include="SciterCore.Windows" Version="*-*" />-->
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <ProjectReference Include="..\..\Platform\SciterCore.Windows\SciterCore.Windows.csproj">
-      <Project>{18b2e4e7-cb77-44c3-865b-be05620aba4d}</Project>
-      <Name>SciterCore.Windows</Name>
-    </ProjectReference>
+    <ProjectReference Include="..\..\Platform\SciterCore\SciterCore.csproj" />
   </ItemGroup>
   
   <ItemGroup Condition=" '$(Configuration)' == 'Debug' ">
