@@ -42,6 +42,12 @@ namespace SciterCore.HelloSciter
 			return Task.CompletedTask;
 		}
 		
+		public void GetDotNetVersion(SciterElement element, SciterValue onCompleted)
+		{
+			var value = SciterValue.Create(RuntimeInformation.FrameworkDescription);
+			onCompleted.Invoke(value);
+		}
+		
 		public Task GetRuntimeInfo(SciterElement element, SciterValue onCompleted, SciterValue onError)
 		{
 			try
@@ -112,17 +118,17 @@ namespace SciterCore.HelloSciter
 			_logger?.LogInformation("{NameOfMethod}() was executed!", nameof(SynchronousFunction));
 		}
 
-		public void SynchronousArgumentFunction(SciterElement element, SciterValue[] args)
+		public void SynchronousFunction(SciterElement element, SciterValue[] args)
 		{
-			_logger?.LogInformation("{NameOfMethod}({Parameters}) was executed!", nameof(SynchronousArgumentFunction),
-				string.Join(", ", args.Select(s => $"{Array.IndexOf(args, s)}: {s.AsInt32()}")));
+			_logger?.LogInformation("{NameOfMethod}({Parameters}) was executed!", nameof(SynchronousFunction),
+				string.Join(", ", args.Select(s => $"{Array.IndexOf(args, s)}: [{string.Join(", ", s.AsEnumerable().Select(s1 => s1.AsInt32()))}]")));
 		}
 
-		public void SynchronousArgumentsFunction(SciterElement element, SciterValue arg1, SciterValue arg2, SciterValue arg3, SciterValue arg4, SciterValue arg5)
+		public void SynchronousFunction(SciterElement element, SciterValue arg1, SciterValue arg2, SciterValue arg3, SciterValue arg4, SciterValue arg5)
 		{
 			_logger?.LogInformation(
 				"{NameOfMethod}(arg1: {Arg1}; arg2: {Arg2}; arg3: {Arg3}; arg4: {Arg4}; arg5: {Arg5}) was executed!",
-				nameof(SynchronousArgumentsFunction), arg1.AsInt32(), arg2.AsInt32(), arg3.AsInt32(), arg4.AsInt32(),
+				nameof(SynchronousFunction), arg1.AsInt32(), arg2.AsInt32(), arg3.AsInt32(), arg4.AsInt32(),
 				arg5.AsInt32());
 		}
 		

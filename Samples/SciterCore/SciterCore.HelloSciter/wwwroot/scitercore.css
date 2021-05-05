@@ -14,8 +14,10 @@ html:theme(dark) {
     
     var(toolbar-bg-color): morph(color(main-bg-color), opacity: 50%);
     
+    var(menu-main-color): color(main-color);
+    
     var(menu-color): morph(rgb(255,255,255), opacity: 85%);
-    var(menu-bg-color): morph(color(main-bg-color), darken: 4%);
+    var(menu-bg-color): morph(color(main-bg-color), darken: 6%);
     
     var(menu-h-color): morph(color(menu-color), lighten: 10%);
     var(menu-h-bg-color): morph(color(accent-color), opacity: 75%);
@@ -29,18 +31,18 @@ html:theme(light) {
     var(card-bg-color): morph(color(main-bg-color), lighten: 10%);
     var(card-bd-color): morph(color(card-bg-color), lighten: 2%);
     var(card-bd-width): 1dip;
-
+    
     var(header-bg-color): color(accent-color);
     
-    var(toolbar-bg-color): morph(color(main-bg-color), opacity: 75%);
+    var(toolbar-bg-color): morph(color(main-bg-color), opacity: 50%);
+    
+    var(menu-main-color): #D0D2D6;
     
     var(menu-color): morph(rgb(255,255,255), opacity: 85%);
-    var(menu-bg-color): morph(color(main-bg-color), lighten: 3%);
+    var(menu-bg-color): morph(#262930, darken: 4%);
     
-    var(menu-h-color): morph(color(menu-color), darken: 10%);
-    var(menu-h-bg-color): morph(color(accent-color), opacity: 50%);
-
-    
+    var(menu-h-color): morph(color(menu-color), lighten: 10%);
+    var(menu-h-bg-color): morph(color(accent-color), opacity: 75%);
 }
 
 html {

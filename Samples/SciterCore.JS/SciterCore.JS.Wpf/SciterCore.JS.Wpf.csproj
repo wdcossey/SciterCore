@@ -6,14 +6,15 @@
         <UseWPF>true</UseWPF>
         <LangVersion>default</LangVersion>
     </PropertyGroup>
-
+    
     <ItemGroup>
-      <ProjectReference Include="..\..\..\Platform\SciterCore.JS\SciterCore.JS.csproj" />
+        <PackageReference Include="SciterCore.JS.Binaries" Version="4.4.7.2" />
+        <PackageReference Include="SciterCore.JS" Version="[0.1.*-*,1.0.0.0)" />
+        <PackageReference Include="SciterCore.PackFolder" Version="[0.1.*-*,1.0.0.0)" />
     </ItemGroup>
 
-    <ItemGroup>
-      <PackageReference Include="SciterCore.JS.Binaries" Version="4.4.7.2" />
-      <PackageReference Include="SciterCore.PackFolder" Version="0.1.483" />
+    <ItemGroup Condition=" '$(Configuration)' == 'Debug' ">
+        <ProjectReference Include="..\..\..\Platform\SciterCore.JS\SciterCore.JS.csproj" />
     </ItemGroup>
-
+    
 </Project>

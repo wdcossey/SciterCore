@@ -33,11 +33,18 @@
         </li>
         <li>View
             <menu class="cool">
-            <li >First item</li>
-            <li >Second item</li>
-            <li >Third item</li>
-        <hr/>
-        <li #menuViewRefresh accesskey="!F5">Reload<span class="accesskey">F5</span></li>
+                <li >First item</li>
+                <li >Second item</li>
+                <li >Third item</li>
+                <hr/>
+                <li>Theme
+                    <menu>
+                <li|radio(theme) value="light">Light</li>
+                <li|radio(theme) checked value="dark">Dark</li>
+                </menu>
+                </li>
+                <hr/>
+                <li #menuViewRefresh accesskey="!F5">Reload<span class="accesskey">F5</span></li>
         </menu>
         </li>
     </ul>

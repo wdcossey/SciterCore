@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -41,6 +42,35 @@ namespace SciterCore.JS.HelloSciter
 			return Task.CompletedTask;
 		}
 
+		public void GetDotNetVersion(SciterElement element, SciterValue onCompleted)
+		{
+			var value = SciterValue.Create(RuntimeInformation.FrameworkDescription);
+			onCompleted.Invoke(value);
+		}
+		
+		public Task GetRuntimeInfo(SciterElement element, SciterValue onCompleted, SciterValue onError)
+		{
+			try
+			{
+				var value = SciterValue.Create(
+					new {
+						FrameworkDescription = RuntimeInformation.FrameworkDescription,
+						ProcessArchitecture = RuntimeInformation.ProcessArchitecture.ToString(),
+						OSArchitecture = RuntimeInformation.OSArchitecture.ToString(),
+						OSDescription = RuntimeInformation.OSDescription,
+						SystemVersion = RuntimeEnvironment.GetSystemVersion()
+					});
+			
+				onCompleted.Invoke(value);
+			}
+			catch (Exception e)
+			{
+				onError.Invoke(SciterValue.MakeError(e.Message));
+			}
+
+			return Task.CompletedTask;
+		}
+		
 		private ManualResetEventSlim _callMeBackResetEvent;
 		
 		public async Task CallMeBack(SciterElement element, SciterValue value, SciterValue onProgress, SciterValue onCompleted)

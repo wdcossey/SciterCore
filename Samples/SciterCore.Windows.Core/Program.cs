@@ -23,7 +23,7 @@ namespace SciterCore.Windows.Core
 		}
 
 		public static SciterWindow AppWindow;
-		public static ApplicationHost AppHost;
+		public static AppHost AppHost;
 
 		[STAThread]
 		static void Main(string[] args)
@@ -48,15 +48,15 @@ namespace SciterCore.Windows.Core
                 .SetIcon(SciterTest.Core.Properties.Resources.IconMain);
 			
 			// Prepares SciterHost and then load the page
-			AppHost = new ApplicationHost(AppWindow);
+			AppHost = new AppHost(AppWindow);
 
 			AppHost
 				.SetupWindow(AppWindow)
-				.AttachEventHandler(new HostEventHandler());
+				.AttachEventHandler(new AppEventHandler());
 
 			AppHost.SetupPage("index.html");
-				
-			//host.DebugInspect();
+			
+			//AppHost.ConnectToInspector();
 
 			//byte[] css_bytes = File.ReadAllBytes(@"D:\ProjetosSciter\AssetsDrop\AssetsDrop\res\css\global.css");
 			//SciterX.API.SciterAppendMasterCSS(css_bytes, (uint) css_bytes.Length);

@@ -2,10 +2,10 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
     <RuntimeIdentifiers>win-x86;win-x64;linux-x64</RuntimeIdentifiers>
     <SciterCorePackDirectory>wwwroot</SciterCorePackDirectory>
     <SciterCorePackCopyToOutput Condition=" '$(Configuration)' == 'Debug' ">true</SciterCorePackCopyToOutput>
+    <TargetFrameworks>net5.0;netcoreapp3.1</TargetFrameworks>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -15,8 +15,22 @@
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <DefineConstants>TRACE;NETCORE;SCITERCORE;</DefineConstants>
   </PropertyGroup>
-  
-  <ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net5.0' ">
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="5.0.0" />
+    <PackageReference Include="System.Text.Json" Version="5.0.2" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' != 'net5.0' ">
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.11" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.11" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="3.1.11" />
@@ -26,11 +40,15 @@
     <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.11" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="3.1.11" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="3.1.11" />
-    <PackageReference Include="SciterCore.Binaries" Version="4.4.7" />
-    <PackageReference Include="SciterCore.Microsoft.DependencyInjection" Version="0.0.507-alpha" />
-    <PackageReference Include="SciterCore.PackFolder" Version="0.1.483" />
-    <PackageReference Include="SciterCore.SciterSharp.Utilities" Version="*-*" />
     <PackageReference Include="System.Text.Json" Version="4.7.2" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="SciterCore.Binaries" Version="4.4.7" />
+    <PackageReference Include="SciterCore" Version="[0.1.*-*,1.0.0.0)" />
+    <PackageReference Include="SciterCore.Microsoft.DependencyInjection" Version="[0.1.*-*,1.0.0.0)" />
+    <PackageReference Include="SciterCore.PackFolder" Version="[0.1.*-*,1.0.0.0)" />
+    <PackageReference Include="SciterCore.SciterSharp.Utilities" Version="*-*" />
   </ItemGroup>
 
   <ItemGroup>
@@ -41,13 +59,9 @@
   </ItemGroup>
 
   <ItemGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <ProjectReference Include="..\..\..\Platform\SciterCore.Microsoft.DependencyInjection\SciterCore.Microsoft.DependencyInjection.csproj" />
     <ProjectReference Include="..\..\..\Platform\SciterCore\SciterCore.csproj" />
+    <ProjectReference Include="..\..\..\Platform\SciterCore.Microsoft.DependencyInjection\SciterCore.Microsoft.DependencyInjection.csproj" />
     <ProjectReference Include="..\..\..\Platform\SciterCore.SciterSharp.Utilities\SciterCore.SciterSharp.Utilities.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\_Shared\SciterCore.Samples.Shared\SciterCore.Samples.Shared.csproj" />
-  </ItemGroup>  
 
 </Project>

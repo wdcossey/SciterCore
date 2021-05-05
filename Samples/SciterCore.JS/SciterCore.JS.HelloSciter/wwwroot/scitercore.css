@@ -13,9 +13,11 @@ html:theme(dark) {
     var(header-bg-color): color(accent-color);
     
     var(toolbar-bg-color): morph(color(main-bg-color), opacity: 50%);
+
+    var(menu-main-color): color(main-color);
     
     var(menu-color): morph(rgb(255,255,255), opacity: 85%);
-    var(menu-bg-color): morph(color(main-bg-color), darken: 4%);
+    var(menu-bg-color): morph(color(main-bg-color), darken: 6%);
     
     var(menu-h-color): morph(color(menu-color), lighten: 10%);
     var(menu-h-bg-color): morph(color(accent-color), opacity: 75%);
@@ -32,15 +34,15 @@ html:theme(light) {
 
     var(header-bg-color): color(accent-color);
     
-    var(toolbar-bg-color): morph(color(main-bg-color), opacity: 75%);
+    var(toolbar-bg-color): morph(color(main-bg-color), opacity: 50%);
+
+    var(menu-main-color): #D0D2D6;
     
     var(menu-color): morph(rgb(255,255,255), opacity: 85%);
-    var(menu-bg-color): morph(color(main-bg-color), lighten: 3%);
+    var(menu-bg-color): morph(#262930, darken: 4%);
     
-    var(menu-h-color): morph(color(menu-color), darken: 10%);
-    var(menu-h-bg-color): morph(color(accent-color), opacity: 50%);
-
-    
+    var(menu-h-color): morph(color(menu-color), lighten: 10%);
+    var(menu-h-bg-color): morph(color(accent-color), opacity: 75%);
 }
 
 html {
@@ -150,6 +152,10 @@ card:hover {
     box-shadow: rgba(0, 0, 0, 0.266) 0px 3.2px 7.2px 0px, rgba(0, 0, 0, 0.22) 0px 0.6px 1.8px 0px;
 }
 
+card:hover:theme(light) {
+    box-shadow: rgba(0, 0, 0, 0.166) 0px 4.2px 9.2px 0px, rgba(0, 0, 0, 0.16) 0px 0.6px 1.8px 0px;
+}
+
 card > cardcontent
 {
     display: block;
@@ -227,17 +233,48 @@ cardfooter > hr {
     border-color: color(card-bd-color);
 }
 
-progress.custom-progress {
-    border:none;
-    border-radius:2dip;
-    background: rgba(0,0,0,.25);
-    height: 4dip;
-    width: 1*;
-    padding: 0;
-    vertical-align: top;
-    foreground: color(accent-color);
-    list-style-image: none;
+@keyframes flat-progress-slide {
+    from { background-position-left: 0%; }
+    to { background-position-left: 100%; }
 }
+
+
+@set std-progress < std-progress-base
+{
+    :root
+    {
+        @STD-BOX-NORMAL;
+        width:90%;
+        height:4dip;
+        border-style:none;
+        padding:0;
+        margin:* 0;
+    }
+
+    :root:not(:busy)::marker {
+        width: length(progress-percent);
+        height: *;
+        background: color(accent-color);
+        stroke:none;
+        stroke-width:0;
+    }
+
+    :root:busy::marker
+    {
+        width:*;
+        height:*;
+        background-repeat: no-repeat;
+        background-image: url(path: M 0 0 L 9 0 L 9 9 L 0 9 Z);
+        background-size: 25% 100%;
+        fill: color(accent-color);
+        stroke:none;
+        stroke-width:0;
+        animation: 1.2s infinite alternate flat-progress-slide;
+    }
+
+}
+
+progress.custom-progress { display:inline-block; style-set:std-progress; }
 
 button.action-button {
     cursor: pointer;
