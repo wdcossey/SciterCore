@@ -24,7 +24,9 @@
     
     <ItemGroup>
         <PackageReference Include="SciterCore.JS.Binaries" Version="4.4.7.2" />
-        <PackageReference Include="SciterCore.PackFolder" Version="0.1.483" />
+        <PackageReference Include="SciterCore.JS" Version="[0.1.*-*,1.0.0.0)" />
+        <PackageReference Include="SciterCore.JS.Microsoft.DependencyInjection" Version="[0.1.*-*,1.0.0.0)" />
+        <PackageReference Include="SciterCore.PackFolder" Version="[0.1.*-*,1.0.0.0)" />
     </ItemGroup>
 
     <ItemGroup>
@@ -34,14 +36,9 @@
         </None>
     </ItemGroup>
 
-    <ItemGroup>
+    <ItemGroup Condition=" '$(Configuration)' == 'Debug' ">
       <ProjectReference Include="..\..\..\Platform\SciterCore.JS.Microsoft.DependencyInjection\SciterCore.JS.Microsoft.DependencyInjection.csproj" />
       <ProjectReference Include="..\..\..\Platform\SciterCore.JS\SciterCore.JS.csproj" />
     </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="sciter.build" />
-    </ItemGroup>
-
 
 </Project>

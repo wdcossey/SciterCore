@@ -7,13 +7,14 @@
         <LangVersion>default</LangVersion>
     </PropertyGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\..\..\Platform\SciterCore\SciterCore.csproj" />
-    </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="SciterCore.Binaries" Version="4.4.7" />
-      <PackageReference Include="SciterCore.PackFolder" Version="0.1.483" />
+        <PackageReference Include="SciterCore.Binaries" Version="4.4.7" />
+        <PackageReference Include="SciterCore" Version="[0.1.*-*,1.0.0.0)" />
+        <PackageReference Include="SciterCore.PackFolder" Version="[0.1.*-*,1.0.0.0)" />
     </ItemGroup>
-
+    
+    <ItemGroup Condition=" '$(Configuration)' == 'Debug' ">
+        <ProjectReference Include="..\..\..\Platform\SciterCore\SciterCore.csproj" />
+    </ItemGroup>
 </Project>
