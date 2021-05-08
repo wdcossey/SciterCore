@@ -1,11 +1,21 @@
 ﻿using System;
 using System.Threading.Tasks;
-using System.Windows;
 
-namespace SciterCore.JS.Wpf
+namespace SciterCore.JS.WinForms
 {
-    public class WpfHostEventHandler: SciterEventHandler
+    public class WinFormsHostEventHandler: SciterEventHandler
     {
+        protected override EventGroups SubscriptionsRequest(SciterElement element)
+        {
+            return EventGroups.HandleAll;
+        }
+        
+        public void GetDotNetVersion(SciterElement element, SciterValue onCompleted)
+        {
+            var value = SciterValue.Create(System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription);
+            onCompleted.Invoke(value);
+        }
+
         public Task GetRuntimeInfo(SciterElement element, SciterValue onCompleted, SciterValue onError)
         {
             try
@@ -27,13 +37,6 @@ namespace SciterCore.JS.Wpf
             }
 		
             return Task.CompletedTask;
-        }
-    }
-    public class UISciterEventHandler: UIElement
-    {
-        public UISciterEventHandler()
-        {
-            
         }
     }
 }

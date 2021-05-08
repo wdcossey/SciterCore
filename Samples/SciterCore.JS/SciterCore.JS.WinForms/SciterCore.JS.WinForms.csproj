@@ -2,9 +2,9 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
-    <RootNamespace>SciterCore.WinForms</RootNamespace>
+    <RootNamespace>SciterCore.JS.WinForms</RootNamespace>
     <LangVersion>default</LangVersion>
   </PropertyGroup>
 
@@ -23,16 +23,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="SciterCore.Binaries" Version="4.4.7" />
-    <PackageReference Include="SciterCore" Version="[0.1.*-*,1.0.0.0)" />
-    <PackageReference Include="SciterCore.Microsoft.DependencyInjection" Version="[0.1.*-*,1.0.0.0)" />
+    <PackageReference Include="SciterCore.JS.Binaries" Version="4.4.7.2" />
+    <PackageReference Include="SciterCore.JS" Version="[0.1.*-*,1.0.0.0)" />
+    <PackageReference Include="SciterCore.JS.Microsoft.DependencyInjection" Version="[0.1.*-*,1.0.0.0)" />
     <PackageReference Include="SciterCore.PackFolder" Version="[0.1.*-*,1.0.0.0)" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <ProjectReference Include="..\..\..\Platform\SciterCore\SciterCore.csproj" />
-    <ProjectReference Include="..\..\..\Platform\SciterCore.Microsoft.DependencyInjection\SciterCore.Microsoft.DependencyInjection.csproj" />
-    <ProjectReference Include="..\..\..\Platform\SciterCore.SciterSharp.Utilities\SciterCore.SciterSharp.Utilities.csproj" />
+    <ProjectReference Include="..\..\..\Platform\SciterCore.JS\SciterCore.JS.csproj" />
+    <ProjectReference Include="..\..\..\Platform\SciterCore.JS.Microsoft.DependencyInjection\SciterCore.JS.Microsoft.DependencyInjection.csproj" />
   </ItemGroup>
   
 </Project>

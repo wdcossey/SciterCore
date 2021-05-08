@@ -176,7 +176,11 @@ namespace SciterCore
 
 			eventHandler?.SetHost(result ? this : null);
 
-			OnAttachEventHandler?.Invoke(this, new AttachHandlerEventArgs() {EventHandler = this.WindowEventHandler});
+			OnAttachEventHandler?.Invoke(this, new AttachHandlerEventArgs
+			{
+				EventHandler = eventHandler
+			});
+			
 			return result;
 		}
 
@@ -286,7 +290,6 @@ namespace SciterCore
 				                               "content:\"Inspector process is not running. You should run it before calling ConnectToInspector()\", " +
 				                               "buttons:#ok" +
 				                               "};");
-				return;
 			}
 
 			await Task.Delay(100);
@@ -611,6 +614,8 @@ namespace SciterCore
 
 		#endregion
 
+		#region Dispose
+
 		private void ReleaseUnmanagedResources()
 		{
 			HostCallbackRegistry.Instance.TryRemove(this, out _);
@@ -634,5 +639,7 @@ namespace SciterCore
 		{
 			Dispose(false);
 		}
+
+		#endregion
 	}
 }

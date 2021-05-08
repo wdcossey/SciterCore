@@ -10,6 +10,12 @@ namespace SciterCore.WinForms
             return EventGroups.HandleAll;
         }
 
+        public void GetDotNetVersion(SciterElement element, SciterValue onCompleted)
+        {
+            var value = SciterValue.Create(System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription);
+            onCompleted.Invoke(value);
+        }
+        
         public Task GetRuntimeInfo(SciterElement element, SciterValue onCompleted, SciterValue onError)
         {
             try

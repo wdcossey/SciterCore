@@ -1,0 +1,359 @@
+﻿
+
+
+html:theme(dark) {
+    var(accent-color): #0288D1;
+    var(main-bg-color): #262930;
+    var(main-color): #D0D2D6;
+    
+    var(card-bg-color): morph(color(main-bg-color), lighten: 5%);
+    var(card-bd-color): morph(color(card-bg-color), lighten: 5%);
+    var(card-bd-width): 1dip;
+    
+    var(header-bg-color): color(accent-color);
+    
+    var(toolbar-bg-color): morph(color(main-bg-color), opacity: 50%);
+    
+    var(menu-main-color): color(main-color);
+    
+    var(menu-color): morph(rgb(255,255,255), opacity: 85%);
+    var(menu-bg-color): morph(color(main-bg-color), darken: 6%);
+    
+    var(menu-h-color): morph(color(menu-color), lighten: 10%);
+    var(menu-h-bg-color): morph(color(accent-color), opacity: 75%);
+}
+
+html:theme(light) {
+    var(accent-color): #796FEA;
+    var(main-bg-color): #F5F5F5;
+    var(main-color): #5D5871;
+    
+    var(card-bg-color): morph(color(main-bg-color), lighten: 10%);
+    var(card-bd-color): morph(color(card-bg-color), lighten: 2%);
+    var(card-bd-width): 1dip;
+    
+    var(header-bg-color): color(accent-color);
+    
+    var(toolbar-bg-color): morph(color(main-bg-color), opacity: 50%);
+    
+    var(menu-main-color): #D0D2D6;
+    
+    var(menu-color): morph(rgb(255,255,255), opacity: 85%);
+    var(menu-bg-color): morph(#262930, darken: 4%);
+    
+    var(menu-h-color): morph(color(menu-color), lighten: 10%);
+    var(menu-h-bg-color): morph(color(accent-color), opacity: 75%);
+}
+
+html {
+
+    background-color: color(main-bg-color);
+    color: color(main-color);
+//border-color: #e6e6e6;
+}
+
+/*  platform supports blurbehind
+@media ui-blurbehind {  
+    html {
+        background:transparent;
+    }
+}
+*/
+
+body {
+    overflow: hidden;
+}
+
+code {
+    color: rgba(160,180,200,.85);
+    opacity: .6;
+}
+
+a {
+    color: color(accent-color);
+    text-decoration: none;
+    cursor: pointer;
+    outline: 0;
+}
+a:hover {
+    color: color(accent-color);
+}
+
+h1 {
+    color: blue;
+    font-size: 30px;
+}
+
+h2 {
+    color: rgb(160,180,200);
+}
+
+h3 {
+    color: rgb(160,180,200);
+
+}
+
+@const TOOLBAR_HEIGHT: 96dip;
+@const FOOTER_HEIGHT: 32dip;
+
+body { margin: 0; }
+
+main {
+    flow:stack;
+    size:*;
+}
+
+
+toolbar {
+    height: @TOOLBAR_HEIGHT;
+    z-index:1;
+    background-color: color(toolbar-bg-color);
+    box-shadow: 0 0 12dip 12dip rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(15dip);
+}
+
+section {
+    size:*;
+    overflow:auto;
+    margin: @TOOLBAR_HEIGHT 0 @FOOTER_HEIGHT 0;
+    clip-box: margin-box;
+    border-spacing:20dip;
+    overflow: scroll-indicator;
+}
+
+footer {
+    overflow:auto;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: @FOOTER_HEIGHT;
+    background-color: color(toolbar-bg-color);
+    box-shadow: 0 0 12dip 12dip rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(10dip);
+}
+
+card {
+    display: block;
+    padding: 16dip;
+    width: 1*;
+    margin-bottom: 16dip;
+    border: var(card-bd-width, 1dip) solid morph(color(card-bd-color), opacity: 50%);
+    border-radius: 0dip;
+    //color: white;
+    //background-color: rgba(36, 49, 64, 1);
+    background-color: color(card-bg-color);
+    box-shadow: rgba(0, 0, 0, 0.133) 0px 1.6px 3.6px 0px, rgba(0, 0, 0, 0.11) 0px 0.3px 0.9px 0px;
+    /*behavior: card-drop-behavior;*/
+}
+
+card:hover {
+    border-color: color(card-bd-color);
+    box-shadow: rgba(0, 0, 0, 0.266) 0px 3.2px 7.2px 0px, rgba(0, 0, 0, 0.22) 0px 0.6px 1.8px 0px;
+}
+
+card > cardcontent
+{
+    display: block;
+    visibility: collapse;
+    width: 1*;
+    opacity: 0;
+    transition: height cubic-in-out 0.4s 0.4s, opacity cubic-in-out 0.4s 0.4s;
+    flow:row(div,div);
+}
+
+card > cardcontent div:nth-child(odd)
+{
+    width:max-content;
+    margin-right: 4dip;
+}
+
+card > cardcontent div:nth-child(even)
+{
+    width:1*;
+}
+
+card > cardcontent[state="visible"]
+{
+    height:max-content;
+    opacity: 1;
+    visibility: visible;
+}
+
+card > cardcontent.has-exception
+{
+    background-color: color(main-bg-color);
+    padding: 8dip;
+    border-radius: 2dip;
+    box-shadow: inset 0 1px 4px 0 rgba(0,0,0,.14);
+    behavior:htmlarea;
+}
+
+card > cardcontent.has-exception span
+{
+    color: crimson;
+}
+
+cardheader {
+    display:inline-block;
+    width: 1*;
+    margin-bottom: 16dip;
+}
+
+cardheader > div {
+    vertical-align: center;
+    font-family: Roboto,Helvetica Neue,sans-serif;
+}
+
+cardheader > div:nth-child(1) {
+    font-size: 20dip;
+    font-weight: 500;
+}
+
+cardheader > div:nth-child(2) {
+    font-size: 14dip;
+    font-weight: 400;
+    opacity: 0.6
+}
+
+cardfooter {
+    display:inline-block;
+    width: 1*;
+    margin-top: 16dip;
+}
+
+cardfooter > hr {
+    width: 1*;
+    margin: -8dip -17dip 8dip -16dip;
+    border-color: color(card-bd-color);
+}
+
+progress.custom-progress {
+    border:none;
+    border-radius:2dip;
+    background: rgba(0,0,0,.25);
+    height: 4dip;
+    width: 1*;
+    padding: 0;
+    vertical-align: top;
+    foreground: color(accent-color);
+    list-style-image: none;
+}
+
+button.action-button {
+    cursor: pointer;
+    font-size: 14dip;
+    font-weight: 400;
+    border-radius:3dip;
+    border: none;
+    background: transparent;
+    color: white;
+    padding: 0dip 16dip;
+    margin: 0 4dip;
+}
+
+button.action-button.primary {
+    border: 1dip solid morph(color(accent-color), lighten: 0.10);
+    background: color(accent-color);
+}
+
+button.action-button.primary:hover {
+    background: morph(color(accent-color), lighten: 0.05);
+    box-shadow: 0 8px 25px -8px color(accent-color);
+}
+
+button.action-button.primary:active {
+    background: morph(color(accent-color), lighten: 0.10);
+    box-shadow: none;
+}
+
+button.action-button.primary:disabled {
+    border-color: color(accent-color);
+}
+
+button.action-button.secondary {
+    border: 1dip solid morph( #990000, lighten: 0.10);
+    background: #990000;
+}
+
+button.action-button.secondary:hover {
+    background: morph(#990000, lighten: 0.05);
+    box-shadow: 0 8px 25px -8px #990000;
+}
+
+button.action-button.secondary:active {
+    background: morph( #990000, lighten: 0.10);
+    box-shadow: none;
+}
+
+button.action-button.secondary:disabled {
+    border-color: #990000;
+}
+
+button.action-button:disabled {
+    opacity: 0.4;
+}
+
+
+tools {
+    z-index: 9999;
+    opacity: 0.75;
+//background-color: #222f;
+    overflow: none;
+    position: fixed;
+    border-radius: 0 0 4dip 4dip;
+    height: max-content;
+    width: max-content;
+//padding: 4dp;
+    top: -50dip;
+    left: *;
+    right: *;
+    float: vertical;
+    transition: opacity 0.4s, top 0.4s;
+}
+
+tools > div
+{
+    position: relative;
+    top: 0;
+    left: 0;
+    right: 0;
+    opacity: 1;
+//    max-width: 60dip;
+//top: 0;
+    transition: opacity 0.2s, top 0.2s;
+}
+
+tools:hover > div
+{
+    opacity: 0;
+    top: -8dip;
+}
+
+tools:hover
+{
+    opacity: 1;
+    top: 0dip;
+}
+
+tools button {
+    cursor: pointer;
+    opacity: 0.75;
+    border-radius: 0 0 2dip 2dip;
+    border: solid 1dip #777f;
+    height: max-content;
+    width: max-content;
+    background: #777f;
+    margin: 2dip;
+    padding: 2dip;
+    transition: border-color 0.4s;
+}
+
+tools button:hover {
+    border-color: #aaaf;
+}
+
+tools button > img {
+    height: 32dip;
+    width: 32dip;
+}
