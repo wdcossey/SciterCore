@@ -5,20 +5,28 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:wpf="clr-namespace:SciterCore.JS.Wpf"
         mc:Ignorable="d"
-        Title="SciterCore.JS::WPF" Height="450" Width="800">
+        Title="SciterCore.JS::WPF" Height="450" Width="800" >
     <Grid>
        <Grid.RowDefinitions>
            <RowDefinition Height="*"/>
-           <!--<RowDefinition Height="*"/>-->
+           <!--<RowDefinition Height="100"/>-->
        </Grid.RowDefinitions>
-        
-        <wpf:SciterControl Grid.Row="0" Content="this://app/index.html">
-        
-        </wpf:SciterControl>
+
+        <wpf:SciterControl  Grid.Row="0" Content="this://app/index.html" />
         
         <!--<wpf:SciterControl Grid.Row="1"  >
             <wpf:SciterControl.Content>
+                &lt;html theme="dark"&gt;
+                &lt;head&gt;
+                &lt;style&gt;
+                @import url(this://app/scitercore.css);
+                &lt;/style&gt;
+                &lt;/head&gt;
+                &lt;body&gt;
+                &lt;img src="this://app/winui_xaml_small.png"&gt;&lt;/img&gt;
                 Hello WPF from the &lt;b&gt;Content&lt;/b&gt;.
+                &lt;/body&gt;
+                &lt;/html&gt;
             </wpf:SciterControl.Content>
         </wpf:SciterControl>-->
     </Grid>

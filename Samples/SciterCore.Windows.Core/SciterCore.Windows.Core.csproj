@@ -71,23 +71,21 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
+  
   <ItemGroup>
     <None Include="Resources\IconMain.ico" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="wwwroot\**" />
   </ItemGroup>
+  
   <ItemGroup>
     <PackageReference Include="SciterCore.Binaries" Version="4.4.7" />
+    <PackageReference Include="SciterCore" Version="[0.1.2.*-*,1.0.0.0)" />
     <PackageReference Include="SciterCore.PackFolder" Version="0.1.483" />
-    <PackageReference Include="SciterCore.SciterSharp.Utilities" Version="*-*" />
-    <!--<PackageReference Include="SciterCore.Windows" Version="*-*" />-->
-  </ItemGroup>
-  <ItemGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <ProjectReference Include="..\..\Platform\SciterCore\SciterCore.csproj" />
+    <PackageReference Include="SciterCore.SciterSharp.Utilities" Version="[0.1.2.*-*,1.0.0.0)" />
   </ItemGroup>
   
   <ItemGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <ProjectReference Include="..\..\Platform\SciterCore\SciterCore.csproj" />
     <ProjectReference Include="..\..\Platform\SciterCore.SciterSharp.Utilities\SciterCore.SciterSharp.Utilities.csproj" />
   </ItemGroup>
   

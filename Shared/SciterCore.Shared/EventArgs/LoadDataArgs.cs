@@ -9,7 +9,12 @@ namespace SciterCore
     public struct LoadDataArgs
     {
         /// <summary>
-        /// One of the codes above.
+        /// SC_LOAD_DATA, 
+        /// SC_DATA_LOADED, 
+        /// SC_ATTACH_BEHAVIOR, 
+        /// SC_ENGINE_DESTROYED , 
+        /// SC_POSTED_NOTIFICATION, 
+        /// SC_GRAPHICS_CRITICAL_FAILURE
         /// </summary>
         public int Code { get; internal set; }
 
@@ -19,7 +24,7 @@ namespace SciterCore
         //public SciterWindow Window { get; internal set; }
 
         /// <summary>
-        /// The <see cref="SciterWindow"/> this callback was attached to.
+        /// The handle of the <see cref="SciterWindow"/> this callback was attached to.
         /// </summary>
         public IntPtr WindowHandle { get; internal set; }
         

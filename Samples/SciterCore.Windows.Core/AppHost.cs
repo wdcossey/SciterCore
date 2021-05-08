@@ -60,7 +60,7 @@ namespace SciterCore.Windows.Core
 
 			Debug.Assert(File.Exists(uri.AbsolutePath));
 #else
-			Uri uri = new Uri(baseUri: _archive.Uri, page);
+			Uri uri = new Uri(baseUri: Archive.Uri, page);
 #endif
 
 			_window.LoadPage(uri: uri);

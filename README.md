@@ -16,18 +16,18 @@
 
 ## Status
 
-| Operating System | Version(s)                          | .Net Core 3.x | .Net 5.x  | Status      | Comments                                                     |
-| -----------------|-------------------------------------|---------------|-----------|-------------|--------------------------------------------------------------|
-| Windows          | 10 Pro `v19042.928`                 | ✔️          | ✔️     | Working     |                                                              |
-| Windows          | 8.1 Pro `v9600`<sup>proxmox</sup>   | ✔️          | ✔️     | Working     |                                                              |
-| Windows          | 8.0 Pro `v9200`<sup>proxmox</sup>   | ✔️          | ✔️     | Working     | Requires `Visual C++ Redistributable for Visual Studio 2015` |
-| Windows          | 7 Pro SP1 `v7601`<sup>proxmox</sup> | ✔️          | ✔️     | Working     | Ensure you have updated your OS!                             |
-| Ubuntu           | `20.04` <sup>proxmox</sup>          | ✔️          | ✔️     | Working     |                                                              |
-| Fedora           | `33` <sup>proxmox</sup>             | ✔️          | ✔️     | Working     |                                                              |
-| Manjaro          | `20.2` `XFCE` <sup>proxmox</sup>    | ✔️          | ✔️     | Working     |                                                              |
-| Linux            | Other                               |               |           | Untested    | Requires `libgtk-3.so.0`                                     |
-| MacOS            | Catalina                            | ⚠️          | ⚠️     | In-Progress |                                                              |
-| MacOS            | Big Sur                             | ⚠️          | ⚠️     | Untested    |                                                              |
+| Operating System | Version(s)                          | .Net Core 3.x | .Net 5.x  | Comments                                                     |
+| -----------------|-------------------------------------| ------------- | --------- |--------------------------------------------------------------|
+| Windows          | 10 Pro `v19042.928`                 | ✔️          | ✔️     |                                                              |
+| Windows          | 8.1 Pro `v9600`<sup>proxmox</sup>   | ✔️          | ✔️     |                                                              |
+| Windows          | 8.0 Pro `v9200`<sup>proxmox</sup>   | ✔️          | ✔️     | Requires `Visual C++ Redistributable for Visual Studio 2015` |
+| Windows          | 7 Pro SP1 `v7601`<sup>proxmox</sup> | ✔️          | ✔️     | Ensure you have updated your OS!                             |
+| Ubuntu           | `20.04` <sup>proxmox</sup>          | ✔️          | ✔️     |                                                              |
+| Fedora           | `33` <sup>proxmox</sup>             | ✔️          | ✔️     |                                                              |
+| Manjaro          | `20.2` `XFCE` <sup>proxmox</sup>    | ✔️          | ✔️     |                                                              |
+| Linux            | Other                               | 🤷‍♂️         | 🤷‍♂️    | Requires `libgtk-3.so.0`                                     |
+| MacOS            | Catalina                            | ⚠️          | ⚠️     |                                                              |
+| MacOS            | Big Sur                             | ⚠️          | ⚠️     |                                                              |
 
 All development is done using `JetBrains Rider` and/or _vanilla_ `dotnet` CLI.
 
@@ -72,7 +72,7 @@ This library provides bindings of [Sciter](http://sciter.com/download/) C/C++ he
 ### SciterCore
 Windows/MacOS/Linux using `Sciter` (`TIScript`).
 
-`.NetStandard 2.1` `.NetStandard 2.0` `.NetCoreApp 2.1` `.NetCoreApp 3.1` `.Net 5`.
+`.NetStandard 2.1` `.NetStandard 2.0` `.NetCoreApp 2.1` `.NetCoreApp 3.1` `.Net 5` `.Net Framework 4.6.1`.
 
 ### SciterCore.Microsoft.DependencyInjection
 `SciterCore` dependency injection extensions using `Microsoft.DependencyInjection`.
@@ -82,15 +82,17 @@ Windows/MacOS/Linux using `Sciter` (`TIScript`).
 ### SciterCore.JS
 Windows/MacOS/Linux using `SciterJS` (`JavaScript`).
 
-`.NetStandard 2.1` `.NetStandard 2.0` `.NetCoreApp 2.1` `.NetCoreApp 3.1` `.Net 5`.
+`.NetStandard 2.1` `.NetStandard 2.0` `.NetCoreApp 2.1` `.NetCoreApp 3.1` `.Net 5` `.Net Framework 4.6.1`.
 
 ### SciterCore.JS.Microsoft.DependencyInjection
 `SciterCore.JS` dependency injection extensions using `Microsoft.DependencyInjection` 
 
 `.NetStandard 2.1` `.NetStandard 2.0` `.NetCoreApp 2.1` `.NetCoreApp 3.1` `.Net 5`.
 
-### SciterCore.Windows
+### <s>SciterCore.Windows</s>
 Windows, WinForms and WPF support via `.Net Framework 4.6.1`
+
+`SciterCore.Windows` is deprecated, use `SciterCore` or `SciterCore.JS`
 
 ### SciterCore.Gtk
 Linux/Gtk support via `MonoDevelop`
@@ -115,6 +117,7 @@ The source can be found [here](https://github.com/wdcossey/SciterCore.JS.Binarie
 | Project                           | Description                                               | Platform(s)                 |
 | --------------------------------- | :-------------------------------------------------------- | --------------------------- |
 | SciterCore.JS.HelloSciter         | `SciterCore.JS` demo using `.Net 5.0.x`                   | `MacOS`, `Windows`, `Linux` |
+| SciterCore.JS.WinForms            | `SciterCore.JS` Demo using `.Net Core 5.0.x` w/ `WinForms`| `Windows`                   |
 | SciterCore.JS.Wpf                 | `SciterCore.JS` demo using `.Net 5.0.x` w/ `WPF`          | `Windows`                   |
 | SciterCore.HelloSciter            | `SciterCore` demo using `.Net Core 3.1.x`                 | `MacOS`, `Windows`, `Linux` |
 | SciterCore.WinForms               | `SciterCore` Demo using `.Net Core 3.1.x` w/ `WinForms`   | `Windows`                   |
@@ -123,8 +126,8 @@ The source can be found [here](https://github.com/wdcossey/SciterCore.JS.Binarie
 | SciterCore.Playground             | `SciterCore` playground project using `.Net Core 3.1.x`   | `MacOS`, `Windows`, `Linux` |
 | SciterCore.Sample.SkiaSharp.***   | Demo using [SkiaSharp](https://github.com/mono/SkiaSharp) | `MacOS`, `Windows`          |
 | SciterCore.Sample.Gtk.***         | Demo using `GTK`, migrated from `SciterSharp`             | `MacOS`, `Windows`, `Linux` |
-| SciterCore.Windows.WinForms       | Demo using `.Net Framework 4.6.x` w/ `WinForms`           | `Windows`                   |
-| SciterCore.Windows.Wpf            | Demo using `.Net Framework 4.6.x` w/ `WPF`                | `Windows`                   |
+| SciterCore.Windows.WinForms       | Demo using `.Net Framework 4.6.1` w/ `WinForms`           | `Windows`                   |
+| SciterCore.Windows.Wpf            | Demo using `.Net Framework 4.6.1` w/ `WPF`                | `Windows`                   |
 | SciterCore.Windows.Core           | Migrated from `SciterSharp`, using `.Net Framework 4.6.x` | `Windows`                   |
 | SciterCore.Xamarin.Mac.HelloSciter| Migrated from `SciterSharp`, using `Xamarin.Mac`          | `MacOS`                     |
 

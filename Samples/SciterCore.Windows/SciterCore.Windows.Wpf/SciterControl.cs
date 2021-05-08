@@ -2,20 +2,31 @@
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
-using System.Windows.Resources;
 using SciterCore.Interop;
 
 namespace SciterCore.Windows.Wpf
 {
     public class SciterControl : HwndHost
     {
-        private static readonly string DefaultHtml = 
-            $"<html window-frame=\"none\" window-blurbehind=\"none\" theme=\"dark\"><head><style> html {{ background: transparent }} </style></head><body><code>Use the <b>LoadHtml</b> event of {nameof(SciterControl)} to load some html.</code>" + 
+        private static readonly string DefaultHtml =
+            "<html theme=\"dark\"><head><style> html {{ background: transparent }} " +
+            "</style></head><body>" +
+            $"<code>Use the <b>{nameof(Content)}</b> property of this <b>{nameof(SciterControl)}</b> to load a page or content.</code>" +
             "<br/><br/>" +
-            $"<pre><code>    {nameof(SciterControl)}.LoadHtml += (sender, args) => <br/>" + 
-            "    {<br/>" + 
-            "        args.Html = \"&lt;body&gt;Hello &lt;b&gt;World&lt;/b&gt;&lt;/body&gt;\";<br/>" + 
-            "    }</code></pre></body></html>";
+            "<pre><code>" +
+            "    &lt;sciter:SciterControl <b>Content</b>=<i>&quot;this://app/index.html&quot;</i>&gt; <br/>" +
+            "    <br/>" +
+            "    &lt;/sciter:SciterControl&gt;" +
+            "    <br/><br/>" +
+            "    <b>OR</b>" +
+            "    <br/><br/>" +
+            "    &lt;sciter:SciterControl&gt; <br/>" +
+            "        &lt;sciter:SciterControl.Content&gt; <br/>" +
+            "            Hello WPF!<br/>" +
+            "        &lt;/sciter:SciterControl.Content&gt; <br/>" +
+            "    &lt;/sciter:SciterControl&gt;" +
+            "    </code></pre>" +
+            "</body></html>";
 
         public SciterControl()
         {
@@ -52,27 +63,6 @@ namespace SciterCore.Windows.Wpf
             set => SetValue(ContentProperty, value);
         }
 
-       // public static readonly DependencyProperty HtmlProperty =
-       //    DependencyProperty.Register(
-       //        "Html", typeof(string), typeof(SciterControl),
-       //        new FrameworkPropertyMetadata(DefaultHtml, new PropertyChangedCallback(OnHtmlChanged)));
-
-       // private static void OnHtmlChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args)
-       // {
-       //     SciterControl control = (SciterControl)obj;
-       //     var bytes = Encoding.UTF8.GetBytes((string)args.NewValue);
-       //     Sciter.Api.SciterLoadHtml(control.Handle, bytes, (uint)bytes.Length, null);
-       // }
-
-       // /// <summary>
-       // /// Gets or sets the value assigned to the control.
-       // /// </summary>
-       // public string Html
-       //{          
-       //    get { return (string)GetValue(HtmlProperty); }
-       //    set { SetValue(HtmlProperty, value); }
-       //}
-
         protected override HandleRef BuildWindowCore(HandleRef hwndParent)
         {
             SciterWindow = SciterWindow
@@ -85,9 +75,7 @@ namespace SciterCore.Windows.Wpf
 
             return new HandleRef(this, SciterWindow.Handle);
         }
-
-        private static IntPtr _hwnd = IntPtr.Zero;
-
+        
         protected override void DestroyWindowCore(HandleRef hwnd)
         {
             PInvokeWindows.DestroyWindow(hwnd: hwnd.Handle);

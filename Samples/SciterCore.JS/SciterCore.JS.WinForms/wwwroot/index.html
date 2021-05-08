@@ -6,45 +6,50 @@
 
 	</style>
 
-	<script type="text/tiscript">
-		//$(#helloSciter).html = view.Host_HelloSciter();
+	<script type="module">
+		import * as sciter from "@sciter";
+		import * as env from "@env";
 
-		view.GetRuntimeInfo(
-			function(value) {
-				$(#frameworkDescription).text = value.FrameworkDescription;
-				//$(#systemVersion).text = value.SystemVersion;
-				$(#processArchitecture).text = value.ProcessArchitecture;
-				$(#osArchitecture).text = value.OSArchitecture;
-				$(#osDescription).text = value.OSDescription;
-				$(#osContent).attributes["state"] = "visible";
-			},
-			function() {
-				
-			}
-		);
-		
-		var version_major = Sciter.VERSION >> 16;
-		var version_minor = Sciter.VERSION & 0xFFFF;
-		var revision_major = Sciter.REVISION >> 16;
-		var revision_minor = Sciter.REVISION & 0xFFFF;
-		$(#sciterversion).text = String.printf("%d.%d.%d.%d (%d)", version_major, version_minor, revision_major, revision_minor, Sciter.BUILD);
+		const $ = sciter.$;
+		const on = sciter.on;
 
-		$(#user).text = Sciter.userName();
-		$(#machine).text = Sciter.machineName();
-		$(#domain).text = Sciter.machineName(true);
-		//$(#home).text = System.home();
-		$(#language).text = System.language;
-		$(#country).text = System.country;
-		$(#os-type).text = System.HANDHELD_OS? "handheld":"desktop";
-		$(#os-version).text = System.OS;
-		$(#gfx-backend).text = view.backendName;
+		document.ready = function () {
+			const version = sciter.VERSION;
+			const revision = sciter.REVISION;
+			$("#sciterversion").innerText = `${version} (${revision})`;
+			$("#quickjs-version").innerText = sciter.QUICKJS_VERSION;
 
-		for(var (i,child) in $$(a) ) {
-			child.on("click", function(evt) {
-				Sciter.launch(this.@#href);
-				return true;
+			$("#user").innerText = env.userName();
+			$("#machine").innerText = env.machineName();
+			$("#domain").innerText = env.domainName();
+			$("#language").innerText = env.language();
+			$("#country").innerText = env.country();
+			$("#os-type").innerText = env.DEVICE;
+			$("#os-version").innerText = env.OS;
+			$("#gfx-backend").innerText = Window.this.graphicsBackend;
+			
+			Window.this.xcall(
+					"GetRuntimeInfo", 
+					function(value) {
+						$("#frameworkDescription").innerText = value.FrameworkDescription;
+						$("#processArchitecture").innerText = value.ProcessArchitecture;
+						$("#osArchitecture").innerText = value.OSArchitecture;
+						$("#osDescription").innerText = value.OSDescription;
+						$("#osContent").setAttribute("state", "visible");
+					}, function(value) { 
+						
+					});
+
+			Window.this.xcall("GetDotNetVersion", function(value) {
+				$("#dotnet-version").innerText = value;
 			});
 		}
+
+		on("^click", "a[href]", function (evt, hlink) {
+			env.launch(hlink.getAttribute("href"));
+			return true;
+		});
+		
 	</script>
 </head>
 
@@ -57,7 +62,7 @@
 					 height="96dip" />
 	
 				<img style="float: right; margin-right: 10dip; display:  none"
-					 src="wpf.svg"
+					 src="winforms.svg"
 					 alt="Microsoft - WPF"
 					 height="96dip" />
 			</div>
@@ -68,8 +73,8 @@
 
 				<card>
 					<cardheader>
-						<div>Hello WPF!</div>
-						<div>Greetings from SciterCore running on .Net 5 using WPF.</div>
+						<div>Hello WinForms!</div>
+						<div>Greetings from SciterCore.JS running on <span #dotnet-version>.Net</span> using WinForms.</div>
 					</cardheader>
 
 					<cardcontent state="visible">
@@ -106,18 +111,23 @@
 				</card>
 			</div>
 		</section>
-	
+
 		<footer>
 			<div style=" flow:horizontal; border-spacing:*;height:*; overflow-x: hidden; overflow-y: hidden">
 				<div style="margin-top:*; margin-bottom:*; margin-left: 8dip; display: inline-block; white-space: nowrap; overflow-x: fragments ">
-					<a href="https://github.com/wdcossey/SciterCore" >SciterCore</a> | <a href="https://github.com/ramon-mendes/SciterSharp" >SciterSharp</a>
+					<a #sciterCore href="https://github.com/wdcossey/SciterCore">SciterCore.JS</a>
 				</div>
-	
+
 				<div style="margin: * 8dip;display: inline-block; white-space: nowrap; overflow-x: fragments">
-					<a href="https://sciter.com/" style="display: inline-block; white-space: nowrap;">Sciter</a>
-					<span #sciterversion style="margin:0 auto; display: inline-block; white-space: nowrap;">Version</span> | <a href="https://icons8.com/" >Icons8</a>
+					<a href="https://sciter.com/" style="display: inline-block; white-space: nowrap;">Sciter.JS</a>
+					<span #sciterversion id="sciterversion"
+						  style="margin:0 auto; display: inline-block; white-space: nowrap;">Version</span> |
+					<a href="https://bellard.org/quickjs/" style="display: inline-block; white-space: nowrap;">QuickJS</a>
+					<span #quickjs-version style="margin:0 auto; display: inline-block; white-space: nowrap;">Version</span>
+					|
+					<a href="https://icons8.com/">Icons8</a>
 				</div>
-	
+
 			</div>
 		</footer>
 	</main>
