@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <TargetFrameworks>net461;net5.0;netcoreapp2.1;netcoreapp3.1;netstandard2.0;netstandard2.1</TargetFrameworks>
-        <LangVersion>8</LangVersion>
+        <LangVersion>default</LangVersion>
         <Title>SciterCore</Title>
         <Authors>William D Cossey</Authors>
         <Description>SciterCore package for .Net applications</Description>

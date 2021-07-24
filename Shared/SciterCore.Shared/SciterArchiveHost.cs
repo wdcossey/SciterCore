@@ -10,18 +10,17 @@ namespace SciterCore
     /// </summary>
     public class SciterArchiveHost : SciterHost
     {
-        
-#if NETCORE
         public SciterArchiveHost()
+            : base()
 		{
 			var archiveAttribute = GetType().GetCustomAttributes<SciterHostArchiveAttribute>(inherit: true).FirstOrDefault();
 			
 			Archive = new SciterArchive(archiveAttribute?.BaseUrl ?? SciterArchive.DEFAULT_ARCHIVE_URI)
 				.Open();
 		}
-#endif
-		
+
         public SciterArchiveHost(string baseUri = SciterArchive.DEFAULT_ARCHIVE_URI)
+            : base()
         {
             Archive = new SciterArchive(baseUri ?? SciterArchive.DEFAULT_ARCHIVE_URI)
                 .Open();

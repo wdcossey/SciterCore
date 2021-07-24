@@ -63,7 +63,6 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <Compile Include="Host.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
@@ -88,10 +87,14 @@
     <PackageReference Include="SciterCore.Binaries" Version="4.4.7" />
     <PackageReference Include="SciterCore.PackFolder" Version="0.1.483" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\Platform\SciterCore.Windows\SciterCore.Windows.csproj">
-      <Project>{18b2e4e7-cb77-44c3-865b-be05620aba4d}</Project>
-      <Name>SciterCore.Windows</Name>
+  <ItemGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <ProjectReference Include="..\..\..\Platform\SciterCore.WinForms\SciterCore.WinForms.csproj">
+      <Project>{cfeb437c-1496-4bf8-90b8-db138df061ec}</Project>
+      <Name>SciterCore.WinForms</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Platform\SciterCore\SciterCore.csproj">
+      <Project>{431e9182-8873-40ab-8800-b0bfa410f7c4}</Project>
+      <Name>SciterCore</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

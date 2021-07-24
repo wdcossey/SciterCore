@@ -1,6 +1,4 @@
-﻿#if NETCORE
-
-using System;
+﻿using System;
 
 namespace SciterCore.Attributes
 {
@@ -18,5 +16,3 @@ namespace SciterCore.Attributes
         }
     }
 }
-
-#endif

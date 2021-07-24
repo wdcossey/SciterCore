@@ -2,13 +2,15 @@
 
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
-        <TargetFramework>net5.0-windows</TargetFramework>
+        <TargetFramework>net5.0-windows10.0.19041.0</TargetFramework>
         <UseWPF>true</UseWPF>
         <LangVersion>default</LangVersion>
     </PropertyGroup>
     
     <ItemGroup>
-        <PackageReference Include="SciterCore.JS.Binaries" Version="4.4.7.2" />
+        <PackageReference Include="Microsoft.Windows.CsWinRT" Version="1.2.5" />
+        <PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.19041.1" />
+        <PackageReference Include="SciterCore.JS.Binaries" Version="4.4.8.4" />
         <PackageReference Include="SciterCore.JS" Version="[0.1.*-*,1.0.0.0)" />
         <PackageReference Include="SciterCore.PackFolder" Version="[0.1.*-*,1.0.0.0)" />
     </ItemGroup>

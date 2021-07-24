@@ -159,7 +159,7 @@ namespace SciterCore.Tests.Integration
             
             _sciterWindow.Show();
             
-            _sciterWindow.RootElement.AppendChildElement("body")
+            _sciterWindow.RootElement.AppendElement("body", elm => elm)
                 .SetStyleValue("background", $"rgb({random.Next(byte.MinValue, byte.MaxValue)}, {random.Next(byte.MinValue, byte.MaxValue)}, {random.Next(byte.MinValue, byte.MaxValue)})")
                 .SetStyleValue("behavior", behaviorName);
 
@@ -223,7 +223,7 @@ namespace SciterCore.Tests.Integration
 
             var backgroundColor = random.Next(byte.MinValue, 80);
             
-            _sciterWindow.RootElement.AppendChildElement("body")
+            _sciterWindow.RootElement.AppendElement("body", elm => elm)
                 .SetStyleValue("background", $"rgb({backgroundColor}, {backgroundColor}, {backgroundColor})")
                 .SetStyleValue("behavior", behaviorName);
 
@@ -308,7 +308,7 @@ namespace SciterCore.Tests.Integration
 
             var backgroundColor = random.Next(byte.MinValue, 80);
             
-            _sciterWindow.RootElement.AppendChildElement("body")
+            _sciterWindow.RootElement.AppendElement("body", elm => elm)
                 .SetStyleValue("background", $"rgb({backgroundColor}, {backgroundColor}, {backgroundColor})")
                 .SetStyleValue("behavior", behaviorName);
 
@@ -397,7 +397,7 @@ namespace SciterCore.Tests.Integration
 
             var backgroundColor = random.Next(byte.MinValue, 80);
             
-            _sciterWindow.RootElement.AppendChildElement("body")
+            _sciterWindow.RootElement.AppendElement("body", elm => elm)
                 .SetStyleValue("background", $"rgb({backgroundColor}, {backgroundColor}, {backgroundColor})")
                 .SetStyleValue("behavior", behaviorName);
 
@@ -459,7 +459,7 @@ namespace SciterCore.Tests.Integration
 
             var backgroundColor = random.Next(byte.MinValue, 80);
             
-            _sciterWindow.RootElement.AppendChildElement("body")
+            _sciterWindow.RootElement.AppendElement("body", elm => elm)
                 .SetStyleValue("background", $"rgb({backgroundColor}, {backgroundColor}, {backgroundColor})")
                 .SetStyleValue("behavior", behaviorName);
 
@@ -519,7 +519,7 @@ namespace SciterCore.Tests.Integration
 
             _sciterWindow.Show();
             
-            _sciterWindow.RootElement.AppendChildElement("body")
+            _sciterWindow.RootElement.AppendElement("body", elm => elm)
                 .SetStyleValue("background-color", $"black")
                 .SetStyleValue("behavior", behaviorName);
 
@@ -664,7 +664,7 @@ namespace SciterCore.Tests.Integration
             
             _sciterWindow.Show();
             
-            _sciterWindow.RootElement.AppendChildElement("body")
+            _sciterWindow.RootElement.AppendElement("body", elm => elm)
                 .SetStyleValue("background-color", $"rgb({random.Next(byte.MinValue, byte.MaxValue)}, {random.Next(byte.MinValue, byte.MaxValue)}, {random.Next(byte.MinValue, byte.MaxValue)})")
                 .SetStyleValue("behavior", behaviorName);
 

@@ -58,25 +58,25 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SciterCore.Sample.Gtk.MacOS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SciterCore.Sample.Gtk.Windows", "Samples\Gtk\Windows\SciterCore.Sample.Gtk.Windows.csproj", "{47D6EAB0-FC66-4DFA-BF99-914878F019A5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SciterCore.Tests.Integration", "SciterCore.Tests.Integration\SciterCore.Tests.Integration.csproj", "{7CD5A242-7058-4FDA-B999-11C2BBFEC587}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SciterCore.Tests.Integration", "SciterCore.Tests.Integration\SciterCore.Tests.Integration.csproj", "{7CD5A242-7058-4FDA-B999-11C2BBFEC587}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SciterCore.Tests.Unit", "SciterCore.Tests.Unit\SciterCore.Tests.Unit.csproj", "{B909FF06-34EB-4085-9AF8-983113BB3DA3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SciterCore.Tests.Unit", "SciterCore.Tests.Unit\SciterCore.Tests.Unit.csproj", "{B909FF06-34EB-4085-9AF8-983113BB3DA3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SciterCore.JS", "Platform\SciterCore.JS\SciterCore.JS.csproj", "{022AD6DB-6B88-46EB-9930-5A4D13BA1D2F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SciterCore.JS", "Platform\SciterCore.JS\SciterCore.JS.csproj", "{022AD6DB-6B88-46EB-9930-5A4D13BA1D2F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SciterCore.JS", "SciterCore.JS", "{389D11CB-9D75-4D5A-8A5F-4AAF59C52334}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SciterCore", "SciterCore", "{D04B36FA-F57D-474B-9F50-FFA6E32B8774}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SciterCore.JS.HelloSciter", "Samples\SciterCore.JS\SciterCore.JS.HelloSciter\SciterCore.JS.HelloSciter.csproj", "{65DB07BD-F9DA-4F53-93DF-7A590840D774}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SciterCore.JS.HelloSciter", "Samples\SciterCore.JS\SciterCore.JS.HelloSciter\SciterCore.JS.HelloSciter.csproj", "{65DB07BD-F9DA-4F53-93DF-7A590840D774}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SciterCore.HelloSciter", "Samples\SciterCore\SciterCore.HelloSciter\SciterCore.HelloSciter.csproj", "{9876BDB8-B79E-48D8-8B6B-B8A18E4D4901}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SciterCore.HelloSciter", "Samples\SciterCore\SciterCore.HelloSciter\SciterCore.HelloSciter.csproj", "{9876BDB8-B79E-48D8-8B6B-B8A18E4D4901}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SciterCore.Behaviors", "Samples\SciterCore\SciterCore.Behaviors\SciterCore.Behaviors.csproj", "{59422FAF-1287-406B-8A95-3744A818864A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SciterCore.Behaviors", "Samples\SciterCore\SciterCore.Behaviors\SciterCore.Behaviors.csproj", "{59422FAF-1287-406B-8A95-3744A818864A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SciterCore.WinForms", "Samples\SciterCore\SciterCore.WinForms\SciterCore.WinForms.csproj", "{2A9D12D7-096F-4724-9AE9-5B5B2D156FE4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SciterCore.WinForms", "Samples\SciterCore\SciterCore.WinForms\SciterCore.WinForms.csproj", "{2A9D12D7-096F-4724-9AE9-5B5B2D156FE4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SciterCore.Playground", "Samples\SciterCore\SciterCore.Playground\SciterCore.Playground.csproj", "{BC2FE3F2-AE0D-42B9-B05B-61260C599B7F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SciterCore.Playground", "Samples\SciterCore\SciterCore.Playground\SciterCore.Playground.csproj", "{BC2FE3F2-AE0D-42B9-B05B-61260C599B7F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SciterCore.Windows", "SciterCore.Windows", "{364DA46A-21C3-46B8-94E2-CFC2B606D3C3}"
 EndProject
@@ -90,35 +90,47 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SciterCore.Windows.Wpf", "S
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SciterCore.Xamarin.Mac.HelloSciter", "Samples\SciterCore.Xamarin.Mac\SciterCore.Xamarin.Mac.HelloSciter\SciterCore.Xamarin.Mac.HelloSciter.csproj", "{764A2B71-F267-4C2E-A4CD-33E050659BD6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SciterCore.SkiaSharp", "Samples\SciterCore\SciterCore.SkiaSharp\SciterCore.SkiaSharp.csproj", "{7D7DA585-5E2F-4A37-A932-E5E2C3A1C3F2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SciterCore.SkiaSharp", "Samples\SciterCore\SciterCore.SkiaSharp\SciterCore.SkiaSharp.csproj", "{7D7DA585-5E2F-4A37-A932-E5E2C3A1C3F2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SciterCore.Microsoft.DependencyInjection", "Platform\SciterCore.Microsoft.DependencyInjection\SciterCore.Microsoft.DependencyInjection.csproj", "{5E2FE263-FF0C-4CCD-8576-08DBBD4248C3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SciterCore.Microsoft.DependencyInjection", "Platform\SciterCore.Microsoft.DependencyInjection\SciterCore.Microsoft.DependencyInjection.csproj", "{5E2FE263-FF0C-4CCD-8576-08DBBD4248C3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SciterCore.SciterSharp.Utilities", "Platform\SciterCore.SciterSharp.Utilities\SciterCore.SciterSharp.Utilities.csproj", "{EA1A4562-E2A9-40E9-8F76-2DEE33E2966D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SciterCore.SciterSharp.Utilities", "Platform\SciterCore.SciterSharp.Utilities\SciterCore.SciterSharp.Utilities.csproj", "{EA1A4562-E2A9-40E9-8F76-2DEE33E2966D}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SciterCore.Shared.Microsoft.DependencyInjection", "Shared\SciterCore.Shared.Microsoft.DependencyInjection\SciterCore.Shared.Microsoft.DependencyInjection.shproj", "{79528DD8-25A3-4C3D-BB92-2F83F1496E33}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SciterCore.JS.Microsoft.DependencyInjection", "Platform\SciterCore.JS.Microsoft.DependencyInjection\SciterCore.JS.Microsoft.DependencyInjection.csproj", "{8C914B56-1141-4F03-BF54-09954182D2A4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SciterCore.JS.Microsoft.DependencyInjection", "Platform\SciterCore.JS.Microsoft.DependencyInjection\SciterCore.JS.Microsoft.DependencyInjection.csproj", "{8C914B56-1141-4F03-BF54-09954182D2A4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SciterCore.JS.Galaxy", "Samples\SciterCore.JS\SciterCore.JS.Galaxy\SciterCore.JS.Galaxy.csproj", "{0A15EFC3-6A09-47CE-9751-3D85A605B11B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SciterCore.JS.Galaxy", "Samples\SciterCore.JS\SciterCore.JS.Galaxy\SciterCore.JS.Galaxy.csproj", "{0A15EFC3-6A09-47CE-9751-3D85A605B11B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SciterCore.Wpf", "Samples\SciterCore\SciterCore.Wpf\SciterCore.Wpf.csproj", "{FF8BDF79-7C70-429B-9CD1-B6B16E49CA06}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SciterCore.Wpf", "Samples\SciterCore\SciterCore.Wpf\SciterCore.Wpf.csproj", "{FF8BDF79-7C70-429B-9CD1-B6B16E49CA06}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SciterCore.JS.Wpf", "Samples\SciterCore.JS\SciterCore.JS.Wpf\SciterCore.JS.Wpf.csproj", "{8842D279-0AF6-47EC-A4A4-74EE41EAFD5D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SciterCore.JS.Wpf", "Samples\SciterCore.JS\SciterCore.JS.Wpf\SciterCore.JS.Wpf.csproj", "{8842D279-0AF6-47EC-A4A4-74EE41EAFD5D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SciterCore.JS.WinForms", "Samples\SciterCore.JS\SciterCore.JS.WinForms\SciterCore.JS.WinForms.csproj", "{2C6682B4-45E7-4CB3-A972-B646BB28B2CB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SciterCore.JS.WinForms", "Samples\SciterCore.JS\SciterCore.JS.WinForms\SciterCore.JS.WinForms.csproj", "{2C6682B4-45E7-4CB3-A972-B646BB28B2CB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SciterCore.JS.Windows.Wpf", "Samples\SciterCore.Windows\SciterCore.JS.Windows.Wpf\SciterCore.JS.Windows.Wpf.csproj", "{FEEC8B8C-B805-48B6-BAE8-D84BD85BE276}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SciterCore.WinForms", "Platform\SciterCore.WinForms\SciterCore.WinForms.csproj", "{CFEB437C-1496-4BF8-90B8-DB138DF061EC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SciterCore.Wpf", "Platform\SciterCore.Wpf\SciterCore.Wpf.csproj", "{292F5218-A209-492A-A60F-AB0A128F0FD8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SciterCore.JS.WinForms", "Platform\SciterCore.JS.WinForms\SciterCore.JS.WinForms.csproj", "{8BC39445-153B-41D2-9572-247DBCE65267}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SciterCore.JS.Wpf", "Platform\SciterCore.JS.Wpf\SciterCore.JS.Wpf.csproj", "{8F678CC1-0844-4719-9F3B-37F91D718ADC}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Shared\SciterCore.Shared\SciterCore.Shared.projitems*{022ad6db-6b88-46eb-9930-5a4d13ba1d2f}*SharedItemsImports = 5
 		Shared\SciterCore.Shared.WinForms\SciterCore.Shared.WinForms.projitems*{18b2e4e7-cb77-44c3-865b-be05620aba4d}*SharedItemsImports = 4
 		Shared\SciterCore.Shared\SciterCore.Shared.projitems*{18b2e4e7-cb77-44c3-865b-be05620aba4d}*SharedItemsImports = 4
-		Shared\SciterCore.Shared\SciterCore.Shared.projitems*{1bb04d34-ceb7-4f51-8d02-980150e4c2a5}*SharedItemsImports = 5
 		Shared\SciterCore.Shared\SciterCore.Shared.projitems*{42bb6ec1-e806-4b5b-a242-1662aae7bf25}*SharedItemsImports = 4
 		Shared\SciterCore.Shared\SciterCore.Shared.projitems*{431e9182-8873-40ab-8800-b0bfa410f7c4}*SharedItemsImports = 5
+		Shared\SciterCore.Shared.Microsoft.DependencyInjection\SciterCore.Shared.Microsoft.DependencyInjection.projitems*{5e2fe263-ff0c-4ccd-8576-08dbbd4248c3}*SharedItemsImports = 5
+		Shared\SciterCore.Shared.Microsoft.DependencyInjection\SciterCore.Shared.Microsoft.DependencyInjection.projitems*{79528dd8-25a3-4c3d-bb92-2f83f1496e33}*SharedItemsImports = 13
 		Shared\SciterCore.Shared\SciterCore.Shared.projitems*{8ac2f80a-0648-45d4-9f2e-b4422c4d1a9b}*SharedItemsImports = 13
-		Shared\SciterCore.Shared\SciterCore.Shared.projitems*{8ec9f0ae-f6c7-47cc-9407-3f8140df52c6}*SharedItemsImports = 4
+		Shared\SciterCore.Shared.WinForms\SciterCore.Shared.WinForms.projitems*{8bc39445-153b-41d2-9572-247dbce65267}*SharedItemsImports = 5
+		Shared\SciterCore.Shared.Microsoft.DependencyInjection\SciterCore.Shared.Microsoft.DependencyInjection.projitems*{8c914b56-1141-4f03-bf54-09954182d2a4}*SharedItemsImports = 5
+		Shared\SciterCore.Shared.WinForms\SciterCore.Shared.WinForms.projitems*{cfeb437c-1496-4bf8-90b8-db138df061ec}*SharedItemsImports = 5
 		Shared\SciterCore.Shared\SciterCore.Shared.projitems*{d60acae0-c246-4936-b92b-b756841db545}*SharedItemsImports = 4
 		Shared\SciterCore.Shared.WinForms\SciterCore.Shared.WinForms.projitems*{f504805e-3a89-41dd-88d4-8319b5a31265}*SharedItemsImports = 13
 	EndGlobalSection
@@ -753,6 +765,86 @@ Global
 		{FEEC8B8C-B805-48B6-BAE8-D84BD85BE276}.Release|x64.Build.0 = Release|Any CPU
 		{FEEC8B8C-B805-48B6-BAE8-D84BD85BE276}.Release|x86.ActiveCfg = Release|Any CPU
 		{FEEC8B8C-B805-48B6-BAE8-D84BD85BE276}.Release|x86.Build.0 = Release|Any CPU
+		{CFEB437C-1496-4BF8-90B8-DB138DF061EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CFEB437C-1496-4BF8-90B8-DB138DF061EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CFEB437C-1496-4BF8-90B8-DB138DF061EC}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{CFEB437C-1496-4BF8-90B8-DB138DF061EC}.Debug|ARM.Build.0 = Debug|Any CPU
+		{CFEB437C-1496-4BF8-90B8-DB138DF061EC}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{CFEB437C-1496-4BF8-90B8-DB138DF061EC}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{CFEB437C-1496-4BF8-90B8-DB138DF061EC}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{CFEB437C-1496-4BF8-90B8-DB138DF061EC}.Debug|x64.Build.0 = Debug|Any CPU
+		{CFEB437C-1496-4BF8-90B8-DB138DF061EC}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{CFEB437C-1496-4BF8-90B8-DB138DF061EC}.Debug|x86.Build.0 = Debug|Any CPU
+		{CFEB437C-1496-4BF8-90B8-DB138DF061EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CFEB437C-1496-4BF8-90B8-DB138DF061EC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CFEB437C-1496-4BF8-90B8-DB138DF061EC}.Release|ARM.ActiveCfg = Release|Any CPU
+		{CFEB437C-1496-4BF8-90B8-DB138DF061EC}.Release|ARM.Build.0 = Release|Any CPU
+		{CFEB437C-1496-4BF8-90B8-DB138DF061EC}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{CFEB437C-1496-4BF8-90B8-DB138DF061EC}.Release|ARM64.Build.0 = Release|Any CPU
+		{CFEB437C-1496-4BF8-90B8-DB138DF061EC}.Release|x64.ActiveCfg = Release|Any CPU
+		{CFEB437C-1496-4BF8-90B8-DB138DF061EC}.Release|x64.Build.0 = Release|Any CPU
+		{CFEB437C-1496-4BF8-90B8-DB138DF061EC}.Release|x86.ActiveCfg = Release|Any CPU
+		{CFEB437C-1496-4BF8-90B8-DB138DF061EC}.Release|x86.Build.0 = Release|Any CPU
+		{292F5218-A209-492A-A60F-AB0A128F0FD8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{292F5218-A209-492A-A60F-AB0A128F0FD8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{292F5218-A209-492A-A60F-AB0A128F0FD8}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{292F5218-A209-492A-A60F-AB0A128F0FD8}.Debug|ARM.Build.0 = Debug|Any CPU
+		{292F5218-A209-492A-A60F-AB0A128F0FD8}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{292F5218-A209-492A-A60F-AB0A128F0FD8}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{292F5218-A209-492A-A60F-AB0A128F0FD8}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{292F5218-A209-492A-A60F-AB0A128F0FD8}.Debug|x64.Build.0 = Debug|Any CPU
+		{292F5218-A209-492A-A60F-AB0A128F0FD8}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{292F5218-A209-492A-A60F-AB0A128F0FD8}.Debug|x86.Build.0 = Debug|Any CPU
+		{292F5218-A209-492A-A60F-AB0A128F0FD8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{292F5218-A209-492A-A60F-AB0A128F0FD8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{292F5218-A209-492A-A60F-AB0A128F0FD8}.Release|ARM.ActiveCfg = Release|Any CPU
+		{292F5218-A209-492A-A60F-AB0A128F0FD8}.Release|ARM.Build.0 = Release|Any CPU
+		{292F5218-A209-492A-A60F-AB0A128F0FD8}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{292F5218-A209-492A-A60F-AB0A128F0FD8}.Release|ARM64.Build.0 = Release|Any CPU
+		{292F5218-A209-492A-A60F-AB0A128F0FD8}.Release|x64.ActiveCfg = Release|Any CPU
+		{292F5218-A209-492A-A60F-AB0A128F0FD8}.Release|x64.Build.0 = Release|Any CPU
+		{292F5218-A209-492A-A60F-AB0A128F0FD8}.Release|x86.ActiveCfg = Release|Any CPU
+		{292F5218-A209-492A-A60F-AB0A128F0FD8}.Release|x86.Build.0 = Release|Any CPU
+		{8BC39445-153B-41D2-9572-247DBCE65267}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8BC39445-153B-41D2-9572-247DBCE65267}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8BC39445-153B-41D2-9572-247DBCE65267}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{8BC39445-153B-41D2-9572-247DBCE65267}.Debug|ARM.Build.0 = Debug|Any CPU
+		{8BC39445-153B-41D2-9572-247DBCE65267}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{8BC39445-153B-41D2-9572-247DBCE65267}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{8BC39445-153B-41D2-9572-247DBCE65267}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{8BC39445-153B-41D2-9572-247DBCE65267}.Debug|x64.Build.0 = Debug|Any CPU
+		{8BC39445-153B-41D2-9572-247DBCE65267}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8BC39445-153B-41D2-9572-247DBCE65267}.Debug|x86.Build.0 = Debug|Any CPU
+		{8BC39445-153B-41D2-9572-247DBCE65267}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8BC39445-153B-41D2-9572-247DBCE65267}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8BC39445-153B-41D2-9572-247DBCE65267}.Release|ARM.ActiveCfg = Release|Any CPU
+		{8BC39445-153B-41D2-9572-247DBCE65267}.Release|ARM.Build.0 = Release|Any CPU
+		{8BC39445-153B-41D2-9572-247DBCE65267}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{8BC39445-153B-41D2-9572-247DBCE65267}.Release|ARM64.Build.0 = Release|Any CPU
+		{8BC39445-153B-41D2-9572-247DBCE65267}.Release|x64.ActiveCfg = Release|Any CPU
+		{8BC39445-153B-41D2-9572-247DBCE65267}.Release|x64.Build.0 = Release|Any CPU
+		{8BC39445-153B-41D2-9572-247DBCE65267}.Release|x86.ActiveCfg = Release|Any CPU
+		{8BC39445-153B-41D2-9572-247DBCE65267}.Release|x86.Build.0 = Release|Any CPU
+		{8F678CC1-0844-4719-9F3B-37F91D718ADC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F678CC1-0844-4719-9F3B-37F91D718ADC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F678CC1-0844-4719-9F3B-37F91D718ADC}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{8F678CC1-0844-4719-9F3B-37F91D718ADC}.Debug|ARM.Build.0 = Debug|Any CPU
+		{8F678CC1-0844-4719-9F3B-37F91D718ADC}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{8F678CC1-0844-4719-9F3B-37F91D718ADC}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{8F678CC1-0844-4719-9F3B-37F91D718ADC}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{8F678CC1-0844-4719-9F3B-37F91D718ADC}.Debug|x64.Build.0 = Debug|Any CPU
+		{8F678CC1-0844-4719-9F3B-37F91D718ADC}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8F678CC1-0844-4719-9F3B-37F91D718ADC}.Debug|x86.Build.0 = Debug|Any CPU
+		{8F678CC1-0844-4719-9F3B-37F91D718ADC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F678CC1-0844-4719-9F3B-37F91D718ADC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F678CC1-0844-4719-9F3B-37F91D718ADC}.Release|ARM.ActiveCfg = Release|Any CPU
+		{8F678CC1-0844-4719-9F3B-37F91D718ADC}.Release|ARM.Build.0 = Release|Any CPU
+		{8F678CC1-0844-4719-9F3B-37F91D718ADC}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{8F678CC1-0844-4719-9F3B-37F91D718ADC}.Release|ARM64.Build.0 = Release|Any CPU
+		{8F678CC1-0844-4719-9F3B-37F91D718ADC}.Release|x64.ActiveCfg = Release|Any CPU
+		{8F678CC1-0844-4719-9F3B-37F91D718ADC}.Release|x64.Build.0 = Release|Any CPU
+		{8F678CC1-0844-4719-9F3B-37F91D718ADC}.Release|x86.ActiveCfg = Release|Any CPU
+		{8F678CC1-0844-4719-9F3B-37F91D718ADC}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -760,6 +852,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{2ED64300-CB6A-4CB3-B687-D2795395FC44} = {14C11ACF-171B-498A-B05E-1FBA845B8405}
 		{42BB6EC1-E806-4B5B-A242-1662AAE7BF25} = {9F087828-7FA8-47AC-81F3-5CC574414030}
+		{EA51B66E-0862-4D79-8FB9-4BB1ED2CFB59} = {364DA46A-21C3-46B8-94E2-CFC2B606D3C3}
 		{D60ACAE0-C246-4936-B92B-B756841DB545} = {9F087828-7FA8-47AC-81F3-5CC574414030}
 		{18B2E4E7-CB77-44C3-865B-BE05620ABA4D} = {9F087828-7FA8-47AC-81F3-5CC574414030}
 		{8AC2F80A-0648-45D4-9F2E-B4422C4D1A9B} = {3F91218E-BE78-4C76-8A97-C2CD48E72FE8}
@@ -792,7 +885,6 @@ Global
 		{4488AB1E-70FB-45BA-9814-AAF89A4F12BD} = {2ABBA2EF-6FEE-4F81-BF64-A1AB02BEE2C5}
 		{4D0745FB-910A-42F9-BC0C-B20812895A35} = {364DA46A-21C3-46B8-94E2-CFC2B606D3C3}
 		{8EC9F0AE-F6C7-47CC-9407-3F8140DF52C6} = {364DA46A-21C3-46B8-94E2-CFC2B606D3C3}
-		{EA51B66E-0862-4D79-8FB9-4BB1ED2CFB59} = {364DA46A-21C3-46B8-94E2-CFC2B606D3C3}
 		{764A2B71-F267-4C2E-A4CD-33E050659BD6} = {3C5AF7A4-E27A-4FDB-8080-D6EBCC683136}
 		{7D7DA585-5E2F-4A37-A932-E5E2C3A1C3F2} = {D04B36FA-F57D-474B-9F50-FFA6E32B8774}
 		{5E2FE263-FF0C-4CCD-8576-08DBBD4248C3} = {9F087828-7FA8-47AC-81F3-5CC574414030}
@@ -804,6 +896,10 @@ Global
 		{8842D279-0AF6-47EC-A4A4-74EE41EAFD5D} = {389D11CB-9D75-4D5A-8A5F-4AAF59C52334}
 		{2C6682B4-45E7-4CB3-A972-B646BB28B2CB} = {389D11CB-9D75-4D5A-8A5F-4AAF59C52334}
 		{FEEC8B8C-B805-48B6-BAE8-D84BD85BE276} = {364DA46A-21C3-46B8-94E2-CFC2B606D3C3}
+		{CFEB437C-1496-4BF8-90B8-DB138DF061EC} = {9F087828-7FA8-47AC-81F3-5CC574414030}
+		{292F5218-A209-492A-A60F-AB0A128F0FD8} = {9F087828-7FA8-47AC-81F3-5CC574414030}
+		{8BC39445-153B-41D2-9572-247DBCE65267} = {9F087828-7FA8-47AC-81F3-5CC574414030}
+		{8F678CC1-0844-4719-9F3B-37F91D718ADC} = {9F087828-7FA8-47AC-81F3-5CC574414030}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {ACCCA607-3FFA-4A98-AB4B-302FEDF13D01}

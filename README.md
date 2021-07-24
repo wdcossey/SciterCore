@@ -4,14 +4,18 @@
 | --------------------- | ------------------------------------------------------------------------------------------------------------------------|--------------|
 | SciterCore            | [![Nuget](https://img.shields.io/nuget/v/SciterCore)](https://www.nuget.org/packages/SciterCore/)                       | [![Build status](https://dev.azure.com/wdcossey/SciterCore/_apis/build/status/SciterCore)](https://dev.azure.com/wdcossey/SciterCore/_build/latest?definitionId=13&branchName=master) |
 | SciterCore.Microsoft.DependencyInjection | [![Nuget](https://img.shields.io/nuget/v/SciterCore.Microsoft.DependencyInjection)](https://www.nuget.org/packages/SciterCore.Microsoft.DependencyInjection/)                 | [![Build status](https://dev.azure.com/wdcossey/SciterCore/_apis/build/status/SciterCore)](https://dev.azure.com/wdcossey/SciterCore/_build/latest?definitionId=13&branchName=master) |
+| SciterCore.WinForms   | [![Nuget](https://img.shields.io/nuget/v/SciterCore.WinForms)](https://www.nuget.org/packages/SciterCore.WinForms/)                 | [![Build status](https://dev.azure.com/wdcossey/SciterCore/_apis/build/status/SciterCore)](https://dev.azure.com/wdcossey/SciterCore/_build/latest?definitionId=13&branchName=master) |
+| SciterCore.Wpf        | [![Nuget](https://img.shields.io/nuget/v/SciterCore.Wpf)](https://www.nuget.org/packages/SciterCore.Wpf/)                 | [![Build status](https://dev.azure.com/wdcossey/SciterCore/_apis/build/status/SciterCore)](https://dev.azure.com/wdcossey/SciterCore/_build/latest?definitionId=13&branchName=master) |
 | SciterCore.JS         | [![Nuget](https://img.shields.io/nuget/v/SciterCore.JS)](https://www.nuget.org/packages/SciterCore.JS/)                 | [![Build status](https://dev.azure.com/wdcossey/SciterCore/_apis/build/status/SciterCore)](https://dev.azure.com/wdcossey/SciterCore/_build/latest?definitionId=13&branchName=master) |
 | SciterCore.JS.Microsoft.DependencyInjection | [![Nuget](https://img.shields.io/nuget/v/SciterCore.JS.Microsoft.DependencyInjection)](https://www.nuget.org/packages/SciterCore.JS.Microsoft.DependencyInjection/)                 | [![Build status](https://dev.azure.com/wdcossey/SciterCore/_apis/build/status/SciterCore)](https://dev.azure.com/wdcossey/SciterCore/_build/latest?definitionId=13&branchName=master) |
+| SciterCore.JS.WinForms| [![Nuget](https://img.shields.io/nuget/v/SciterCore.JS.WinForms)](https://www.nuget.org/packages/SciterCore.JS.WinForms/) | [![Build status](https://dev.azure.com/wdcossey/SciterCore/_apis/build/status/SciterCore)](https://dev.azure.com/wdcossey/SciterCore/_build/latest?definitionId=13&branchName=master) |
+| SciterCore.JS.Wpf     | [![Nuget](https://img.shields.io/nuget/v/SciterCore.JS.Wpf)](https://www.nuget.org/packages/SciterCore.JS.Wpf/)           | [![Build status](https://dev.azure.com/wdcossey/SciterCore/_apis/build/status/SciterCore)](https://dev.azure.com/wdcossey/SciterCore/_build/latest?definitionId=13&branchName=master) |
 | SciterCore.SciterSharp.Utilities | [![Nuget](https://img.shields.io/nuget/v/SciterCore.SciterSharp.Utilities)](https://www.nuget.org/packages/SciterCore.SciterSharp.Utilities/)                 | [![Build status](https://dev.azure.com/wdcossey/SciterCore/_apis/build/status/SciterCore)](https://dev.azure.com/wdcossey/SciterCore/_build/latest?definitionId=13&branchName=master) |
 | SciterCore.Windows    | [![Nuget](https://img.shields.io/nuget/v/SciterCore.WinForms)](https://www.nuget.org/packages/SciterCore.WinForms/)     | |
 | SciterCore.Gtk        | [![Nuget](https://img.shields.io/nuget/v/SciterCore.Gtk)](https://www.nuget.org/packages/SciterCore.Gtk/)               | |
 | SciterCore.Xamarin.Mac| [![Nuget](https://img.shields.io/nuget/v/SciterCore.Mac)](https://www.nuget.org/packages/SciterCore.Mac/)               | |
-| [SciterCore.Binaries](https://github.com/wdcossey/SciterCore.Binaries)   | [![NuGet](https://img.shields.io/nuget/v/SciterCore.Binaries)](https://www.nuget.org/packages/SciterCore.Binaries/)     | |
-| [SciterCore.JS.Binaries](https://github.com/wdcossey/SciterCore.JS.Binaries)   | [![NuGet](https://img.shields.io/nuget/v/SciterCore.JS.Binaries)](https://www.nuget.org/packages/SciterCore.JS.Binaries/)     | |
+| [SciterCore.Binaries](https://github.com/wdcossey/SciterCore.Binaries)   | [![NuGet](https://img.shields.io/nuget/v/SciterCore.Binaries)](https://www.nuget.org/packages/SciterCore.Binaries/)     | [![Build status](https://dev.azure.com/wdcossey/SciterCore/_apis/build/status/SciterCore.Binaries)](https://dev.azure.com/wdcossey/SciterCore/_build/latest?definitionId=11) |
+| [SciterCore.JS.Binaries](https://github.com/wdcossey/SciterCore.JS.Binaries)   | [![NuGet](https://img.shields.io/nuget/v/SciterCore.JS.Binaries)](https://www.nuget.org/packages/SciterCore.JS.Binaries/)     | [![Build status](https://dev.azure.com/wdcossey/SciterCore/_apis/build/status/SciterCore.JS.Binaries)](https://dev.azure.com/wdcossey/SciterCore/_build/latest?definitionId=15) |
 | [SciterCore.PackFolder](https://github.com/wdcossey/SciterCore.PackFolder) | [![Nuget](https://img.shields.io/nuget/v/SciterCore.PackFolder)](https://www.nuget.org/packages/SciterCore.PackFolder/) | [![Build status](https://dev.azure.com/wdcossey/SciterCore/_apis/build/status/SciterCore.PackFolder)](https://dev.azure.com/wdcossey/SciterCore/_build/latest?definitionId=12) |
 
 ## Status
@@ -19,9 +23,9 @@
 | Operating System | Version(s)                          | .Net Core 3.x | .Net 5.x  | Comments                                                     |
 | -----------------|-------------------------------------| ------------- | --------- |--------------------------------------------------------------|
 | Windows          | 10 Pro `v19042.928`                 | ✔️          | ✔️     |                                                              |
-| Windows          | 8.1 Pro `v9600`<sup>proxmox</sup>   | ✔️          | ✔️     |                                                              |
-| Windows          | 8.0 Pro `v9200`<sup>proxmox</sup>   | ✔️          | ✔️     | Requires `Visual C++ Redistributable for Visual Studio 2015` |
-| Windows          | 7 Pro SP1 `v7601`<sup>proxmox</sup> | ✔️          | ✔️     | Ensure you have updated your OS!                             |
+| Windows          | 8.1 Pro `v9600` <sup>proxmox</sup>  | ✔️          | ✔️     |                                                              |
+| Windows          | 8.0 Pro `v9200` <sup>proxmox</sup>  | ✔️          | ✔️     | Requires `Visual C++ Redistributable for Visual Studio 2015` |
+| Windows          | 7 Pro SP1 `v7601` <sup>proxmox</sup>| ✔️          | ✔️     | Ensure you have updated your OS!                             |
 | Ubuntu           | `20.04` <sup>proxmox</sup>          | ✔️          | ✔️     |                                                              |
 | Fedora           | `33` <sup>proxmox</sup>             | ✔️          | ✔️     |                                                              |
 | Manjaro          | `20.2` `XFCE` <sup>proxmox</sup>    | ✔️          | ✔️     |                                                              |
@@ -79,6 +83,16 @@ Windows/MacOS/Linux using `Sciter` (`TIScript`).
 
 `.NetStandard 2.1` `.NetStandard 2.0` `.NetCoreApp 2.1` `.NetCoreApp 3.1` `.Net 5`.
 
+### SciterCore.WinForms
+`SciterCore` for WinForms.
+
+`.Net Framework 4.6.1` `.Net 5 (Windows)`.
+
+### SciterCore.Wpf
+`SciterCore` for Wpf.
+
+`.Net Framework 4.6.1` `.Net 5 (Windows)`.
+
 ### SciterCore.JS
 Windows/MacOS/Linux using `SciterJS` (`JavaScript`).
 
@@ -88,6 +102,17 @@ Windows/MacOS/Linux using `SciterJS` (`JavaScript`).
 `SciterCore.JS` dependency injection extensions using `Microsoft.DependencyInjection` 
 
 `.NetStandard 2.1` `.NetStandard 2.0` `.NetCoreApp 2.1` `.NetCoreApp 3.1` `.Net 5`.
+
+
+### SciterCore.JS.WinForms
+`SciterCore.JS` for WinForms.
+
+`.Net Framework 4.6.1` `.Net 5 (Windows)`.
+
+### SciterCore.JS.Wpf
+`SciterCore.JS` for Wpf.
+
+`.Net Framework 4.6.1` `.Net 5 (Windows)`.
 
 ### <s>SciterCore.Windows</s>
 Windows, WinForms and WPF support via `.Net Framework 4.6.1`
@@ -102,13 +127,19 @@ MacOS support via `Xamarin.Mac`
 
 ### SciterCore.PackFolder
 
+`Sciter` PackFolder MSBuild Task(s) for embedding Sciter packed binaries into Project resources.
+
 The source can be found [here](https://github.com/wdcossey/SciterCore.PackFolder)
 
 ### SciterCore.Binaries
 
+`Sciter` binaries for Windows, MacOS and Linux.
+
 The source can be found [here](https://github.com/wdcossey/SciterCore.Binaries)
 
 ### SciterCore.JS.Binaries
+
+`Sciter.JS` binaries for Windows, MacOS and Linux.
 
 The source can be found [here](https://github.com/wdcossey/SciterCore.JS.Binaries)
 

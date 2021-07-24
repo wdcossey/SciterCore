@@ -30,13 +30,13 @@ namespace SciterCore.JS.Wpf
 
         public SciterControl()
         {
-            Host = new SciterArchiveHost();
+            Host = new ThemedSciterArchiveHost();
             Content = DefaultHtml;
         }
 
         public SciterWindow SciterWindow { get; private set; }
         
-        public SciterArchiveHost Host { get; set; }
+        public ThemedSciterArchiveHost Host { get; set; }
 
         public static readonly DependencyProperty ContentProperty =
             DependencyProperty.Register(

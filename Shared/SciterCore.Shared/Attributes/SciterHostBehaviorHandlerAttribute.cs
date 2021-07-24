@@ -1,6 +1,4 @@
-﻿#if NETCORE
-
-using System;
+﻿using System;
 using SciterTest.CoreForms.Extensions;
 
 namespace SciterCore.Attributes
@@ -16,5 +14,3 @@ namespace SciterCore.Attributes
         }
     }
 }
-
-#endif
