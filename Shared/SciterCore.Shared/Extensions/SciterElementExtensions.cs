@@ -708,10 +708,7 @@ namespace SciterCore
         /// <returns>The Parent <see cref="SciterElement"/> of the newly created <see cref="SciterElement"/></returns>
         /// <exception cref="ArgumentNullException">If the <paramref name="tag"/> is null.</exception>
         public static SciterElement AppendElement(this SciterElement parent, string tag, Func<SciterElement, SciterElement> callbackFunc = null)
-        { 
-            parent?.AppendElement(tag: tag, text: null, callbackFunc: callbackFunc);
-            return parent;
-        }
+            => parent?.AppendElement(tag: tag, text: null, callbackFunc: callbackFunc);
 
         /// <summary>
         /// Creates a new <see cref="SciterElement"/> with the given <paramref name="tag"/> and appends it to the <paramref name="parent"/>.
@@ -722,7 +719,7 @@ namespace SciterCore
         /// <returns>The Parent <see cref="SciterElement"/> of the newly created <see cref="SciterElement"/></returns>
         /// <exception cref="ArgumentNullException">If the <paramref name="tag"/> is null.</exception>
         public static SciterElement AppendElement(this SciterElement parent, string tag)
-        { 
+        {
             parent?.TryAppendElement(tag: tag, element: out _, text: null, callback: null);
             return parent;
         }
