@@ -11,6 +11,8 @@ using SciterCore.Interop;
 namespace SciterCore.Windows.Core
 {
 
+	//[SciterHostEventHandlerAttribute(typeof(AppEventHandler))]
+	[SciterHostArchive("this://app/")]
 	class AppHost : SciterArchiveHost
 	{
 		protected static ISciterApi _api = Sciter.SciterApi;

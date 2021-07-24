@@ -55,8 +55,8 @@ namespace SciterCore.Windows.Tests.Unit
         {
             var element = _sciterWindow
                 .RootElement
-                .AppendChildElement("body")
-                .AppendChildElement(tag, "you should not see me!");
+                .AppendElement("body", (elm) => elm)
+                .AppendElement(tag, "you should not see me!", elm => elm);
 
             element.SetText("text");
 
@@ -75,8 +75,8 @@ namespace SciterCore.Windows.Tests.Unit
 
             var element = _sciterWindow
                 .RootElement
-                .AppendChildElement("body")
-                .AppendChildElement(tag, "you should not see me!");
+                .AppendElement("body", elm => elm)
+                .AppendElement(tag, "you should not see me!", elm => elm);
 
             element.Text = "text";
 
@@ -95,9 +95,9 @@ namespace SciterCore.Windows.Tests.Unit
             
             _sciterWindow
                 .RootElement
-                .AppendChildElement(div)
-                .AppendChildElement(text)
-                .AppendChildElement(ul);
+                .AppendElement(div, elm => elm)
+                .AppendElement(text, elm => elm)
+                .AppendElement(ul, elm => elm);
             
             Assert.AreEqual(ul.Parent.UniqueId, text.UniqueId);
             Assert.AreEqual(text.Parent.UniqueId, div.UniqueId);
@@ -113,9 +113,9 @@ namespace SciterCore.Windows.Tests.Unit
             
             _sciterWindow
                 .RootElement
-                .AppendChildElement(div)
-                .AppendChildElement(text)
-                .AppendChildElement(ul);
+                .AppendElement(div, elm => elm)
+                .AppendElement(text, elm => elm)
+                .AppendElement(ul, elm => elm);
             
             Assert.AreEqual(_sciterWindow.RootElement.Children[0].UniqueId, div.UniqueId);
             Assert.AreEqual(div.Children[0].UniqueId, text.UniqueId);
@@ -201,8 +201,8 @@ namespace SciterCore.Windows.Tests.Unit
         {
             var element = _sciterWindow
                 .RootElement
-                .AppendChildElement("body")
-                .AppendChildElement(tag, "you should not see me!");
+                .AppendElement("body", elm => elm)
+                .AppendElement(tag, "you should not see me!", elm => elm);
 
             element.SetHtml($"<div>{innerText}</div>");
 
@@ -220,8 +220,8 @@ namespace SciterCore.Windows.Tests.Unit
         {
             var element = _sciterWindow
                 .RootElement
-                .AppendChildElement("body")
-                .AppendChildElement(tag, "you should not see me!");
+                .AppendElement("body", elm => elm)
+                .AppendElement(tag, "you should not see me!", elm => elm);
 
             element.Html = $"<div>{innerText}</div>";
 
@@ -337,7 +337,7 @@ namespace SciterCore.Windows.Tests.Unit
         public void Element_first_last_child(string tag)
         {
             var element = _sciterWindow
-                .RootElement.AppendChildElement(SciterElement.Create(tag));
+                .RootElement.AppendElement(SciterElement.Create(tag), elm => elm);
 
             element
                 .AppendElement("first", "first child")
@@ -363,7 +363,7 @@ namespace SciterCore.Windows.Tests.Unit
         public void Element_first_last_child_at_index(string tag)
         {
             var element = _sciterWindow
-                .RootElement.AppendChildElement(SciterElement.Create(tag));
+                .RootElement.AppendElement(SciterElement.Create(tag), elm => elm);
 
             element
                 .AppendElement("first", "first child")
@@ -386,7 +386,7 @@ namespace SciterCore.Windows.Tests.Unit
         public void Clear_element_text(string tag)
         {
             var element = _sciterWindow
-                .RootElement.AppendChildElement(SciterElement.Create(tag));
+                .RootElement.AppendElement(SciterElement.Create(tag), elm => elm);
 
             element.AppendElement("elm", "this is my text");
 
@@ -405,10 +405,10 @@ namespace SciterCore.Windows.Tests.Unit
         public void Clone_element(string tag)
         {
             var element = _sciterWindow
-                .RootElement.AppendChildElement(SciterElement.Create(tag));
+                .RootElement.AppendElement(SciterElement.Create(tag), elm => elm);
 
             var clonedElement = _sciterWindow
-                .RootElement.AppendChildElement(element.Clone());
+                .RootElement.AppendElement(element.Clone(), elm => elm);
 
             Assert.IsNotNull(element);
             Assert.IsNotNull(clonedElement);

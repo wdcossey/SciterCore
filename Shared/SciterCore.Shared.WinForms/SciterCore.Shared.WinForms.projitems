@@ -13,7 +13,4 @@
     <Compile Include="$(MSBuildThisFileDirectory)SciterControl.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SciterHostComponent.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Events" />
-  </ItemGroup>
 </Project>

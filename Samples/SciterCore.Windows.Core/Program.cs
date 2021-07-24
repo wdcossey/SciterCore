@@ -37,7 +37,7 @@ namespace SciterCore.Windows.Core
 
 			// Platform specific (required for GTK)
 			SciterPlatform.Initialize();
-			// Sciter needs this for drag 'n drop support
+			// SciterCore needs this for drag 'n drop support (on Windows)
 			SciterPlatform.EnableDragAndDrop();
 			
 			// Create the window

@@ -4,7 +4,7 @@
         <SciterCoreResourceName>LibConsole</SciterCoreResourceName>
         <SciterCorePackFileName>SciterSharp.Console</SciterCorePackFileName>
         <TargetFrameworks>net461;net5.0;netcoreapp2.1;netcoreapp3.1;netstandard2.0;netstandard2.1</TargetFrameworks>
-        <LangVersion>8</LangVersion>
+        <LangVersion>default</LangVersion>
         <Title>SciterSharp.Console</Title>
         <Authors>Ramon Mendes, William D Cossey</Authors>
         <Description>This package includes SciterSharp.Console and SciterSharp.Utils for extending TIScript</Description>
@@ -15,6 +15,10 @@
         <PackageTags>Sciter SciterCore SciterSharp WinForms WPF Gtk Xamarin</PackageTags>
         <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
         <RootNamespace>SciterCore</RootNamespace>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+      <DocumentationFile>bin\Release\SciterCore.SciterSharp.Utilities.xml</DocumentationFile>
     </PropertyGroup>
 
     <ItemGroup>

@@ -174,8 +174,11 @@
 		}
 		
 		for(var (i,child) in $$(li|radio(theme)) ) {
-			child.on("click", function(evt) {
+			child.on("click", function(evt, sender) {
 				self.attributes["theme"] = this.value;
+            	sender.refresh();
+            	for(var (i, element) in $$(menu))
+                	element.refresh();
 			});
 		}
 

@@ -154,6 +154,11 @@
         
         on("click", "li|radio(theme)", function (evt,sender) {
             document.attributes["theme"] = sender.value;
+            sender.requestPaint();
+            document.querySelectorAll('menu').forEach(element => {
+                element.requestPaint();
+            });
+            return true;
         });
         
     </script>

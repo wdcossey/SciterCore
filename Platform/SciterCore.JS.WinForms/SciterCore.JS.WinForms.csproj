@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <RootNamespace>SciterCore</RootNamespace>
+        <UseWindowsForms>true</UseWindowsForms>
+        <TargetFrameworks>net461;net5.0-windows</TargetFrameworks>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' And '$(TargetFramework)' != 'net461' ">
+        <DefineConstants>TRACE;NETCORE;SCITER_JS</DefineConstants>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' And '$(TargetFramework)' == 'net461' ">
+        <DefineConstants>TRACE;WINDOWS;SCITER_JS</DefineConstants>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' And '$(TargetFramework)' != 'net461' ">
+        <DefineConstants>TRACE;NETCORE;SCITER_JS</DefineConstants>
+        <DocumentationFile>bin\Release\SciterCore.JS.WinForms.xml</DocumentationFile>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' And '$(TargetFramework)' == 'net461' ">
+        <DefineConstants>TRACE;WINDOWS;SCITER_JS</DefineConstants>
+        <DocumentationFile>bin\Release\SciterCore.JS.WinForms.xml</DocumentationFile>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="SciterCore.JS" Version="[0.1.2.6*-*,1.0.0.0)" />
+    </ItemGroup>
+    
+    <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">
+        <Reference Include="System.Windows.Forms" />
+    </ItemGroup>
+    
+    <ItemGroup Condition=" '$(TargetFramework)' != 'net461' ">
+        
+    </ItemGroup>
+    
+    <ItemGroup Condition=" '$(Configuration)' == 'Debug' ">
+        <ProjectReference Include="..\..\Platform\SciterCore.JS\SciterCore.JS.csproj" />
+    </ItemGroup>
+
+    <Import Project="..\..\Shared\SciterCore.Shared.WinForms\SciterCore.Shared.WinForms.projitems" Label="Shared" />
+</Project>

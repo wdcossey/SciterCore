@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <TargetFrameworks>net5.0;netcoreapp2.1;netcoreapp3.1;netstandard2.0;netstandard2.1</TargetFrameworks>
-        <LangVersion>8</LangVersion>
+        <LangVersion>default</LangVersion>
         <Title>SciterCore.Microsoft.DependencyInjection</Title>
         <Authors>William D Cossey</Authors>
         <Description>SciterCore package for .Net applications using Microsoft.Extensions.DependencyInjection</Description>
@@ -21,6 +21,7 @@
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
       <DefineConstants>TRACE;NETCORE</DefineConstants>
+      <DocumentationFile>bin\Release\SciterCore.Microsoft.DependencyInjection.xml</DocumentationFile>
     </PropertyGroup>
     
     <ItemGroup Condition=" '$(TargetFramework)' == 'net5.0' ">

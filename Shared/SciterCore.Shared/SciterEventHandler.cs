@@ -49,14 +49,12 @@ namespace SciterCore
 		private static readonly List<SciterEventHandler> AttachedHandlers = new List<SciterEventHandler>();// we keep a copy of all attached instances to guard from GC removal
 
 		public SciterEventHandler()
-            : this(name: null)
-		{
+            : this(host: null, name: null) { }
 
-		}
-
-		public SciterEventHandler(string name = null)
+		public SciterEventHandler(SciterHost host = null, string name = null)
 		{
 			EventProc = EventProcMethod;
+			Host = host;
 			Name = name ?? this.GetType().FullName;
 		}
 

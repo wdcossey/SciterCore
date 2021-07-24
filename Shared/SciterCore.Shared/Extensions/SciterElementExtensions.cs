@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SciterCore.Interop;
 
+// ReSharper disable MethodOverloadWithOptionalParameter
 // ReSharper disable UnusedType.Global
 // ReSharper disable UnusedMethodReturnValue.Global
 // ReSharper disable UnusedMember.Global
@@ -81,23 +82,27 @@ namespace SciterCore
         /// <param name="parent"></param>
         /// <param name="tag"></param>
         /// <param name="text"></param>
+        /// <param name="callback"></param>
         /// <returns>The newly created child <see cref="SciterElement"/></returns>
         /// <exception cref="ArgumentNullException">If the <paramref name="parent"/> is null.</exception>
         /// <exception cref="ArgumentNullException">If the <paramref name="tag"/> is null.</exception>
-        public static SciterElement AppendChildElement(this SciterElement parent, string tag, string text = null)
+        [Obsolete("Use AppendElement(Func<SciterElement,SciterElement>)")]
+        public static SciterElement AppendChildElement(this SciterElement parent, string tag, string text = null, Action<SciterElement> callback = null)
         {
-            return parent.AppendChildElement(childElement: SciterElement.Create(tag: tag, text));
+            return parent.AppendChildElement(childElement: SciterElement.Create(tag: tag, text), callback: callback);
         }
-        
+
         /// <summary>
         /// Appends and returns the the given <paramref name="childElement"/>.
         /// </summary>
         /// <param name="parent"></param>
         /// <param name="childElement"></param>
+        /// <param name="callback"></param>
         /// <returns>The newly created child <see cref="SciterElement"/></returns>
         /// <exception cref="ArgumentNullException">If the <paramref name="parent"/> is null.</exception>
         /// <exception cref="ArgumentNullException">If the <paramref name="childElement"/> is null.</exception>
-        public static SciterElement AppendChildElement(this SciterElement parent, SciterElement childElement)
+        [Obsolete("Use AppendElement(Func<SciterElement,SciterElement>)")]
+        public static SciterElement AppendChildElement(this SciterElement parent, SciterElement childElement, Action<SciterElement> callback = null)
         {
             if (parent == null)
                 throw new ArgumentNullException(nameof(parent), @"Parent element cannot be null.");
@@ -105,7 +110,7 @@ namespace SciterCore
             if (childElement == null)
                 throw new ArgumentNullException(nameof(childElement), @"Element cannot be null or empty.");
             
-            parent.AppendElement(childElement);
+            parent.AppendElement(element: childElement, callback: callback);
 
             return childElement;
         }
@@ -116,23 +121,27 @@ namespace SciterCore
         /// <param name="parent"></param>
         /// <param name="tag"></param>
         /// <param name="text"></param>
+        /// <param name="callback"></param>
         /// <returns>The newly created child <see cref="SciterElement"/></returns>
         /// <exception cref="ArgumentNullException">If the <paramref name="parent"/> is null.</exception>
         /// <exception cref="ArgumentNullException">If the <paramref name="tag"/> is null.</exception>
-        public static bool TryAppendChildElement(this SciterElement parent, string tag, string text = null)
+        [Obsolete("Use TryAppendElement(Func<SciterElement,SciterElement>)")]
+        public static bool TryAppendChildElement(this SciterElement parent, string tag, string text = null, Action<SciterElement> callback = null)
         {
-            return parent.TryAppendChildElement(childElement: SciterElement.Create(tag: tag, text)) == true;
+            return parent.TryAppendChildElement(childElement: SciterElement.Create(tag: tag, text), callback: callback) == true;
         }
-        
+
         /// <summary>
         /// Appends and returns the the given <paramref name="childElement"/>.
         /// </summary>
         /// <param name="parent"></param>
         /// <param name="childElement"></param>
+        /// <param name="callback"></param>
         /// <returns>The newly created child <see cref="SciterElement"/></returns>
         /// <exception cref="ArgumentNullException">If the <paramref name="parent"/> is null.</exception>
         /// <exception cref="ArgumentNullException">If the <paramref name="childElement"/> is null.</exception>
-        public static bool TryAppendChildElement(this SciterElement parent, SciterElement childElement)
+        [Obsolete("Use TryAppendElement(Func<SciterElement,SciterElement>)")]
+        public static bool TryAppendChildElement(this SciterElement parent, SciterElement childElement, Action<SciterElement> callback = null)
         {
             if (parent == null)
                 throw new ArgumentNullException(nameof(parent), @"Parent element cannot be null.");
@@ -140,7 +149,7 @@ namespace SciterCore
             if (childElement == null)
                 throw new ArgumentNullException(nameof(childElement), @"Element cannot be null or empty.");
             
-            return parent.TryAppendElement(childElement);
+            return parent.TryAppendElement(element: childElement, callback: callback);
         }
         
         /// <summary>
@@ -442,7 +451,7 @@ namespace SciterCore
             element?.SetStyleValueInternal(key: key, value: value);
             return element;
         }
-        
+
         public static bool TrySetStyleValue(this SciterElement element, string key, string value)
         {
             return element?.TrySetStyleValueInternal(key: key, value: value) == true;
@@ -592,6 +601,19 @@ namespace SciterCore
         /// </summary>
         /// <param name="parent"></param>
         /// <param name="element"></param>
+        /// <returns>The Parent <see cref="SciterElement"/> of the newly created <see cref="SciterElement"/></returns>
+        /// <exception cref="ArgumentNullException">If the <paramref name="element"/> is null.</exception>
+        public static SciterElement AppendElement(this SciterElement parent, SciterElement element)
+        {
+            parent?.AppendElement(element: element, callback: null);
+            return parent;
+        }
+
+        /// <summary>
+        /// Appends a <see cref="SciterElement"/> to the <paramref name="parent"/>.
+        /// </summary>
+        /// <param name="parent"></param>
+        /// <param name="element"></param>
         /// <param name="callback"></param>
         /// <returns>The Parent <see cref="SciterElement"/> of the newly created <see cref="SciterElement"/></returns>
         /// <exception cref="ArgumentNullException">If the <paramref name="element"/> is null.</exception>
@@ -599,6 +621,21 @@ namespace SciterCore
         {
             parent?.TryAppendElement(element: element, callback: callback);
             return parent;
+        }
+
+        /// <summary>
+        /// Appends a <see cref="SciterElement"/> to the <paramref name="parent"/>.
+        /// </summary>
+        /// <param name="parent"></param>
+        /// <param name="element"></param>
+        /// <param name="callbackFunc"></param>
+        /// <returns>The Parent <see cref="SciterElement"/> of the newly created <see cref="SciterElement"/></returns>
+        /// <exception cref="ArgumentNullException">If the <paramref name="element"/> is null.</exception>
+        public static SciterElement AppendElement(this SciterElement parent, SciterElement element, Func<SciterElement, SciterElement> callbackFunc = null)
+        {
+            SciterElement resultElement = null;
+            parent?.TryAppendElement(element: element, out resultElement, callbackFunc: callbackFunc);
+            return resultElement;
         }
 
         /// <summary>
@@ -625,6 +662,72 @@ namespace SciterCore
         }
 
         /// <summary>
+        /// Appends a <see cref="SciterElement"/> to the <paramref name="parent"/>.
+        /// </summary>
+        /// <param name="parent"></param>
+        /// <param name="element"></param>
+        /// <param name="resultElement"></param>
+        /// <param name="callbackFunc"></param>
+        /// <returns>The Parent <see cref="SciterElement"/> of the newly created <see cref="SciterElement"/></returns>
+        /// <exception cref="ArgumentNullException">If the <paramref name="element"/> is null.</exception>
+        public static bool TryAppendElement(this SciterElement parent, SciterElement element, out SciterElement resultElement, Func<SciterElement, SciterElement> callbackFunc = null)
+        {
+            if (parent == null)
+                throw new ArgumentNullException(nameof(parent), $"{nameof(parent)} cannot be null.");
+            
+            if (element == null)
+                throw new ArgumentNullException(nameof(element), $"{nameof(element)} cannot be null.");
+
+            var result = parent?.AppendElementInternal(element: element) == true;
+            
+            resultElement = callbackFunc?.Invoke(element);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Creates a new <see cref="SciterElement"/> with the given <paramref name="tag"/> and appends it to the <paramref name="parent"/>.
+        /// </summary>
+        /// <param name="parent"></param>
+        /// <param name="tag"></param>
+        /// <param name="callback"></param>
+        /// <returns>The Parent <see cref="SciterElement"/> of the newly created <see cref="SciterElement"/></returns>
+        /// <exception cref="ArgumentNullException">If the <paramref name="tag"/> is null.</exception>
+        public static SciterElement AppendElement(this SciterElement parent, string tag, Action<SciterElement> callback = null)
+        { 
+            parent?.AppendElement(tag: tag, text: null, callback: callback);
+            return parent;
+        }
+
+        /// <summary>
+        /// Creates a new <see cref="SciterElement"/> with the given <paramref name="tag"/> and appends it to the <paramref name="parent"/>.
+        /// </summary>
+        /// <param name="parent"></param>
+        /// <param name="tag"></param>
+        /// <param name="callbackFunc"></param>
+        /// <returns>The Parent <see cref="SciterElement"/> of the newly created <see cref="SciterElement"/></returns>
+        /// <exception cref="ArgumentNullException">If the <paramref name="tag"/> is null.</exception>
+        public static SciterElement AppendElement(this SciterElement parent, string tag, Func<SciterElement, SciterElement> callbackFunc = null)
+        { 
+            parent?.AppendElement(tag: tag, text: null, callbackFunc: callbackFunc);
+            return parent;
+        }
+
+        /// <summary>
+        /// Creates a new <see cref="SciterElement"/> with the given <paramref name="tag"/> and appends it to the <paramref name="parent"/>.
+        /// </summary>
+        /// <param name="parent"></param>
+        /// <param name="tag"></param>
+        /// <param name="text"></param>
+        /// <returns>The Parent <see cref="SciterElement"/> of the newly created <see cref="SciterElement"/></returns>
+        /// <exception cref="ArgumentNullException">If the <paramref name="tag"/> is null.</exception>
+        public static SciterElement AppendElement(this SciterElement parent, string tag)
+        { 
+            parent?.TryAppendElement(tag: tag, element: out _, text: null, callback: null);
+            return parent;
+        }
+
+        /// <summary>
         /// Creates a new <see cref="SciterElement"/> with the given <paramref name="tag"/> and appends it to the <paramref name="parent"/>.
         /// </summary>
         /// <param name="parent"></param>
@@ -634,7 +737,7 @@ namespace SciterCore
         /// <exception cref="ArgumentNullException">If the <paramref name="tag"/> is null.</exception>
         public static SciterElement AppendElement(this SciterElement parent, string tag, string text = null)
         { 
-            parent?.TryAppendElement(tag: tag, element: out _, text: text, callback: (Action<SciterElement>)null);
+            parent?.TryAppendElement(tag: tag, element: out _, text: text, callback: null);
             return parent;
         }
 
@@ -658,6 +761,37 @@ namespace SciterCore
         /// </summary>
         /// <param name="parent"></param>
         /// <param name="tag"></param>
+        /// <param name="text"></param>
+        /// <param name="callbackFunc"></param>
+        /// <returns>The Parent <see cref="SciterElement"/> of the newly created <see cref="SciterElement"/></returns>
+        /// <exception cref="ArgumentNullException">If the <paramref name="tag"/> is null.</exception>
+        public static SciterElement AppendElement(this SciterElement parent, string tag, string text = null, Func<SciterElement, SciterElement> callbackFunc = null)
+        { 
+            SciterElement resultElement = (SciterElement)default;
+            parent?.TryAppendElement(tag: tag, element: out resultElement, text: text, callbackFunc: callbackFunc);
+            return resultElement;
+        }
+
+        /// <summary>
+        /// Creates a new <see cref="SciterElement"/> with the given <paramref name="tag"/> and appends it to the <paramref name="parent"/>.
+        /// </summary>
+        /// <param name="parent"></param>
+        /// <param name="tag"></param>
+        /// <param name="element">The newly created <see cref="SciterElement"/></param>
+        /// <param name="callback"></param>
+        /// <returns>The Parent <see cref="SciterElement"/> of the newly created <see cref="SciterElement"/></returns>
+        /// <exception cref="ArgumentNullException">If the <paramref name="tag"/> is null.</exception>
+        public static bool TryAppendElement(this SciterElement parent, string tag, out SciterElement element, Action<SciterElement> callback = null)
+        {
+            element = (SciterElement)default;
+            return parent?.TryAppendElement(tag: tag, element: out element, text: null, callback: callback) == true;
+        }
+
+        /// <summary>
+        /// Creates a new <see cref="SciterElement"/> with the given <paramref name="tag"/> and appends it to the <paramref name="parent"/>.
+        /// </summary>
+        /// <param name="parent"></param>
+        /// <param name="tag"></param>
         /// <param name="element">The newly created <see cref="SciterElement"/></param>
         /// <param name="text"></param>
         /// <param name="callback"></param>
@@ -673,6 +807,30 @@ namespace SciterCore
             var result = parent?.TryAppendElementInternal(tag: tag, out element, text: text) == true;
             
             callback?.Invoke(element);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Creates a new <see cref="SciterElement"/> with the given <paramref name="tag"/> and appends it to the <paramref name="parent"/>.
+        /// </summary>
+        /// <param name="parent"></param>
+        /// <param name="tag"></param>
+        /// <param name="element">The newly created <see cref="SciterElement"/></param>
+        /// <param name="text"></param>
+        /// <param name="callbackFunc"></param>
+        /// <returns>The Parent <see cref="SciterElement"/> of the newly created <see cref="SciterElement"/></returns>
+        /// <exception cref="ArgumentNullException">If the <paramref name="tag"/> is null.</exception>
+        public static bool TryAppendElement(this SciterElement parent, string tag, out SciterElement element, string text = null, Func<SciterElement, SciterElement> callbackFunc = null)
+        {
+            if (string.IsNullOrWhiteSpace(tag))
+                throw new ArgumentNullException(nameof(tag), @"Tag cannot be null or empty.");
+
+            SciterElement resultElement = (SciterElement)default;
+            
+            var result = parent?.TryAppendElementInternal(tag: tag, out resultElement, text: text) == true;
+
+            element = callbackFunc?.Invoke(resultElement);
 
             return result;
         }

@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <TargetFrameworks>net461;net5.0;netcoreapp2.1;netcoreapp3.1;netstandard2.0;netstandard2.1</TargetFrameworks>
-        <LangVersion>8</LangVersion>
+        <LangVersion>default</LangVersion>
         <Title>SciterCore.JS</Title>
         <Authors>William D Cossey</Authors>
         <Description>SciterCore.JS package for .Net applications</Description>
@@ -30,7 +30,7 @@
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' And '$(TargetFramework)' == 'net461' ">
         <DefineConstants>TRACE;WINDOWS;SCITER_JS</DefineConstants>
-        <DocumentationFile>bin\Release\SciterCore.xml</DocumentationFile>
+        <DocumentationFile>bin\Release\SciterCore.JS.xml</DocumentationFile>
     </PropertyGroup>
 
     <ItemGroup>

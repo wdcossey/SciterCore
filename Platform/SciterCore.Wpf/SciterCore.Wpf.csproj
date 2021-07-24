@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <RootNamespace>SciterCore</RootNamespace>
+        <UseWPF >true</UseWPF >
+        <TargetFrameworks>net461;net5.0-windows</TargetFrameworks>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' And '$(TargetFramework)' != 'net461' ">
+        <DefineConstants>TRACE;NETCORE</DefineConstants>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' And '$(TargetFramework)' == 'net461' ">
+        <DefineConstants>TRACE;WINDOWS</DefineConstants>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' And '$(TargetFramework)' != 'net461' ">
+        <DefineConstants>TRACE;NETCORE</DefineConstants>
+        <DocumentationFile>bin\Release\SciterCore.Wpf.xml</DocumentationFile>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' And '$(TargetFramework)' == 'net461' ">
+        <DefineConstants>TRACE;WINDOWS</DefineConstants>
+        <DocumentationFile>bin\Release\SciterCore.Wpf.xml</DocumentationFile>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="SciterCore" Version="[0.1.2.6*-*,1.0.0.0)" />
+    </ItemGroup>
+    
+    <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">
+        <Reference Include="PresentationFramework" />
+    </ItemGroup>
+    
+    <ItemGroup Condition=" '$(TargetFramework)' != 'net461' ">
+        
+    </ItemGroup>
+    
+    <ItemGroup Condition=" '$(Configuration)' == 'Debug' ">
+        <ProjectReference Include="..\..\Platform\SciterCore\SciterCore.csproj" />
+    </ItemGroup>
+</Project>

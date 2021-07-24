@@ -25,10 +25,10 @@ namespace SciterCore.JS.Wpf
             {
                 onError.Invoke(SciterValue.MakeError(e.Message));
             }
-		
             return Task.CompletedTask;
         }
     }
+    
     public class UISciterEventHandler: UIElement
     {
         public UISciterEventHandler()
