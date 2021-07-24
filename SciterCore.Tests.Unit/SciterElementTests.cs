@@ -415,5 +415,37 @@ namespace SciterCore.Tests.Unit
             Assert.AreEqual(2, _sciterWindow.RootElement.ChildCount);
             Assert.AreNotEqual(element.UniqueId, clonedElement.UniqueId);
         }
+
+        [TestCase("div", "option")]
+        [TestCase("text", "option")]
+        [TestCase("label", "option")]
+        [TestCase("ul", "option")]
+        public void AppendElement_using_SciterElement_with_Func_returns_the_correct_element(string expectedTag, string expectedChildTag)
+        {
+            var element = _sciterWindow
+                .RootElement.AppendElement(SciterElement.Create(expectedTag), elm => elm.AppendElement(SciterElement.Create(expectedChildTag)));
+            
+            Assert.IsNotNull(element);
+            Assert.AreEqual(expectedTag, element.Tag);
+            Assert.AreEqual(1, _sciterWindow.RootElement.ChildCount);
+            Assert.AreEqual(1, element.ChildCount);
+            Assert.AreEqual(expectedChildTag, element.FirstChild().Tag);
+        }
+
+        [TestCase("div", "option")]
+        [TestCase("text", "option")]
+        [TestCase("label", "option")]
+        [TestCase("ul", "option")]
+        public void AppendElement_using_tag_string_with_Func_returns_the_correct_element(string expectedTag, string expectedChildTag)
+        {
+            var element = _sciterWindow
+                .RootElement.AppendElement(expectedTag, elm => elm.AppendElement(expectedChildTag));
+            
+            Assert.IsNotNull(element);
+            Assert.AreEqual(expectedTag, element.Tag);
+            Assert.AreEqual(1, _sciterWindow.RootElement.ChildCount);
+            Assert.AreEqual(1, element.ChildCount);
+            Assert.AreEqual(expectedChildTag, element.FirstChild().Tag);
+        }
     }
 }

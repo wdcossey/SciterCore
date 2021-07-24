@@ -178,9 +178,8 @@ namespace Microsoft.Extensions.DependencyInjection
                     {
                         result = ActivatorUtilities.CreateInstance<THost>(provider);
                     }*/
-                    
-                    if (sciterHostOptions.ArchiveUri != null)
-                        ;
+
+                    if (sciterHostOptions.ArchiveUri != null) { }
 
                     var result = ActivatorUtilities.CreateInstance<TPrimaryHost>(scopedServiceProvider);
                     
