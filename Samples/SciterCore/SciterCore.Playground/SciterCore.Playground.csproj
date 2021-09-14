@@ -32,7 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="SciterCore.Binaries" Version="4.4.7" />
+    <PackageReference Include="SciterCore.Binaries" Version="4.4.8.3" />
     <PackageReference Include="SciterCore" Version="[0.1.*-*,1.0.0.0)" />
     <PackageReference Include="SciterCore.Microsoft.DependencyInjection" Version="[0.1.*-*,1.0.0.0)" />
     <PackageReference Include="SciterCore.PackFolder" Version="[0.1.*-*,1.0.0.0)" />

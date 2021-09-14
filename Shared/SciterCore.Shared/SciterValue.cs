@@ -1,17 +1,17 @@
 ﻿// Copyright 2016 Ramon F. Mendes
 //
 // This file is part of SciterSharp.
-// 
+//
 // SciterSharp is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // SciterSharp is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with SciterSharp.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -43,7 +43,7 @@ namespace SciterCore
 	{
 		internal Interop.SciterValue.VALUE _data;
 		private static readonly ISciterApi SciterApi = Sciter.SciterApi;
-		
+
 		private readonly bool _unuseValue = true;
 		public static readonly SciterValue Undefined;
 		public static readonly SciterValue Null;
@@ -73,18 +73,18 @@ namespace SciterCore
 		public override string ToString()
 		{
 			var what = "";
-			if (IsUndefined) 
+			if (IsUndefined)
 				what = nameof(IsUndefined);
 
-			if (IsBool) 
+			if (IsBool)
 				what += $"{nameof(IsBool)} ({AsBooleanInternal()})";
 
-			if (IsInt) 
+			if (IsInt)
 				what += $"{nameof(IsInt)} ({AsInt32Internal()})";
 
-			if (IsFloat) 
+			if (IsFloat)
 				what += $"{nameof(IsFloat)} ({AsDoubleInternal()})";
-			
+
 			if (IsString)
 				what = $"{nameof(IsString)} ({AsStringInternal(string.Empty)})";
 
@@ -94,67 +94,72 @@ namespace SciterCore
 				if (IsString)
 					what += $" ({AsStringInternal(string.Empty)})";
 			}
-			
-			if (IsErrorString) 
+
+			if (IsErrorString)
 				what = nameof(IsErrorString);
-			
-			if (IsDate) 
+
+			if (IsDate)
 				what = $"{nameof(IsDate)} ({AsInt64Internal()})";
-			
-			if (IsCurrency) 
+
+			if (IsCurrency)
 				what = $"{nameof(IsCurrency)} ({AsCurrencyInternal()})";
-			
-			if (IsMap) 
+
+			if (IsMap)
 				what = nameof(IsMap);
-			
-			if (IsArray) 
+
+			if (IsArray)
 				what = nameof(IsArray);
-			
-			if (IsFunction) 
+
+			if (IsFunction)
 				what = nameof(IsFunction);
-			
-			if (IsBytes) 
+
+			if (IsBytes)
 				what = nameof(IsBytes);
-			
-			if (IsObject) 
+
+			if (IsObject)
 				what = nameof(IsObject);
-			
-			if (IsDomElement) 
+
+			if (IsDomElement)
 				what = nameof(IsDomElement);
-			
-			if (IsNativeFunction) 
+
+			if (IsNativeFunction)
 				what = nameof(IsNativeFunction);
-			
-			if (IsColor) 
+
+			if (IsColor)
 				what = $"{nameof(IsColor)} ({AsColorInternal()})";
-			
-			if (IsDuration) 
+
+			if (IsDuration)
 				what = $"{nameof(IsDuration)} ({AsDurationInternal()})";
-			
-			if (IsAngle) 
+
+			if (IsAngle)
 				what =  $"{nameof(IsAngle)} ({AsAngleInternal()})";
-			
-			if (IsNull) 
+
+			if (IsNull)
 				what = nameof(IsNull);
-			
-			if (IsObjectNative) 
+
+			if (IsObjectNative)
 				what = nameof(IsObjectNative);
-			
-			if (IsObjectArray) 
+
+			if (IsObjectArray)
 				what = nameof(IsObjectArray);
-			
-			if (IsObjectFunction) 
+
+			if (IsObjectFunction)
+			{
 				what = nameof(IsObjectFunction);
-			
-			if (IsObjectObject) 
+
+				var index = 0;
+				what += $" ({string.Join(", ", AsEnumerableInternal()?.Select(s => $"param{index++}") ?? Array.Empty<string>())})";
+			}
+
+			if (IsObjectObject)
 				what = nameof(IsObjectObject);
-			
-			if (IsObjectClass) 
+
+			if (IsObjectClass)
 				what = nameof(IsObjectClass);
-			
-			if (IsObjectError) 
+
+			if (IsObjectError)
 				what = nameof(IsObjectError);
-			
+
 			if (IsMap)
 			{
 				what = $"{nameof(IsMap)} {Regex.Replace(this.AsJsonString(),@"\t|\n|\r","")}";
@@ -164,14 +169,14 @@ namespace SciterCore
 		}
 
 		#endregion
-		
+
 		#region Constructor(s)
-		
+
 		internal SciterValue()
 		{
 			SciterApi.ValueInit(out _data);
 		}
-		
+
 		internal SciterValue(Action<SciterValue> setupFunc)
 		{
 			SciterApi.ValueInit(out _data);
@@ -182,26 +187,26 @@ namespace SciterCore
 		{
 			return new SciterValue(value._data);
 		}
-		
+
 		private SciterValue(Interop.SciterValue.VALUE value)
 		{
 			SciterApi.ValueInit(out _data);
 			SciterApi.ValueCopy(out _data, ref value);
 			_unuseValue = false;
 		}
-		
+
 		internal static SciterValue Attach(Interop.SciterValue.VALUE value)
 		{
 			return new SciterValue(value);
 		}
-		
+
 		#endregion
 
 		#region Create
-		
+
 		public static SciterValue Create(bool value)
 		{
-			return new SciterValue(v => 
+			return new SciterValue(v =>
 				SciterApi.ValueIntDataSet(ref v._data, value ? 1 : 0, (uint) Interop.SciterValue.VALUE_TYPE.T_BOOL, 0));
 		}
 
@@ -241,13 +246,13 @@ namespace SciterCore
 			return new SciterValue(v =>
 				SciterApi.ValueInt64DataSet(ref v._data, value, (uint) Interop.SciterValue.VALUE_TYPE.T_DATE, 0));
 		}
-		
+
 		public static SciterValue Create(SciterColor color)
 		{
 			return new SciterValue(v => SciterApi.ValueIntDataSet(ref v._data, (int) color.Value,
 				(uint) Interop.SciterValue.VALUE_TYPE.T_COLOR, 0));
 		}
-		
+
 		public static SciterValue Create(params SciterValue[] values)
 		{
 			var result = new SciterValue();
@@ -257,7 +262,7 @@ namespace SciterCore
 			}
 			return result;
 		}
-		
+
 		///<summary>
 		/// Creates a <see cref="SciterValue"/> from an arbitrary object, looping recursively through its public properties
 		///</summary>
@@ -280,11 +285,11 @@ namespace SciterCore
 				result.SetItem(new SciterValue(item.Key), Attach(item.Value));
 			return result;
 		}
-		
+
 		#endregion
-		
+
 		#region Private Methods
-		
+
 		private SciterValue(IConvertible value)
 		{
 			SciterApi.ValueInit(out _data);
@@ -333,15 +338,23 @@ namespace SciterCore
 					throw new Exception($"Can not create a SciterValue from type '{value.GetType()}'");
 			}
 		}
-		
+
+		private SciterValue(IFormattable value)
+		{
+			SciterApi.ValueInit(out _data);
+			var @string = value.ToString(format: null, formatProvider: null);
+			SciterApi.ValueStringDataSet(ref _data, @string, (uint) @string.Length,
+				(uint) Interop.SciterValue.VALUE_UNIT_TYPE_STRING.UT_STRING_STRING);
+		}
+
 		private IConvertible FromSciterValue(SciterValue value)
 		{
 			var valueTypeResult = SciterApi.ValueType(ref value._data, out var valueType, out var _)
 				.IsOk();
-			
+
 			if (!valueTypeResult)
 				return null;
-			
+
 			switch ((Interop.SciterValue.VALUE_TYPE)valueType)
 			{
 				case Interop.SciterValue.VALUE_TYPE.T_NULL:
@@ -388,21 +401,21 @@ namespace SciterCore
 					throw new Exception($"Can not create a SciterValue from type '{value.GetType()}'");
 			}
 		}
-		
-		private static SciterValue FromObjectRecurse(object value, ref List<object> antiRecurse, int depth)
+
+		private static SciterValue FromObjectRecurse(object value, ref List<object> antiRecurse, int depth, int maxDepth = 10)
 		{
-			if(depth++ >= 10)
+			if(depth++ >= maxDepth)
 				throw new InvalidOperationException("Recursion too deep");
-			
+
 			if (value == null)
 				return Null;
-			
+
 			if (value is IConvertible convertible)
 				return new SciterValue(convertible);
 
 			if (antiRecurse.Contains(value))
 				throw new InvalidOperationException("Found recursive property");
-			
+
 			antiRecurse.Add(antiRecurse);
 
 			var t = value.GetType();
@@ -419,17 +432,21 @@ namespace SciterCore
 					{
 						valueArray.Append(FromObjectRecurse(item, ref antiRecurse, depth));
 					}
-				
+
 				return valueArray;
 			}
+
+
+			//if (value is IFormattable formattable)
+			//	return new SciterValue(formattable);
 
 			var result = new SciterValue();
 
 			foreach(var prop in t.GetProperties())
 			{
-				if (!prop.CanRead) 
+				if (!prop.CanRead)
 					continue;
-				
+
 				var val = prop.GetValue(value);
 				result[prop.Name] = FromObjectRecurse(val, ref antiRecurse, depth);
 			}
@@ -438,7 +455,7 @@ namespace SciterCore
 		}
 
 		#endregion
-		
+
 		//TODO: Clean this up
 		public SciterValue(Func<SciterValue[], SciterValue> func)
 		{
@@ -475,7 +492,7 @@ namespace SciterCore
 			SciterApi.ValueInit(out _data);
 			SciterApi.ValueNativeFunctorSet(ref _data, fnfi, fnfr, IntPtr.Zero);
 		}
-		
+
 		//TODO: Clean this up
 		public SciterValue(Action<SciterValue[]> func)
 		{
@@ -529,8 +546,8 @@ namespace SciterCore
 			}
 			return sv;
 		}
-		
-		
+
+
 		///// <summary>
 		///// Constructs a TIScript array T[] where T is a basic type like int or string
 		///// </summary>
@@ -561,7 +578,7 @@ namespace SciterCore
 		{
 			var result = new SciterValue();
 			var convertibles = value as T[] ?? value.ToArray();
-			
+
 			if(convertibles?.Any() != true)
 			{
 				SciterApi.ValueIntDataSet(ref result._data, 0, (uint) Interop.SciterValue.VALUE_TYPE.T_ARRAY, 0);
@@ -571,7 +588,7 @@ namespace SciterCore
 			var i = 0;
 			foreach (var convertible in convertibles)
 				result.SetItem(i++, new SciterValue(convertible));
-			
+
 			return result;
 		}
 
@@ -589,7 +606,7 @@ namespace SciterCore
 		}
 
 		#region Make
-		
+
 		///<summary>
 		/// Returns SciterValue representing error.
 		/// If such value is used as a return value from native function the script runtime will throw an error in script rather than returning that value.
@@ -613,7 +630,7 @@ namespace SciterCore
 			SciterApi.ValueStringDataSet(ref result._data, sym, (uint)sym.Length, (uint)Interop.SciterValue.VALUE_UNIT_TYPE_STRING.UT_STRING_SYMBOL);
 			return result;
 		}
-		
+
 		//public static SciterValue MakeColor(uint abgr)
 		//{
 		//	var sv = new SciterValue();
@@ -632,7 +649,7 @@ namespace SciterCore
 			SciterApi.ValueFloatDataSet(ref sv._data, value, (uint)Interop.SciterValue.VALUE_TYPE.T_DURATION, 0);
 			return sv;
 		}
-		
+
 		/// <summary>
 		/// Creates a <see cref="SciterValue"/> (<see cref="SciterCore.Interop.SciterValue.VALUE_TYPE.T_ANGLE"/>) from a <see cref="Double"/>
 		/// </summary>
@@ -656,7 +673,7 @@ namespace SciterCore
 			SciterApi.ValueInt64DataSet(ref result._data, value, (uint) Interop.SciterValue.VALUE_TYPE.T_CURRENCY, 0);
 			return result;
 		}
-		
+
 		/// <summary>
 		/// Creates a <see cref="SciterValue"/> (<see cref="SciterCore.Interop.SciterValue.VALUE_TYPE.T_DATE"/>) from a <see cref="DateTime"/>
 		/// </summary>
@@ -670,61 +687,61 @@ namespace SciterCore
 		#endregion
 
 		#region Is Type
-		
+
 		public bool IsUndefined => _data.t == (uint)Interop.SciterValue.VALUE_TYPE.T_UNDEFINED;
-		
+
 		public bool IsBool => _data.t == (uint) Interop.SciterValue.VALUE_TYPE.T_BOOL;
-		
+
 		public bool IsInt => _data.t == (uint) Interop.SciterValue.VALUE_TYPE.T_INT;
-		
+
 		public bool IsFloat => _data.t == (uint) Interop.SciterValue.VALUE_TYPE.T_FLOAT;
-		
+
 		public bool IsString => _data.t == (uint) Interop.SciterValue.VALUE_TYPE.T_STRING;
-		
+
 		public bool IsSymbol => _data.t == (uint) Interop.SciterValue.VALUE_TYPE.T_STRING && _data.u == (uint) Interop.SciterValue.VALUE_UNIT_TYPE_STRING.UT_STRING_SYMBOL;
-		
+
 		public bool IsErrorString => _data.t == (uint) Interop.SciterValue.VALUE_TYPE.T_STRING && _data.u == (uint) Interop.SciterValue.VALUE_UNIT_TYPE_STRING.UT_STRING_ERROR;
-		
+
 		public bool IsDate => _data.t == (uint) Interop.SciterValue.VALUE_TYPE.T_DATE;
-		
+
 		public bool IsCurrency => _data.t == (uint) Interop.SciterValue.VALUE_TYPE.T_CURRENCY;
-		
+
 		public bool IsMap => _data.t == (uint) Interop.SciterValue.VALUE_TYPE.T_MAP;
-		
+
 		public bool IsArray => _data.t == (uint) Interop.SciterValue.VALUE_TYPE.T_ARRAY;
-		
+
 		public bool IsFunction => _data.t == (uint) Interop.SciterValue.VALUE_TYPE.T_FUNCTION;
-		
+
 		public bool IsBytes => _data.t == (uint) Interop.SciterValue.VALUE_TYPE.T_BYTES;
-		
+
 		public bool IsObject => _data.t == (uint) Interop.SciterValue.VALUE_TYPE.T_OBJECT;
-		
+
 		public bool IsDomElement => _data.t == (uint) Interop.SciterValue.VALUE_TYPE.T_DOM_OBJECT;
-		
+
 		public bool IsResource => _data.t == (uint) Interop.SciterValue.VALUE_TYPE.T_RESOURCE;
-		
+
 		public bool IsNativeFunction => SciterApi.ValueIsNativeFunctor(ref _data) != 0;
-		
+
 		public bool IsColor => _data.t == (uint) Interop.SciterValue.VALUE_TYPE.T_COLOR;
-		
+
 		public bool IsAsset => _data.t == (uint) Interop.SciterValue.VALUE_TYPE.T_ASSET;
-		
+
 		public bool IsDuration => _data.t == (uint) Interop.SciterValue.VALUE_TYPE.T_DURATION;
-		
+
 		public bool IsAngle => _data.t == (uint) Interop.SciterValue.VALUE_TYPE.T_ANGLE;
-		
+
 		public bool IsNull => _data.t == (uint)Interop.SciterValue.VALUE_TYPE.T_NULL;
-		
+
 		public bool IsObjectNative => _data.t == (uint) Interop.SciterValue.VALUE_TYPE.T_OBJECT && _data.u == (uint) Interop.SciterValue.VALUE_UNIT_TYPE_OBJECT.UT_OBJECT_NATIVE;
-		
+
 		public bool IsObjectArray => _data.t == (uint) Interop.SciterValue.VALUE_TYPE.T_OBJECT && _data.u == (uint) Interop.SciterValue.VALUE_UNIT_TYPE_OBJECT.UT_OBJECT_ARRAY;
-		
+
 		public bool IsObjectFunction => _data.t == (uint) Interop.SciterValue.VALUE_TYPE.T_OBJECT && _data.u == (uint) Interop.SciterValue.VALUE_UNIT_TYPE_OBJECT.UT_OBJECT_FUNCTION;
-		
+
 		public bool IsObjectObject => _data.t == (uint) Interop.SciterValue.VALUE_TYPE.T_OBJECT && _data.u == (uint) Interop.SciterValue.VALUE_UNIT_TYPE_OBJECT.UT_OBJECT_OBJECT;
-		
+
 		public bool IsObjectClass => _data.t == (uint) Interop.SciterValue.VALUE_TYPE.T_OBJECT && _data.u == (uint) Interop.SciterValue.VALUE_UNIT_TYPE_OBJECT.UT_OBJECT_CLASS;
-		
+
 		public bool IsObjectError => _data.t == (uint) Interop.SciterValue.VALUE_TYPE.T_OBJECT && _data.u == (uint) Interop.SciterValue.VALUE_UNIT_TYPE_OBJECT.UT_OBJECT_ERROR;
 
 		#endregion
@@ -734,86 +751,86 @@ namespace SciterCore
 		//TODO: Clean this up
 		public object ToObject()
 		{
-			if (IsUndefined) 
+			if (IsUndefined)
 				return null;
 
-			if (IsBool) 
+			if (IsBool)
 				return AsBooleanInternal();
 
-			if (IsInt) 
+			if (IsInt)
 				return AsInt32Internal();
 
-			if (IsFloat) 
+			if (IsFloat)
 				return AsDoubleInternal();
-			
+
 			if (IsString)
 				return AsStringInternal(string.Empty);
 
 			if (IsSymbol)
 				return AsStringInternal(string.Empty);
-			
-			//if (IsErrorString) 
+
+			//if (IsErrorString)
 			//	what = nameof(IsErrorString);
-			
-			if (IsDate) 
+
+			if (IsDate)
 				return AsInt64Internal();
-			
-			if (IsCurrency) 
+
+			if (IsCurrency)
 				return AsCurrencyInternal();
-			
-			//if (IsMap) 
+
+			//if (IsMap)
 			//	what = nameof(IsMap);
-			
-			//if (IsArray) 
+
+			//if (IsArray)
 			//	what = nameof(IsArray);
-			
-			//if (IsFunction) 
+
+			//if (IsFunction)
 			//	what = nameof(IsFunction);
-			
-			//if (IsBytes) 
+
+			//if (IsBytes)
 			//	what = nameof(IsBytes);
-			
-			//if (IsObject) 
+
+			//if (IsObject)
 			//	what = nameof(IsObject);
-			
-			//if (IsDomElement) 
+
+			//if (IsDomElement)
 			//	what = nameof(IsDomElement);
-			
-			//if (IsNativeFunction) 
+
+			//if (IsNativeFunction)
 			//	what = nameof(IsNativeFunction);
-			
-			if (IsColor) 
+
+			if (IsColor)
 				return AsColorInternal();
-			
-			if (IsDuration) 
+
+			if (IsDuration)
 				return AsDurationInternal();
-			
-			if (IsAngle) 
+
+			if (IsAngle)
 				return AsAngleInternal();
-			
-			if (IsNull) 
+
+			if (IsNull)
 				return null;
-			
+
 			return null;
-			
-			//if (IsObjectNative) 
+
+			//if (IsObjectNative)
 			//	what = nameof(IsObjectNative);
-			
-			//if (IsObjectArray) 
+
+			//if (IsObjectArray)
 			//	what = nameof(IsObjectArray);
-			
-			//if (IsObjectFunction) 
+
+			//if (IsObjectFunction)
 			//	what = nameof(IsObjectFunction);
-			
-			//if (IsObjectObject) 
+
+			//if (IsObjectObject)
 			//	what = nameof(IsObjectObject);
-			
-			//if (IsObjectClass) 
+
+			//if (IsObjectClass)
 			//	what = nameof(IsObjectClass);
-			
-			//if (IsObjectError) 
+
+			//if (IsObjectError)
 			//	what = nameof(IsObjectError);
-			
+
 			//if (IsMap)
 			//{
 			//	what = $"{nameof(IsMap)} {Regex.Replace(this.AsJsonString(),@"\t|\n|\r","")}";
@@ -823,7 +840,7 @@ namespace SciterCore
 		}
 
 		#endregion
-		
+
 		#region As
 
 		/// <summary>
@@ -900,7 +917,7 @@ namespace SciterCore
 	        value = result ? unchecked((uint)pData) : @default;
             return result;
         }
-		
+
 		/// <summary>
 		/// Reads the <see cref="SciterValue"/> as a <see cref="Int64"/>
 		/// </summary>
@@ -925,7 +942,7 @@ namespace SciterCore
 			value = result ? pData : @default;
 			return result;
 		}
-		
+
 		/// <summary>
 		/// Reads the <see cref="SciterValue"/> as a <see cref="Double"/>
 		/// </summary>
@@ -936,7 +953,7 @@ namespace SciterCore
 	        TryAsDoubleInternal(value: out var result, @default: @default);
 	        return result;
         }
-		
+
 		/// <summary>
 		/// Reads the <see cref="SciterValue"/> as a <see cref="Double"/>
 		/// </summary>
@@ -950,7 +967,7 @@ namespace SciterCore
 	        value = result ? pData : @default;
 	        return result;
         }
-		
+
 		/// <summary>
 		/// Reads the <see cref="SciterValue"/> as a <see cref="Single"/>
 		/// </summary>
@@ -961,7 +978,7 @@ namespace SciterCore
 	        TryAsFloatInternal(value: out var result, @default: @default);
 	        return result;
         }
-		
+
 		/// <summary>
 		/// Reads the <see cref="SciterValue"/> as a <see cref="Single"/>
 		/// </summary>
@@ -1047,7 +1064,7 @@ namespace SciterCore
 				ThrowTypeException(nameof(Interop.SciterValue.VALUE_TYPE.T_COLOR));
 
 			var result = TryAsUInt32Internal(out var intValue);
-			
+
 			value = result ? new SciterColor(intValue) : SciterColor.Transparent;
 			return result;
 		}
@@ -1105,7 +1122,7 @@ namespace SciterCore
 		internal bool TryAsDateTimeInternal(out DateTime value, bool universalTime = true)
 		{
 			var result = TryAsInt64Internal(out var intValue);
-			
+
 			value = result ? DateTime.FromFileTime(intValue) : DateTime.MinValue;
 
 			if (universalTime)
@@ -1113,9 +1130,9 @@ namespace SciterCore
 
 			return result;
 		}
-		
+
 //#endif
-		
+
 		internal IEnumerable<SciterValue> AsEnumerableInternal()
 		{
 			if(!IsArray && !IsObject && !IsMap)
@@ -1138,10 +1155,10 @@ namespace SciterCore
 
 			return result;
 		}
-		
+
 		internal IDictionary<string, IConvertible> AsDictionaryInternal()
 		{
-			if (!IsObject && !IsMap) 
+			if (!IsObject && !IsMap)
 				ThrowTypeException($"{nameof(IDictionary)}<{nameof(String)}, {nameof(IConvertible)}>");
 
 			var result = new Dictionary<string, IConvertible>();
@@ -1152,15 +1169,15 @@ namespace SciterCore
 
 			return result;
 		}
-		
+
 		internal SciterElement AsElementInternal()
 		{
 			if(!IsResource && !IsDomElement)
 				ThrowTypeException(nameof(Interop.SciterValue.VALUE_TYPE.T_RESOURCE), nameof(Interop.SciterValue.VALUE_TYPE.T_DOM_OBJECT));
-			
+
 			return SciterElement.Attach(this.GetObjectData());
 		}
-		
+
 		public static SciterValue FromJsonString(string json, StringConversionType conversionType = StringConversionType.JsonLiteral)
 		{
 			var result = new SciterValue();
@@ -1176,9 +1193,9 @@ namespace SciterCore
 
 		internal bool TryAsJsonStringInternal(out string value, StringConversionType conversionType = StringConversionType.JsonLiteral)
 		{
-			
+
 			value = null;
-			
+
 			if (conversionType == StringConversionType.Simple && IsString)
 				return TryAsStringInternal(out value);
 
@@ -1187,24 +1204,24 @@ namespace SciterCore
 				.IsOk();
 
 			value = result ? sciterValue.AsStringInternal() : null;
-			
+
 			return result;
 		}
 
 		#endregion
-		
+
 		#region Clear
-		
+
 		internal void ClearInternal()
 		{
 			TryClearInternal();
 		}
-		
+
 		internal bool TryClearInternal()
 		{
 			return SciterApi.ValueClear(out _data).IsOk();
 		}
-		
+
 		#endregion
 
 		public int Length
@@ -1215,7 +1232,7 @@ namespace SciterCore
 				return count;
 			}
 		}
-		
+
 		public SciterValue this[int key]
 		{
 			get => GetItemInternal(key);
@@ -1229,12 +1246,12 @@ namespace SciterCore
 		}
 
 		#region Item Operations
-		
+
 		internal void SetItemInternal(int index, SciterValue value)
 		{
 			TrySetItemInternal(index: index, value: value);
 		}
-		
+
 		internal bool TrySetItemInternal(int index, SciterValue value)
 		{
 			return SciterApi.ValueNthElementValueSet(ref _data, index, ref value._data)
@@ -1317,22 +1334,22 @@ namespace SciterCore
 		}
 
 		#endregion
-		
+
 		#region Keys
-		
+
 		internal SciterValue GetKeyInternal(int index)
 		{
 			TryGetKeyInternal(value: out var result, index: index);
 			return result;
 		}
-		
+
 		internal bool TryGetKeyInternal(out SciterValue value, int index)
 		{
 			var result = SciterApi.ValueNthElementKey(ref _data, index, out var intValue)
 				.IsOk();
 
 			value = result ? new SciterValue(intValue) : Null;
-			
+
 			return result;
 		}
 
@@ -1347,40 +1364,40 @@ namespace SciterCore
 				throw new InvalidOperationException($"Please call {nameof(SciterCore.SciterValueExtensions.Isolate)} for this {nameof(SciterValue)}");
 
 			var result = new List<SciterValue>();
-				
+
 			for(var i = 0; i < Length; i++)
 				result.Add(GetKeyInternal(i));
-				
+
 			return result;
 		}
-		
-		
+
+
 		#endregion
-		
+
 		/*public void SetObjectData(IntPtr p)
 		{
 			Debug.Assert(data.u == (uint) SciterXValue.VALUE_UNIT_TYPE_OBJECT.UT_OBJECT_NATIVE);
 			_api.ValueBinaryDataSet(ref data, );
 		}*/
-		
+
 		#region GetObjectData
-		
+
 		internal IntPtr GetObjectDataInternal()
 		{
 			TryGetObjectDataInternal(out var result);
 			return result;
 		}
-		
+
 		internal bool TryGetObjectDataInternal(out IntPtr value)
 		{
 			return SciterApi.ValueBinaryData(ref _data, out value, out var dummy)
 				.IsOk();
 		}
-		
+
 		#endregion
 
 		#region Invoke
-		
+
 		internal SciterValue InvokeInternal(IList<SciterValue> args, SciterValue self = null, string urlOrScriptName = null)
 		{
 			TryInvokeInternal(value: out var value, args: args, self: self, urlOrScriptName: urlOrScriptName);
@@ -1393,9 +1410,9 @@ namespace SciterCore
 				throw new Exception("Can't Call() this SciterValue because it is not a function");
 
 			value = new SciterValue();
-			
+
 			var valueArray = args?.Select(sv => sv._data).ToArray();
-			
+
 			self ??= Undefined;
 
 			var result = SciterApi.ValueInvoke(ref _data, ref self._data, (uint) (args?.Count ?? 0), args?.Count > 0 ? valueArray : null, out value._data, null)
@@ -1413,7 +1430,7 @@ namespace SciterCore
 		{
 			return TryInvokeInternal(value: out value, args: (IList<SciterValue>) args);
 		}
-		
+
 		#endregion
 
 		#region Isolate
@@ -1422,7 +1439,7 @@ namespace SciterCore
 		{
 			return SciterApi.ValueIsolate(ref _data).IsOk();
 		}
-		
+
 		#endregion
 
 		private static void ThrowTypeException(params string[] typeNames)
@@ -1431,16 +1448,16 @@ namespace SciterCore
 		}
 
 		#region IDisposable
-		
+
 		private bool _disposedValue = false;
 
 		private void Dispose(bool disposing)
 		{
-			if (_disposedValue) 
+			if (_disposedValue)
 				return;
-			
+
 			if(disposing) { }
-				
+
 			if (_unuseValue)
 				SciterApi.ValueClear(out _data);
 
@@ -1451,13 +1468,13 @@ namespace SciterCore
 		{
 			Dispose(false);
 		}
-		
+
 		public void Dispose()
 		{
 			Dispose(true);
 			GC.SuppressFinalize(this);
 		}
-		
+
 		#endregion
 	}
 }

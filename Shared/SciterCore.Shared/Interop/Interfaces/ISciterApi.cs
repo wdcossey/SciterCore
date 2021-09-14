@@ -54,7 +54,7 @@ namespace SciterCore.Interop
 		bool SciterSetHomeURL(IntPtr hwnd, string baseUrl);
 		IntPtr SciterCreateNSView(SciterRectangle frame);
 		IntPtr SciterCreateWidget(SciterRectangle frame);
-		IntPtr SciterCreateWindow(SciterXDef.SCITER_CREATE_WINDOW_FLAGS creationFlags, SciterRectangle frame,
+		IntPtr SciterCreateWindow(CreateWindowFlags creationFlags, SciterRectangle frame,
 			MulticastDelegate delegt, IntPtr delegateParam, IntPtr parent);
 
 		void SciterSetupDebugOutput(IntPtr hwndOrNull, IntPtr param, SciterXDef.DEBUG_OUTPUT_PROC pfOutput);
@@ -183,7 +183,7 @@ namespace SciterCore.Interop
 		SciterXDom.SCDOM_RESULT SciterGetValue(IntPtr he, out SciterValue.VALUE pval);
 		SciterXDom.SCDOM_RESULT SciterSetValue(IntPtr he, ref SciterValue.VALUE pval);
 		SciterXDom.SCDOM_RESULT SciterGetExpando(IntPtr he, out SciterValue.VALUE pval, bool forceCreation);
-		
+
 		/// <summary>
 		/// <para>SciterGetObject - Get 'expando' object of the element. 'expando' is a scripting object (of class Element) <br/>
 		/// that is assigned to the DOM element. 'expando' could be null as they are created on demand by script.</para>
@@ -195,7 +195,7 @@ namespace SciterCore.Interop
 		/// <param name="forceCreation">If there is no expando then when forceCreation==TRUE the function will create it.</param>
 		/// <returns></returns>
 		SciterXDom.SCDOM_RESULT SciterGetObject(IntPtr he, out IntPtr pval, bool forceCreation);
-		
+
 		/// <summary>
 		/// <para>SciterGetElementNamespace - Get namespace of document of the DOM element.</para>
 		/// <para>ATTN!: If you plan to store the reference or use it inside code that calls script VM functions</para>
@@ -303,7 +303,7 @@ namespace SciterCore.Interop
 
 		[Obsolete("Removed in Sciter v4.4.3.24", false)]
 		bool Sciter_V2v(IntPtr vm, ref SciterValue.VALUE value, ref SciterScript.ScriptValue scriptValue);
-		
+
 		[Obsolete("Reserved in Sciter v4.4.3.24", true)]
 		void Reserved1();
 
@@ -312,7 +312,7 @@ namespace SciterCore.Interop
 
 		[Obsolete("Reserved in Sciter v4.4.3.24", true)]
 		void Reserved3();
-		
+
 		[Obsolete("Reserved in Sciter v4.4.3.24", true)]
 		void Reserved4();
 
@@ -356,13 +356,13 @@ namespace SciterCore.Interop
 		bool SciterSetGlobalAsset(IntPtr pass);
 
 		#endregion
-		
+
 		#region Sciter 4.4.4.7
-		
+
 		SciterXDom.SCDOM_RESULT SciterGetElementAsset(IntPtr el, ulong nameAtom, out IntPtr ppass);
 		//bool SciterGetVariable(IntPtr hwndOrNull, string path, ref SciterValue.VALUE pvalToGet);
 		//bool SciterSetVariable(IntPtr hwndOrNull, string path, ref SciterValue.VALUE pvalToSet);
-		
+
 		#endregion
 
 		#region Sciter 4.4.5.4

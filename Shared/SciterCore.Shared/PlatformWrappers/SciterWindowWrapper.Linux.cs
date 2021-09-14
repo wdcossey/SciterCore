@@ -10,7 +10,7 @@ namespace SciterCore.PlatformWrappers
 		internal class LinuxWrapper : ISciterWindowWrapper
 		{
 			private static readonly ISciterApi SciterApi = Sciter.SciterApi;
-			
+
 			public IntPtr GetWindowHandle(IntPtr handle)
 			{
 				Debug.Assert(handle != IntPtr.Zero);
@@ -25,12 +25,12 @@ namespace SciterCore.PlatformWrappers
 			/// <param name="frame">Rectangle of the window</param>
 			/// <param name="creationFlags">Flags for the window creation, defaults to SW_MAIN | SW_TITLEBAR | SW_RESIZEABLE | SW_CONTROLS</param>
 			/// <param name="parent"></param>
-			public void CreateWindow(SciterRectangle frame = new SciterRectangle(),
-				SciterXDef.SCITER_CREATE_WINDOW_FLAGS creationFlags = DefaultCreateFlags, IntPtr? parent = null)
+			public IntPtr CreateWindow(SciterRectangle frame = new SciterRectangle(),
+				CreateWindowFlags creationFlags = DefaultCreateFlags, IntPtr? parent = null)
 			{
 #if DEBUG
 				// Force Sciter SW_ENABLE_DEBUG in Debug build.
-				creationFlags |= SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_ENABLE_DEBUG;
+				creationFlags |= CreateWindowFlags.EnableDebug;
 #endif
 
 				var result = SciterApi.SciterCreateWindow(
@@ -40,11 +40,13 @@ namespace SciterCore.PlatformWrappers
 					IntPtr.Zero,
 					parent ?? IntPtr.Zero
 				);
-				
+
 				Debug.Assert(result != IntPtr.Zero);
 
 				if (result == IntPtr.Zero)
 					throw new Exception("CreateWindow() failed");
+
+				return result;
 			}
 
 			/*public SciterWindow CreateMainWindow(int width, int height,
@@ -76,7 +78,7 @@ namespace SciterCore.PlatformWrappers
 				CreateWindow(frame, SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_ALPHA | SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_TOOL, owner_hwnd);
 				// Sciter BUG: window comes with WM_EX_APPWINDOW style
 			}*/
-			
+
 
 			public void Destroy(IntPtr window)
 			{
@@ -145,7 +147,7 @@ namespace SciterCore.PlatformWrappers
 			// TODO: Does this exist in GTK?
 			public SciterSize GetScreenSize(IntPtr window) =>
 				SciterSize.Empty;
-			
+
 			public SciterSize Size(IntPtr window)
 			{
 				PInvokeGtk.gtk_window_get_size(window, out var windowWidth, out var windowHeight);
@@ -166,7 +168,7 @@ namespace SciterCore.PlatformWrappers
 				else
 					PInvokeGtk.gtk_widget_hide(window);
 			}
-			
+
 			public void ShowModal(IntPtr window)
 			{
 				Show(window);
@@ -202,10 +204,10 @@ namespace SciterCore.PlatformWrappers
 				var titlePtr = PInvokeGtk.gtk_window_get_title(window);
 				return Marshal.PtrToStringAnsi(titlePtr);
 			}
-			
+
 			public void SetTitle(IntPtr window, string title) =>
 				PInvokeGtk.gtk_window_set_title(window, title);
-			
+
 
 			#endregion
 		}
