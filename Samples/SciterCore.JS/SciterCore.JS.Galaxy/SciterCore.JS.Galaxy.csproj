@@ -23,7 +23,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="SciterCore.JS.Binaries" Version="4.4.8.4" />
+        <PackageReference Include="SciterCore.JS.Binaries" Version="4.4.8.9" />
         <PackageReference Include="SciterCore.JS" Version="[0.1.*-*,1.0.0.0)" />
         <PackageReference Include="SciterCore.JS.Microsoft.DependencyInjection" Version="[0.1.*-*,1.0.0.0)" />
         <PackageReference Include="SciterCore.PackFolder" Version="[0.1.*-*,1.0.0.0)" />

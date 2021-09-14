@@ -21,6 +21,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ElementRegistry.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\BehaviorEvents.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\CallbackCode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Enums\CreateWindowFlags.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\CursorType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\DragAndDropMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\DraggingMode.cs" />
@@ -159,6 +160,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)EventHandlerRegistry.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Attributes\SciterBehaviorAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\BehaviorAttributeExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SciterWindowBuilder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ScriptExecutioner.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)WindowDelegateRegistry.cs" />
   </ItemGroup>

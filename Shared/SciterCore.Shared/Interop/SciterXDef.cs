@@ -1,17 +1,17 @@
 ﻿// Copyright 2016 Ramon F. Mendes
 //
 // This file is part of SciterSharp.
-// 
+//
 // SciterSharp is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // SciterSharp is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with SciterSharp.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -105,9 +105,9 @@ namespace SciterCore.Interop
 			public IntPtr data;									// LPCBYTE - [in] pointer to loaded data.
 			public uint dataSize;								// UINT - [in] loaded data size (in bytes).
 			public SciterRequest.SciterResourceType dataType;	// UINT - [in] SciterResourceType
-			public uint status;									// UINT - [in] 
-																// status = 0 (dataSize == 0) - unknown error. 
-																// status = 100..505 - http response status, Note: 200 - OK! 
+			public uint status;									// UINT - [in]
+																// status = 0 (dataSize == 0) - unknown error.
+																// status = 100..505 - http response status, Note: 200 - OK!
 																// status > 12000 - wininet error code, see ERROR_INTERNET_*** in wininet.h
 		}
 
@@ -123,7 +123,7 @@ namespace SciterCore.Interop
 			public SciterBehaviors.ELEMENT_EVENT_PROC elementProc;	// ElementEventProc - [out] pointer to ElementEventProc function.
 			public IntPtr elementTag;	// LPVOID - [out] tag value, passed as is into pointer ElementEventProc function.
 		}
-		
+
 		[StructLayout(LayoutKind.Sequential)]
 		public struct SCN_ENGINE_DESTROYED
 		{
@@ -183,12 +183,12 @@ namespace SciterCore.Interop
 			SCITER_FONT_SMOOTHING = 4,
 
 			/// <summary>
-			/// Windows Aero support, value: 
-			/// 0 - normal drawing, 
+			/// Windows Aero support, value:
+			/// 0 - normal drawing,
 			/// 1 - window has transparent background after calls DwmExtendFrameIntoClientArea() or DwmEnableBlurBehindWindow()
 			/// </summary>
-			SCITER_TRANSPARENT_WINDOW = 6,  // Windows Aero support, value: 
-											// 0 - normal drawing, 
+			SCITER_TRANSPARENT_WINDOW = 6,  // Windows Aero support, value:
+											// 0 - normal drawing,
 											// 1 - window has transparent background after calls DwmExtendFrameIntoClientArea() or DwmEnableBlurBehindWindow().
 
 			/// <summary>
@@ -231,7 +231,7 @@ namespace SciterCore.Interop
 			/// hWnd - N/A , value - max request length in megabytes (1024*1024 bytes)
 			/// </summary>
 			SCITER_SET_MAX_HTTP_DATA_LENGTH = 15,
-			
+
 			/// <summary>
 			/// value 1 - 1px in CSS is treated as 1dip, value 0 - default behavior - 1px is a physical pixel
 			/// </summary>
@@ -248,7 +248,7 @@ namespace SciterCore.Interop
 
 
 		[Flags]
-		public enum SCITER_CREATE_WINDOW_FLAGS : uint
+		internal enum SCITER_CREATE_WINDOW_FLAGS : uint
 		{
 			/// <summary>Child window only, if this flag is set all other flags ignored</summary>
 			SW_CHILD = (1 << 0),

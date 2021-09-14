@@ -10,25 +10,20 @@ namespace SciterCore.JS.Wpf
         public ThemedSciterArchiveHost()
         {
             _uiSettings = new Windows.UI.ViewManagement.UISettings();
-            
+
             _uiSettings.ColorValuesChanged += (sender, args) =>
-            {
-                var frame = this.RootElement.SelectFirst("frame#content");
                 this.EvalScript(@"var frame = document.$(""frame""); frame.frame.loadFile(frame.frame.document.url());");
-            };
         }
-        
+
         protected override LoadResult OnLoadData(object sender, LoadDataArgs args)
         {
             //watcher://theme/windows.css
-            if (args.Uri.Scheme.Equals("watcher") && args.Uri.Host.Equals("theme") && args.Uri.PathAndQuery.Equals("/windows.css"))
-            {
-                var cssBytes = GenerateThemeContent(args);
-                Sciter.SciterApi.SciterDataReady(Window.Handle, args.Uri.ToString(), cssBytes, (uint) cssBytes.Length);
-                return LoadResult.Ok;
-            }
+            if (!args.Uri.ToString().Equals("watcher://theme/windows.css"))
+                return base.OnLoadData(sender, args);
 
-            return base.OnLoadData(sender, args);
+            var cssBytes = GenerateThemeContent(args);
+            Sciter.SciterApi.SciterDataReady(Window.Handle, args.Uri.ToString(), cssBytes, (uint) cssBytes.Length);
+            return LoadResult.Ok;
         }
 
         private byte[] GenerateThemeContent(LoadDataArgs args)
@@ -59,7 +54,7 @@ namespace SciterCore.JS.Wpf
 
     var(header-bg-color): color(accent-color);
 
-    var(toolbar-bg-color): morph(color(main-bg-color), opacity: 50%);
+    var(toolbar-bg-color): morph(color(main-color), opacity: 10%);
 
     var(menu-main-color): #D0D2D6;
 

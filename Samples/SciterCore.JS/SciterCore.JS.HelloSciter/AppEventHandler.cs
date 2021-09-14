@@ -20,12 +20,12 @@ namespace SciterCore.JS.HelloSciter
 		{
 			_logger = logger;
 		}
-		
+
 		public Task StackTrace(SciterElement element, SciterValue onCompleted)
 		{
 			var stackTrace = new StackTrace(true);
 			var stackFrame = stackTrace.GetFrame(0);
-			
+
 			var value = SciterValue.Create(
 				new
 				{
@@ -38,7 +38,7 @@ namespace SciterCore.JS.HelloSciter
 				});
 
 			onCompleted.Invoke(value);
-			
+
 			return Task.CompletedTask;
 		}
 
@@ -47,7 +47,7 @@ namespace SciterCore.JS.HelloSciter
 			var value = SciterValue.Create(RuntimeInformation.FrameworkDescription);
 			onCompleted.Invoke(value);
 		}
-		
+
 		public Task GetRuntimeInfo(SciterElement element, SciterValue onCompleted, SciterValue onError)
 		{
 			try
@@ -58,9 +58,9 @@ namespace SciterCore.JS.HelloSciter
 						ProcessArchitecture = RuntimeInformation.ProcessArchitecture.ToString(),
 						OSArchitecture = RuntimeInformation.OSArchitecture.ToString(),
 						OSDescription = RuntimeInformation.OSDescription,
-						SystemVersion = RuntimeEnvironment.GetSystemVersion()
+						SystemVersion = RuntimeEnvironment.GetSystemVersion(),
 					});
-			
+
 				onCompleted.Invoke(value);
 			}
 			catch (Exception e)
@@ -70,9 +70,9 @@ namespace SciterCore.JS.HelloSciter
 
 			return Task.CompletedTask;
 		}
-		
+
 		private ManualResetEventSlim _callMeBackResetEvent;
-		
+
 		public async Task CallMeBack(SciterElement element, SciterValue value, SciterValue onProgress, SciterValue onCompleted)
 		{
 			_callMeBackResetEvent = new ManualResetEventSlim(false);
@@ -85,28 +85,28 @@ namespace SciterCore.JS.HelloSciter
 				//Simulates a delay
 				await Task.Delay(10);
 				var val = i / 200d * 100;
-				
+
 				onProgress.Invoke(SciterValue.Create(i), SciterValue.Create(val));
 			}
 
 			onCompleted.Invoke(SciterValue.Create($"You have {(!_callMeBackResetEvent.IsSet ? "successfully completed" : "cancelled")} your task!"), SciterValue.Create(!_callMeBackResetEvent.IsSet));
 		}
-		
+
 		public Task CancelCallMeBack()
 		{
 			_callMeBackResetEvent?.Set();
 			return Task.CompletedTask;
 		}
-		
+
 		[SciterFunctionName("breakMe")]
 		[SciterCallbackWrapper]
 		public Task ThrowException(SciterValue numerator, SciterValue denominator)
 		{
 			try
-			{ 
+			{
 				//This will purposely throw an exception!
 				var value = numerator.AsInt32() / denominator.AsInt32();
-				
+
 				return Task.FromResult(SciterValue.Create(value));
 			}
 			catch (Exception ex)
@@ -139,7 +139,7 @@ namespace SciterCore.JS.HelloSciter
 		public async Task AsynchronousFunction()
 		{
 			await Task.Delay(TimeSpan.FromSeconds(5));
-			
+
 			_logger?.LogInformation("{NameOfMethod}() was executed!", nameof(AsynchronousFunction));
 		}
 
@@ -149,7 +149,7 @@ namespace SciterCore.JS.HelloSciter
 			var result = Host.EvalScript($"{input.AsString()}");
 			return result;
 		}
-		
+
 		protected override EventGroups SubscriptionsRequest(SciterElement element)
 		{
 			return EventGroups.HandleAll;
@@ -188,7 +188,7 @@ namespace SciterCore.JS.HelloSciter
 			//Console.WriteLine($"{args}");
 			//if (args.Event == GestureEvent.Request)
 			//	return true;
-			
+
 			return base.OnGesture(element, args);
 		}
 
@@ -203,7 +203,7 @@ namespace SciterCore.JS.HelloSciter
 			_logger?.LogTrace("{NameOfMethod}(methodName: \"{MethodName}\")", nameof(OnScriptCall), methodName);
 			return base.OnScriptCall(element, methodName, args);
 		}
-		
+
 		protected override ScriptEventResult OnScriptCall(SciterElement element, MethodInfo method, SciterValue[] args)
 		{
 			_logger?.LogTrace("{NameOfMethod}(method: \"{Method}\")", nameof(OnScriptCall), method.Name);
@@ -222,7 +222,7 @@ namespace SciterCore.JS.HelloSciter
 			_logger?.LogTrace(
 				"{NameOfMethod}(sourceElement: {SourceElement}; targetElement: {TargetElement}; type: {Type}; data: {DataString}; eventName: {EventName})",
 				nameof(OnEvent), sourceElement?.Tag, targetElement?.Tag, type, data.AsString(), eventName);
-			
+
 			return base.OnEvent(sourceElement, targetElement, type, reason, data, eventName);
 		}
 

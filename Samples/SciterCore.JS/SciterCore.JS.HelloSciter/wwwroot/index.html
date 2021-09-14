@@ -6,13 +6,15 @@
 
         @import url(scitercore.css);
         @import url(std-menu.css);
-        
-        a:link { behavior: clickable;  }
+
+        a:link {
+            behavior: clickable;
+        }
 
         .runtimeInformation {
             /*behavior: runtime-info;*/
         }
-        
+
     </style>
 
     <script type="module">
@@ -21,7 +23,7 @@
 
         const $ = sciter.$;
         const on = sciter.on;
-        
+
         document.ready = function () {
             var version = sciter.VERSION;
             var revision = sciter.REVISION;
@@ -40,11 +42,11 @@
             Window.this.xcall("AsynchronousFunction");
 
             Window.this.xcall("SynchronousFunction");
-            
+
             Window.this.xcall("SynchronousFunction", [1,2,3,4,5,6]);
-            
+
             Window.this.xcall("SynchronousFunction", 1, 2, 3, 4, 5);
-            
+
             Window.this.xcall("StackTrace", function(value) {
                $("#stMethodName").innerText = value.MethodName;
                $("#stFileUri").textContent = value.FileName;
@@ -79,7 +81,7 @@
             Window.this.xcall("GetDotNetVersion", function(value) {
                 $("#dotnet-version").innerText = value;
             });
-            
+
             Window.this.xcall("breakMe", 100, 0,
                 function(value, ex) {
                     if (ex)
@@ -90,11 +92,11 @@
                     else {
                         $("#exContent").innerHTML = `<div>Value:</div><div><span>${value}</span></div>`;
                     }
-                    
+
                     $("#exContent").setAttribute("state", "visible");
                 }
             );
-            
+
         }
 
         on("^click", "a[href]", function (evt, hlink) {
@@ -124,7 +126,7 @@
             $("#callbackState").style["color"] = undefined;
             $("#callbackProgressContainer").style.display = "block";
             $("#callbackProgress").value = 0;
-            
+
 
             const cbs = $('#callbackState');
             const cbm = $('#callbackMessage');
@@ -151,7 +153,7 @@
         on("click", "#cancelCallback", function () {
             Window.this.xcall("CancelCallMeBack");
         });
-        
+
         on("click", "li|radio(theme)", function (evt,sender) {
             document.attributes["theme"] = sender.value;
             sender.requestPaint();
@@ -160,9 +162,9 @@
             });
             return true;
         });
-        
+
     </script>
-    
+
 </head>
 <body>
 
@@ -172,24 +174,24 @@
                 <img src="logo.png"
                      alt="Sciter Logo"
                      height="96dip"/>
-    
+
                 <img style="float: right; margin-right: 10dip;"
                      src="icons8-visual-studio-code-2019.svg"
                      alt="icons8 - Visual Studio Code"
                      height="96dip"/>
             </div>
         </toolbar>
-    
+
         <section>
-    
+
             <div style="margin: 20dip">
-    
+
                 <card>
                     <cardheader>
                         <div>Hello C#!</div>
                         <div>Greetings from SciterCore.JS running on <span #dotnet-version>.Net</span>.</div>
                     </cardheader>
-    
+
                     <cardcontent state="visible">
                         <div>OS type:</div>
                         <div style="font-weight: bold;" #os-type></div>
@@ -208,7 +210,7 @@
                         <div>Language:</div>
                         <div style="font-weight: bold;" #language></div>
                     </cardcontent>
-    
+
                 </card>
 
                 <!-- Attached via a behaviour on `.runtimeInformation` -->
@@ -254,7 +256,7 @@
                     </cardfooter>
 
                 </card>
-                
+
                 <card>
                     <cardheader>
                         <div>StackFrame</div>
@@ -285,16 +287,16 @@
                         <div><span>Hello:</span>&nbsp;<span style="font-weight: bold;">Sciter</span></div>
                     </cardcontent>
                 </card>
-                
+
             </div>
         </section>
-    
+
         <footer>
             <div style=" flow:horizontal; border-spacing:*;height:*; overflow-x: hidden; overflow-y: hidden">
                 <div style="margin-top:*; margin-bottom:*; margin-left: 8dip; display: inline-block; white-space: nowrap; overflow-x: fragments ">
                     <a #sciterCore href="https://github.com/wdcossey/SciterCore">SciterCore.JS</a>
                 </div>
-    
+
                 <div style="margin: * 8dip;display: inline-block; white-space: nowrap; overflow-x: fragments">
                     <a href="https://sciter.com/" style="display: inline-block; white-space: nowrap;">Sciter.JS</a>
                     <span #sciterversion id="sciterversion"
@@ -304,7 +306,7 @@
                     |
                     <a href="https://icons8.com/">Icons8</a>
                 </div>
-    
+
             </div>
         </footer>
     </main>

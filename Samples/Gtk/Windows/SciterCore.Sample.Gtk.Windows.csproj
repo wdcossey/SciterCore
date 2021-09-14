@@ -111,7 +111,7 @@
     <EmbeddedResource Include="Properties\Resources.resx" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="SciterCore.Binaries" Version="4.4.7" />
+    <PackageReference Include="SciterCore.Binaries" Version="4.4.8.3" />
     <PackageReference Include="SciterCore.PackFolder" Version="0.1.483" />
   </ItemGroup>
   <ItemGroup>

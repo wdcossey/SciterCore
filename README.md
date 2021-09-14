@@ -170,6 +170,12 @@ Windows 10 (.Net 5.x)
 
 ![https://github.com/wdcossey/SciterCore/](https://github.com/wdcossey/SciterCore/raw/master/Assets/preview/scitercore_js_preview_001.png)
 
+### SciterCore.JS (for WPF)
+
+Windows 10 (.Net 5.x) w/ basic theme change handling
+
+![https://github.com/wdcossey/SciterCore/](https://github.com/wdcossey/SciterCore/raw/master/Assets/preview/scitercore_js_wpf_preview_001.png)
+
 ### SciterCore
 
 Windows 10 (.Net Core 3.1.x)

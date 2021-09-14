@@ -10,15 +10,15 @@ namespace SciterCore.PlatformWrappers
 		internal class WindowsWrapper : ISciterWindowWrapper
 		{
 			private static readonly ISciterApi SciterApi = Sciter.SciterApi;
-			
+
 			//private IntPtr _handle;
-			
+
 			//public IntPtr Handle
 			//{
 			//	get => _handle;
 			//	protected set => _handle = value;
 			//}
-			
+
 			/*public bool SetSciterOption(SciterXDef.SCITER_RT_OPTIONS option, IntPtr value)
 			{
 				Debug.Assert(Handle != IntPtr.Zero);
@@ -27,14 +27,14 @@ namespace SciterCore.PlatformWrappers
 
 			/*public SciterWindow()
 			{
-	
+
 				var allow = SciterXDef.SCRIPT_RUNTIME_FEATURES.ALLOW_EVAL |
 							SciterXDef.SCRIPT_RUNTIME_FEATURES.ALLOW_FILE_IO |
 							SciterXDef.SCRIPT_RUNTIME_FEATURES.ALLOW_SOCKET_IO |
 							SciterXDef.SCRIPT_RUNTIME_FEATURES.ALLOW_SYSINFO;
-	
+
 				Api.SciterSetOption(IntPtr.Zero, SciterXDef.SCITER_RT_OPTIONS.SCITER_SET_SCRIPT_RUNTIME_FEATURES, new IntPtr((int)allow));
-	
+
 	#if WINDOWS || NETCORE
 				WindowDelegateRegistry.Set(this, InternalProcessSciterWindowMessage);
 	#endif
@@ -43,14 +43,14 @@ namespace SciterCore.PlatformWrappers
 			/*public SciterWindow(IntPtr hwnd, bool weakReference = false)
 			{
 				Handle = hwnd;
-	
+
 				if (!weakReference)
 				{
-	
+
 	#if WINDOWS || NETCORE
 					WindowDelegateRegistry.Set(this, InternalProcessSciterWindowMessage);
 	#endif
-	
+
 	#if GTKMONO
 					_gtkwindow = PInvokeGtk.gtk_widget_get_toplevel(Handle);
 					Debug.Assert(_gtkwindow != IntPtr.Zero);
@@ -60,8 +60,8 @@ namespace SciterCore.PlatformWrappers
 				}
 			}*/
 
-			private const SciterXDef.SCITER_CREATE_WINDOW_FLAGS DefaultWindowsCreateFlags =
-				DefaultCreateFlags | SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_GLASSY;
+			private const CreateWindowFlags DefaultWindowsCreateFlags =
+				DefaultCreateFlags | CreateWindowFlags.Glassy;
 
 			public IntPtr GetWindowHandle(IntPtr handle) => handle;
 
@@ -71,12 +71,12 @@ namespace SciterCore.PlatformWrappers
 			/// <param name="frame">Rectangle of the window</param>
 			/// <param name="creationFlags">Flags for the window creation, defaults to SW_MAIN | SW_TITLEBAR | SW_RESIZEABLE | SW_CONTROLS</param>
 			/// <param name="parent"></param>
-			public void CreateWindow(SciterRectangle frame = new SciterRectangle(),
-				SciterXDef.SCITER_CREATE_WINDOW_FLAGS creationFlags = DefaultWindowsCreateFlags, IntPtr? parent = null)
+			public IntPtr CreateWindow(SciterRectangle frame = new SciterRectangle(),
+				CreateWindowFlags creationFlags = DefaultWindowsCreateFlags, IntPtr? parent = null)
 			{
 #if DEBUG
 				// Force Sciter SW_ENABLE_DEBUG in Debug build.
-				creationFlags |= SciterXDef.SCITER_CREATE_WINDOW_FLAGS.SW_ENABLE_DEBUG;
+				creationFlags |= CreateWindowFlags.EnableDebug;
 #endif
 				var result = SciterApi.SciterCreateWindow(
 					creationFlags,
@@ -85,11 +85,13 @@ namespace SciterCore.PlatformWrappers
 					IntPtr.Zero,
 					parent ?? IntPtr.Zero
 				);
-				
+
 				Debug.Assert(result != IntPtr.Zero);
 
 				if (result == IntPtr.Zero)
 					throw new Exception("CreateWindow() failed");
+
+				return result;
 			}
 
 			/*public SciterWindow CreateMainWindow(int width, int height,
@@ -262,7 +264,7 @@ namespace SciterCore.PlatformWrappers
 			public void Show(IntPtr handle, bool show = true) =>
 				PInvokeWindows.ShowWindow(handle,
 					show ? PInvokeWindows.ShowWindowCommands.Show : PInvokeWindows.ShowWindowCommands.Hide);
-			
+
 			public void ShowModal(IntPtr handle)
 			{
 				Show(handle);
@@ -301,7 +303,7 @@ namespace SciterCore.PlatformWrappers
 				Marshal.FreeHGlobal(unmanagedPointer);
 				return title;
 			}
-			
+
 			public void SetTitle(IntPtr handle, string title)
 			{
 				var strPtr = Marshal.StringToHGlobalUni(title);
