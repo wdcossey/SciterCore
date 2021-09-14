@@ -133,18 +133,6 @@ footer {
     backdrop-filter: none;
 }
 
-@media ui-blurbehind {
-    toolbar {
-        backdrop-filter: blur(10dip);
-        background-color: morph(color(toolbar-bg-color), opacity: 50%);
-    }
-
-    footer {
-        background-color: morph(color(toolbar-bg-color), opacity: 50%);
-        backdrop-filter: blur(10dip);
-    }
-}
-
 card {
     display: block;
     padding: 16dip;
@@ -404,4 +392,16 @@ tools button:hover {
 tools button > img {
     height: 32dip;
     width: 32dip;
+}
+
+@media ui-blurbehind && platform != "Linux" {
+    toolbar {
+        background-color: morph(color(toolbar-bg-color), opacity: 50%);
+        backdrop-filter: blur(10dip);
+    }
+
+    footer {
+        background-color: morph(color(toolbar-bg-color), opacity: 50%);
+        backdrop-filter: blur(10dip);
+    }
 }

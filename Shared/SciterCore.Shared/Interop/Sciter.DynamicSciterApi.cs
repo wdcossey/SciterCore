@@ -80,7 +80,6 @@ namespace SciterCore.Interop
 			[SciterApiOSPlatformAttribute(SciterOSPlatform.Linux)]
 			public readonly SciterApiDelegates.SciterCreateWidget SciterCreateWidget;
 			
-			[SciterApiOSPlatformAttribute(SciterOSPlatform.Windows)]
 			public readonly SciterApiDelegates.SciterCreateWindow SciterCreateWindow;
 
 			public readonly SciterApiDelegates.SciterSetupDebugOutput SciterSetupDebugOutput;

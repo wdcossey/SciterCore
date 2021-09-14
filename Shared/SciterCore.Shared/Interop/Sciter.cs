@@ -703,13 +703,9 @@ namespace SciterCore.Interop
                     SciterRectangle frame, MulticastDelegate delegt,
                     IntPtr delegateParam, IntPtr parent)
                 {
-                    if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                        throw new PlatformNotSupportedException($"{nameof(SciterCreateWindow)} is for use on {nameof(OSPlatform.Windows)}");
-
-                    var frameRECT = frame.ToRect();
+	                var frameRECT = frame.ToRect();
                     var flags = (SciterXDef.SCITER_CREATE_WINDOW_FLAGS)(uint)creationFlags;
-
-					return _sciterCreateWindow(creationFlags: flags, frame: ref frameRECT, delegt: delegt, delegateParam: delegateParam, parent: parent);
+                    return _sciterCreateWindow(creationFlags: flags, frame: ref frameRECT, delegt: delegt, delegateParam: delegateParam, parent: parent);
 				}
 
                 public void SciterSetupDebugOutput(IntPtr hwndOrNull, IntPtr param, SciterXDef.DEBUG_OUTPUT_PROC pfOutput) =>
